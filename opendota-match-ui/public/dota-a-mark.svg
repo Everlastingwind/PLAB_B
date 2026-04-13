@@ -1,0 +1,6 @@
+<svg width="64" height="64" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Dota 2 mark">
+  <rect x="6" y="6" width="52" height="52" rx="8" fill="#C62828"/>
+  <polygon points="16,14 33,27 14,33" fill="#FFFFFF"/>
+  <polygon points="50,30 31,36 48,50" fill="#FFFFFF"/>
+  <rect x="24" y="28" width="20" height="8" rx="2" transform="rotate(18 34 32)" fill="#111111"/>
+</svg>

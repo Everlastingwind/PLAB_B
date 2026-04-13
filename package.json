@@ -1,0 +1,16 @@
+{
+  "name": "plab-b",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "npm --prefix opendota-match-ui run dev",
+    "build": "npm --prefix opendota-match-ui run build",
+    "preview": "npm --prefix opendota-match-ui run preview",
+    "fetch-dota-vpkr": "node scripts/fetch_latest_dota_data.js"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.103.0",
+    "dotaconstants": "^10.8.0",
+    "lucide-react": "^1.8.0"
+  }
+}

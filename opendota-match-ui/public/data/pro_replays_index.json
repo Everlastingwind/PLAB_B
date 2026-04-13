@@ -1,0 +1,232 @@
+{
+  "version": 1,
+  "_meta": {
+    "source": "opendota_team36_recent",
+    "team_id": 36,
+    "fetched_matches": 2
+  },
+  "replays": [
+    {
+      "match_id": 8769321570,
+      "uploaded_at": "2026-04-12T20:44:18Z",
+      "duration_sec": 1622,
+      "radiant_win": true,
+      "league_name": "DreamLeague Season 29 Qualifiers",
+      "radiant_score": 33,
+      "dire_score": 11,
+      "players": [
+        {
+          "player_slot": 0,
+          "account_id": 835864135,
+          "hero_id": 65,
+          "pro_name": "pma",
+          "is_radiant": true,
+          "kills": 11,
+          "deaths": 2,
+          "assists": 12
+        },
+        {
+          "player_slot": 1,
+          "account_id": 185590374,
+          "hero_id": 106,
+          "pro_name": "Niku",
+          "is_radiant": true,
+          "kills": 8,
+          "deaths": 3,
+          "assists": 18
+        },
+        {
+          "player_slot": 2,
+          "account_id": 957204049,
+          "hero_id": 61,
+          "pro_name": "gotthejuice",
+          "is_radiant": true,
+          "kills": 9,
+          "deaths": 0,
+          "assists": 8
+        },
+        {
+          "player_slot": 3,
+          "account_id": 919735867,
+          "hero_id": 79,
+          "pro_name": "daze",
+          "is_radiant": true,
+          "kills": 4,
+          "deaths": 3,
+          "assists": 16
+        },
+        {
+          "player_slot": 4,
+          "account_id": 130991304,
+          "hero_id": 121,
+          "pro_name": "Riddys",
+          "is_radiant": true,
+          "kills": 1,
+          "deaths": 3,
+          "assists": 18
+        },
+        {
+          "player_slot": 128,
+          "account_id": 16497807,
+          "hero_id": 86,
+          "pro_name": "tOfu",
+          "is_radiant": false,
+          "kills": 1,
+          "deaths": 5,
+          "assists": 6
+        },
+        {
+          "player_slot": 129,
+          "account_id": 97590558,
+          "hero_id": 77,
+          "pro_name": "Ace ♠",
+          "is_radiant": false,
+          "kills": 4,
+          "deaths": 6,
+          "assists": 4
+        },
+        {
+          "player_slot": 130,
+          "account_id": 201358612,
+          "hero_id": 126,
+          "pro_name": "Nisha",
+          "is_radiant": false,
+          "kills": 2,
+          "deaths": 9,
+          "assists": 2
+        },
+        {
+          "player_slot": 131,
+          "account_id": 230487729,
+          "hero_id": 100,
+          "pro_name": "Ekki",
+          "is_radiant": false,
+          "kills": 1,
+          "deaths": 8,
+          "assists": 7
+        },
+        {
+          "player_slot": 132,
+          "account_id": 152962063,
+          "hero_id": 21,
+          "pro_name": "m1CKe",
+          "is_radiant": false,
+          "kills": 3,
+          "deaths": 5,
+          "assists": 3
+        }
+      ]
+    },
+    {
+      "match_id": 8769245008,
+      "uploaded_at": "2026-04-12T19:28:17Z",
+      "duration_sec": 2513,
+      "radiant_win": false,
+      "league_name": "DreamLeague Season 29 Qualifiers",
+      "radiant_score": 11,
+      "dire_score": 40,
+      "players": [
+        {
+          "player_slot": 0,
+          "account_id": 957204049,
+          "hero_id": 46,
+          "pro_name": "gotthejuice",
+          "is_radiant": true,
+          "kills": 3,
+          "deaths": 5,
+          "assists": 3
+        },
+        {
+          "player_slot": 1,
+          "account_id": 185590374,
+          "hero_id": 145,
+          "pro_name": "Niku",
+          "is_radiant": true,
+          "kills": 5,
+          "deaths": 10,
+          "assists": 4
+        },
+        {
+          "player_slot": 2,
+          "account_id": 835864135,
+          "hero_id": 108,
+          "pro_name": "pma",
+          "is_radiant": true,
+          "kills": 1,
+          "deaths": 5,
+          "assists": 8
+        },
+        {
+          "player_slot": 3,
+          "account_id": 919735867,
+          "hero_id": 86,
+          "pro_name": "daze",
+          "is_radiant": true,
+          "kills": 2,
+          "deaths": 10,
+          "assists": 8
+        },
+        {
+          "player_slot": 4,
+          "account_id": 130991304,
+          "hero_id": 83,
+          "pro_name": "Riddys",
+          "is_radiant": true,
+          "kills": 0,
+          "deaths": 10,
+          "assists": 5
+        },
+        {
+          "player_slot": 128,
+          "account_id": 16497807,
+          "hero_id": 111,
+          "pro_name": "tOfu",
+          "is_radiant": false,
+          "kills": 4,
+          "deaths": 6,
+          "assists": 29
+        },
+        {
+          "player_slot": 129,
+          "account_id": 97590558,
+          "hero_id": 28,
+          "pro_name": "Ace ♠",
+          "is_radiant": false,
+          "kills": 5,
+          "deaths": 2,
+          "assists": 23
+        },
+        {
+          "player_slot": 130,
+          "account_id": 201358612,
+          "hero_id": 126,
+          "pro_name": "Nisha",
+          "is_radiant": false,
+          "kills": 18,
+          "deaths": 1,
+          "assists": 14
+        },
+        {
+          "player_slot": 131,
+          "account_id": 230487729,
+          "hero_id": 123,
+          "pro_name": "Ekki",
+          "is_radiant": false,
+          "kills": 5,
+          "deaths": 1,
+          "assists": 26
+        },
+        {
+          "player_slot": 132,
+          "account_id": 152962063,
+          "hero_id": 54,
+          "pro_name": "m1CKe",
+          "is_radiant": false,
+          "kills": 8,
+          "deaths": 1,
+          "assists": 9
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+utils/.dota_cache/
+data/d2vpkr_raw/
+
+# 依赖与构建
+node_modules/
+dist/
+
+# 密钥（切勿提交）
+.env
+.env.local
+.env.*.local
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.Python

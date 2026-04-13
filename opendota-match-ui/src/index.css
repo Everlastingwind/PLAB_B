@@ -1,0 +1,78 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* 柔和米灰底，避免纯白刺眼 */
+    --app-bg: #e3e6eb;
+    --app-bg-muted: #ebeff5;
+    --app-text: #1f2937;
+    --app-text-muted: #4b5563;
+    --app-border: #c9d0db;
+    --app-header-bg: rgba(23, 31, 43, 0.96);
+    --app-card-bg: #faf9f6;
+    --app-card-border: #ddd9d2;
+    --app-card-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    --app-inset-bg: #e3e0da;
+    --app-raised-bg: #faf9f6;
+    --app-frame-bg: #f0ede8;
+  }
+
+  .dark {
+    --app-bg: #0f172a;
+    --app-bg-muted: #1e293b;
+    --app-text: #e2e8f0;
+    --app-text-muted: #94a3b8;
+    --app-border: #334155;
+    --app-header-bg: rgba(15, 23, 42, 0.96);
+    --app-card-bg: rgba(30, 41, 59, 0.94);
+    --app-card-border: #334155;
+    --app-card-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+    --app-inset-bg: rgba(15, 23, 42, 0.55);
+    --app-raised-bg: rgba(51, 65, 85, 0.5);
+    --app-frame-bg: #0f172a;
+  }
+
+  /* 不用 @apply bg-skin-page：JIT 对仅在 CSS 里 @apply 的自定义色偶发不生成，改用变量与类一致 */
+  html {
+    background-color: var(--app-bg);
+    color: var(--app-text);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+.tabs-scroll {
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: rgb(203 213 225 / 0.9) transparent;
+}
+.dark .tabs-scroll {
+  scrollbar-color: rgb(71 85 105 / 0.85) transparent;
+}
+.tabs-scroll::-webkit-scrollbar {
+  height: 4px;
+}
+.tabs-scroll::-webkit-scrollbar-thumb {
+  @apply rounded-full bg-slate-300/90 dark:bg-slate-600/80;
+}
+
+.skill-build-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: rgb(203 213 225 / 0.75) transparent;
+}
+.dark .skill-build-scroll {
+  scrollbar-color: rgb(71 85 105 / 0.7) transparent;
+}
+.skill-build-scroll::-webkit-scrollbar {
+  height: 4px;
+}
+.skill-build-scroll::-webkit-scrollbar-button {
+  display: none;
+  width: 0;
+  height: 0;
+}
+.skill-build-scroll::-webkit-scrollbar-thumb {
+  @apply rounded-full bg-slate-300/80 dark:bg-slate-600/70;
+}

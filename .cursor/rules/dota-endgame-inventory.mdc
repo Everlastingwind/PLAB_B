@@ -1,0 +1,28 @@
+---
+description: 从 DEM/解析器 JSON 读取终局装备时必须使用的管线（与客户端对齐的推断逻辑）
+alwaysApply: true
+---
+
+# 终局装备（主 6 格 + 中立）
+
+## 唯一权威实现
+
+- **不要**在零散脚本里重写「战斗日志拼装备」；**统一**使用 `scripts/dem_result_to_slim_match.py` 内的逻辑（`build_slim_from_dem_events` → `_main_six_items_slot_from_combat_log` → `_build_endgame_main_six_item_keys` 与 `_non_disposable_purchase_keys_newest_first`）。
+- 核心约定（已实现，勿在别处重复造轮子）：
+  - `slot_best` 只采信 **`time >= 0`** 且带 HUD **`slot` 0–5** 的购买；选人阶段 `time < 0` 的假槽位忽略。
+  - 若可靠槽位 **&lt; 4**：**不要**用 `DOTA_COMBATLOG_ITEM` / 按时间硬塞格；用 **剪枝后的购买池**（`_prune_keys_subsumed_by_created_items`，按 `items.json` 的 `components` 去掉已被成品吸收的配方件）经 `_refill_main_six_strip_invalid` 从左填 6 格。
+  - **补刀斧** `quelling_blade` 不得因 `qual==component` 低价被当成 disposable 剔除。
+  - **魔棒/魔杖**允许出现在主栏展示（已从 disposable 表移除）。
+  - 有 **interval / `item_*` 快照** 时优先用 `_best_interval_inventory_bundle_for_slot`；有 OpenDota 式 `players[].item_0..5` 时走 `_inventory_from_api_style_player`。
+
+## 标准用法
+
+- 单场写入前端：  
+  `python scripts/dem_result_to_slim_match.py <parser_events.json> -o opendota-match-ui/public/data/matches/{match_id}.json`  
+  再按需 `translate_match_data` + `backend.match_service.save_uploaded_match_slim` 更新 `latest_match` / `replays_index`。
+- 仅合并装备补丁：`--inventory-overlay`（见 `scripts/build_local_inventory_overlay.py`）。
+- DotaParser `batch_output` 风格：`scripts/merge_batch_output_inventory.py`（内部仍应走 `merge_endgame_inventory_from_api_players` / 与 slim 合并，而非自写推断）。
+
+## 若需改逻辑
+
+- **只改** `dem_result_to_slim_match.py`（及相关共用辅助函数），保持全项目一条路径，避免与前端展示分叉。

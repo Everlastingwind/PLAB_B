@@ -1,0 +1,14 @@
+{
+  "players": [
+    { "slot": 0, "ability_upgrades_arr": [] },
+    { "slot": 1, "ability_upgrades_arr": [] },
+    { "slot": 2, "ability_upgrades_arr": [] },
+    { "slot": 3, "ability_upgrades_arr": [] },
+    { "slot": 4, "ability_upgrades_arr": [] },
+    { "slot": 5, "ability_upgrades_arr": [] },
+    { "slot": 6, "ability_upgrades_arr": [] },
+    { "slot": 7, "ability_upgrades_arr": [] },
+    { "slot": 8, "ability_upgrades_arr": [] },
+    { "slot": 9, "ability_upgrades_arr": [] }
+  ]
+}

@@ -1,0 +1,6 @@
+# 后端 API 示例（可选）
+fastapi>=0.100.0
+uvicorn[standard]>=0.22.0
+
+# batch_processor.py（本地 dem 批量解析上传：原始二进制流）
+requests>=2.28.0
