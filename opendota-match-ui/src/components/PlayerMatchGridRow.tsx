@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import type { PlayerRowMock } from "../data/mockMatchPlayers";
 import { heroIconUrl, itemIconUrl } from "../data/mockMatchPlayers";
 import { cn } from "../lib/cn";
@@ -216,6 +217,10 @@ export function PlayerMatchGridRow({
 
   // 详情页：仅显示职业选手注册名；非职业统一显示「匿名玩家」。
   const displayName = displayPlayerLabel(p.proName);
+  const accountId = Number(p.accountId ?? 0);
+  const hasProName = String(p.proName ?? "").trim().length > 0;
+  const canLinkPlayer =
+    Number.isFinite(accountId) && accountId > 0 && hasProName;
 
   return (
     <div className={rowShellClass(side)}>
@@ -240,17 +245,32 @@ export function PlayerMatchGridRow({
           </div>
         ) : null}
         <div className="flex min-w-0 flex-1 flex-col gap-1">
-          <div
-            className={cn(
-              "truncate text-left text-sm font-semibold leading-tight",
-              side === "radiant"
-                ? "text-emerald-950 dark:text-slate-100"
-                : "text-rose-950 dark:text-slate-100"
-            )}
-            title={displayName || undefined}
-          >
-            {displayName || "—"}
-          </div>
+          {canLinkPlayer ? (
+            <Link
+              to={`/player/${accountId}`}
+              className={cn(
+                "truncate text-left text-sm font-semibold leading-tight underline-offset-2 hover:underline",
+                side === "radiant"
+                  ? "text-emerald-950 dark:text-slate-100"
+                  : "text-rose-950 dark:text-slate-100"
+              )}
+              title={displayName || undefined}
+            >
+              {displayName || "—"}
+            </Link>
+          ) : (
+            <div
+              className={cn(
+                "truncate text-left text-sm font-semibold leading-tight",
+                side === "radiant"
+                  ? "text-emerald-950 dark:text-slate-100"
+                  : "text-rose-950 dark:text-slate-100"
+              )}
+              title={displayName || undefined}
+            >
+              {displayName || "—"}
+            </div>
+          )}
           {p.leaderboardRank != null && p.leaderboardRank > 0 ? (
             <div
               className={cn(

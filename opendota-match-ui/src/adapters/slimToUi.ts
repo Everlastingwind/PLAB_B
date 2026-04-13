@@ -1166,6 +1166,11 @@ function slimPlayerToRow(p: SlimPlayer, maps: EntityMapsPayload): PlayerRowMock 
       : stripReplayRowFactionOutcomeNoise(
           sanitizePlayerDisplayText(String(proNameRaw))
         ) || undefined;
+  const accountIdRaw = Number(p.account_id ?? 0);
+  const accountId =
+    Number.isFinite(accountIdRaw) && accountIdRaw > 0
+      ? accountIdRaw
+      : undefined;
   const lbRaw = (p as { leaderboard_rank?: unknown }).leaderboard_rank;
   const leaderboardRank = (() => {
     const n = numOrZero(lbRaw);
@@ -1195,6 +1200,7 @@ function slimPlayerToRow(p: SlimPlayer, maps: EntityMapsPayload): PlayerRowMock 
     heroKey: key,
     heroNameCn: heroNameCnRaw || undefined,
     proName,
+    accountId,
     steamName: stripReplayRowFactionOutcomeNoise(
       sanitizePlayerDisplayText(String(p.personaname || p.name || "-"))
     ),

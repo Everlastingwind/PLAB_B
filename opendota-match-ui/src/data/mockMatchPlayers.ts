@@ -112,6 +112,8 @@ export interface PlayerRowMock {
   heroNameCn?: string;
   /** 职业选手名（account_id 匹配 pro 列表） */
   proName?: string | null;
+  /** 用于选手页链接；无或非正数时不展示可点击链接 */
+  accountId?: number;
   steamName: string;
   /** @deprecated 展示改用 leaderboardRank；保留兼容旧 mock */
   rankLabel: string;
