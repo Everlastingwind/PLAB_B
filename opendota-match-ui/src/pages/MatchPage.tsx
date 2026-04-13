@@ -68,11 +68,24 @@ export function MatchPage() {
 
       <main className="min-w-0 overflow-x-hidden px-3 py-2 sm:px-4 lg:px-6">
         <div className="mx-auto w-full max-w-[1600px] flex flex-col">
-          <MatchVerticalBoard
-            radiant={radiant}
-            dire={dire}
-            matchMeta={header}
-          />
+          {loading ? (
+            <div
+              className={cn(
+                "flex min-h-[320px] flex-col items-center justify-center gap-3 rounded-xl border border-skin-line bg-skin-card/40 px-4 py-12 text-sm text-skin-sub",
+                "dark:bg-slate-900/30"
+              )}
+              aria-busy
+            >
+              <div className="h-8 w-8 animate-spin rounded-full border-2 border-skin-line border-t-amber-500/80" />
+              <p>正在加载本场对局数据…</p>
+            </div>
+          ) : (
+            <MatchVerticalBoard
+              radiant={radiant}
+              dire={dire}
+              matchMeta={header}
+            />
+          )}
         </div>
       </main>
     </PageShell>
