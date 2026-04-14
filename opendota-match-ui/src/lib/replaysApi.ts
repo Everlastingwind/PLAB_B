@@ -9,7 +9,11 @@ export async function fetchReplaysIndex(): Promise<ReplaysIndexPayload> {
     cache: "no-store",
   });
   if (!res.ok) throw new Error(`replays_index ${res.status}`);
-  return (await res.json()) as ReplaysIndexPayload;
+  const raw = (await res.json()) as ReplaysIndexPayload;
+  return {
+    ...raw,
+    replays: (raw.replays || []).map((r) => ({ ...r, source: "pub" })),
+  };
 }
 
 /** 职业比赛索引：由 scripts/fetch_pro_replays_index.py 生成（OpenDota proMatches + 战队过滤） */
@@ -18,7 +22,11 @@ export async function fetchProReplaysIndex(): Promise<ReplaysIndexPayload> {
     cache: "no-store",
   });
   if (!res.ok) throw new Error(`pro_replays_index ${res.status}`);
-  return (await res.json()) as ReplaysIndexPayload;
+  const raw = (await res.json()) as ReplaysIndexPayload;
+  return {
+    ...raw,
+    replays: (raw.replays || []).map((r) => ({ ...r, source: "pro" })),
+  };
 }
 
 /** 合并 PUB + PRO 索引：同 match_id 保留 uploaded_at 较新的一条 */
