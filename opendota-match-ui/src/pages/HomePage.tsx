@@ -42,22 +42,6 @@ export function HomePage() {
       onFeedModeChange={setFeed}
     >
       <main className="mx-auto w-full max-w-[1400px] px-4 py-4 sm:px-6 sm:py-8 lg:px-8">
-        {feed.pro ? (
-          <p className="mb-6 text-xs leading-relaxed text-skin-sub">
-            PRO：OpenDota 职业比赛索引（战队 ID 见{" "}
-            <span className="font-mono text-skin-ink">liquipedia_top20_team_ids.json</span>
-            ）；建议每日 9:20 运行{" "}
-            <span className="font-mono text-skin-ink">scripts/fetch_pro_replays_index.py</span>{" "}
-            更新。
-            {feed.pub ? (
-              <>
-                {" "}
-                当前已同时包含 <span className="font-medium text-skin-ink">PUB</span>{" "}
-                本地上传对局，列表已按比赛编号去重合并。
-              </>
-            ) : null}
-          </p>
-        ) : null}
         {idxErr ? (
           <p className="mb-4 text-sm text-amber-500/90">{idxErr}</p>
         ) : null}

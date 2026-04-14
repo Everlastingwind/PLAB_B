@@ -24,7 +24,7 @@ export function AppHeader({ center, trailing }: AppHeaderProps) {
           center ? "items-start" : "items-center"
         )}
       >
-        <div className={cn("flex shrink-0 items-center gap-3", Boolean(center) && "mt-1")}>
+        <div className={cn("flex shrink-0 items-center", Boolean(center) && "mt-1")}>
           <Link to="/" aria-label="返回首页">
             <span
               className="flex h-10 items-center gap-0.5 font-sans text-[28px] font-semibold leading-none tracking-[0.04em]"
@@ -37,12 +37,6 @@ export function AppHeader({ center, trailing }: AppHeaderProps) {
               />
               <span>NB</span>
             </span>
-          </Link>
-          <Link
-            to="/pros"
-            className="whitespace-nowrap text-[11px] font-semibold text-slate-600 underline-offset-4 hover:text-slate-900 hover:underline sm:text-xs dark:text-slate-400 dark:hover:text-slate-200"
-          >
-            职业选手
           </Link>
         </div>
         <div className="flex min-w-0 flex-1 basis-0 flex-row items-center justify-start sm:justify-center">

@@ -255,11 +255,6 @@ export function HeroMatchesPage() {
               返回主页
             </Link>
           </div>
-          {feed.pro ? (
-            <p className="mb-4 text-xs leading-relaxed text-skin-sub">
-              当前列表可含 OpenDota 职业索引对局（PRO）；与 PUB 同时开启时已按比赛编号去重合并。
-            </p>
-          ) : null}
           {!mapsLoading && maps ? (
             replays.length === 0 ? (
               <p className="text-sm text-skin-sub">暂无该英雄的录像记录。</p>

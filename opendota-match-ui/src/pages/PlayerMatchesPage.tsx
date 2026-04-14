@@ -196,12 +196,6 @@ export function PlayerMatchesPage() {
             </Link>
           </div>
 
-          {feed.pro ? (
-            <p className="mb-4 text-xs leading-relaxed text-skin-sub">
-              当前列表可含 OpenDota 职业索引对局（PRO）；与 PUB 同时开启时已按比赛编号去重合并。
-            </p>
-          ) : null}
-
           {titleName === "匿名玩家" || !titleName ? (
             <p className="mb-6 text-sm text-skin-sub">
               非职业选手以「匿名玩家」展示；完整出装与加点请点进单场录像查看。
