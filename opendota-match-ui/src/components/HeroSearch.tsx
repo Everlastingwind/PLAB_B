@@ -322,7 +322,7 @@ export function HeroSearch({
               !mdUp && dockTopPx > 0 ? { top: dockTopPx } : undefined
             }
             className={cn(
-              "z-[300] max-h-72 overflow-auto rounded-lg border border-skin-line bg-white py-1 dark:border-slate-600 dark:bg-slate-900",
+              "z-[5000] max-h-72 overflow-auto rounded-lg border border-skin-line bg-white py-1 dark:border-slate-600 dark:bg-slate-900",
               "max-md:fixed max-md:left-4 max-md:right-4 max-md:mt-0 max-md:min-w-0 max-md:w-auto max-md:max-w-none max-md:shadow-xl max-md:shadow-black/15 max-md:ring-1 max-md:ring-slate-800/25",
               "md:absolute md:left-0 md:right-0 md:top-full md:mt-1 md:min-w-full md:w-full md:max-w-none md:shadow-lg md:shadow-black/10"
             )}
@@ -380,7 +380,7 @@ export function HeroSearch({
             : undefined
         }
         className={cn(
-          "z-[250] min-w-0",
+          "z-[4900] min-w-0",
           "mt-2 w-full max-w-full md:relative md:top-auto",
           heroAvatarGridOpen &&
             "max-md:fixed max-md:left-4 max-md:right-4 max-md:mt-0 max-md:w-auto max-md:max-w-none"

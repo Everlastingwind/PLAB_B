@@ -38,7 +38,7 @@ export function PageShell({
   return (
     <div className="min-h-screen bg-skin-page text-skin-ink antialiased transition-colors">
       <AppHeader center={center} trailing={trailing} />
-      {children}
+      <div className="relative z-0 min-w-0">{children}</div>
     </div>
   );
 }

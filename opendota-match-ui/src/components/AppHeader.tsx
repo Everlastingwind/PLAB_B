@@ -13,7 +13,7 @@ export function AppHeader({ center, trailing }: AppHeaderProps) {
   return (
     <header
       className={cn(
-        "border-b border-slate-700/80 bg-skin-header/95 text-slate-100 backdrop-blur-md transition-colors",
+        "relative z-50 border-b border-slate-700/80 bg-skin-header/95 text-slate-100 backdrop-blur-md transition-colors",
         "supports-[backdrop-filter]:bg-skin-header/90",
         "shadow-[0_4px_18px_rgba(0,0,0,0.25)] dark:border-slate-700 dark:bg-slate-900/95 dark:text-slate-200 supports-[backdrop-filter]:dark:bg-slate-900/90"
       )}
