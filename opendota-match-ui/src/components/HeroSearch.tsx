@@ -1,4 +1,11 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { useNavigate } from "react-router-dom";
 import { Search } from "lucide-react";
 import type { EntityMapsPayload, HeroMapEntry } from "../types/entityMaps";
@@ -88,6 +95,13 @@ export function HeroSearch({
   const [heroAvatarGridOpen, setHeroAvatarGridOpen] = useState(false);
   const [proPlayers, setProPlayers] = useState<ProPlayerCandidate[]>([]);
   const boxRef = useRef<HTMLDivElement>(null);
+  const anchorRef = useRef<HTMLDivElement>(null);
+  /** Viewport px; used for `position:fixed` dropdowns below md */
+  const [dockTopPx, setDockTopPx] = useState(0);
+  /** Tailwind `md` breakpoint (768px) and up */
+  const [mdUp, setMdUp] = useState(() =>
+    typeof window === "undefined" ? false : window.matchMedia("(min-width: 768px)").matches
+  );
 
   const list = useMemo<SearchRow[]>(() => {
     if (!maps) return [];
@@ -180,6 +194,31 @@ export function HeroSearch({
     return () => document.removeEventListener("mousedown", onDoc);
   }, []);
 
+  const updateDockTop = useCallback(() => {
+    const el = anchorRef.current;
+    if (!el) return;
+    const r = el.getBoundingClientRect();
+    setDockTopPx(Math.round(r.bottom + 8));
+  }, []);
+
+  useLayoutEffect(() => {
+    const mq = window.matchMedia("(min-width: 768px)");
+    const run = () => {
+      setMdUp(mq.matches);
+      if (mq.matches) return;
+      updateDockTop();
+    };
+    run();
+    mq.addEventListener("change", run);
+    window.addEventListener("resize", run);
+    window.addEventListener("scroll", run, true);
+    return () => {
+      mq.removeEventListener("change", run);
+      window.removeEventListener("resize", run);
+      window.removeEventListener("scroll", run, true);
+    };
+  }, [updateDockTop, open, heroAvatarGridOpen, q, feedMode]);
+
   useEffect(() => {
     let cancelled = false;
     (async () => {
@@ -239,7 +278,10 @@ export function HeroSearch({
       ref={boxRef}
       className="relative box-border flex w-full min-w-0 max-w-full flex-col px-2 md:px-4 lg:px-8 sm:mx-auto sm:max-w-3xl"
     >
-      <div className="relative z-20 w-full min-w-0 max-w-full">
+      <div
+        ref={anchorRef}
+        className="relative z-20 w-full min-w-0 max-w-full"
+      >
         <div className="flex w-full min-w-0 max-w-full items-center justify-center gap-2">
           <div
             className={cn(
@@ -276,7 +318,14 @@ export function HeroSearch({
         </div>
         {open && list.length > 0 ? (
           <ul
-            className="absolute left-0 right-0 top-full z-[200] mt-1 min-w-full w-full max-w-none max-h-72 overflow-auto rounded-lg border border-skin-line bg-white py-1 shadow-lg shadow-black/10 dark:border-slate-600 dark:bg-slate-900 dark:shadow-black/40"
+            style={
+              !mdUp && dockTopPx > 0 ? { top: dockTopPx } : undefined
+            }
+            className={cn(
+              "z-[300] max-h-72 overflow-auto rounded-lg border border-skin-line bg-white py-1 dark:border-slate-600 dark:bg-slate-900",
+              "max-md:fixed max-md:left-4 max-md:right-4 max-md:mt-0 max-md:min-w-0 max-md:w-auto max-md:max-w-none max-md:shadow-xl max-md:shadow-black/15 max-md:ring-1 max-md:ring-slate-800/25",
+              "md:absolute md:left-0 md:right-0 md:top-full md:mt-1 md:min-w-full md:w-full md:max-w-none md:shadow-lg md:shadow-black/10"
+            )}
             role="listbox"
           >
             {list.map((row) =>
@@ -325,12 +374,22 @@ export function HeroSearch({
         ) : null}
       </div>
       <section
-        className="relative z-10 mt-2 w-full min-w-0 max-w-full"
+        style={
+          !mdUp && heroAvatarGridOpen && dockTopPx > 0
+            ? { top: dockTopPx }
+            : undefined
+        }
+        className={cn(
+          "z-[250] min-w-0",
+          "mt-2 w-full max-w-full md:relative md:top-auto",
+          heroAvatarGridOpen &&
+            "max-md:fixed max-md:left-4 max-md:right-4 max-md:mt-0 max-md:w-auto max-md:max-w-none"
+        )}
         aria-label="按属性筛选英雄"
       >
         <div
           className={cn(
-            "relative w-full min-w-0 max-w-full rounded-lg border border-skin-line bg-skin-card p-2 dark:border-slate-700 dark:bg-slate-900/50"
+            "relative w-full min-w-0 max-w-full rounded-lg border border-skin-line bg-skin-card p-2 shadow-xl ring-1 ring-slate-900/10 dark:border-slate-700 dark:bg-slate-900/50 dark:ring-white/10 md:mx-auto md:max-w-[600px] md:shadow-none md:ring-0"
           )}
         >
         <div
@@ -363,7 +422,7 @@ export function HeroSearch({
           ))}
         </div>
         {heroAvatarGridOpen ? (
-          <div className="grid w-full min-w-0 max-w-full grid-cols-5 gap-2 overflow-auto sm:grid-cols-7 md:grid-cols-9">
+          <div className="grid w-full min-w-0 max-w-full grid-cols-[repeat(auto-fill,minmax(52px,1fr))] gap-2 overflow-auto sm:grid-cols-7 md:grid-cols-9">
             {attrHeroes.map((h) => (
               <button
                 key={`attr-${h.id}`}
