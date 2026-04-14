@@ -41,7 +41,9 @@ export function AppHeader({ center, trailing }: AppHeaderProps) {
             <span>NB</span>
           </span>
         </Link>
-        <div className="flex min-w-0 flex-1 items-center justify-center">{center}</div>
+        <div className="flex min-w-0 flex-1 items-center justify-start sm:justify-center">
+          {center}
+        </div>
         <div className="flex shrink-0 items-center gap-2">{trailing}</div>
       </div>
     </header>

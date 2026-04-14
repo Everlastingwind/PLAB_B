@@ -45,7 +45,7 @@ export function HomePage() {
       feedMode={feed}
       onFeedModeChange={setFeed}
     >
-      <main className="mx-auto w-full max-w-[1400px] px-4 py-8 sm:px-6 lg:px-8">
+      <main className="mx-auto w-full max-w-[1400px] px-4 py-4 sm:px-6 sm:py-8 lg:px-8">
         {feed === "pro" ? (
           <p className="mb-6 text-xs leading-relaxed text-skin-sub">
             PRO：OpenDota 职业比赛索引（战队 ID 见{" "}
@@ -62,7 +62,7 @@ export function HomePage() {
           <p className="mb-4 text-sm text-amber-500/90">{mapsErr}</p>
         ) : null}
         {!mapsLoading && maps ? (
-          <div className="flex flex-col gap-3">
+          <div className="flex flex-col gap-2 sm:gap-3">
             {visible.map((r) => (
               <ReplayCard
                 key={`${feed}-${r.match_id}-${r.uploaded_at}`}

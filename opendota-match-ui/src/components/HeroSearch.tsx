@@ -347,7 +347,7 @@ export function HeroSearch({
           ))}
         </div>
         {heroAvatarGridOpen ? (
-          <div className="grid max-h-52 grid-cols-[repeat(auto-fill,minmax(44px,1fr))] gap-1.5 overflow-auto">
+          <div className="grid max-h-52 w-full grid-cols-6 gap-1 overflow-auto sm:grid-cols-[repeat(auto-fit,minmax(44px,1fr))] sm:gap-1.5">
             {attrHeroes.map((h) => (
               <button
                 key={`attr-${h.id}`}

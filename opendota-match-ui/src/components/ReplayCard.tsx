@@ -27,7 +27,7 @@ function HeroCells({
 }) {
   const sorted = [...players].sort(compareByPlayerSlot);
   return (
-    <div className="flex flex-nowrap items-center justify-center gap-1.5 sm:gap-2">
+    <div className="flex flex-nowrap items-center justify-center gap-0.5 sm:gap-2">
       {sorted.map((p) => {
         const key = heroKeyFromId(p.hero_id, maps);
         const nameRaw = String(p.pro_name ?? "").trim();
@@ -35,7 +35,7 @@ function HeroCells({
         return (
           <div
             key={p.player_slot}
-            className="flex w-[62px] shrink-0 flex-col items-center gap-1 sm:w-[72px]"
+            className="flex w-[46px] shrink-0 flex-col items-center gap-0.5 sm:w-[62px] sm:gap-1 lg:w-[72px]"
           >
             <Link
               to={`/hero/${encodeURIComponent(key)}`}
@@ -53,14 +53,14 @@ function HeroCells({
               <img
                 src={heroIconUrl(key === "unknown" ? "invoker" : key)}
                 alt=""
-                className="h-9 w-9 rounded-sm object-cover sm:h-10 sm:w-10"
+                className="h-7 w-7 rounded-sm object-cover sm:h-9 sm:w-9 lg:h-10 lg:w-10"
                 loading="lazy"
               />
             </Link>
             <Link
               to={`/player/${p.account_id}`}
               className={cn(
-                "pointer-events-auto w-full whitespace-normal break-all text-center text-[11px] leading-tight underline-offset-2 transition-colors",
+                "pointer-events-auto w-full whitespace-normal break-all text-center text-[9px] leading-none underline-offset-2 transition-colors sm:text-[11px] sm:leading-tight",
                 isAnonymous
                   ? "text-slate-400 hover:text-slate-600 dark:text-slate-500 dark:hover:text-slate-400"
                   : cn(
@@ -140,7 +140,7 @@ export function ReplayCard({
         "transition-colors duration-200 ease-out",
         "hover:border-slate-300 hover:shadow-md dark:hover:border-slate-600",
         "dark:bg-slate-800/60 dark:backdrop-blur-sm dark:hover:bg-slate-700/75",
-        "px-2.5 py-3 sm:px-4 sm:py-3.5"
+        "px-1.5 py-2 sm:px-4 sm:py-3.5"
       )}
     >
       <Link
@@ -168,25 +168,25 @@ export function ReplayCard({
           {replay.match_id}
         </button>
       </div>
-      <div className="relative z-10 flex flex-nowrap items-stretch gap-2 pointer-events-none sm:gap-3">
-        <div className="flex min-w-0 flex-1 items-center justify-center">
+      <div className="relative z-10 flex flex-nowrap items-stretch gap-1 pointer-events-none sm:gap-3">
+        <div className="flex min-w-0 flex-1 items-center justify-end sm:justify-center">
           <HeroCells players={rad} maps={maps} side="radiant" />
         </div>
 
         <div
           className={cn(
-            "flex w-[5.25rem] shrink-0 flex-col items-center justify-center rounded-lg border border-skin-line px-2 py-2 sm:w-24",
+            "flex w-[3.75rem] shrink-0 flex-col items-center justify-center rounded-md border border-skin-line px-1 py-1 sm:w-24 sm:rounded-lg sm:px-2 sm:py-2",
             "bg-skin-inset shadow-inner dark:border-transparent dark:bg-slate-950/35 dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]"
           )}
         >
-          <div className="mb-1 text-[10px] font-bold uppercase leading-none tracking-wide sm:text-[11px]">
+          <div className="mb-0.5 text-[9px] font-bold uppercase leading-none tracking-wide sm:mb-1 sm:text-[10px] md:text-[11px]">
             {radWon ? (
               <span className="text-emerald-700 dark:text-emerald-400">天辉 胜</span>
             ) : (
               <span className="text-rose-700 dark:text-rose-400">夜魇 胜</span>
             )}
           </div>
-          <div className="flex items-baseline gap-0.5 font-mono text-lg font-bold tabular-nums leading-none sm:text-xl">
+          <div className="flex items-baseline gap-0.5 font-mono text-sm font-bold tabular-nums leading-none sm:text-lg lg:text-xl">
             <span
               className={cn(
                 radWon ? "text-emerald-700 dark:text-emerald-400" : "text-slate-400 dark:text-slate-500"
@@ -207,7 +207,7 @@ export function ReplayCard({
           </div>
         </div>
 
-        <div className="flex min-w-0 flex-1 items-center justify-center">
+        <div className="flex min-w-0 flex-1 items-center justify-start sm:justify-center">
           <HeroCells players={dire} maps={maps} side="dire" />
         </div>
       </div>
