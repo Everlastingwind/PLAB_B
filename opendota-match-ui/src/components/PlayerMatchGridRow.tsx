@@ -19,7 +19,7 @@ import { TalentTreeBadge } from "./TalentTreeBadge";
  */
 /** 列轨道（不含 `display:grid`，便于与 `hidden` / `md:grid` 组合） */
 export const MATCH_BOARD_GRID_TRACKS =
-  "w-full min-w-0 grid-cols-[minmax(0,2.5fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,1.5fr)] gap-4";
+  "w-full min-w-0 grid-cols-[minmax(0,2.35fr)_minmax(0,0.9fr)_minmax(0,0.9fr)_minmax(0,0.95fr)_minmax(0,1fr)_minmax(0,1.7fr)] gap-3";
 
 export const MATCH_BOARD_GRID_COLS = cn("grid", MATCH_BOARD_GRID_TRACKS);
 
