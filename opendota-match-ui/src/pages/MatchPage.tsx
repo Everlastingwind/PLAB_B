@@ -9,8 +9,7 @@ import { cn } from "../lib/cn";
 
 export function MatchPage() {
   const { matchId = "" } = useParams<{ matchId: string }>();
-  const { loading, error, header, radiant, dire, fromLiveJson } =
-    useMatchData(matchId);
+  const { loading, error, header, radiant, dire } = useMatchData(matchId);
 
   const handleCopyId = useCallback(() => {
     void navigator.clipboard.writeText(header.matchId);
@@ -54,18 +53,6 @@ export function MatchPage() {
             : `正在加载比赛 ${matchId} …`}
         </div>
       )}
-      {error && !loading && (
-        <div
-          className={cn(
-            "border-b border-skin-line py-2 text-center text-xs text-amber-600 dark:text-amber-500/90",
-            "bg-skin-inset dark:bg-slate-800"
-          )}
-        >
-          数据加载失败（{error}）
-          {fromLiveJson ? null : "，已使用本地 mock。"}
-        </div>
-      )}
-
       <main className="min-w-0 overflow-x-hidden px-3 py-2 sm:px-4 lg:px-6">
         <div className="mx-auto w-full max-w-[1600px] flex flex-col">
           {loading ? (
@@ -78,6 +65,15 @@ export function MatchPage() {
             >
               <div className="h-8 w-8 animate-spin rounded-full border-2 border-skin-line border-t-amber-500/80" />
               <p>正在加载本场对局数据…</p>
+            </div>
+          ) : error ? (
+            <div
+              className={cn(
+                "flex min-h-[220px] items-center justify-center rounded-xl border border-skin-line bg-skin-card/40 px-4 py-10 text-sm text-skin-sub",
+                "dark:bg-slate-900/30"
+              )}
+            >
+              没有比赛数据
             </div>
           ) : (
             <MatchVerticalBoard
