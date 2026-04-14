@@ -9,22 +9,27 @@ import { displayPlayerLabel } from "../lib/playerDisplay";
 import { SkillBuildTimeline } from "./SkillBuildTimeline";
 import { TalentTreeBadge } from "./TalentTreeBadge";
 
-/** 全局表头与所有数据行共用同一列轨道，保证对齐；物品列按内容宽度，避免 3fr 拉满右侧空白 */
+/**
+ * 全局表头与每行数据必须是**同一套** grid-template-columns。
+ * 若最后一列用 max-content：表头只有「物品」很窄、行内装备区很宽，各行的 fr 列宽会不一致，
+ * 等级/经济等列与表头无法对齐。物品列也用 fr，格内 `justify-self-start` + `w-fit` 避免假拉伸。
+ */
 export const MATCH_BOARD_GRID_COLS =
-  "grid grid-cols-[2.5fr_1fr_1fr_1fr_1fr_max-content] gap-4";
+  "grid w-full min-w-0 grid-cols-[minmax(0,2.5fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,1.5fr)] gap-4";
 
 /** 与表头共用：列轨道 + 内边距；背景由阵营区分 */
 export const MATCH_STAT_GRID_TEMPLATE = cn(
   MATCH_BOARD_GRID_COLS,
-  "items-start w-full rounded-lg p-3 mb-2 min-w-0"
+  "items-start rounded-lg p-3 mb-2"
 );
 
 function rowShellClass(side: "radiant" | "dire") {
   return cn(
     MATCH_STAT_GRID_TEMPLATE,
+    "ring-1 ring-inset",
     side === "radiant"
-      ? "border border-emerald-800/20 bg-emerald-100/70 dark:border-emerald-700/25 dark:bg-emerald-950/35"
-      : "border border-rose-800/20 bg-rose-100/70 dark:border-rose-700/25 dark:bg-rose-950/35"
+      ? "ring-emerald-800/20 bg-emerald-100/70 dark:ring-emerald-700/25 dark:bg-emerald-950/35"
+      : "ring-rose-800/20 bg-rose-100/70 dark:ring-rose-700/25 dark:bg-rose-950/35"
   );
 }
 
@@ -225,6 +230,7 @@ export function PlayerMatchGridRow({
   return (
     <div className={rowShellClass(side)}>
       {/* 1. 玩家：头像 → 天赋树 → 昵称 / Rank / 技能加点（与 OpenDota 类布局一致） */}
+      <div className="min-w-0 max-w-full self-start overflow-hidden">
       <div className="flex min-w-0 items-center gap-2 overflow-hidden sm:gap-2.5">
         <img
           src={heroIconUrl(p.heroKey === "unknown" ? "invoker" : p.heroKey)}
@@ -287,6 +293,7 @@ export function PlayerMatchGridRow({
             <SkillBuildTimeline steps={p.skillBuild} />
           ) : null}
         </div>
+      </div>
       </div>
 
       {/* 2. 等级 + K/D/A */}

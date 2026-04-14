@@ -28,10 +28,10 @@ function teamHeroKillsMax(players: PlayerRowMock[]) {
 function headerGridClass(side: "radiant" | "dire") {
   return cn(
     MATCH_BOARD_GRID_COLS,
-    "items-end w-full rounded-lg border p-3 mb-2 min-w-0",
+    "items-end rounded-lg p-3 mb-2 ring-1 ring-inset",
     side === "radiant"
-      ? "border-emerald-800/25 bg-emerald-100/80 text-emerald-900/80 dark:border-emerald-700/30 dark:bg-emerald-950/50 dark:text-emerald-200/90"
-      : "border-rose-800/25 bg-rose-100/80 text-rose-900/80 dark:border-rose-700/30 dark:bg-rose-950/50 dark:text-rose-200/90",
+      ? "ring-emerald-800/25 bg-emerald-100/80 text-emerald-900/80 dark:ring-emerald-700/30 dark:bg-emerald-950/50 dark:text-emerald-200/90"
+      : "ring-rose-800/25 bg-rose-100/80 text-rose-900/80 dark:ring-rose-700/30 dark:bg-rose-950/50 dark:text-rose-200/90",
     "text-[11px] font-semibold uppercase tracking-wide"
   );
 }

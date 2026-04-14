@@ -42,13 +42,13 @@ function GlobalColumnHeader() {
       <div className={cn(cell, "text-left")}>
         <span>英雄 / 玩家</span>
       </div>
-      <div className="flex min-w-0 items-baseline justify-center gap-2 text-center">
-        <span>等级</span>
-        <span className={kdaHint}>K / D / A</span>
+      <div className={cn(cell, "text-center")}>
+        <div>等级</div>
+        <div className={cn(kdaHint, "mt-0.5")}>K / D / A</div>
       </div>
-      <div className="text-center">正 / 反</div>
-      <div className="text-center">经济</div>
-      <div className="text-center">伤害</div>
+      <div className={cn(cell, "text-center")}>正 / 反</div>
+      <div className={cn(cell, "text-center")}>经济</div>
+      <div className={cn(cell, "text-center")}>伤害</div>
       <div className={cn(cell, "justify-self-start text-left")}>物品</div>
     </div>
   );
