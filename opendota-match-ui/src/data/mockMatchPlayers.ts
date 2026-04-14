@@ -5,6 +5,36 @@
 export const STEAM_CDN =
   "https://cdn.cloudflare.steamstatic.com";
 
+/**
+ * dotaconstants / 管线常见 `/apps/dota2/...` 相对路径；若不拼 CDN，浏览器会向本站请求 → 404空白。
+ * 协议相对 `//cdn...` 亦归一为 https。
+ */
+export function normalizeDotaAssetUrl(raw: string): string {
+  const u = (raw || "").trim();
+  if (!u) return "";
+  if (u.startsWith("https://") || u.startsWith("http://")) return u.split("?")[0];
+  if (u.startsWith("//")) return `https:${u}`.split("?")[0];
+  if (u.startsWith("/")) return `${STEAM_CDN}${u}`;
+  if (u.startsWith("apps/")) return `${STEAM_CDN}/${u}`;
+  return u;
+}
+
+/**
+ * Steam CDN小图：`referrerPolicy=no-referrer` 减少部分环境下拒链。
+ * 首屏少量头像用 eager；技能/物品/列表量多，用 lazy 减轻单域名并发排队。
+ */
+export const steamCdnImgHero = {
+  loading: "eager" as const,
+  decoding: "async" as const,
+  referrerPolicy: "no-referrer" as const,
+};
+
+export const steamCdnImgDefer = {
+  loading: "lazy" as const,
+  decoding: "async" as const,
+  referrerPolicy: "no-referrer" as const,
+};
+
 /** 英雄：`dota_react/heroes/{英文名}.png` */
 export function heroIconUrl(heroKey: string): string {
   const key = heroKey.replace(/^npc_dota_hero_/, "");

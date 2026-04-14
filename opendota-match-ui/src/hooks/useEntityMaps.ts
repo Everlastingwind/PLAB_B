@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { loadEntityMapsPayload } from "../lib/entityMapsLoader";
 import type { EntityMapsPayload } from "../types/entityMaps";
 
 export function useEntityMaps(): {
@@ -16,9 +17,7 @@ export function useEntityMaps(): {
       setLoading(true);
       setError(null);
       try {
-        const res = await fetch("/data/entity_maps.json", { cache: "no-store" });
-        if (!res.ok) throw new Error(String(res.status));
-        const j = (await res.json()) as EntityMapsPayload;
+        const j = await loadEntityMapsPayload();
         if (!cancelled) setMaps(j);
       } catch (e) {
         if (!cancelled)

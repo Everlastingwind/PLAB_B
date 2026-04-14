@@ -1,4 +1,8 @@
-import { itemIconUrl } from "../data/mockMatchPlayers";
+import {
+  itemIconUrl,
+  normalizeDotaAssetUrl,
+  steamCdnImgDefer,
+} from "../data/mockMatchPlayers";
 import type {
   ItemOverlay,
   ItemSlotMock,
@@ -58,10 +62,13 @@ function ItemIcon({ slot }: { slot: ItemSlotMock | null }) {
       )}
     >
       <img
-        src={slot.imageUrl?.trim() || itemIconUrl(slot.itemKey)}
+        src={
+          normalizeDotaAssetUrl(slot.imageUrl?.trim() ?? "") ||
+          itemIconUrl(slot.itemKey)
+        }
         alt=""
         className="h-full w-full object-cover"
-        loading="lazy"
+        {...steamCdnImgDefer}
       />
       {slot.overlay ? <ItemOverlayBadge overlay={slot.overlay} /> : null}
     </div>
@@ -95,7 +102,7 @@ function AghanimPairInSlot({
           !hasScepter && "opacity-[0.38] grayscale-[0.85]"
         )}
         title={hasScepter ? "已购买神杖" : "未购买神杖"}
-        loading="lazy"
+        {...steamCdnImgDefer}
       />
       <img
         src={AGHANIM_SHARD_IMG}
@@ -105,7 +112,7 @@ function AghanimPairInSlot({
           !hasShard && "opacity-[0.38] grayscale-[0.85]"
         )}
         title={hasShard ? "已购买魔晶" : "未购买魔晶"}
-        loading="lazy"
+        {...steamCdnImgDefer}
       />
     </div>
   );

@@ -2,7 +2,13 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { ChevronDown } from "lucide-react";
 import type { PlayerRowMock } from "../data/mockMatchPlayers";
-import { heroIconUrl, itemIconUrl } from "../data/mockMatchPlayers";
+import {
+  heroIconUrl,
+  itemIconUrl,
+  normalizeDotaAssetUrl,
+  steamCdnImgDefer,
+  steamCdnImgHero,
+} from "../data/mockMatchPlayers";
 import { cn } from "../lib/cn";
 import { clipMechaCorner } from "../lib/mechaStyles";
 import { formatStat } from "../lib/display";
@@ -125,7 +131,7 @@ function GridInventorySlots({
             src={AGHANIM_SCEPTER_ICON}
             alt=""
             className="h-full w-full object-cover"
-            loading="lazy"
+            {...steamCdnImgDefer}
           />
         </div>
         <div
@@ -142,7 +148,7 @@ function GridInventorySlots({
             src={AGHANIM_SHARD_ICON}
             alt=""
             className="h-full w-full object-cover"
-            loading="lazy"
+            {...steamCdnImgDefer}
           />
         </div>
       </div>
@@ -173,15 +179,15 @@ function GridInventorySlots({
                 />
               );
             }
-            const src =
-              slot.imageUrl?.trim() || itemIconUrl(itemKeyClean(slot.itemKey));
+            const rawImg = slot.imageUrl?.trim() ?? "";
+            const src = normalizeDotaAssetUrl(rawImg) || itemIconUrl(itemKeyClean(slot.itemKey));
             return (
               <div key={idx} className={filledMain} role="listitem">
                 <img
                   src={src}
                   alt=""
                   className="h-full w-full object-cover"
-                  loading="lazy"
+                  {...steamCdnImgDefer}
                 />
               </div>
             );
@@ -299,7 +305,7 @@ export function PlayerMatchGridRow({
                 clipMechaCorner,
                 "rounded-[4px]"
               )}
-              loading="lazy"
+              {...steamCdnImgHero}
             />
             <div className="min-w-0 flex-1">
               {canLinkPlayer ? (
@@ -461,7 +467,7 @@ export function PlayerMatchGridRow({
             clipMechaCorner,
             "rounded-[4px]"
           )}
-          loading="lazy"
+          {...steamCdnImgHero}
         />
         {hasTalentOrSkillUi(p) ? (
           <div className="pointer-events-auto shrink-0">

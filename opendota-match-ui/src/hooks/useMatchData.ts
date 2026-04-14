@@ -6,7 +6,9 @@ import type { TeamTableMock } from "../data/mockMatchPlayers";
 import { buildUiFromSlim, DEFAULT_TEAM_NAMES } from "../adapters/slimToUi";
 import { enrichSlimWithOpenDotaAbilityUpgrades } from "../lib/enrichSlimFromOpenDota";
 import { mergeOpenDotaEndgameItemsIntoSlim } from "../lib/mergeOpenDotaEndgameItems";
+import { loadEntityMapsPayload } from "../lib/entityMapsLoader";
 import { purifyMatchJsonForSlim } from "../lib/purifyRawMatchJson";
+import { fetchStaticJson } from "../lib/fetchStaticJson";
 import {
   fetchOpenDotaMatchById,
   fetchNaviLatestOpenDotaMatch,
@@ -25,21 +27,14 @@ export interface MatchDataState {
   fromLiveJson: boolean;
 }
 
-async function fetchJson<T>(path: string): Promise<T> {
-  const t = Date.now();
-  const res = await fetch(`${path}?t=${t}`, { cache: "no-store" });
-  if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
-  return res.json() as Promise<T>;
-}
-
 /** 与比赛数据并行拉取；缺失或失败时不阻断主流程 */
 async function fetchLatestTalentsMap(): Promise<
   Record<string, VpkrTalentLabelEntry> | undefined
 > {
   try {
-    const raw = await fetchJson<{ byAbilityKey?: Record<string, VpkrTalentLabelEntry> }>(
-      "/data/latest_talents_map.json"
-    );
+    const raw = await fetchStaticJson<{
+      byAbilityKey?: Record<string, VpkrTalentLabelEntry>;
+    }>("/data/latest_talents_map.json");
     const tbl = raw?.byAbilityKey;
     return tbl && typeof tbl === "object" ? tbl : undefined;
   } catch {
@@ -77,7 +72,7 @@ export function useMatchData(matchId?: string): MatchDataState & { reload: () =>
       let slim: SlimMatchJson | null = null;
       let lastErr: Error | null = null;
       let maps: EntityMapsPayload | null = null;
-      const mapsPromise = fetchJson<EntityMapsPayload>("/data/entity_maps.json");
+      const mapsPromise = loadEntityMapsPayload();
       const talentLabelsPromise = fetchLatestTalentsMap();
 
       if (isNaviOpenDotaLiveRoute(matchId)) {
@@ -114,7 +109,7 @@ export function useMatchData(matchId?: string): MatchDataState & { reload: () =>
             const [m, talentLabelsByKey, raw] = await Promise.all([
               mapsPromise,
               talentLabelsPromise,
-              fetchJson<unknown>(path),
+              fetchStaticJson<unknown>(path, { cache: "no-cache" }),
             ]);
             maps = {
               ...m,

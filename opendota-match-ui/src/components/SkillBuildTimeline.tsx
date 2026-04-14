@@ -3,6 +3,8 @@ import {
   abilityIconFallbackUrl,
   abilityIconUrl,
   dotaTalentsIconUrl,
+  normalizeDotaAssetUrl,
+  steamCdnImgDefer,
 } from "../data/mockMatchPlayers";
 import { cn } from "../lib/cn";
 
@@ -21,7 +23,7 @@ export function isNoiseAbilityStep(s: SkillBuildStepUi): boolean {
 }
 
 function abilityImgSrc(s: SkillBuildStepUi): string {
-  const u = (s.img || "").trim();
+  const u = normalizeDotaAssetUrl(s.img || "");
   if (u) return u;
   if (s.abilityKey) return abilityIconUrl(s.abilityKey);
   if (s.kind === "talent" || s.isTalent) return dotaTalentsIconUrl;
@@ -91,7 +93,7 @@ export function SkillBuildTimeline({ steps }: { steps: SkillBuildStepUi[] }) {
                     src={src}
                     alt=""
                     className="h-full w-full object-cover"
-                    loading="lazy"
+                    {...steamCdnImgDefer}
                     title={tip}
                     onError={(e) => {
                       const el = e.currentTarget;

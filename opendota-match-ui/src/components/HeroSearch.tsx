@@ -10,7 +10,7 @@ import { useNavigate } from "react-router-dom";
 import { Search } from "lucide-react";
 import type { EntityMapsPayload, HeroMapEntry } from "../types/entityMaps";
 import { cn } from "../lib/cn";
-import { heroIconUrl } from "../data/mockMatchPlayers";
+import { heroIconUrl, steamCdnImgDefer } from "../data/mockMatchPlayers";
 import heroPrimaryAttr from "../data/hero_primary_attr.json";
 import { FeedModeToggle, type FeedSelection } from "./FeedModeToggle";
 import { SEEDED_PRO_PLAYERS } from "../data/proPlayers";
@@ -450,7 +450,7 @@ export function HeroSearch({
                     src={heroIconUrl(h.key)}
                     alt={h.nameCn || h.nameEn}
                     className="h-full w-full object-cover object-center"
-                    loading="lazy"
+                    {...steamCdnImgDefer}
                   />
                 </div>
               </button>

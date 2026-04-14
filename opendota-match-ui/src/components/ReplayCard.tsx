@@ -1,12 +1,16 @@
 import { Link } from "react-router-dom";
 import type { MouseEvent } from "react";
-import { heroIconUrl } from "../data/mockMatchPlayers";
+import { heroIconUrl, steamCdnImgDefer } from "../data/mockMatchPlayers";
 import type { EntityMapsPayload } from "../types/entityMaps";
 import type { ReplayPlayerSummary, ReplaySummary } from "../types/replaysIndex";
 import { displayPlayerLabel } from "../lib/playerDisplay";
 import { heroKeyFromId } from "../lib/replaysApi";
 import { cn } from "../lib/cn";
-import { compareByPlayerSlot, isRadiantFromPlayer } from "../lib/matchGrouping";
+import {
+  compareByPlayerSlot,
+  isCanonicalDotaLobbyPlayerSlot,
+  isRadiantFromPlayer,
+} from "../lib/matchGrouping";
 import { kdaFromPlayerRecord } from "../lib/playerKda";
 
 function sumKills(players: ReplayPlayerSummary[]): number {
@@ -54,7 +58,7 @@ function HeroCells({
                 src={heroIconUrl(key === "unknown" ? "invoker" : key)}
                 alt=""
                 className="h-6 w-6 rounded-sm object-cover sm:h-9 sm:w-9 lg:h-10 lg:w-10"
-                loading="lazy"
+                {...steamCdnImgDefer}
               />
             </Link>
             <Link
@@ -88,14 +92,17 @@ export function ReplayCard({
   replay: ReplaySummary;
   maps: EntityMapsPayload;
 }) {
-  const rad = replay.players.filter((p) =>
-    isRadiantFromPlayer({
-      player_slot: p.player_slot,
-      is_radiant: p.is_radiant,
-    })
+  const rad = replay.players.filter(
+    (p) =>
+      isCanonicalDotaLobbyPlayerSlot(p.player_slot) &&
+      isRadiantFromPlayer({
+        player_slot: p.player_slot,
+        is_radiant: p.is_radiant,
+      })
   );
   const dire = replay.players.filter(
     (p) =>
+      isCanonicalDotaLobbyPlayerSlot(p.player_slot) &&
       !isRadiantFromPlayer({
         player_slot: p.player_slot,
         is_radiant: p.is_radiant,

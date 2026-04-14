@@ -10,6 +10,7 @@ import {
   abilityIconFallbackUrl,
   abilityIconUrl,
   dotaTalentsIconUrl,
+  normalizeDotaAssetUrl,
   STEAM_CDN,
 } from "../data/mockMatchPlayers";
 import type { MatchHeaderData } from "../data/mockMatch";
@@ -43,7 +44,10 @@ import {
   compareByPlayerSlot,
   splitRadiantDirePlayers,
 } from "../lib/matchGrouping";
-import { isNoiseAbilityStep } from "../components/SkillBuildTimeline";
+import {
+  countTimelineVisibleSteps,
+  isNoiseAbilityStep,
+} from "../components/SkillBuildTimeline";
 import abilityIdsJson from "../data/ability_ids.json";
 import {
   buildTalentTreeUiFromBook,
@@ -120,6 +124,70 @@ function isAttributeBonusAbilityKey(key: string | null | undefined): boolean {
   return key.toLowerCase() === "special_bonus_attributes";
 }
 
+const RUBICK_HERO_ID = 86;
+
+/**
+ * 拉比克加点条：只保留 4 个本体技能 + 天赋/全属性。
+ * - 窃取的技能（nevermore_* 等）排除。
+ * - `rubick_telekinesis_land*` 等为子技能，排除（否则会挤占时间轴或显示重复图标）。
+ */
+const RUBICK_CORE_ABILITY_KEYS = new Set([
+  "rubick_telekinesis",
+  "rubick_fade_bolt",
+  "rubick_spell_steal",
+  "rubick_arcane_supremacy",
+  "rubick_null_field",
+]);
+
+function isRubickNativeSkillBuildStep(s: SkillBuildStepUi): boolean {
+  if (s.kind === "talent" || s.isTalent) return true;
+  if (s.kind === "empty" || s.kind === "unknown") return false;
+  const k = (s.abilityKey || "").trim().toLowerCase();
+  if (!k) return false;
+  if (isTalentAbilityKey(k) || isAttributeBonusAbilityKey(k)) return true;
+  return RUBICK_CORE_ABILITY_KEYS.has(k);
+}
+
+/** 管线偶发 ability_key 与 img 不一致时，按 key 强制对齐 Steam 图标路径 */
+function rubickNormalizeCoreAbilityIcon(s: SkillBuildStepUi): SkillBuildStepUi {
+  if (s.kind !== "ability" || s.isTalent || !s.abilityKey) return s;
+  const k = s.abilityKey.trim().toLowerCase();
+  if (!RUBICK_CORE_ABILITY_KEYS.has(k)) return s;
+  return {
+    ...s,
+    img: normalizeDotaAssetUrl(abilityIconUrl(s.abilityKey)),
+  };
+}
+
+function filterRubickSkillBuildForDisplay(
+  heroId: number,
+  heroKey: string,
+  steps: SkillBuildStepUi[] | undefined
+): SkillBuildStepUi[] | undefined {
+  if (!steps?.length) return steps;
+  if (heroId !== RUBICK_HERO_ID && heroKey !== "rubick") return steps;
+  const kept = steps.filter((s) => isRubickNativeSkillBuildStep(s));
+  if (kept.length === 0) return undefined;
+  return kept.map((s, i) => {
+    const n = i + 1;
+    return rubickNormalizeCoreAbilityIcon({ ...s, step: n, level: n });
+  });
+}
+
+/** 挑选 arr vs 管线时：拉比克按展示白名单计数，避免窃取技能抬高 ability_upgrades_arr 优先级 */
+function countVisibleSkillStepsForSourceCompare(
+  steps: SkillBuildStepUi[] | undefined,
+  heroId: number,
+  heroKey: string
+): number {
+  if (!steps?.length) return 0;
+  const list =
+    heroId === RUBICK_HERO_ID || heroKey === "rubick"
+      ? steps.filter((s) => isRubickNativeSkillBuildStep(s))
+      : steps;
+  return countTimelineVisibleSteps(list);
+}
+
 function mapSkillBuild(raw: unknown): SkillBuildStepUi[] | undefined {
   if (!Array.isArray(raw) || raw.length === 0) return undefined;
   const out: SkillBuildStepUi[] = [];
@@ -156,7 +224,7 @@ function mapSkillBuild(raw: unknown): SkillBuildStepUi[] | undefined {
       (kind === "talent" || kind === "unknown"
         ? nameRaw || labelCn || labelEn
         : "");
-    let img = String(o.img ?? o.img_url ?? "").trim();
+    let img = normalizeDotaAssetUrl(String(o.img ?? o.img_url ?? "").trim());
     if (!img) {
       if (kind === "ability" && ak) img = abilityIconUrl(ak);
       else if (kind === "talent") img = dotaTalentsIconUrl;
@@ -181,10 +249,13 @@ function mapSkillBuild(raw: unknown): SkillBuildStepUi[] | undefined {
 function abilityImgUrlFromMapEntry(entry: AbilityMapEntry | undefined): string {
   if (!entry) return "";
   const p = (entry.img || "").trim();
-  if (p.startsWith("http://") || p.startsWith("https://")) return p.split("?")[0];
-  if (p.startsWith("/")) return `${STEAM_CDN}${p}`;
-  if (entry.key) return abilityIconUrl(entry.key);
-  return "";
+  let out = "";
+  if (p.startsWith("http://") || p.startsWith("https://")) out = p.split("?")[0];
+  else if (p.startsWith("//")) out = `https:${p}`.split("?")[0];
+  else if (p.startsWith("/")) out = `${STEAM_CDN}${p}`;
+  else if (p.startsWith("apps/")) out = `${STEAM_CDN}/${p}`;
+  else if (entry.key) out = abilityIconUrl(entry.key);
+  return normalizeDotaAssetUrl(out);
 }
 
 /** 与后端 resolve / 前端 skill_build 对齐，避免 ability_ 前缀或大小写导致左右判反 */
@@ -541,9 +612,11 @@ function mapSkillBuildFromTwoStep(
     const nameEn = String(o.name_en ?? "").trim();
     const nameCn = String(o.name_cn ?? "").trim();
     const imgRaw = String(o.img_url ?? "").trim();
-    let img = imgRaw;
+    let img = normalizeDotaAssetUrl(imgRaw);
     if (!img && kind === "ability" && ak) {
-      img = abilityImgUrlFromMapEntry(entry) || abilityIconUrl(ak);
+      img = normalizeDotaAssetUrl(
+        abilityImgUrlFromMapEntry(entry) || abilityIconUrl(ak)
+      );
     }
     if (!img && kind === "talent") img = dotaTalentsIconUrl;
     if (!img && kind === "unknown") img = abilityIconFallbackUrl;
@@ -564,12 +637,35 @@ function mapSkillBuildFromTwoStep(
   return out.length ? padSkillBuildEmptyTail(out) : undefined;
 }
 
-function skillBuildHasRenderedSteps(steps: SkillBuildStepUi[] | undefined): boolean {
-  if (!steps?.length) return false;
-  return steps.some(
-    (x) =>
-      x.kind === "ability" || x.kind === "talent" || x.kind === "unknown"
-  );
+/** 时间轴上实际会画出的步数（不含 empty / unknown / 噪声）；用于挑选加点源，避免「全是 unknown 仍占住 skillBuild」导致整行被滤空 */
+function skillBuildHasTimelineSteps(steps: SkillBuildStepUi[] | undefined): boolean {
+  return countTimelineVisibleSteps(steps ?? []) > 0;
+}
+
+/** 与 SkillBuildTimeline 可见规则一致，统计「全属性」加点步数 */
+function countTimelineAttributeBonusSteps(steps: SkillBuildStepUi[] | undefined): number {
+  const list = (steps ?? []).length >= 25 ? (steps ?? []).slice(0, 25) : (steps ?? []);
+  let n = 0;
+  for (const s of list) {
+    if (s.kind === "empty" || s.kind === "unknown") continue;
+    if (isNoiseAbilityStep(s)) continue;
+    if (isAttributeBonusAbilityKey(s.abilityKey)) n++;
+  }
+  return n;
+}
+
+/**
+ * DEM/OpenDota 的 ability序列偶发把占位/经济误记为 ability id，表上解析成大量 special_bonus_attributes（蓝球），
+ * 与真实管线 skill_build 并存时应用管线。
+ */
+function abilityDerivedBuildDominatedByAttributeSpam(
+  candidate: SkillBuildStepUi[] | undefined,
+  pipeline: SkillBuildStepUi[] | undefined
+): boolean {
+  if (!skillBuildHasTimelineSteps(pipeline)) return false;
+  const c = countTimelineAttributeBonusSteps(candidate);
+  const p = countTimelineAttributeBonusSteps(pipeline);
+  return c >= 2 && c > p;
 }
 
 function normalizeTreeSideSelected(raw: unknown): "left" | "right" | null {
@@ -1010,26 +1106,53 @@ function slimPlayerToRow(p: SlimPlayer, maps: EntityMapsPayload): PlayerRowMock 
 
   let skillBuild: SkillBuildStepUi[] | undefined;
   const rawUpgradeArr = p.ability_upgrades_arr;
+  const pipeVis = countVisibleSkillStepsForSourceCompare(
+    pipelineSkillBuild,
+    heroId,
+    key
+  );
   if (
     Array.isArray(rawUpgradeArr) &&
     rawUpgradeArr.length > 0 &&
     !looksLikeOpenDotaInterleavedAbilityArr(rawUpgradeArr)
   ) {
     const fromArr = skillBuildFromAbilityUpgradeArr(rawUpgradeArr, maps);
-    if (skillBuildHasRenderedSteps(fromArr)) {
+    const fromVis = countVisibleSkillStepsForSourceCompare(fromArr, heroId, key);
+    // entity_maps 缺新 ability id 时 fromArr 多为 unknown，时间轴会滤掉 → 白格/空白；此时应退回管线 skill_build（常带 CDN img）
+    // 另：arr 若被误解析为大量全属性点，可见步数仍可能 ≥ 管线，但图标会整排蓝球；此时以管线为准
+    if (
+      fromVis > 0 &&
+      fromVis >= pipeVis &&
+      !abilityDerivedBuildDominatedByAttributeSpam(fromArr, pipelineSkillBuild)
+    ) {
       skillBuild = fromArr;
     }
   }
-  if (!skillBuild && skillBuildHasRenderedSteps(openDotaSkillBuild)) {
+  if (
+    !skillBuild &&
+    skillBuildHasTimelineSteps(openDotaSkillBuild) &&
+    !abilityDerivedBuildDominatedByAttributeSpam(
+      openDotaSkillBuild,
+      pipelineSkillBuild
+    )
+  ) {
     skillBuild = openDotaSkillBuild;
-  } else if (!skillBuild && skillBuildHasRenderedSteps(pipelineSkillBuild)) {
+  }
+  if (!skillBuild && skillBuildHasTimelineSteps(pipelineSkillBuild)) {
     skillBuild = pipelineSkillBuild;
   } else if (
     !skillBuild &&
     Array.isArray(rawUpgradeArr) &&
-    rawUpgradeArr.length > 0
+    rawUpgradeArr.length > 0 &&
+    !looksLikeOpenDotaInterleavedAbilityArr(rawUpgradeArr)
   ) {
-    skillBuild = skillBuildFromAbilityUpgradeArr(rawUpgradeArr, maps);
+    const fallbackArr = skillBuildFromAbilityUpgradeArr(rawUpgradeArr, maps);
+    if (
+      skillBuildHasTimelineSteps(fallbackArr) &&
+      !abilityDerivedBuildDominatedByAttributeSpam(fallbackArr, pipelineSkillBuild)
+    ) {
+      skillBuild = fallbackArr;
+    }
   }
 
   const skillBuildForTalentKeys = pipelineSkillBuild ?? skillBuild;
@@ -1039,10 +1162,10 @@ function slimPlayerToRow(p: SlimPlayer, maps: EntityMapsPayload): PlayerRowMock 
   );
   // skill_build_two_step 与 ability_upgrades_arr 同源时易混入噪声；仅当管线 skill_build 完全无展示内容时再回退
   if (
-    !skillBuildHasRenderedSteps(pipelineSkillBuild) &&
+    !skillBuildHasTimelineSteps(pipelineSkillBuild) &&
     skillBuildTwoStep &&
-    skillBuildHasRenderedSteps(skillBuildTwoStep) &&
-    !skillBuildHasRenderedSteps(skillBuild)
+    skillBuildHasTimelineSteps(skillBuildTwoStep) &&
+    !skillBuildHasTimelineSteps(skillBuild)
   ) {
     skillBuild = skillBuildTwoStep;
   }
@@ -1194,6 +1317,7 @@ function slimPlayerToRow(p: SlimPlayer, maps: EntityMapsPayload): PlayerRowMock 
   };
   const scepterActive = scepterShardBuff.scepter;
   const shardActive = scepterShardBuff.shard;
+  skillBuild = filterRubickSkillBuildForDisplay(heroId, key, skillBuild);
   return {
     slot: numOrZero(p.player_slot),
     heroId: heroId || undefined,
