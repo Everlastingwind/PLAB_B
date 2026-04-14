@@ -12,7 +12,7 @@ import type { EntityMapsPayload, HeroMapEntry } from "../types/entityMaps";
 import { cn } from "../lib/cn";
 import { heroIconUrl } from "../data/mockMatchPlayers";
 import heroPrimaryAttr from "../data/hero_primary_attr.json";
-import { FeedModeToggle, type FeedMode } from "./FeedModeToggle";
+import { FeedModeToggle, type FeedSelection } from "./FeedModeToggle";
 import { SEEDED_PRO_PLAYERS } from "../data/proPlayers";
 
 type HeroRow = HeroMapEntry & { id: string };
@@ -85,8 +85,8 @@ export function HeroSearch({
   onFeedModeChange,
 }: {
   maps: EntityMapsPayload | null;
-  feedMode?: FeedMode;
-  onFeedModeChange?: (m: FeedMode) => void;
+  feedMode?: FeedSelection;
+  onFeedModeChange?: (m: FeedSelection) => void;
 }) {
   const nav = useNavigate();
   const [open, setOpen] = useState(false);
@@ -313,7 +313,7 @@ export function HeroSearch({
             />
           </div>
           {feedMode && onFeedModeChange ? (
-            <FeedModeToggle mode={feedMode} onChange={onFeedModeChange} />
+            <FeedModeToggle selection={feedMode} onChange={onFeedModeChange} />
           ) : null}
         </div>
         {open && list.length > 0 ? (

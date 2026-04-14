@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import { AppHeader } from "./AppHeader";
 import { HeroSearch } from "./HeroSearch";
-import type { FeedMode } from "./FeedModeToggle";
+import type { FeedSelection } from "./FeedModeToggle";
 import { useEntityMaps } from "../hooks/useEntityMaps";
 
 export function PageShell({
@@ -14,8 +14,8 @@ export function PageShell({
   /** 主页 / 英雄 / 选手页：中间为英雄搜索 */
   centerSearch?: boolean;
   /** 仅主页：PUB=本地上传解析录像，PRO=OpenDota 职业索引 */
-  feedMode?: FeedMode;
-  onFeedModeChange?: (m: FeedMode) => void;
+  feedMode?: FeedSelection;
+  onFeedModeChange?: (m: FeedSelection) => void;
   trailing?: ReactNode;
   children: ReactNode;
 }) {

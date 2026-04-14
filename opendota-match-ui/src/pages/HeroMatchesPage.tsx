@@ -1,8 +1,9 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { PageShell } from "../components/PageShell";
+import type { FeedSelection } from "../components/FeedModeToggle";
 import {
-  fetchReplaysIndex,
+  fetchReplaysForFeedSelection,
   filterByHeroKey,
   hasMore,
   slicePage,
@@ -121,6 +122,7 @@ export function HeroMatchesPage() {
   const nav = useNavigate();
   const decoded = decodeURIComponent(heroKey);
   const { maps, loading: mapsLoading } = useEntityMaps();
+  const [feed, setFeed] = useState<FeedSelection>({ pub: true, pro: false });
   const [replays, setReplays] = useState<ReplaySummary[]>([]);
   const [detailByMatch, setDetailByMatch] = useState<Record<number, SlimMatchJson>>(
     {}
@@ -133,14 +135,26 @@ export function HeroMatchesPage() {
 
   useEffect(() => {
     setPage(1);
-  }, [decoded]);
+  }, [decoded, feed]);
 
   useEffect(() => {
     if (!maps) return;
-    fetchReplaysIndex().then((idx) => {
-      setReplays(filterByHeroKey(idx.replays, decoded, maps));
-    });
-  }, [decoded, maps]);
+    let cancelled = false;
+    fetchReplaysForFeedSelection(feed)
+      .then((rows) => {
+        if (!cancelled) {
+          setReplays(filterByHeroKey(rows, decoded, maps));
+          setDetailByMatch({});
+          setTalentUiByMatch({});
+        }
+      })
+      .catch(() => {
+        if (!cancelled) setReplays([]);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [decoded, maps, feed]);
 
   const visible = useMemo(
     () => slicePage(replays, page),
@@ -204,7 +218,7 @@ export function HeroMatchesPage() {
     return () => {
       cancelled = true;
     };
-  }, [visible, detailByMatch, maps, decoded]);
+  }, [visible, detailByMatch, maps, decoded, replays]);
 
   const onIntersect = useCallback(() => {
     setPage((p) => (hasMore(replays.length, p) ? p + 1 : p));
@@ -228,7 +242,7 @@ export function HeroMatchesPage() {
     Object.values(maps.heroes).find((h) => h.key === decoded);
 
   return (
-    <PageShell centerSearch>
+    <PageShell centerSearch feedMode={feed} onFeedModeChange={setFeed}>
         <main className="mx-auto w-full max-w-[1400px] px-4 py-8 sm:px-6 lg:px-8">
           <div className="mb-6 flex flex-wrap items-center gap-3">
             <h1 className="text-lg font-bold text-skin-ink">
@@ -241,6 +255,11 @@ export function HeroMatchesPage() {
               返回主页
             </Link>
           </div>
+          {feed.pro ? (
+            <p className="mb-4 text-xs leading-relaxed text-skin-sub">
+              当前列表可含 OpenDota 职业索引对局（PRO）；与 PUB 同时开启时已按比赛编号去重合并。
+            </p>
+          ) : null}
           {!mapsLoading && maps ? (
             replays.length === 0 ? (
               <p className="text-sm text-skin-sub">暂无该英雄的录像记录。</p>

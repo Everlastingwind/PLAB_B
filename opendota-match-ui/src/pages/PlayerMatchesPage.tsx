@@ -1,8 +1,9 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { PageShell } from "../components/PageShell";
+import type { FeedSelection } from "../components/FeedModeToggle";
 import {
-  fetchReplaysIndex,
+  fetchReplaysForFeedSelection,
   filterByAccountId,
   hasMore,
   slicePage,
@@ -63,6 +64,7 @@ export function PlayerMatchesPage() {
   const { accountId = "0" } = useParams<{ accountId: string }>();
   const aid = Number(accountId) || 0;
   const { maps, loading: mapsLoading } = useEntityMaps();
+  const [feed, setFeed] = useState<FeedSelection>({ pub: true, pro: false });
   const [replays, setReplays] = useState<ReplaySummary[]>([]);
   const [detailByMatch, setDetailByMatch] = useState<Record<number, SlimPlayer>>(
     {}
@@ -72,13 +74,24 @@ export function PlayerMatchesPage() {
 
   useEffect(() => {
     setPage(1);
-  }, [aid]);
+  }, [aid, feed]);
 
   useEffect(() => {
-    fetchReplaysIndex().then((idx) => {
-      setReplays(filterByAccountId(idx.replays, aid));
-    });
-  }, [aid]);
+    let cancelled = false;
+    fetchReplaysForFeedSelection(feed)
+      .then((rows) => {
+        if (!cancelled) {
+          setReplays(filterByAccountId(rows, aid));
+          setDetailByMatch({});
+        }
+      })
+      .catch(() => {
+        if (!cancelled) setReplays([]);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [aid, feed]);
 
   const visible = useMemo(
     () => slicePage(replays, page),
@@ -167,7 +180,7 @@ export function PlayerMatchesPage() {
   }, [replays, aid, maps]);
 
   return (
-    <PageShell centerSearch>
+    <PageShell centerSearch feedMode={feed} onFeedModeChange={setFeed}>
         <main className="mx-auto w-full max-w-[1400px] px-4 py-8 sm:px-6 lg:px-8">
           <div className="mb-6 flex flex-wrap items-center gap-3">
             <h1 className="text-lg font-bold text-skin-ink">
@@ -182,6 +195,12 @@ export function PlayerMatchesPage() {
               返回主页
             </Link>
           </div>
+
+          {feed.pro ? (
+            <p className="mb-4 text-xs leading-relaxed text-skin-sub">
+              当前列表可含 OpenDota 职业索引对局（PRO）；与 PUB 同时开启时已按比赛编号去重合并。
+            </p>
+          ) : null}
 
           {titleName === "匿名玩家" || !titleName ? (
             <p className="mb-6 text-sm text-skin-sub">

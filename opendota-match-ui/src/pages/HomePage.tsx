@@ -1,18 +1,14 @@
 import { useEffect, useMemo, useState } from "react";
 import { PageShell } from "../components/PageShell";
 import { ReplayCard } from "../components/ReplayCard";
-import type { FeedMode } from "../components/FeedModeToggle";
-import {
-  fetchReplaysIndex,
-  fetchProReplaysIndex,
-  PAGE_SIZE,
-} from "../lib/replaysApi";
+import type { FeedSelection } from "../components/FeedModeToggle";
+import { fetchReplaysForFeedSelection, PAGE_SIZE } from "../lib/replaysApi";
 import type { ReplaySummary } from "../types/replaysIndex";
 import { useEntityMaps } from "../hooks/useEntityMaps";
 
 export function HomePage() {
   const { maps, loading: mapsLoading, error: mapsErr } = useEntityMaps();
-  const [feed, setFeed] = useState<FeedMode>("pub");
+  const [feed, setFeed] = useState<FeedSelection>({ pub: true, pro: false });
   const [replays, setReplays] = useState<ReplaySummary[]>([]);
   const [idxErr, setIdxErr] = useState<string | null>(null);
   const [page, setPage] = useState(1);
@@ -20,10 +16,8 @@ export function HomePage() {
   useEffect(() => {
     setPage(1);
     setIdxErr(null);
-    const load =
-      feed === "pub" ? fetchReplaysIndex : fetchProReplaysIndex;
-    load()
-      .then((idx) => setReplays(idx.replays))
+    fetchReplaysForFeedSelection(feed)
+      .then((list) => setReplays(list))
       .catch((e) =>
         setIdxErr(e instanceof Error ? e.message : "索引加载失败")
       );
@@ -39,6 +33,8 @@ export function HomePage() {
     return replays.slice(start, end);
   }, [replays, page]);
 
+  const feedKey = `${feed.pub ? "p" : ""}${feed.pro ? "r" : ""}`;
+
   return (
     <PageShell
       centerSearch
@@ -46,13 +42,20 @@ export function HomePage() {
       onFeedModeChange={setFeed}
     >
       <main className="mx-auto w-full max-w-[1400px] px-4 py-4 sm:px-6 sm:py-8 lg:px-8">
-        {feed === "pro" ? (
+        {feed.pro ? (
           <p className="mb-6 text-xs leading-relaxed text-skin-sub">
             PRO：OpenDota 职业比赛索引（战队 ID 见{" "}
             <span className="font-mono text-skin-ink">liquipedia_top20_team_ids.json</span>
             ）；建议每日 9:20 运行{" "}
             <span className="font-mono text-skin-ink">scripts/fetch_pro_replays_index.py</span>{" "}
             更新。
+            {feed.pub ? (
+              <>
+                {" "}
+                当前已同时包含 <span className="font-medium text-skin-ink">PUB</span>{" "}
+                本地上传对局，列表已按比赛编号去重合并。
+              </>
+            ) : null}
           </p>
         ) : null}
         {idxErr ? (
@@ -65,7 +68,7 @@ export function HomePage() {
           <div className="flex flex-col gap-2 sm:gap-3">
             {visible.map((r) => (
               <ReplayCard
-                key={`${feed}-${r.match_id}-${r.uploaded_at}`}
+                key={`${feedKey}-${r.match_id}-${r.uploaded_at}-${r.source ?? ""}`}
                 replay={r}
                 maps={maps}
               />

@@ -21,6 +21,52 @@ export async function fetchProReplaysIndex(): Promise<ReplaysIndexPayload> {
   return (await res.json()) as ReplaysIndexPayload;
 }
 
+/** 合并 PUB + PRO 索引：同 match_id 保留 uploaded_at 较新的一条 */
+export function mergePubProReplays(
+  pubRows: ReplaySummary[],
+  proRows: ReplaySummary[]
+): ReplaySummary[] {
+  const byId = new Map<number, ReplaySummary>();
+  const upsert = (r: ReplaySummary, defaultSource: "pub" | "pro") => {
+    const row = { ...r, source: r.source ?? defaultSource };
+    const ex = byId.get(row.match_id);
+    if (!ex) {
+      byId.set(row.match_id, row);
+      return;
+    }
+    const t1 = new Date(ex.uploaded_at).getTime();
+    const t2 = new Date(row.uploaded_at).getTime();
+    if (t2 >= t1) byId.set(row.match_id, row);
+  };
+  for (const r of pubRows) upsert(r, "pub");
+  for (const r of proRows) upsert(r, "pro");
+  return Array.from(byId.values()).sort(
+    (a, b) =>
+      new Date(b.uploaded_at).getTime() - new Date(a.uploaded_at).getTime()
+  );
+}
+
+/** 录像索引来源（首页 / 英雄页 / 选手页共用）：PUB / PRO 可多选 */
+export type FeedSelection = { pub: boolean; pro: boolean };
+
+export async function fetchReplaysForFeedSelection(
+  sel: FeedSelection
+): Promise<ReplaySummary[]> {
+  if (sel.pub && sel.pro) {
+    const [pubIdx, proIdx] = await Promise.all([
+      fetchReplaysIndex(),
+      fetchProReplaysIndex(),
+    ]);
+    return mergePubProReplays(pubIdx.replays, proIdx.replays);
+  }
+  if (sel.pub) {
+    const idx = await fetchReplaysIndex();
+    return idx.replays;
+  }
+  const idx = await fetchProReplaysIndex();
+  return idx.replays;
+}
+
 export function slicePage(replays: ReplaySummary[], page: number): ReplaySummary[] {
   const end = page * PAGE_SIZE;
   return replays.slice(0, end);
