@@ -199,8 +199,8 @@ export function useMatchData(matchId?: string): MatchDataState & { reload: () =>
           duration:
             ui.header.duration === "0:00" ? mockMatchHeader.duration : ui.header.duration,
           scoreRadiant:
-            ui.header.scoreRadiant || mockMatchHeader.scoreRadiant,
-          scoreDire: ui.header.scoreDire || mockMatchHeader.scoreDire,
+            ui.header.scoreRadiant ?? mockMatchHeader.scoreRadiant,
+          scoreDire: ui.header.scoreDire ?? mockMatchHeader.scoreDire,
         },
         radiant: ui.radiant,
         dire: ui.dire,
