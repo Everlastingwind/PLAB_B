@@ -22,7 +22,7 @@ export function PageShell({
   const { maps, loading } = useEntityMaps();
   const center =
     centerSearch && maps ? (
-      <div className="flex w-full max-w-3xl items-center justify-center gap-2 sm:gap-3">
+      <div className="flex min-w-0 flex-1 w-full max-w-none items-center justify-start gap-2 sm:max-w-3xl sm:justify-center sm:gap-3">
         <div className="min-w-0 w-full">
           <HeroSearch
             maps={maps}
@@ -32,7 +32,7 @@ export function PageShell({
         </div>
       </div>
     ) : centerSearch && loading ? (
-      <div className="mx-auto h-10 w-full max-w-3xl animate-pulse rounded-md bg-skin-inset" />
+      <div className="h-10 w-full max-w-none animate-pulse rounded-md bg-skin-inset sm:mx-auto sm:max-w-3xl" />
     ) : undefined;
 
   return (

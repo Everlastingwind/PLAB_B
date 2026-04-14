@@ -235,7 +235,10 @@ export function HeroSearch({
   }
 
   return (
-    <div ref={boxRef} className="relative mx-auto w-full max-w-3xl">
+    <div
+      ref={boxRef}
+      className="relative w-full min-w-0 max-w-none sm:mx-auto sm:max-w-3xl"
+    >
       <div className="relative z-20">
         <div className="flex items-center justify-center gap-2">
           <div
@@ -321,7 +324,13 @@ export function HeroSearch({
           </ul>
         ) : null}
       </div>
-      <div className="relative z-10 mt-2 rounded-lg border border-skin-line bg-skin-card p-2 dark:border-slate-700 dark:bg-slate-900/50">
+      <div
+        className={cn(
+          "relative z-10 mt-2 rounded-lg border border-skin-line bg-skin-card p-2 dark:border-slate-700 dark:bg-slate-900/50",
+          "max-sm:w-screen max-sm:max-w-[100vw] max-sm:rounded-none max-sm:border-x-0 max-sm:px-2 max-sm:py-2",
+          "max-sm:left-1/2 max-sm:-translate-x-1/2"
+        )}
+      >
         <div className={cn("flex flex-wrap gap-1.5", heroAvatarGridOpen && "mb-2")}>
           {ATTR_LABELS.map((row) => (
             <button
