@@ -237,10 +237,10 @@ export function HeroSearch({
   return (
     <div
       ref={boxRef}
-      className="relative w-full min-w-0 max-w-none px-2 md:px-4 lg:px-8 sm:mx-auto sm:max-w-3xl"
+      className="relative box-border flex w-full min-w-0 max-w-full flex-col px-2 md:px-4 lg:px-8 sm:mx-auto sm:max-w-3xl"
     >
-      <div className="relative z-20">
-        <div className="flex items-center justify-center gap-2">
+      <div className="relative z-20 w-full min-w-0 max-w-full">
+        <div className="flex w-full min-w-0 max-w-full items-center justify-center gap-2">
           <div
             className={cn(
               "flex min-w-0 flex-1 items-center gap-2 rounded-lg border border-skin-line bg-white px-3 py-2 shadow-inner dark:border-slate-600 dark:bg-slate-800/90",
@@ -276,7 +276,7 @@ export function HeroSearch({
         </div>
         {open && list.length > 0 ? (
           <ul
-            className="absolute left-0 right-0 top-full z-[200] mt-1 max-h-72 overflow-auto rounded-lg border border-skin-line bg-white py-1 shadow-lg shadow-black/10 dark:border-slate-600 dark:bg-slate-900 dark:shadow-black/40"
+            className="absolute left-0 right-0 top-full z-[200] mt-1 min-w-full w-full max-w-none max-h-72 overflow-auto rounded-lg border border-skin-line bg-white py-1 shadow-lg shadow-black/10 dark:border-slate-600 dark:bg-slate-900 dark:shadow-black/40"
             role="listbox"
           >
             {list.map((row) =>
@@ -324,12 +324,21 @@ export function HeroSearch({
           </ul>
         ) : null}
       </div>
-      <div
-        className={cn(
-          "relative z-10 mt-2 w-full rounded-lg border border-skin-line bg-skin-card p-2 dark:border-slate-700 dark:bg-slate-900/50"
-        )}
+      <section
+        className="relative z-10 mt-2 w-full min-w-0 max-w-full"
+        aria-label="按属性筛选英雄"
       >
-        <div className={cn("flex flex-wrap gap-1.5", heroAvatarGridOpen && "mb-2")}>
+        <div
+          className={cn(
+            "relative w-full min-w-0 max-w-full rounded-lg border border-skin-line bg-skin-card p-2 dark:border-slate-700 dark:bg-slate-900/50"
+          )}
+        >
+        <div
+          className={cn(
+            "flex w-full min-w-0 max-w-full flex-wrap justify-center gap-2",
+            heroAvatarGridOpen && "mb-2"
+          )}
+        >
           {ATTR_LABELS.map((row) => (
             <button
               key={row.id}
@@ -354,7 +363,7 @@ export function HeroSearch({
           ))}
         </div>
         {heroAvatarGridOpen ? (
-          <div className="grid max-h-52 w-full grid-cols-4 gap-1 overflow-auto sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10 sm:gap-1.5">
+          <div className="grid w-full min-w-0 max-w-full grid-cols-5 gap-2 overflow-auto sm:grid-cols-7 md:grid-cols-9">
             {attrHeroes.map((h) => (
               <button
                 key={`attr-${h.id}`}
@@ -381,7 +390,8 @@ export function HeroSearch({
             ))}
           </div>
         ) : null}
-      </div>
+        </div>
+      </section>
     </div>
   );
 }
