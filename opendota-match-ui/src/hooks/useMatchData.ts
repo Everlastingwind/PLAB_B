@@ -189,6 +189,15 @@ export function useMatchData(matchId?: string): MatchDataState & { reload: () =>
         return;
       }
       const ui = buildUiFromSlim(slim, maps, DEFAULT_TEAM_NAMES);
+      const rawRadiantScore = Number(ui.header.scoreRadiant ?? 0);
+      const rawDireScore = Number(ui.header.scoreDire ?? 0);
+      const hasValidScoreFromSource = rawRadiantScore > 0 || rawDireScore > 0;
+      const fallbackRadiantKills = players
+        .filter((p) => Number(p.player_slot ?? 0) < 128)
+        .reduce((sum, p) => sum + Number(p.kills ?? 0), 0);
+      const fallbackDireKills = players
+        .filter((p) => Number(p.player_slot ?? 0) >= 128)
+        .reduce((sum, p) => sum + Number(p.kills ?? 0), 0);
       setState({
         loading: false,
         error: null,
@@ -198,9 +207,12 @@ export function useMatchData(matchId?: string): MatchDataState & { reload: () =>
           matchId: ui.header.matchId === "—" ? mockMatchHeader.matchId : ui.header.matchId,
           duration:
             ui.header.duration === "0:00" ? mockMatchHeader.duration : ui.header.duration,
-          scoreRadiant:
-            ui.header.scoreRadiant ?? mockMatchHeader.scoreRadiant,
-          scoreDire: ui.header.scoreDire ?? mockMatchHeader.scoreDire,
+          scoreRadiant: hasValidScoreFromSource
+            ? rawRadiantScore
+            : fallbackRadiantKills,
+          scoreDire: hasValidScoreFromSource
+            ? rawDireScore
+            : fallbackDireKills,
         },
         radiant: ui.radiant,
         dire: ui.dire,
