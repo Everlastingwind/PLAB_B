@@ -2099,11 +2099,11 @@
           "assists": 2
         },
         {
-          "player_slot": 133,
+          "player_slot": 4,
           "account_id": 383788462,
           "hero_id": 22,
           "pro_name": null,
-          "is_radiant": false,
+          "is_radiant": true,
           "kills": 6,
           "deaths": 4,
           "assists": 25

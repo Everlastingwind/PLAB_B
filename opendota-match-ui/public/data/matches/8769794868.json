@@ -10447,7 +10447,7 @@
         611,
         5113
       ],
-      "player_slot": 133,
+      "player_slot": 4,
       "isRadiant": false,
       "hero_portrait_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/zuus.png",
       "hero_icon_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/icons/zuus.png",
@@ -10910,7 +10910,8 @@
       "item_3": 36,
       "item_4": 180,
       "item_5": 77,
-      "item_neutral": 0
+      "item_neutral": 0,
+      "is_radiant": true
     }
   ]
 }
