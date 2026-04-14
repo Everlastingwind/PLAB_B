@@ -1211,11 +1211,11 @@
           "assists": 10
         },
         {
-          "player_slot": 133,
+          "player_slot": 4,
           "account_id": 0,
           "hero_id": 39,
           "pro_name": null,
-          "is_radiant": false,
+          "is_radiant": true,
           "kills": 13,
           "deaths": 3,
           "assists": 14
