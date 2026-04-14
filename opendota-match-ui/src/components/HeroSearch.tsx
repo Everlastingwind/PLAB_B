@@ -237,7 +237,7 @@ export function HeroSearch({
   return (
     <div
       ref={boxRef}
-      className="relative w-full min-w-0 max-w-none sm:mx-auto sm:max-w-3xl"
+      className="relative w-full min-w-0 max-w-none px-2 md:px-4 lg:px-8 sm:mx-auto sm:max-w-3xl"
     >
       <div className="relative z-20">
         <div className="flex items-center justify-center gap-2">
@@ -326,9 +326,7 @@ export function HeroSearch({
       </div>
       <div
         className={cn(
-          "relative z-10 mt-2 rounded-lg border border-skin-line bg-skin-card p-2 dark:border-slate-700 dark:bg-slate-900/50",
-          "max-sm:w-screen max-sm:max-w-[100vw] max-sm:rounded-none max-sm:border-x-0 max-sm:px-2 max-sm:py-2",
-          "max-sm:left-1/2 max-sm:-translate-x-1/2"
+          "relative z-10 mt-2 w-full rounded-lg border border-skin-line bg-skin-card p-2 dark:border-slate-700 dark:bg-slate-900/50"
         )}
       >
         <div className={cn("flex flex-wrap gap-1.5", heroAvatarGridOpen && "mb-2")}>
@@ -356,21 +354,29 @@ export function HeroSearch({
           ))}
         </div>
         {heroAvatarGridOpen ? (
-          <div className="grid max-h-52 w-full grid-cols-6 gap-1 overflow-auto sm:grid-cols-[repeat(auto-fit,minmax(44px,1fr))] sm:gap-1.5">
+          <div className="grid max-h-52 w-full grid-cols-4 gap-1 overflow-auto sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10 sm:gap-1.5">
             {attrHeroes.map((h) => (
               <button
                 key={`attr-${h.id}`}
                 type="button"
                 onClick={() => goHero(h.key)}
                 title={h.nameCn || h.nameEn}
-                className="aspect-square w-full overflow-hidden rounded-sm border border-slate-300 transition-colors hover:border-amber-500/70 dark:border-slate-600 dark:hover:border-amber-500/60"
+                className="group w-full cursor-pointer border-0 bg-transparent p-0 text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-500/80 focus-visible:ring-offset-2 focus-visible:ring-offset-skin-card dark:focus-visible:ring-offset-slate-900/50"
               >
-                <img
-                  src={heroIconUrl(h.key)}
-                  alt={h.nameCn || h.nameEn}
-                  className="h-full w-full object-cover"
-                  loading="lazy"
-                />
+                <div
+                  className={cn(
+                    "relative w-full overflow-hidden rounded-sm bg-slate-800 ring-1 ring-slate-300 transition-all",
+                    "aspect-[4/3] dark:bg-slate-900 dark:ring-slate-600",
+                    "group-hover:ring-2 group-hover:ring-emerald-500 dark:group-hover:ring-emerald-500"
+                  )}
+                >
+                  <img
+                    src={heroIconUrl(h.key)}
+                    alt={h.nameCn || h.nameEn}
+                    className="h-full w-full object-cover object-center"
+                    loading="lazy"
+                  />
+                </div>
               </button>
             ))}
           </div>
