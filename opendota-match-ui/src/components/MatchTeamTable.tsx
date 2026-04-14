@@ -1,7 +1,7 @@
 import type { MatchHeaderData } from "../data/mockMatch";
 import type { PlayerRowMock, TeamTableMock } from "../data/mockMatchPlayers";
 import {
-  MATCH_BOARD_GRID_COLS,
+  MATCH_BOARD_GRID_TRACKS,
   PlayerMatchGridRow,
 } from "./PlayerMatchGridRow";
 import { cn } from "../lib/cn";
@@ -27,8 +27,8 @@ function teamHeroKillsMax(players: PlayerRowMock[]) {
 
 function headerGridClass(side: "radiant" | "dire") {
   return cn(
-    MATCH_BOARD_GRID_COLS,
-    "items-end rounded-lg p-3 mb-2 ring-1 ring-inset",
+    MATCH_BOARD_GRID_TRACKS,
+    "hidden items-end rounded-lg p-3 mb-2 ring-1 ring-inset md:grid",
     side === "radiant"
       ? "ring-emerald-800/25 bg-emerald-100/80 text-emerald-900/80 dark:ring-emerald-700/30 dark:bg-emerald-950/50 dark:text-emerald-200/90"
       : "ring-rose-800/25 bg-rose-100/80 text-rose-900/80 dark:ring-rose-700/30 dark:bg-rose-950/50 dark:text-rose-200/90",

@@ -1,4 +1,6 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
+import { ChevronDown } from "lucide-react";
 import type { PlayerRowMock } from "../data/mockMatchPlayers";
 import { heroIconUrl, itemIconUrl } from "../data/mockMatchPlayers";
 import { cn } from "../lib/cn";
@@ -14,8 +16,11 @@ import { TalentTreeBadge } from "./TalentTreeBadge";
  * 若最后一列用 max-content：表头只有「物品」很窄、行内装备区很宽，各行的 fr 列宽会不一致，
  * 等级/经济等列与表头无法对齐。物品列也用 fr，格内 `justify-self-start` + `w-fit` 避免假拉伸。
  */
-export const MATCH_BOARD_GRID_COLS =
-  "grid w-full min-w-0 grid-cols-[minmax(0,2.5fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,1.5fr)] gap-4";
+/** 列轨道（不含 `display:grid`，便于与 `hidden` / `md:grid` 组合） */
+export const MATCH_BOARD_GRID_TRACKS =
+  "w-full min-w-0 grid-cols-[minmax(0,2.5fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,1.5fr)] gap-4";
+
+export const MATCH_BOARD_GRID_COLS = cn("grid", MATCH_BOARD_GRID_TRACKS);
 
 /** 与表头共用：列轨道 + 内边距；背景由阵营区分 */
 export const MATCH_STAT_GRID_TEMPLATE = cn(
@@ -23,13 +28,25 @@ export const MATCH_STAT_GRID_TEMPLATE = cn(
   "items-start rounded-lg p-3 mb-2"
 );
 
+function rowTint(side: "radiant" | "dire") {
+  return side === "radiant"
+    ? "ring-emerald-800/20 bg-emerald-100/70 dark:ring-emerald-700/25 dark:bg-emerald-950/35"
+    : "ring-rose-800/20 bg-rose-100/70 dark:ring-rose-700/25 dark:bg-rose-950/35";
+}
+
 function rowShellClass(side: "radiant" | "dire") {
   return cn(
-    MATCH_STAT_GRID_TEMPLATE,
+    MATCH_BOARD_GRID_TRACKS,
+    "hidden items-start rounded-lg p-3 mb-2 md:grid",
     "ring-1 ring-inset",
-    side === "radiant"
-      ? "ring-emerald-800/20 bg-emerald-100/70 dark:ring-emerald-700/25 dark:bg-emerald-950/35"
-      : "ring-rose-800/20 bg-rose-100/70 dark:ring-rose-700/25 dark:bg-rose-950/35"
+    rowTint(side)
+  );
+}
+
+function mobileCardShell(side: "radiant" | "dire") {
+  return cn(
+    "relative mb-2 rounded-lg p-3 ring-1 ring-inset md:hidden",
+    rowTint(side)
   );
 }
 
@@ -51,9 +68,11 @@ function hasTalentOrSkillUi(p: PlayerRowMock): boolean {
 function GridInventorySlots({
   p,
   side,
+  compact = false,
 }: {
   p: PlayerRowMock;
   side: "radiant" | "dire";
+  compact?: boolean;
 }) {
   const legacy = p.buffs.aghanims ?? "none";
   const scepterOn =
@@ -67,23 +86,34 @@ function GridInventorySlots({
       ? "border-emerald-600/30 dark:border-emerald-500/25"
       : "border-rose-600/30 dark:border-rose-500/25";
 
-  const emptyMain =
-    "flex h-10 w-10 shrink-0 items-center justify-center rounded-md border border-slate-700/30 bg-slate-800/50 ring-1 ring-slate-800/35 dark:border-slate-700/40 dark:bg-slate-800/50 dark:ring-slate-900/40";
+  const emptyMain = compact
+    ? "flex h-7 w-7 shrink-0 items-center justify-center rounded border border-slate-700/30 bg-slate-800/50 ring-1 ring-slate-800/35 dark:border-slate-700/40 dark:bg-slate-800/50 dark:ring-slate-900/40"
+    : "flex h-10 w-10 shrink-0 items-center justify-center rounded-md border border-slate-700/30 bg-slate-800/50 ring-1 ring-slate-800/35 dark:border-slate-700/40 dark:bg-slate-800/50 dark:ring-slate-900/40";
 
   const filledMain = cn(
-    "flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-md border bg-slate-900/80",
+    compact
+      ? "flex h-7 w-7 shrink-0 items-center justify-center overflow-hidden rounded border bg-slate-900/80"
+      : "flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-md border bg-slate-900/80",
     sideBorderMain
   );
 
+  const aghBox = compact ? "h-5 w-5 p-px" : "h-6 w-6 p-0.5";
+
   return (
-    <div className="flex w-fit max-w-full min-w-0 items-center gap-2 overflow-hidden">
+    <div
+      className={cn(
+        "flex w-fit max-w-full min-w-0 items-center overflow-hidden",
+        compact ? "gap-1" : "gap-2"
+      )}
+    >
       <div
-        className="flex shrink-0 flex-col gap-1"
+        className={cn("flex shrink-0 flex-col", compact ? "gap-0.5" : "gap-1")}
         aria-label="阿哈利姆神杖与魔晶"
       >
         <div
           className={cn(
-            "flex h-6 w-6 items-center justify-center rounded border p-0.5 transition-all",
+            "flex items-center justify-center rounded border transition-all",
+            aghBox,
             scepterOn
               ? "border-sky-400/55 bg-sky-500/10 shadow-[0_0_10px_rgba(56,189,248,0.28)] dark:border-sky-400/50 dark:bg-sky-500/15"
               : "border-slate-600/30 bg-slate-900/25 opacity-45 dark:border-slate-600/35 dark:bg-slate-950/40"
@@ -99,7 +129,8 @@ function GridInventorySlots({
         </div>
         <div
           className={cn(
-            "flex h-6 w-6 items-center justify-center rounded border p-0.5 transition-all",
+            "flex items-center justify-center rounded border transition-all",
+            aghBox,
             shardOn
               ? "border-cyan-400/55 bg-cyan-500/10 shadow-[0_0_10px_rgba(34,211,238,0.26)] dark:border-cyan-400/50 dark:bg-cyan-500/15"
               : "border-slate-600/30 bg-slate-900/25 opacity-45 dark:border-slate-600/35 dark:bg-slate-950/40"
@@ -115,9 +146,17 @@ function GridInventorySlots({
         </div>
       </div>
 
-      <div className="flex shrink-0 flex-nowrap items-center gap-2 overflow-hidden">
+      <div
+        className={cn(
+          "flex shrink-0 flex-nowrap items-center overflow-hidden",
+          compact ? "gap-1" : "gap-2"
+        )}
+      >
         <div
-          className="grid shrink-0 grid-cols-6 gap-2"
+          className={cn(
+            "grid shrink-0 grid-cols-6",
+            compact ? "gap-1" : "gap-2"
+          )}
           role="list"
           aria-label="主物品栏（6 格）"
         >
@@ -227,7 +266,183 @@ export function PlayerMatchGridRow({
   const canLinkPlayer =
     Number.isFinite(accountId) && accountId > 0 && hasProName;
 
+  const [mobileOpen, setMobileOpen] = useState(false);
+
+  const inkName =
+    side === "radiant"
+      ? "text-emerald-950 dark:text-slate-100"
+      : "text-rose-950 dark:text-slate-100";
+
   return (
+    <>
+      <div className={mobileCardShell(side)}>
+        <div className="relative">
+          <button
+            type="button"
+            className="absolute inset-0 z-0 cursor-pointer rounded-[inherit] border-0 bg-transparent p-0 text-left"
+            aria-expanded={mobileOpen}
+            aria-label={mobileOpen ? "收起该选手详情" : "展开该选手详情"}
+            onClick={() => setMobileOpen((v) => !v)}
+          />
+          <div className="relative z-10 flex gap-2 pointer-events-none">
+            <img
+              src={heroIconUrl(p.heroKey === "unknown" ? "invoker" : p.heroKey)}
+              alt=""
+              className={cn(
+                "h-12 w-12 shrink-0 object-cover",
+                clipMechaCorner,
+                "rounded-[4px]"
+              )}
+              loading="lazy"
+            />
+            <div className="min-w-0 flex-1">
+              {canLinkPlayer ? (
+                <Link
+                  to={`/player/${accountId}`}
+                  className={cn(
+                    "pointer-events-auto block truncate text-sm font-semibold leading-tight underline-offset-2 hover:underline",
+                    inkName
+                  )}
+                  title={displayName || undefined}
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  {displayName || "—"}
+                </Link>
+              ) : (
+                <div
+                  className={cn(
+                    "truncate text-sm font-semibold leading-tight",
+                    inkName
+                  )}
+                  title={displayName || undefined}
+                >
+                  {displayName || "—"}
+                </div>
+              )}
+              <div className="mt-1.5 max-w-full overflow-x-auto">
+                <GridInventorySlots p={p} side={side} compact />
+              </div>
+            </div>
+            <ChevronDown
+              className={cn(
+                "pointer-events-none mt-0.5 h-5 w-5 shrink-0 text-neutral-600 transition-transform dark:text-slate-400",
+                mobileOpen && "rotate-180"
+              )}
+              aria-hidden
+            />
+          </div>
+        </div>
+        {mobileOpen ? (
+          <div
+            className="relative z-10 mt-3 space-y-3 border-t border-neutral-900/10 pt-3 dark:border-white/10"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="grid grid-cols-2 gap-x-3 gap-y-2 text-xs">
+              <div>
+                <div className="mb-0.5 text-[10px] font-medium uppercase tracking-wide text-neutral-500 dark:text-slate-500">
+                  等级
+                </div>
+                <div
+                  className={cn(
+                    "font-mono font-medium tabular-nums",
+                    side === "radiant"
+                      ? "text-emerald-950 dark:text-slate-200"
+                      : "text-rose-950 dark:text-slate-200"
+                  )}
+                >
+                  Lv.{p.level}
+                </div>
+              </div>
+              <div>
+                <div className="mb-0.5 text-[10px] font-medium uppercase tracking-wide text-neutral-500 dark:text-slate-500">
+                  K / D / A
+                </div>
+                <div className="whitespace-nowrap font-mono tabular-nums">
+                  <span className={killClass}>{kills}</span>
+                  <span className={kdaSepClass}>/</span>
+                  <span className={kdaMutedClass}>{deaths}</span>
+                  <span className={kdaSepClass}>/</span>
+                  <span className={kdaMutedClass}>{assists}</span>
+                </div>
+              </div>
+              <div>
+                <div className="mb-0.5 text-[10px] font-medium uppercase tracking-wide text-neutral-500 dark:text-slate-500">
+                  正 / 反
+                </div>
+                <div className="whitespace-nowrap font-mono tabular-nums text-neutral-900 dark:text-slate-200">
+                  <span
+                    className={
+                      side === "radiant"
+                        ? "font-medium text-emerald-950 dark:text-slate-100"
+                        : "font-medium text-rose-950 dark:text-slate-100"
+                    }
+                  >
+                    {formatStat(p.lastHits)}
+                  </span>
+                  <span className="text-neutral-600 dark:text-slate-500">
+                    {" "}
+                    /{" "}
+                  </span>
+                  <span className="text-neutral-900 dark:text-slate-200">
+                    {formatStat(p.denies)}
+                  </span>
+                </div>
+              </div>
+              <div>
+                <div className="mb-0.5 text-[10px] font-medium uppercase tracking-wide text-neutral-500 dark:text-slate-500">
+                  经济
+                </div>
+                <div
+                  className={cn(
+                    "font-mono font-semibold tabular-nums",
+                    side === "radiant"
+                      ? "text-emerald-900 dark:text-emerald-400"
+                      : "text-rose-900 dark:text-rose-400"
+                  )}
+                >
+                  {formatStat(p.netWorth, "gold")}
+                </div>
+              </div>
+              <div className="col-span-2">
+                <div className="mb-0.5 text-[10px] font-medium uppercase tracking-wide text-neutral-500 dark:text-slate-500">
+                  伤害
+                </div>
+                <DamageCell
+                  value={p.heroDamage ?? 0}
+                  maxInTeam={maxH}
+                  side={side}
+                />
+              </div>
+            </div>
+            {p.leaderboardRank != null && p.leaderboardRank > 0 ? (
+              <div
+                className={cn(
+                  "text-[11px] tabular-nums",
+                  side === "radiant"
+                    ? "text-emerald-800 dark:text-emerald-400/90"
+                    : "text-rose-800 dark:text-rose-400/90"
+                )}
+              >
+                Rank {p.leaderboardRank}
+              </div>
+            ) : null}
+            {hasTalentOrSkillUi(p) ? (
+              <div className="pointer-events-auto flex flex-wrap items-start gap-2">
+                <TalentTreeBadge
+                  tree={p.talentTree}
+                  talentPicks={p.talentPicks}
+                />
+              </div>
+            ) : null}
+            {p.skillBuild && p.skillBuild.length > 0 ? (
+              <div className="pointer-events-auto">
+                <SkillBuildTimeline steps={p.skillBuild} />
+              </div>
+            ) : null}
+          </div>
+        ) : null}
+      </div>
+
     <div className={rowShellClass(side)}>
       {/* 1. 玩家：头像 → 天赋树 → 昵称 / Rank / 技能加点（与 OpenDota 类布局一致） */}
       <div className="min-w-0 max-w-full self-start overflow-hidden">
@@ -362,5 +577,6 @@ export function PlayerMatchGridRow({
         <GridInventorySlots p={p} side={side} />
       </div>
     </div>
+    </>
   );
 }

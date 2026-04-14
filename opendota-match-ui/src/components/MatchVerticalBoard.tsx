@@ -2,7 +2,7 @@ import type { MatchHeaderData } from "../data/mockMatch";
 import type { PlayerRowMock, TeamTableMock } from "../data/mockMatchPlayers";
 import { FactionMatchBanner } from "./FactionMatchBanner";
 import {
-  MATCH_BOARD_GRID_COLS,
+  MATCH_BOARD_GRID_TRACKS,
   PlayerMatchGridRow,
 } from "./PlayerMatchGridRow";
 import { cn } from "../lib/cn";
@@ -34,8 +34,8 @@ function GlobalColumnHeader() {
     <div
       role="row"
       className={cn(
-        MATCH_BOARD_GRID_COLS,
-        "items-start border-b-2 border-skin-line bg-slate-100/85 p-3 dark:border-slate-600/80 dark:bg-slate-800/70",
+        MATCH_BOARD_GRID_TRACKS,
+        "hidden items-start border-b-2 border-skin-line bg-slate-100/85 p-3 dark:border-slate-600/80 dark:bg-slate-800/70 md:grid",
         "text-[11px] font-semibold uppercase tracking-wide text-slate-700 dark:text-slate-300"
       )}
     >
