@@ -395,7 +395,7 @@ export function HeroSearch({
         >
         <div
           className={cn(
-            "flex w-full min-w-0 max-w-full flex-nowrap items-stretch gap-1 md:flex-wrap md:justify-start md:gap-2",
+            "flex w-full min-w-0 max-w-full flex-nowrap items-stretch gap-1 overflow-x-auto pb-0.5 md:flex-wrap md:justify-start md:gap-2 md:overflow-visible md:pb-0",
             heroAvatarGridOpen && "mb-2"
           )}
         >
@@ -413,7 +413,7 @@ export function HeroSearch({
               }}
               className={cn(
                 "min-w-0 rounded-md border px-2 py-1 text-center text-xs font-medium transition-colors md:shrink-0",
-                "max-md:flex-1 max-md:px-1.5 max-md:text-[11px] max-md:leading-tight",
+                "max-md:shrink-0 max-md:basis-auto max-md:px-2 max-md:text-[11px] max-md:leading-tight max-md:whitespace-nowrap",
                 attr === row.id
                   ? "border-amber-500/70 bg-amber-100 text-amber-900 dark:border-amber-500/60 dark:bg-amber-500/20 dark:text-amber-200"
                   : "border-slate-300 bg-white text-slate-700 hover:bg-slate-100 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
