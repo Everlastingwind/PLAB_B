@@ -31,6 +31,8 @@ UA = {"User-Agent": "plab-dota/fetch_pro_replays_index (+OpenDota)"}
 # 单场详情请求上限（避免一次跑太久；定时任务可改为 40+）
 MAX_DETAIL_FETCH = int(__import__("os").environ.get("PRO_FETCH_LIMIT", "12"))
 REQUEST_SLEEP_SEC = 0.35
+PRO_PATCH_ID_RAW = __import__("os").environ.get("PRO_PATCH_ID", "").strip()
+PRO_PATCH_ID = int(PRO_PATCH_ID_RAW) if PRO_PATCH_ID_RAW else None
 
 
 def _get(url: str) -> Any:
@@ -95,7 +97,8 @@ def main() -> None:
             break
 
     replays: List[Dict[str, Any]] = []
-    for i, m in enumerate(picked[:MAX_DETAIL_FETCH]):
+    scan_limit = min(len(picked), max(MAX_DETAIL_FETCH * 8, MAX_DETAIL_FETCH))
+    for i, m in enumerate(picked[:scan_limit]):
         mid = int(m["match_id"])
         try:
             raw = _get(f"https://api.opendota.com/api/matches/{mid}")
@@ -103,6 +106,15 @@ def main() -> None:
             print("skip", mid, e.code)
             time.sleep(REQUEST_SLEEP_SEC)
             continue
+        if PRO_PATCH_ID is not None:
+            try:
+                patch_id = int(raw.get("patch") or 0)
+            except (TypeError, ValueError):
+                patch_id = 0
+            if patch_id != PRO_PATCH_ID:
+                time.sleep(REQUEST_SLEEP_SEC)
+                continue
+
         slim = translate_match_data(raw)
         MATCH_DIR.mkdir(parents=True, exist_ok=True)
         slim_path = MATCH_DIR / f"{mid}.json"
@@ -135,12 +147,15 @@ def main() -> None:
             }
         )
         print("ok", mid, len(replays))
+        if len(replays) >= MAX_DETAIL_FETCH:
+            break
         time.sleep(REQUEST_SLEEP_SEC)
 
     meta = {
         "source": "opendota_proMatches_filtered",
         "team_ids_count": len(team_ids),
         "fetched_matches": len(replays),
+        "patch_id_filter": PRO_PATCH_ID,
     }
     OUT.write_text(
         json.dumps(
