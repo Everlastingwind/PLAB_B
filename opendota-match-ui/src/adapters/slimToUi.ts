@@ -48,6 +48,11 @@ import {
   countTimelineVisibleSteps,
   isNoiseAbilityStep,
 } from "../components/SkillBuildTimeline";
+import {
+  RUBICK_HERO_ID,
+  filterRubickSkillBuildForDisplay,
+  isRubickNativeSkillBuildStep,
+} from "../lib/rubickSkillBuild";
 import abilityIdsJson from "../data/ability_ids.json";
 import {
   buildTalentTreeUiFromBook,
@@ -122,56 +127,6 @@ function isTalentAbilityKey(key: string): boolean {
 function isAttributeBonusAbilityKey(key: string | null | undefined): boolean {
   if (!key) return false;
   return key.toLowerCase() === "special_bonus_attributes";
-}
-
-const RUBICK_HERO_ID = 86;
-
-/**
- * 拉比克加点条：只保留 4 个本体技能 + 天赋/全属性。
- * - 窃取的技能（nevermore_* 等）排除。
- * - `rubick_telekinesis_land*` 等为子技能，排除（否则会挤占时间轴或显示重复图标）。
- */
-const RUBICK_CORE_ABILITY_KEYS = new Set([
-  "rubick_telekinesis",
-  "rubick_fade_bolt",
-  "rubick_spell_steal",
-  "rubick_arcane_supremacy",
-  "rubick_null_field",
-]);
-
-function isRubickNativeSkillBuildStep(s: SkillBuildStepUi): boolean {
-  if (s.kind === "talent" || s.isTalent) return true;
-  if (s.kind === "empty" || s.kind === "unknown") return false;
-  const k = (s.abilityKey || "").trim().toLowerCase();
-  if (!k) return false;
-  if (isTalentAbilityKey(k) || isAttributeBonusAbilityKey(k)) return true;
-  return RUBICK_CORE_ABILITY_KEYS.has(k);
-}
-
-/** 管线偶发 ability_key 与 img 不一致时，按 key 强制对齐 Steam 图标路径 */
-function rubickNormalizeCoreAbilityIcon(s: SkillBuildStepUi): SkillBuildStepUi {
-  if (s.kind !== "ability" || s.isTalent || !s.abilityKey) return s;
-  const k = s.abilityKey.trim().toLowerCase();
-  if (!RUBICK_CORE_ABILITY_KEYS.has(k)) return s;
-  return {
-    ...s,
-    img: normalizeDotaAssetUrl(abilityIconUrl(s.abilityKey)),
-  };
-}
-
-function filterRubickSkillBuildForDisplay(
-  heroId: number,
-  heroKey: string,
-  steps: SkillBuildStepUi[] | undefined
-): SkillBuildStepUi[] | undefined {
-  if (!steps?.length) return steps;
-  if (heroId !== RUBICK_HERO_ID && heroKey !== "rubick") return steps;
-  const kept = steps.filter((s) => isRubickNativeSkillBuildStep(s));
-  if (kept.length === 0) return undefined;
-  return kept.map((s, i) => {
-    const n = i + 1;
-    return rubickNormalizeCoreAbilityIcon({ ...s, step: n, level: n });
-  });
 }
 
 /** 挑选 arr vs 管线时：拉比克按展示白名单计数，避免窃取技能抬高 ability_upgrades_arr 优先级 */

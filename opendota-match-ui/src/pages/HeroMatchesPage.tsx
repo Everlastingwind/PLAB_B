@@ -18,6 +18,12 @@ import {
   heroIconUrl,
   itemIconUrl,
 } from "../data/mockMatchPlayers";
+import type { SkillBuildStepUi } from "../data/mockMatchPlayers";
+import { SkillBuildTimeline } from "../components/SkillBuildTimeline";
+import {
+  isRubickHero,
+  isRubickNativeSlimSkillBuildStep,
+} from "../lib/rubickSkillBuild";
 import type { SlimMatchJson, SlimPlayer } from "../types/slimMatch";
 import { TalentTreeBadge } from "../components/TalentTreeBadge";
 import type { TalentPickUi, TalentTreeUi } from "../data/mockMatchPlayers";
@@ -127,8 +133,15 @@ export function HeroMatchesPage() {
   const [detailByMatch, setDetailByMatch] = useState<Record<number, SlimMatchJson>>(
     {}
   );
-  const [talentUiByMatch, setTalentUiByMatch] = useState<
-    Record<number, { tree: TalentTreeUi | null | undefined; picks?: TalentPickUi[] }>
+  const [playerUiByMatch, setPlayerUiByMatch] = useState<
+    Record<
+      number,
+      {
+        tree: TalentTreeUi | null | undefined;
+        picks?: TalentPickUi[];
+        skillBuild?: SkillBuildStepUi[];
+      }
+    >
   >({});
   const [page, setPage] = useState(1);
   const sentinelRef = useRef<HTMLDivElement>(null);
@@ -145,7 +158,7 @@ export function HeroMatchesPage() {
         if (!cancelled) {
           setReplays(filterByHeroKey(rows, decoded, maps));
           setDetailByMatch({});
-          setTalentUiByMatch({});
+          setPlayerUiByMatch({});
         }
       })
       .catch(() => {
@@ -170,9 +183,13 @@ export function HeroMatchesPage() {
     if (!need.length) return;
     (async () => {
       const updates: Record<number, SlimMatchJson> = {};
-      const talentUpdates: Record<
+      const playerUiUpdates: Record<
         number,
-        { tree: TalentTreeUi | null | undefined; picks?: TalentPickUi[] }
+        {
+          tree: TalentTreeUi | null | undefined;
+          picks?: TalentPickUi[];
+          skillBuild?: SkillBuildStepUi[];
+        }
       > = {};
       for (const mid of need) {
         try {
@@ -196,9 +213,10 @@ export function HeroMatchesPage() {
               return true;
             });
             if (exact) {
-              talentUpdates[mid] = {
+              playerUiUpdates[mid] = {
                 tree: exact.talentTree,
                 picks: exact.talentPicks,
+                skillBuild: exact.skillBuild,
               };
             }
           } catch {
@@ -210,8 +228,8 @@ export function HeroMatchesPage() {
       }
       if (!cancelled && Object.keys(updates).length) {
         setDetailByMatch((prev) => ({ ...prev, ...updates }));
-        if (Object.keys(talentUpdates).length) {
-          setTalentUiByMatch((prev) => ({ ...prev, ...talentUpdates }));
+        if (Object.keys(playerUiUpdates).length) {
+          setPlayerUiByMatch((prev) => ({ ...prev, ...playerUiUpdates }));
         }
       }
     })();
@@ -300,18 +318,27 @@ export function HeroMatchesPage() {
                     const canLinkPlayer =
                       Number.isFinite(accountId) && accountId > 0 && hasProName;
                     const items = (row?.items_slot || []).slice(0, 6);
-                    const steps = (row?.skill_build || [])
-                      .filter((s) => s && s.type !== "empty")
-                      .slice(0, 16);
+                    const rawSkillSteps = (row?.skill_build || []).filter(
+                      (s) => s && s.type !== "empty"
+                    );
+                    const steps =
+                      row &&
+                      isRubickHero(Number(row.hero_id || 0), decoded)
+                        ? rawSkillSteps.filter((s) =>
+                            isRubickNativeSlimSkillBuildStep(s)
+                          )
+                        : rawSkillSteps;
+                    const stepsSlice = steps.slice(0, 16);
+                    const skillBuildFromAdapter = playerUiByMatch[r.match_id]?.skillBuild;
                     const talentTreeFallback = mergeTalentTreeBySkillBuild(
                       toTalentTreeUi(row?.talent_tree),
                       row,
                       maps
                     );
                     const talentPicksFallback = toTalentPicksUi(row?.talent_picks);
-                    const talentFromDetail = talentUiByMatch[r.match_id];
-                    const talentTree = talentFromDetail?.tree ?? talentTreeFallback;
-                    const talentPicks = talentFromDetail?.picks ?? talentPicksFallback;
+                    const fromAdapter = playerUiByMatch[r.match_id];
+                    const talentTree = fromAdapter?.tree ?? talentTreeFallback;
+                    const talentPicks = fromAdapter?.picks ?? talentPicksFallback;
                     return (
                       <div
                         key={`${r.match_id}-${r.uploaded_at}`}
@@ -388,31 +415,37 @@ export function HeroMatchesPage() {
                               )
                             : <span className="text-skin-sub">-</span>}
                         </div>
-                        <div className="flex items-center gap-1 overflow-hidden">
-                          {steps.length
-                            ? steps.map((s, idx) => {
-                                const k0 = String(s.ability_key || "").trim();
-                                const isTalent =
-                                  s.type === "talent" || Boolean(s.is_talent);
-                                if (isTalent) return null;
-                                const src = k0 ? abilityIconUrl(k0) : "";
-                                return src ? (
-                                  <img
-                                    key={`${r.match_id}-sb-${idx}`}
-                                    src={src}
-                                    alt=""
-                                    className="h-6 w-6 rounded object-cover"
-                                    loading="lazy"
-                                    onError={(e) => {
-                                      const el = e.currentTarget;
-                                      if (!el.src.includes("filler_ability")) {
-                                        el.src = abilityIconFallbackUrl;
-                                      }
-                                    }}
-                                  />
-                                ) : null;
-                              })
-                            : <span className="text-skin-sub">-</span>}
+                        <div className="flex min-w-0 items-center gap-1 overflow-hidden">
+                          {skillBuildFromAdapter?.length ? (
+                            <div className="min-w-0 max-w-full scale-90 origin-left">
+                              <SkillBuildTimeline steps={skillBuildFromAdapter} />
+                            </div>
+                          ) : stepsSlice.length ? (
+                            stepsSlice.map((s, idx) => {
+                              const k0 = String(s.ability_key || "").trim();
+                              const isTalent =
+                                s.type === "talent" || Boolean(s.is_talent);
+                              if (isTalent) return null;
+                              const src = k0 ? abilityIconUrl(k0) : "";
+                              return src ? (
+                                <img
+                                  key={`${r.match_id}-sb-${idx}`}
+                                  src={src}
+                                  alt=""
+                                  className="h-6 w-6 rounded object-cover"
+                                  loading="lazy"
+                                  onError={(e) => {
+                                    const el = e.currentTarget;
+                                    if (!el.src.includes("filler_ability")) {
+                                      el.src = abilityIconFallbackUrl;
+                                    }
+                                  }}
+                                />
+                              ) : null;
+                            })
+                          ) : (
+                            <span className="text-skin-sub">-</span>
+                          )}
                         </div>
                         <div className="flex items-center justify-center">
                           {talentTree || talentPicks.length > 0 ? (
