@@ -390,7 +390,7 @@ export function HeroSearch({
           className={cn(
             "relative w-full min-w-0 max-w-full rounded-lg border border-skin-line bg-skin-card p-2 dark:border-slate-700 dark:bg-slate-900/50",
             "max-md:shadow-xl max-md:ring-1 max-md:ring-slate-900/10 max-md:dark:ring-white/10",
-            "md:mx-auto md:max-w-[600px] md:shadow-none md:ring-0"
+            "md:w-full md:max-w-none md:shadow-none md:ring-0"
           )}
         >
         <div
