@@ -276,7 +276,7 @@ export function HeroSearch({
   return (
     <div
       ref={boxRef}
-      className="relative box-border flex w-full min-w-0 max-w-full flex-col px-2 md:px-4 lg:px-8 sm:mx-auto sm:max-w-3xl"
+      className="relative box-border flex w-full min-w-0 max-w-full flex-col max-md:px-2 md:mx-auto md:max-w-3xl md:px-0"
     >
       <div
         ref={anchorRef}
@@ -322,9 +322,9 @@ export function HeroSearch({
               !mdUp && dockTopPx > 0 ? { top: dockTopPx } : undefined
             }
             className={cn(
-              "z-[5000] max-h-72 overflow-auto rounded-lg border border-skin-line bg-white py-1 dark:border-slate-600 dark:bg-slate-900",
-              "max-md:fixed max-md:left-4 max-md:right-4 max-md:mt-0 max-md:min-w-0 max-md:w-auto max-md:max-w-none max-md:shadow-xl max-md:shadow-black/15 max-md:ring-1 max-md:ring-slate-800/25",
-              "md:absolute md:left-0 md:right-0 md:top-full md:mt-1 md:min-w-full md:w-full md:max-w-none md:shadow-lg md:shadow-black/10"
+              "max-h-72 overflow-auto rounded-lg border border-skin-line bg-white py-1 dark:border-slate-600 dark:bg-slate-900",
+              "max-md:z-[5000] max-md:fixed max-md:left-4 max-md:right-4 max-md:mt-0 max-md:min-w-0 max-md:w-auto max-md:max-w-none max-md:shadow-xl max-md:shadow-black/15 max-md:ring-1 max-md:ring-slate-800/25",
+              "md:z-[200] md:absolute md:left-0 md:right-0 md:top-full md:mt-1 md:min-w-full md:w-full md:max-w-none md:shadow-lg md:shadow-black/10"
             )}
             role="listbox"
           >
@@ -380,21 +380,22 @@ export function HeroSearch({
             : undefined
         }
         className={cn(
-          "z-[4900] min-w-0",
-          "mt-2 w-full max-w-full md:relative md:top-auto",
+          "min-w-0 mt-2 w-full max-w-full md:relative md:top-auto md:z-10",
           heroAvatarGridOpen &&
-            "max-md:fixed max-md:left-4 max-md:right-4 max-md:mt-0 max-md:w-auto max-md:max-w-none"
+            "max-md:z-[4900] max-md:fixed max-md:left-4 max-md:right-4 max-md:mt-0 max-md:w-auto max-md:max-w-none"
         )}
         aria-label="按属性筛选英雄"
       >
         <div
           className={cn(
-            "relative w-full min-w-0 max-w-full rounded-lg border border-skin-line bg-skin-card p-2 shadow-xl ring-1 ring-slate-900/10 dark:border-slate-700 dark:bg-slate-900/50 dark:ring-white/10 md:mx-auto md:max-w-[600px] md:shadow-none md:ring-0"
+            "relative w-full min-w-0 max-w-full rounded-lg border border-skin-line bg-skin-card p-2 dark:border-slate-700 dark:bg-slate-900/50",
+            "max-md:shadow-xl max-md:ring-1 max-md:ring-slate-900/10 max-md:dark:ring-white/10",
+            "md:mx-auto md:max-w-[600px] md:shadow-none md:ring-0"
           )}
         >
         <div
           className={cn(
-            "flex w-full min-w-0 max-w-full flex-wrap justify-center gap-2",
+            "flex w-full min-w-0 max-w-full flex-wrap justify-center gap-2 md:justify-start",
             heroAvatarGridOpen && "mb-2"
           )}
         >
@@ -422,7 +423,7 @@ export function HeroSearch({
           ))}
         </div>
         {heroAvatarGridOpen ? (
-          <div className="grid w-full min-w-0 max-w-full grid-cols-10 gap-x-0.5 gap-y-1 overflow-auto sm:gap-x-1 sm:gap-y-1.5">
+          <div className="grid w-full min-w-0 max-w-full grid-cols-10 gap-x-0.5 gap-y-1 overflow-auto md:grid-cols-[repeat(auto-fit,minmax(44px,1fr))] md:gap-x-1.5 md:gap-y-1.5">
             {attrHeroes.map((h) => (
               <button
                 key={`attr-${h.id}`}
