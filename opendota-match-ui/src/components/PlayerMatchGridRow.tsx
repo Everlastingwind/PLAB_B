@@ -8,6 +8,7 @@ import { clipMechaCorner } from "../lib/mechaStyles";
 import { formatStat } from "../lib/display";
 import { kdaFromPlayerRecord } from "../lib/playerKda";
 import { displayPlayerLabel } from "../lib/playerDisplay";
+import { seededProNameForAccount } from "../data/proPlayers";
 import { SkillBuildTimeline } from "./SkillBuildTimeline";
 import { TalentTreeBadge } from "./TalentTreeBadge";
 
@@ -259,12 +260,17 @@ export function PlayerMatchGridRow({
   const kdaSepClass = "text-neutral-600 dark:text-slate-500";
   const kdaMutedClass = "text-neutral-900 dark:text-slate-300";
 
-  // 详情页：仅显示职业选手注册名；非职业统一显示「匿名玩家」。
-  const displayName = displayPlayerLabel(p.proName);
+  // 详情页：优先录像内 pro_name；否则用种子战队名单（OpenDota 注册名）。
   const accountId = Number(p.accountId ?? 0);
   const hasProName = String(p.proName ?? "").trim().length > 0;
+  const seededPro = seededProNameForAccount(accountId);
+  const displayName = displayPlayerLabel(
+    hasProName ? p.proName : seededPro ?? p.proName
+  );
   const canLinkPlayer =
-    Number.isFinite(accountId) && accountId > 0 && hasProName;
+    Number.isFinite(accountId) &&
+    accountId > 0 &&
+    (hasProName || Boolean(seededPro));
 
   const [mobileOpen, setMobileOpen] = useState(false);
 

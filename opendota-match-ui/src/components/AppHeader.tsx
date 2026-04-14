@@ -24,23 +24,27 @@ export function AppHeader({ center, trailing }: AppHeaderProps) {
           center ? "items-start" : "items-center"
         )}
       >
-        <Link
-          to="/"
-          aria-label="返回首页"
-          className={cn("shrink-0", Boolean(center) && "mt-1")}
-        >
-          <span
-            className="flex h-10 items-center gap-0.5 font-sans text-[28px] font-semibold leading-none tracking-[0.04em]"
-            style={{ color: "#000000" }}
-          >
-            <span>PL</span>
+        <div className={cn("flex shrink-0 items-center gap-3", Boolean(center) && "mt-1")}>
+          <Link to="/" aria-label="返回首页">
             <span
-              aria-hidden
-              className="inline-block h-7 w-7 bg-[url('/dota-a-mark.png')] bg-contain bg-center bg-no-repeat align-middle"
-            />
-            <span>NB</span>
-          </span>
-        </Link>
+              className="flex h-10 items-center gap-0.5 font-sans text-[28px] font-semibold leading-none tracking-[0.04em]"
+              style={{ color: "#000000" }}
+            >
+              <span>PL</span>
+              <span
+                aria-hidden
+                className="inline-block h-7 w-7 bg-[url('/dota-a-mark.png')] bg-contain bg-center bg-no-repeat align-middle"
+              />
+              <span>NB</span>
+            </span>
+          </Link>
+          <Link
+            to="/pros"
+            className="whitespace-nowrap text-[11px] font-semibold text-slate-600 underline-offset-4 hover:text-slate-900 hover:underline sm:text-xs dark:text-slate-400 dark:hover:text-slate-200"
+          >
+            职业选手
+          </Link>
+        </div>
         <div className="flex min-w-0 flex-1 basis-0 flex-row items-center justify-start sm:justify-center">
           {center}
         </div>

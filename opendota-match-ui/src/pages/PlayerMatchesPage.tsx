@@ -10,6 +10,7 @@ import {
 import type { ReplaySummary } from "../types/replaysIndex";
 import { useEntityMaps } from "../hooks/useEntityMaps";
 import { displayPlayerLabel } from "../lib/playerDisplay";
+import { seededProNameForAccount } from "../data/proPlayers";
 import { heroKeyFromId } from "../lib/replaysApi";
 import {
   abilityIconUrl,
@@ -141,7 +142,8 @@ export function PlayerMatchesPage() {
         }
       }
     }
-    return null;
+    const seeded = seededProNameForAccount(aid);
+    return seeded ? displayPlayerLabel(seeded) : null;
   }, [replays, aid]);
 
   /** 该选手在各局中的英雄（去重） */
