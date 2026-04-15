@@ -8,8 +8,9 @@
 
   python scripts/upload_pub_dem_json.py E:\\doreplays_json_results\\8767466369.json
 
-默认在能解析出 **match_id** 时，会**自动从 OpenDota 合并终局 6 格 + 中立装备**（与客户端结算栏一致）；
-加点/天赋仍以本地 DEM 为准。可用 ``--no-opendota-items`` 关闭装备合并。
+默认在能解析出 **match_id** 时，会**自动从 OpenDota 合并终局 6 格 + 中立装备**（与客户端结算栏一致），
+并合并 **对英雄/建筑伤害与治疗**（与客户端计分板同源，避免仅用战斗日志累加造成的偏差）；
+加点/天赋仍以本地 DEM 为准。可用 ``--no-opendota-items`` 关闭上述 OpenDota 合并。
 完整合并（含 OpenDota skill_build）仍用 ``--merge-opendota``。
 
 与 ``dem_result_to_slim_match.py`` 的输入格式一致；可选 ``--players`` 合并加点辅助 JSON。
@@ -139,7 +140,7 @@ def main() -> None:
     if not args.no_opendota_items and mid_int > 0:
         ok_i, omsg_i = dem_mod.merge_endgame_inventory_from_opendota(slim, mid_int)
         print(
-            "OpenDota 终局装备合并:",
+            "OpenDota 终局装备与伤害/治疗合并:",
             "成功" if ok_i else "失败",
             omsg_i,
             "match_id=",

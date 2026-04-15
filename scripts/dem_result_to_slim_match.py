@@ -106,13 +106,34 @@ def _fetch_opendota_match_json(match_id: int) -> Tuple[Optional[Dict[str, Any]],
         return None, str(e)[:200]
 
 
+def _merge_opendota_damage_stats_into_player(dest: Dict[str, Any], src: Dict[str, Any]) -> None:
+    """
+    用 OpenDota（Steam Web API / GC 汇总）写入与客户端计分板一致的数值。
+
+    DEM 里对 ``DOTA_COMBATLOG_DAMAGE`` 按 attacker/target 名含 ``npc_dota_hero_`` 累加，
+    常与客户端「对英雄伤害」不一致（幻象、多段结算、单位名边界等），故在能拉到 OpenDota
+    本场数据时以 ``players[].hero_damage`` 等字段为准覆盖。
+    """
+    for key in ("hero_damage", "tower_damage", "hero_healing"):
+        if key not in src:
+            continue
+        val = src.get(key)
+        if val is None:
+            continue
+        try:
+            dest[key] = int(val)
+        except (TypeError, ValueError):
+            continue
+
+
 def merge_skill_and_talent_from_opendota(
     slim: Dict[str, Any],
     match_id: int,
 ) -> Tuple[bool, str]:
     """
     用 OpenDota 同场对局数据覆盖每名玩家的 skill_build、talent_tree、ability_timeline、talents_taken，
-    以及「身上 6 格 + 中立」装备（items_slot / neutral_img / neutral_item_key，不读背包）。
+    以及「身上 6 格 + 中立」装备（items_slot / neutral_img / neutral_item_key，不读背包），
+    并写入与客户端计分板同源的 hero_damage / tower_damage / hero_healing。
     以补全录像里缺失的 ability_upgrades（天赋高亮依赖此项）。
     """
     raw, fetch_err = _fetch_opendota_match_json(match_id)
@@ -162,6 +183,7 @@ def merge_skill_and_talent_from_opendota(
         ):
             if key in src:
                 p[key] = src[key]
+        _merge_opendota_damage_stats_into_player(p, src)
         n += 1
     meta = slim.setdefault("_meta", {})
     meta["skill_talent_source"] = f"opendota_api_match_{match_id}"
@@ -178,7 +200,8 @@ def merge_endgame_inventory_from_api_players(
 ) -> Tuple[bool, str]:
     """
     用 OpenDota 风格的 ``players[]``（含 item_0..item_5、item_neutral 等）经 translate_match_data
-    后，只把**结算装备相关字段**合并进已生成的 slim（不动 skill_build / talent）。
+    后，把**结算装备相关字段**以及 **hero_damage / tower_damage / hero_healing**（与客户端计分板
+    同源）合并进已生成的 slim（不动 skill_build / talent）。
     """
     if not api_players:
         return False, "empty api_players"
@@ -222,6 +245,7 @@ def merge_endgame_inventory_from_api_players(
         ):
             if key in src:
                 p[key] = src[key]
+        _merge_opendota_damage_stats_into_player(p, src)
         n += 1
     meta = slim.setdefault("_meta", {})
     meta["endgame_items_source"] = source_meta
@@ -234,8 +258,9 @@ def merge_endgame_inventory_from_opendota(
     match_id: int,
 ) -> Tuple[bool, str]:
     """
-    仅从 OpenDota 同场对局合并**结算栏装备**（与客户端终局 HUD 一致，含空槽与中立项），
-    不覆盖 skill_build / talent_tree / ability 时间线（仍用本地 DEM 推断）。
+    仅从 OpenDota 同场对局合并**结算栏装备**（与客户端终局 HUD 一致，含空槽与中立项）及
+    **对英雄/建筑伤害、治疗**（与客户端计分板同源），不覆盖 skill_build / talent_tree /
+    ability 时间线（仍用本地 DEM 推断）。
     """
     raw, fetch_err = _fetch_opendota_match_json(match_id)
     if not raw:
@@ -542,6 +567,17 @@ def _hero_internal_from_unit(unit: str) -> str:
 
 
 def _aggregate_combat(events: List[dict]) -> Dict[str, Dict[str, float]]:
+    """
+    英雄对英雄伤害：与客户端计分板「造成伤害 - 英雄」对齐的近似规则。
+
+    录像 ``DOTA_COMBATLOG_DAMAGE`` 若仅按双方均为 ``npc_dota_hero_*`` 累加，会把 **臂章等自伤**
+    以及 **对敌方英雄幻象** 的伤害算进去，常见如混沌骑士约为真实读数的两倍。故排除：
+
+    - ``attackername == targetname``（对自身的伤害）；
+    - ``targetillusion is True``（目标为幻象单位；攻击者可为真身或幻象，仍记在英雄名上）。
+
+    少数英雄在部分对局上可能与客户端仍有小偏差（幻象标记边界），无 OpenDota 时属已知限制。
+    """
     dmg_hero = defaultdict(float)
     dmg_tower = defaultdict(float)
     heal = defaultdict(float)
@@ -555,6 +591,10 @@ def _aggregate_combat(events: List[dict]) -> Dict[str, Dict[str, float]]:
             tar = e.get("targetname") or ""
             if "npc_dota_hero_" in att:
                 if "npc_dota_hero_" in tar:
+                    if att == tar:
+                        continue
+                    if e.get("targetillusion"):
+                        continue
                     dmg_hero[att] += val
                 elif any(x in tar for x in tower_keywords):
                     dmg_tower[att] += val
@@ -1504,9 +1544,32 @@ def build_slim_from_dem_events(
             gpm = (float(iv.get("gold") or 0) * 60.0) / duration_sec
             xpm = (float(iv.get("xp") or 0) * 60.0) / duration_sec
 
+        pb_for_row: Optional[Dict[str, Any]] = None
+        if players_blob and slot < len(players_blob):
+            tpb = players_blob[slot]
+            if isinstance(tpb, dict):
+                pb_for_row = tpb
+
         hero_dmg = int(agg["hero"].get(hero_npc, 0))
         tower_dmg = int(agg["tower"].get(hero_npc, 0))
         hero_heal = int(agg["heal"].get(hero_npc, 0))
+        # 解析器 / 本地 JSON 若已带结算统计，优先于战斗日志累加（无 OpenDota 时与客户端对齐）
+        if pb_for_row is not None:
+            if "hero_damage" in pb_for_row:
+                try:
+                    hero_dmg = int(pb_for_row["hero_damage"])
+                except (TypeError, ValueError):
+                    pass
+            if "tower_damage" in pb_for_row:
+                try:
+                    tower_dmg = int(pb_for_row["tower_damage"])
+                except (TypeError, ValueError):
+                    pass
+            if "hero_healing" in pb_for_row:
+                try:
+                    hero_heal = int(pb_for_row["hero_healing"])
+                except (TypeError, ValueError):
+                    pass
 
         up_arr = _ability_upgrades_arr_for_slot(events, slot, players_blob)
         merged_ev = upgrades_from_raw_events.get(slot)
@@ -1576,12 +1639,6 @@ def build_slim_from_dem_events(
             talent_tree = merge_talent_tree_from_parser_picks(
                 talent_tree, merged_tp
             )
-
-        pb_for_row: Optional[Dict[str, Any]] = None
-        if players_blob and slot < len(players_blob):
-            tpb = players_blob[slot]
-            if isinstance(tpb, dict):
-                pb_for_row = tpb
 
         items_slot: Optional[List[Dict[str, Any]]] = None
         neutral_img: str = ""
