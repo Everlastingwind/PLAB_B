@@ -44,6 +44,7 @@ import urllib.error
 import urllib.request
 from collections import defaultdict
 from pathlib import Path
+from statistics import median
 from typing import Any, Dict, List, Mapping, Optional, Set, Tuple
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -390,6 +391,28 @@ def _epilogue_meta(events: List[dict]) -> Tuple[Optional[int], Optional[int], Op
     return None, None, None
 
 
+def _match_end_time_sec(events: List[dict]) -> int:
+    """
+    以比赛结算时刻作为终局时间：
+    - 优先取带时间戳事件里的最大非负 time（战斗阶段）；
+    - 忽略 epilogue/cosmetics/dotaplus 等赛后块（常见负时间占位）。
+    """
+    end_t = 0
+    for e in events:
+        t = e.get("time")
+        if not isinstance(t, (int, float)):
+            continue
+        ti = int(t)
+        if ti < 0:
+            continue
+        tp = str(e.get("type") or "")
+        if tp in {"epilogue", "cosmetics", "dotaplus"}:
+            continue
+        if ti > end_t:
+            end_t = ti
+    return end_t
+
+
 def _dig_player_info_array(obj: Any) -> Optional[List[Any]]:
     """从 epilogue JSON 中递归找到 playerInfo_ / playerInfo 数组。"""
     if isinstance(obj, dict):
@@ -610,6 +633,240 @@ def _aggregate_combat(events: List[dict]) -> Dict[str, Dict[str, float]]:
     }
 
 
+def _slot_to_player_slot_from_events(events: List[dict]) -> Dict[int, int]:
+    out: Dict[int, int] = {}
+    for e in events:
+        if e.get("type") != "player_slot":
+            continue
+        try:
+            slot = int(e.get("key"))
+            ps = int(e.get("value"))
+        except (TypeError, ValueError):
+            continue
+        out[slot] = ps
+    return out
+
+
+def _is_radiant_player_slot(ps: int) -> bool:
+    if 0 <= ps <= 4:
+        return True
+    if 128 <= ps <= 132:
+        return False
+    if 5 <= ps <= 9:
+        return False
+    return ps < 5
+
+
+def _lane_by_xy(x: float, y: float, lane_delta: float) -> str:
+    d = float(x) - float(y)
+    if d > lane_delta:
+        return "bot"
+    if d < -lane_delta:
+        return "top"
+    return "mid"
+
+
+_SUPPORT_UTILITY_ITEM_WEIGHTS = {
+    "ward_observer": 3,
+    "ward_sentry": 4,
+    "dust": 3,
+    "smoke_of_deceit": 3,
+    "gem": 5,
+    "ward_dispenser": 2,
+}
+
+
+def _support_item_signal_by_slot(
+    events: List[dict],
+    slot_to_hero_npc: Dict[int, str],
+    dc: Any,
+    *,
+    start_sec: int = -120,
+    end_sec: int = 600,
+) -> Tuple[Dict[int, int], Dict[int, List[Dict[str, Any]]]]:
+    score_by_slot: Dict[int, int] = {s: 0 for s in slot_to_hero_npc}
+    items_by_slot: Dict[int, Dict[str, int]] = {s: {} for s in slot_to_hero_npc}
+    for e in events:
+        if e.get("type") != "DOTA_COMBATLOG_PURCHASE":
+            continue
+        try:
+            t = int(e.get("time") or 0)
+        except (TypeError, ValueError):
+            continue
+        if t < start_sec or t > end_sec:
+            continue
+        tgt = str(e.get("targetname") or "")
+        slot_match: Optional[int] = None
+        for s, hn in slot_to_hero_npc.items():
+            if _targetname_matches_hero_npc(tgt, hn):
+                slot_match = int(s)
+                break
+        if slot_match is None:
+            continue
+        key = _item_key_from_valuename(str(e.get("valuename") or ""))
+        if not key:
+            continue
+        rk = (dc.resolve_items_json_key(key) or key).strip()
+        w = int(_SUPPORT_UTILITY_ITEM_WEIGHTS.get(rk) or 0)
+        if w <= 0:
+            continue
+        score_by_slot[slot_match] = int(score_by_slot.get(slot_match) or 0) + w
+        cnts = items_by_slot.setdefault(slot_match, {})
+        cnts[rk] = int(cnts.get(rk) or 0) + 1
+    items_out: Dict[int, List[Dict[str, Any]]] = {}
+    for s, cnts in items_by_slot.items():
+        rows: List[Dict[str, Any]] = []
+        for k, c in sorted(cnts.items(), key=lambda kv: kv[0]):
+            rows.append({"item_key": k, "count": int(c)})
+        items_out[int(s)] = rows
+    return score_by_slot, items_out
+
+
+def _assign_early_roles_for_team(
+    rows: List[Dict[str, Any]],
+    *,
+    is_radiant: bool,
+) -> Dict[int, str]:
+    """
+    将同一阵营玩家（前 5 分钟 lane 已判定）映射到专业位置术语：
+    carry / mid / offlane / support(4) / support(5)。
+    """
+    role_by_slot: Dict[int, str] = {}
+    if not rows:
+        return role_by_slot
+
+    safe_lane = "bot" if is_radiant else "top"
+    off_lane = "top" if is_radiant else "bot"
+
+    def _sort_key(x: Dict[str, Any]) -> Tuple[float, int]:
+        nw = float(x.get("lane_phase_networth") or 0.0)
+        return (-nw, int(x.get("slot") or 0))
+
+    def _support_key(x: Dict[str, Any]) -> Tuple[int, float, int]:
+        sp = int(x.get("support_item_points_early") or 0)
+        nw = float(x.get("lane_phase_networth") or 0.0)
+        return (-sp, nw, int(x.get("slot") or 0))
+
+    mids = sorted([x for x in rows if x.get("lane_early") == "mid"], key=_sort_key)
+    safe = sorted([x for x in rows if x.get("lane_early") == safe_lane], key=_sort_key)
+    off = sorted([x for x in rows if x.get("lane_early") == off_lane], key=_sort_key)
+
+    if mids:
+        role_by_slot[int(mids[0]["slot"])] = "mid"
+    if safe:
+        role_by_slot[int(safe[0]["slot"])] = "carry"
+        safe_supports = sorted(safe[1:], key=_support_key)
+        if safe_supports:
+            role_by_slot[int(safe_supports[0]["slot"])] = "support(5)"
+            for x in safe_supports[1:]:
+                role_by_slot[int(x["slot"])] = "support(4)"
+    if off:
+        role_by_slot[int(off[0]["slot"])] = "offlane"
+        off_supports = sorted(off[1:], key=_support_key)
+        if off_supports:
+            role_by_slot[int(off_supports[0]["slot"])] = "support(4)"
+            for x in off_supports[1:]:
+                role_by_slot[int(x["slot"])] = "support(5)"
+
+    rest = sorted(
+        [x for x in rows if int(x.get("slot") or 0) not in role_by_slot], key=_sort_key
+    )
+    desired_order = ["carry", "mid", "offlane", "support(4)", "support(5)"]
+    missing = [r for r in desired_order if r not in set(role_by_slot.values())]
+    for i, x in enumerate(rest):
+        role_by_slot[int(x["slot"])] = missing[i] if i < len(missing) else "support(4)"
+    return role_by_slot
+
+
+def _infer_lane_and_role_by_slot(
+    events: List[dict],
+    dc: Any,
+    *,
+    lane_phase_sec: int = 300,
+    lane_delta: float = 20.0,
+) -> Dict[int, Dict[str, Any]]:
+    """
+    仅基于 interval 坐标推断对线期分路与位置（前 5 分钟）：
+    - lane_early: top/mid/bot
+    - role_early: carry/mid/offlane/support(4)/support(5)
+    """
+    slot_to_ps = _slot_to_player_slot_from_events(events)
+    points_by_slot: Dict[int, List[Tuple[float, float]]] = {}
+    nw_by_slot: Dict[int, Tuple[float, float]] = {}  # slot -> (time, networth)
+    slot_to_hero_npc: Dict[int, str] = {}
+
+    for e in events:
+        if e.get("type") != "interval":
+            continue
+        t = e.get("time")
+        if not isinstance(t, (int, float)):
+            continue
+        if t < 0 or t > lane_phase_sec:
+            continue
+        slot = e.get("slot")
+        x = e.get("x")
+        y = e.get("y")
+        if not isinstance(slot, int):
+            continue
+        if not isinstance(x, (int, float)) or not isinstance(y, (int, float)):
+            continue
+        points_by_slot.setdefault(slot, []).append((float(x), float(y)))
+        unit = str(e.get("unit") or "").strip()
+        if unit.startswith("CDOTA_Unit_Hero_"):
+            hi = _hero_internal_from_unit(unit)
+            if hi:
+                slot_to_hero_npc[int(slot)] = f"npc_dota_hero_{hi}"
+        nw = e.get("networth")
+        if isinstance(nw, (int, float)):
+            prev = nw_by_slot.get(slot)
+            if prev is None or float(t) >= prev[0]:
+                nw_by_slot[slot] = (float(t), float(nw))
+
+    support_score_by_slot, support_items_by_slot = _support_item_signal_by_slot(
+        events,
+        slot_to_hero_npc,
+        dc,
+    )
+
+    base_rows: List[Dict[str, Any]] = []
+    for slot, pts in points_by_slot.items():
+        if not pts:
+            continue
+        xs = [p[0] for p in pts]
+        ys = [p[1] for p in pts]
+        mx = float(median(xs))
+        my = float(median(ys))
+        ps = slot_to_ps.get(slot)
+        is_rad = _is_radiant_player_slot(int(ps)) if ps is not None else slot < 5
+        base_rows.append(
+            {
+                "slot": int(slot),
+                "player_slot": int(ps) if ps is not None else None,
+                "is_radiant": bool(is_rad),
+                "lane_early": _lane_by_xy(mx, my, lane_delta),
+                "lane_phase_networth": float(nw_by_slot.get(slot, (0.0, 0.0))[1]),
+                "support_item_points_early": int(support_score_by_slot.get(slot) or 0),
+            }
+        )
+
+    rad_rows = [x for x in base_rows if x.get("is_radiant") is True]
+    dire_rows = [x for x in base_rows if x.get("is_radiant") is False]
+    role_rad = _assign_early_roles_for_team(rad_rows, is_radiant=True)
+    role_dire = _assign_early_roles_for_team(dire_rows, is_radiant=False)
+    role_all = {**role_rad, **role_dire}
+
+    out: Dict[int, Dict[str, Any]] = {}
+    for x in base_rows:
+        slot = int(x["slot"])
+        out[slot] = {
+            "lane_early": str(x.get("lane_early") or ""),
+            "role_early": str(role_all.get(slot) or ""),
+            "support_item_points_early": int(x.get("support_item_points_early") or 0),
+            "support_items_early": support_items_by_slot.get(slot) or [],
+        }
+    return out
+
+
 def _inventory_from_api_style_player(
     p: Dict[str, Any],
     dc: Any,
@@ -681,6 +938,99 @@ def _item_key_from_valuename(vn: str) -> Optional[str]:
     return key
 
 
+def _normalize_hero_npc_name_for_compare(s: str) -> str:
+    x = str(s or "").strip().lower()
+    if not x:
+        return ""
+    if x.startswith("npc_dota_hero_"):
+        x = x[len("npc_dota_hero_") :]
+    return x.replace("_", "")
+
+
+def _targetname_matches_hero_npc(targetname: str, hero_npc: str) -> bool:
+    t = str(targetname or "").strip()
+    h = str(hero_npc or "").strip()
+    if not t or not h:
+        return False
+    if t == h:
+        return True
+    return _normalize_hero_npc_name_for_compare(t) == _normalize_hero_npc_name_for_compare(h)
+
+
+def _starting_items_from_purchases(
+    events: List[dict],
+    hero_npc: str,
+    dc: Any,
+    *,
+    start_sec: int = -30,
+    end_sec: int = 0,
+) -> List[Dict[str, Any]]:
+    """出门装：优先比赛开始前 30 秒购买；若该窗口为空，回退到最早非正时间点至 0 秒。"""
+
+    def _collect(_start: int, _end: int) -> List[Dict[str, Any]]:
+        rows: Dict[str, Dict[str, Any]] = {}
+        for e in events:
+            if e.get("type") != "DOTA_COMBATLOG_PURCHASE":
+                continue
+            if not _targetname_matches_hero_npc(str(e.get("targetname") or ""), hero_npc):
+                continue
+            try:
+                t = int(e.get("time") or 0)
+            except (TypeError, ValueError):
+                continue
+            if t < _start or t > _end:
+                continue
+            key = _item_key_from_valuename(str(e.get("valuename") or ""))
+            if not key:
+                continue
+            rk = (dc.resolve_items_json_key(key) or key).strip()
+            row = rows.get(rk)
+            if row is None:
+                iid = 0
+                try:
+                    iid = int(dc.items.get(rk, {}).get("id") or 0)
+                except (TypeError, ValueError):
+                    iid = 0
+                nm_en, nm_cn, img = dc.item_display(rk or key)
+                row = {
+                    "item_id": iid,
+                    "item_key": rk or key,
+                    "item_name_en": nm_en,
+                    "item_name_cn": nm_cn,
+                    "image_url": img,
+                    "count": 0,
+                    "first_purchase_time": t,
+                }
+                rows[rk] = row
+            row["count"] = int(row.get("count") or 0) + 1
+            if t < int(row.get("first_purchase_time") or t):
+                row["first_purchase_time"] = t
+        out = list(rows.values())
+        out.sort(key=lambda x: int(x.get("first_purchase_time") or 0))
+        return out
+
+    out = _collect(start_sec, end_sec)
+    if out:
+        return out
+
+    non_pos_times: List[int] = []
+    for e in events:
+        if e.get("type") != "DOTA_COMBATLOG_PURCHASE":
+            continue
+        if not _targetname_matches_hero_npc(str(e.get("targetname") or ""), hero_npc):
+            continue
+        try:
+            t = int(e.get("time") or 0)
+        except (TypeError, ValueError):
+            continue
+        if t <= 0:
+            non_pos_times.append(t)
+    if not non_pos_times:
+        return []
+    fallback_start = max(min(non_pos_times), -120)
+    return _collect(fallback_start, 0)
+
+
 # 结算面主槽应弱化的消耗 / 侦查（显式表 + dotaconstants qual/cost 兜底）
 _DISPOSABLE_MAIN_ITEM_KEYS = frozenset(
     {
@@ -709,6 +1059,55 @@ _DISPOSABLE_MAIN_ITEM_KEYS = frozenset(
 )
 
 
+_SUPPORT_UTILITY_ITEM_KEYS = frozenset(
+    {
+        "ward_observer",
+        "ward_sentry",
+        "dust",
+        "smoke_of_deceit",
+        "gem",
+        "gem_of_true_sight",
+        "ward_dispenser",
+    }
+)
+
+_FALLBACK_POOL_SUPPORT_KEYS = frozenset(
+    {
+        "gem",
+        "gem_of_true_sight",
+        "dust",
+    }
+)
+
+_MAIN_SIX_NEUTRAL_ONLY_KEYS = frozenset(
+    {
+        "tiara_of_selemene",
+    }
+)
+
+_CONSUME_LIKELY_MAIN_KEYS = frozenset(
+    {
+        "aghanims_shard",
+        "moon_shard",
+    }
+)
+
+_FALLBACK_TRANSIENT_UTILITY_KEYS = frozenset(
+    {
+        "ancient_janggo",
+        "pavise",
+    }
+)
+
+_FALLBACK_STALE_COMPONENT_MAX_COST = 2200
+_FALLBACK_STALE_COMPONENT_SEC = 900
+_FALLBACK_STALE_CHEAP_MAX_COST = 700
+_FALLBACK_STALE_CHEAP_SEC = 900
+_FALLBACK_CONSUME_LIKELY_DEMOTE_SEC = 300
+_FALLBACK_RECENT_ACTIVITY_BONUS_SEC = 900
+_FALLBACK_TRANSIENT_UTILITY_DEMOTE_SEC = 600
+
+
 def _item_is_disposable_main_inventory(dc: Any, key: Optional[str]) -> bool:
     """主 6 格展示用：弱化 TP/眼/小消耗等（仍可能被战斗日志写在槽位上）。"""
     if not key:
@@ -716,11 +1115,14 @@ def _item_is_disposable_main_inventory(dc: Any, key: Optional[str]) -> bool:
     lk = dc.resolve_items_json_key(str(key).strip().lower())
     if not lk:
         return False
+    # 真眼/假眼/粉/雾/Gem 属于辅助核心功能道具：允许在终局主栏展示。
+    if lk in _SUPPORT_UTILITY_ITEM_KEYS:
+        return False
     if lk in _DISPOSABLE_MAIN_ITEM_KEYS:
         return True
     if lk.startswith("foragers_"):
         return True
-    if "ward" in lk:
+    if "ward" in lk and lk not in _SUPPORT_UTILITY_ITEM_KEYS:
         return True
     it = dc.items.get(lk) or {}
     try:
@@ -773,6 +1175,9 @@ def _forbidden_in_main_six(dc: Any, key: Optional[str]) -> bool:
     """
     if not key:
         return False
+    rk = (dc.resolve_items_json_key(str(key).strip().lower()) or str(key).strip().lower())
+    if rk in _MAIN_SIX_NEUTRAL_ONLY_KEYS:
+        return True
     if _item_is_disposable_main_inventory(dc, key):
         return True
     return bool(_item_allowed_neutral_trinket(dc, key))
@@ -824,6 +1229,18 @@ _INVENTORY_BOOT_ITEM_KEYS = frozenset(
     }
 )
 
+_BOOT_ITEM_PREFERENCE = {
+    "travel_boots_2": 7,
+    "travel_boots": 6,
+    "guardian_greaves": 5,
+    "arcane_boots": 4,
+    "phase_boots": 3,
+    "power_treads": 3,
+    "tranquil_boots": 2,
+    "tranquil_boots_inactive": 2,
+    "boots": 1,
+}
+
 # 为塞进鞋时尽量不踢掉的核心大件（若只按「非 created」选受害者会误伤鞋以外的关键装）
 _BOOT_EVICT_PROTECT_KEYS = frozenset(
     {
@@ -838,17 +1255,19 @@ _BOOT_EVICT_PROTECT_KEYS = frozenset(
 
 
 def _hero_latest_boot_purchase_info(
-    events: List[dict], hero_npc: str, dc: Any
+    events: List[dict], hero_npc: str, dc: Any, match_end_time: Optional[int] = None
 ) -> Optional[Tuple[str, int]]:
     """不计 disposable 过滤：鞋在商店购买必进日志；取每种鞋最后一次购买，再取时间最晚的一双（相位/飞鞋等升级链）。"""
     boot_last: Dict[str, int] = {}
     for e in events:
         if e.get("type") != "DOTA_COMBATLOG_PURCHASE":
             continue
-        if (e.get("targetname") or "") != hero_npc:
+        if not _targetname_matches_hero_npc(str(e.get("targetname") or ""), hero_npc):
             continue
         t = int(e.get("time") or 0)
         if t < 0:
+            continue
+        if match_end_time is not None and t > int(match_end_time):
             continue
         key = _item_key_from_valuename(str(e.get("valuename") or ""))
         if not key:
@@ -861,8 +1280,12 @@ def _hero_latest_boot_purchase_info(
             boot_last[key] = t
     if not boot_last:
         return None
-    bk = max(boot_last.keys(), key=lambda k: boot_last[k])
-    return (bk, boot_last[bk])
+    def _key_rank(k: str) -> Tuple[int, int]:
+        rk = (dc.resolve_items_json_key(k) or k).strip().lower()
+        return (int(boot_last.get(k, 0)), int(_BOOT_ITEM_PREFERENCE.get(rk, 0)))
+
+    bk = max(boot_last.keys(), key=_key_rank)
+    return (bk, int(boot_last[bk]))
 
 
 def _boot_eviction_victim_key(
@@ -915,17 +1338,86 @@ def _merge_boot_into_top_six_pool(
 
 
 def _non_disposable_purchase_keys_newest_first(
-    events: List[dict], hero_npc: str, dc: Any
+    events: List[dict], hero_npc: str, dc: Any, match_end_time: Optional[int] = None
 ) -> List[str]:
-    """每名英雄、每个 item_key 保留最后一次购买时间，按时间从新到旧排序（仅 0..5 槽或未定槽）。"""
+    """
+    每名英雄、每个 item_key 保留最后一次购买时间，按时间从新到旧排序（仅 0..5 槽或未定槽）。
+    注意：该池用于「无可靠 HUD 槽」时的回填，辅助侦查道具（眼/粉/雾/Gem）不应从历史购买硬补进终局主栏。
+    """
     last_t: Dict[str, int] = {}
+    support_last_t: Dict[str, int] = {}
+    support_last_activity_t: Dict[str, int] = {}
+    item_last_activity_t: Dict[str, int] = {}
+    max_t = 0
+    end_ref_t = int(match_end_time) if match_end_time is not None else 0
+
+    for e in events:
+        tt = e.get("time")
+        if isinstance(tt, (int, float)):
+            max_t = max(max_t, int(tt))
+        if e.get("type") != "DOTA_COMBATLOG_ITEM":
+            continue
+        if (e.get("attackername") or "") != hero_npc:
+            continue
+        ak = _item_key_from_valuename(str(e.get("inflictor") or ""))
+        if not ak:
+            continue
+        try:
+            at = int(e.get("time") or 0)
+        except (TypeError, ValueError):
+            at = 0
+        if match_end_time is not None and at > int(match_end_time):
+            continue
+        ark = (dc.resolve_items_json_key(ak) or ak).strip().lower()
+        prev_any = item_last_activity_t.get(ark)
+        if prev_any is None or at >= prev_any:
+            item_last_activity_t[ark] = at
+        if ark not in _SUPPORT_UTILITY_ITEM_KEYS:
+            continue
+        prev = support_last_activity_t.get(ark)
+        if prev is None or at >= prev:
+            support_last_activity_t[ark] = at
+
+    if end_ref_t <= 0:
+        end_ref_t = max_t
+
     for e in events:
         if e.get("type") != "DOTA_COMBATLOG_PURCHASE":
             continue
-        if (e.get("targetname") or "") != hero_npc:
+        if not _targetname_matches_hero_npc(str(e.get("targetname") or ""), hero_npc):
             continue
         key = _item_key_from_valuename(str(e.get("valuename") or ""))
         if not key or _item_is_disposable_main_inventory(dc, key):
+            continue
+        rk = (dc.resolve_items_json_key(key) or key).strip().lower()
+        t = int(e.get("time") or 0)
+        if match_end_time is not None and t > int(match_end_time):
+            continue
+        if rk in _SUPPORT_UTILITY_ITEM_KEYS:
+            prev = support_last_t.get(rk)
+            if prev is None or t >= prev:
+                support_last_t[rk] = t
+            continue
+        row = dc.items.get(rk) or {}
+        try:
+            cost = int(row.get("cost") or 0)
+        except (TypeError, ValueError):
+            cost = 0
+        qual = str(row.get("qual") or "").lower()
+        at = item_last_activity_t.get(rk)
+        latest_seen = int(max(t, at if at is not None else -10**9))
+        age = int(end_ref_t - latest_seen)
+        # 仅有购买、长期无后续活动的低价件 / 组件，回填时容易误判为终局持有（如补刀斧、临时组件）。
+        if (
+            qual == "component"
+            and not bool(row.get("created"))
+            and cost <= _FALLBACK_STALE_COMPONENT_MAX_COST
+            and age >= _FALLBACK_STALE_COMPONENT_SEC
+        ):
+            continue
+        if cost <= _FALLBACK_STALE_CHEAP_MAX_COST and age >= _FALLBACK_STALE_CHEAP_SEC:
+            continue
+        if _forbidden_in_main_six(dc, rk):
             continue
         if _item_allowed_neutral_trinket(dc, key):
             continue
@@ -937,13 +1429,86 @@ def _non_disposable_purchase_keys_newest_first(
                     continue
             except (TypeError, ValueError):
                 continue
-        t = int(e.get("time") or 0)
         prev = last_t.get(key)
         if prev is None or t >= prev:
             last_t[key] = t
-    ordered = sorted(last_t.keys(), key=lambda k: last_t[k], reverse=True)
+
+    for rk, t in support_last_t.items():
+        if rk not in _FALLBACK_POOL_SUPPORT_KEYS:
+            continue
+        # 仅在尾盘保留 Gem / 粉作为主栏候选，减少「曾购买但已消耗/转移」误判。
+        if t < end_ref_t - 900:
+            continue
+        at = support_last_activity_t.get(rk)
+        if at is not None and at >= t and rk != "gem" and rk != "gem_of_true_sight":
+            continue
+        last_t[rk] = t
+    def _pool_score(k: str) -> Tuple[int, int, int, int]:
+        rk = (dc.resolve_items_json_key(k) or k).strip().lower()
+        row = dc.items.get(rk) or {}
+        try:
+            cost = int(row.get("cost") or 0)
+        except (TypeError, ValueError):
+            cost = 0
+        qual = str(row.get("qual") or "").lower()
+        pt = int(last_t.get(k, 0))
+        at_raw = item_last_activity_t.get(rk)
+        at = int(at_raw) if at_raw is not None else -10**9
+        recent_activity = 1 if at >= end_ref_t - _FALLBACK_RECENT_ACTIVITY_BONUS_SEC else 0
+        qual_rank = (
+            4 if qual == "artifact" else
+            3 if qual == "rare" else
+            2 if qual == "epic" else
+            1 if qual == "common" else
+            0
+        )
+        # 统一回填规则：优先“近期有活动”+“购买时间更晚”+“价值/品质更高”。
+        return (recent_activity, max(pt, at), cost, qual_rank)
+
+    ordered = sorted(last_t.keys(), key=_pool_score, reverse=True)
     ordered = _prune_keys_subsumed_by_created_items(ordered, dc)
-    boot_info = _hero_latest_boot_purchase_info(events, hero_npc, dc)
+    # 无终局快照时，Shard/月之碎片常已被吃掉仅留下 buff；若长期无活动，降权到池尾避免挤占主 6 格。
+    head: List[str] = []
+    tail: List[str] = []
+    for k in ordered:
+        rk = (dc.resolve_items_json_key(k) or k).strip().lower()
+        if rk not in _CONSUME_LIKELY_MAIN_KEYS:
+            head.append(k)
+            continue
+        at = item_last_activity_t.get(rk)
+        lt = int(max(last_t.get(k, 0), at if at is not None else -10**9))
+        if int(end_ref_t - lt) >= _FALLBACK_CONSUME_LIKELY_DEMOTE_SEC:
+            tail.append(k)
+        else:
+            head.append(k)
+    ordered = head + tail
+
+    # 过渡功能装（鼓/帕维斯等）若远离结算时刻，通常已被卖掉或腾格，避免误占终局主栏。
+    head2: List[str] = []
+    tail2: List[str] = []
+    for k in ordered:
+        rk = (dc.resolve_items_json_key(k) or k).strip().lower()
+        if rk not in _FALLBACK_TRANSIENT_UTILITY_KEYS:
+            head2.append(k)
+            continue
+        at = item_last_activity_t.get(rk)
+        lt = int(max(last_t.get(k, 0), at if at is not None else -10**9))
+        if int(end_ref_t - lt) >= _FALLBACK_TRANSIENT_UTILITY_DEMOTE_SEC:
+            tail2.append(k)
+        else:
+            head2.append(k)
+    ordered = head2 + tail2
+    # 多次换鞋（草鞋/绿鞋/飞鞋）仅保留最终那一双，避免同屏多鞋误判。
+    boot_keys = [
+        k for k in ordered
+        if (dc.resolve_items_json_key(k) or k).strip().lower() in _INVENTORY_BOOT_ITEM_KEYS
+    ]
+    if len(boot_keys) > 1:
+        keep_boot = max(boot_keys, key=lambda k: last_t.get(k, 0))
+        ordered = [k for k in ordered if k == keep_boot or k not in boot_keys]
+    boot_info = _hero_latest_boot_purchase_info(
+        events, hero_npc, dc, match_end_time=match_end_time
+    )
     if not boot_info:
         return ordered
     boot_k, boot_t = boot_info
@@ -961,13 +1526,16 @@ def _refill_main_six_strip_invalid(
     dc: Any,
     *,
     fill_empty_from_pool: bool = True,
+    match_end_time: Optional[int] = None,
 ) -> None:
     """
     去掉主槽中的消耗品与中立-only 物品。
     fill_empty_from_pool=True 时：用「可上主栏的购买记录」从左到右补空位（旧行为，无槽位日志的录像）。
     fill_empty_from_pool=False 时：仅清空非法格，**不把后续物品左移填入空槽**（对齐 HUD 0–5 与中立槽分离）。
     """
-    pool = _non_disposable_purchase_keys_newest_first(events, hero_npc, dc)
+    pool = _non_disposable_purchase_keys_newest_first(
+        events, hero_npc, dc, match_end_time=match_end_time
+    )
     present: Set[str] = set()
     for i in range(6):
         k = main[i]
@@ -1246,23 +1814,190 @@ def _prune_keys_subsumed_by_created_items(
     ]
 
 
-def _apply_item_upgrade_dedupe(main: List[Optional[str]]) -> None:
+_ITEM_UPGRADE_DEDUPE_PAIRS = (
+    ("invis_sword", "silver_edge"),
+    ("lesser_crit", "greater_crit"),
+    ("diffusal_blade", "disperser"),
+    ("cyclone", "wind_waker"),
+    ("sphere", "mirror_shield"),
+    ("travel_boots", "travel_boots_2"),
+    ("ultimate_scepter", "ultimate_scepter_2"),
+    ("dagon", "dagon_2"),
+    ("dagon", "dagon_3"),
+    ("dagon", "dagon_4"),
+    ("dagon", "dagon_5"),
+    ("dagon_2", "dagon_3"),
+    ("dagon_2", "dagon_4"),
+    ("dagon_2", "dagon_5"),
+    ("dagon_3", "dagon_4"),
+    ("dagon_3", "dagon_5"),
+    ("dagon_4", "dagon_5"),
+)
+
+_ITEM_CONFLICT_GROUPS = (
+    frozenset({"medallion_of_courage", "solar_crest"}),
+    frozenset({"echo_sabre", "harpoon"}),
+    frozenset({"kaya", "yasha_and_kaya", "kaya_and_sange", "bloodstone"}),
+    frozenset({"vanguard", "crimson_guard"}),
+    frozenset({"ancient_janggo", "boots_of_bearing"}),
+)
+
+
+def _apply_item_upgrade_dedupe(main: List[Optional[str]], dc: Any) -> None:
     """
     主栏 6 格内若同时出现装备升级链的低端与高端，清空低端格（避免大隐刀与影刃同屏等矛盾）。
     不改变槽位索引，仅置 None，供后续 refill 或转 items_slot 时空格展示。
     """
-    pairs = (
-        ("invis_sword", "silver_edge"),
-        ("lesser_crit", "greater_crit"),
-    )
-    present = {k for k in main if k}
-    for low, high in pairs:
-        if low not in present or high not in present:
+    resolved_present: Set[str] = set()
+    for k in main:
+        if not k:
+            continue
+        rk = (dc.resolve_items_json_key(k) or k).strip()
+        if rk:
+            resolved_present.add(rk)
+    for low, high in _ITEM_UPGRADE_DEDUPE_PAIRS:
+        if low not in resolved_present or high not in resolved_present:
             continue
         for i in range(6):
-            if main[i] == low:
+            k = main[i]
+            if not k:
+                continue
+            rk = (dc.resolve_items_json_key(k) or k).strip()
+            if rk == low:
                 main[i] = None
-        present.discard(low)
+        resolved_present.discard(low)
+
+
+def _item_last_seen_evidence_for_hero(
+    events: List[dict],
+    hero_npc: str,
+    dc: Any,
+    *,
+    match_end_time: Optional[int] = None,
+) -> Tuple[Dict[str, int], Dict[str, int], int]:
+    purchase_t: Dict[str, int] = {}
+    activity_t: Dict[str, int] = {}
+    end_t = 0
+    for e in events:
+        tt = e.get("time")
+        if not isinstance(tt, (int, float)):
+            continue
+        t = int(tt)
+        if t < 0:
+            continue
+        if match_end_time is not None and t > int(match_end_time):
+            continue
+        if t > end_t:
+            end_t = t
+        et = e.get("type")
+        if et == "DOTA_COMBATLOG_PURCHASE":
+            if not _targetname_matches_hero_npc(str(e.get("targetname") or ""), hero_npc):
+                continue
+            k = _item_key_from_valuename(str(e.get("valuename") or ""))
+            if not k:
+                continue
+            rk = (dc.resolve_items_json_key(k) or k).strip().lower()
+            if not rk:
+                continue
+            prev = purchase_t.get(rk)
+            if prev is None or t >= prev:
+                purchase_t[rk] = t
+        elif et == "DOTA_COMBATLOG_ITEM":
+            if not _targetname_matches_hero_npc(str(e.get("attackername") or ""), hero_npc):
+                continue
+            k = _item_key_from_valuename(str(e.get("inflictor") or ""))
+            if not k:
+                continue
+            rk = (dc.resolve_items_json_key(k) or k).strip().lower()
+            if not rk:
+                continue
+            prev = activity_t.get(rk)
+            if prev is None or t >= prev:
+                activity_t[rk] = t
+    return purchase_t, activity_t, end_t
+
+
+def _apply_item_conflict_priority(
+    main: List[Optional[str]],
+    events: List[dict],
+    hero_npc: str,
+    dc: Any,
+    *,
+    match_end_time: Optional[int] = None,
+) -> None:
+    purchase_t, activity_t, _ = _item_last_seen_evidence_for_hero(
+        events, hero_npc, dc, match_end_time=match_end_time
+    )
+    if not main:
+        return
+
+    def _score(k: str) -> Tuple[int, int, int]:
+        rk = (dc.resolve_items_json_key(k) or k).strip().lower()
+        at = int(activity_t.get(rk, -10**9))
+        pt = int(purchase_t.get(rk, -10**9))
+        row = dc.items.get(rk) or {}
+        try:
+            cost = int(row.get("cost") or 0)
+        except (TypeError, ValueError):
+            cost = 0
+        return (max(at, pt), at, cost)
+
+    for grp in _ITEM_CONFLICT_GROUPS:
+        idxs: List[int] = []
+        keys: List[str] = []
+        for i in range(min(6, len(main))):
+            k = main[i]
+            if not k:
+                continue
+            rk = (dc.resolve_items_json_key(k) or k).strip().lower()
+            if rk in grp:
+                idxs.append(i)
+                keys.append(rk)
+        if len(idxs) <= 1:
+            continue
+        keep = max(keys, key=_score)
+        for i in idxs:
+            k = main[i]
+            if not k:
+                continue
+            rk = (dc.resolve_items_json_key(k) or k).strip().lower()
+            if rk != keep:
+                main[i] = None
+
+
+def _apply_upgrade_dedupe_on_items_slot(
+    items_slot: List[Dict[str, Any]],
+    dc: Any,
+) -> None:
+    """对主栏 items_slot 做升级链去重（保留高阶，低阶清空）。"""
+    if not isinstance(items_slot, list) or len(items_slot) < 1:
+        return
+    keys: List[Optional[str]] = []
+    for i in range(min(6, len(items_slot))):
+        c = items_slot[i]
+        if not isinstance(c, dict):
+            keys.append(None)
+            continue
+        ik = c.get("item_key")
+        keys.append(str(ik).strip() if ik else None)
+    before = list(keys)
+    _apply_item_upgrade_dedupe(keys, dc)
+    before_n = sum(1 for k in before if k)
+    after_n = sum(1 for k in keys if k)
+    # 若去重后主栏过于稀疏（常见于旧数据把升级链写满 0..5），宁可保留原槽位，避免“只剩 1-2 件”。
+    if before_n >= 5 and after_n <= 2:
+        return
+    for i in range(min(6, len(items_slot))):
+        if before[i] and not keys[i]:
+            items_slot[i] = {
+                "slot": i,
+                "item_id": 0,
+                "item_key": None,
+                "item_name_en": "",
+                "item_name_cn": "",
+                "image_url": "",
+                "empty": True,
+            }
 
 
 def _aghanims_from_main_keys(keys: List[Optional[str]]) -> Tuple[bool, bool]:
@@ -1279,7 +2014,7 @@ def _aghanims_from_main_keys(keys: List[Optional[str]]) -> Tuple[bool, bool]:
 
 
 def _build_endgame_main_six_item_keys(
-    events: List[dict], hero_npc: str, dc: Any
+    events: List[dict], hero_npc: str, dc: Any, match_end_time: Optional[int] = None
 ) -> List[Optional[str]]:
     """
     回退路径：仅当无 interval 快照且无 players item_* 时使用。
@@ -1293,7 +2028,7 @@ def _build_endgame_main_six_item_keys(
     for e in events:
         if e.get("type") != "DOTA_COMBATLOG_PURCHASE":
             continue
-        if (e.get("targetname") or "") != hero_npc:
+        if not _targetname_matches_hero_npc(str(e.get("targetname") or ""), hero_npc):
             continue
         key = _item_key_from_valuename(str(e.get("valuename") or ""))
         if not key:
@@ -1311,13 +2046,22 @@ def _build_endgame_main_six_item_keys(
         # 选人/开局前 (time<0) 的购买常全部标 slot 0，会误判为 HUD 槽位；只采信正式比赛内的槽点。
         if t < 0:
             continue
+        if match_end_time is not None and t > int(match_end_time):
+            continue
         prev = slot_best.get(si)
         if prev is None or t >= prev[0]:
             slot_best[si] = (t, key)
     for si, (_t, key) in slot_best.items():
         if 0 <= si <= 5:
             main[si] = key
-    _apply_item_upgrade_dedupe(main)
+    _apply_item_upgrade_dedupe(main, dc)
+    _apply_item_conflict_priority(
+        main,
+        events,
+        hero_npc,
+        dc,
+        match_end_time=match_end_time,
+    )
     present: Set[str] = {k for k in main if k}
     # 仅当战斗日志里「带 HUD slot」的购买覆盖足够多时，才信任按槽推断并禁止左移补位。
     # 部分解析器几乎不给 slot（或只有开局 1 格），若仍走严格路径会把唯一一格清成消耗品后全空。
@@ -1333,7 +2077,10 @@ def _build_endgame_main_six_item_keys(
         for e in reversed(events):
             if e.get("type") != "DOTA_COMBATLOG_ITEM":
                 continue
-            if (e.get("attackername") or "") != hero_npc:
+            if not _targetname_matches_hero_npc(str(e.get("attackername") or ""), hero_npc):
+                continue
+            et = e.get("time")
+            if match_end_time is not None and isinstance(et, (int, float)) and int(et) > int(match_end_time):
                 continue
             key = _item_key_from_valuename(str(e.get("inflictor") or ""))
             if not key or _item_is_disposable_main_inventory(dc, key):
@@ -1362,7 +2109,7 @@ def _build_endgame_main_six_item_keys(
             for e in events:
                 if e.get("type") != "DOTA_COMBATLOG_PURCHASE":
                     continue
-                if (e.get("targetname") or "") != hero_npc:
+                if not _targetname_matches_hero_npc(str(e.get("targetname") or ""), hero_npc):
                     continue
                 key = _item_key_from_valuename(str(e.get("valuename") or ""))
                 if not key or _item_is_disposable_main_inventory(dc, key):
@@ -1378,6 +2125,8 @@ def _build_endgame_main_six_item_keys(
                     except (TypeError, ValueError):
                         continue
                 t = int(e.get("time") or 0)
+                if match_end_time is not None and t > int(match_end_time):
+                    continue
                 last_t[key] = t
             for k in sorted(last_t.keys(), key=lambda x: last_t[x], reverse=True):
                 if all(x is not None for x in main):
@@ -1396,15 +2145,28 @@ def _build_endgame_main_six_item_keys(
         hero_npc,
         dc,
         fill_empty_from_pool=not have_slot_purchases_strict,
+        match_end_time=match_end_time,
     )
-    _apply_item_upgrade_dedupe(main)
+    _apply_item_upgrade_dedupe(main, dc)
+    _apply_item_conflict_priority(
+        main,
+        events,
+        hero_npc,
+        dc,
+        match_end_time=match_end_time,
+    )
     return main
 
 
 def _main_six_items_slot_from_combat_log(
-    events: List[dict], hero_npc: str, dc: Any
+    events: List[dict],
+    hero_npc: str,
+    dc: Any,
+    match_end_time: Optional[int] = None,
 ) -> List[Optional[Dict[str, Any]]]:
-    keys = _build_endgame_main_six_item_keys(events, hero_npc, dc)
+    keys = _build_endgame_main_six_item_keys(
+        events, hero_npc, dc, match_end_time=match_end_time
+    )
     out: List[Optional[Dict[str, Any]]] = []
     for i in range(6):
         k = keys[i]
@@ -1485,10 +2247,12 @@ def build_slim_from_dem_events(
     hero_abilities_map = load_hero_abilities_map(dc.cache_dir)
 
     mid, gwinner, _ = _epilogue_meta(events)
+    match_end_time = _match_end_time_sec(events)
     name_by_hero = _epilogue_player_names(events)
     steam_acc = _epilogue_steam_account_by_hero(events)
     slot_hero = _slot_hero_from_intervals(events)
     last_iv = _last_intervals(events)
+    lane_role_by_slot = _infer_lane_and_role_by_slot(events, dc)
     agg = _aggregate_combat(events)
 
     account_to_slot: Dict[int, int] = {}
@@ -1553,6 +2317,7 @@ def build_slim_from_dem_events(
         hero_dmg = int(agg["hero"].get(hero_npc, 0))
         tower_dmg = int(agg["tower"].get(hero_npc, 0))
         hero_heal = int(agg["heal"].get(hero_npc, 0))
+        starting_items = _starting_items_from_purchases(events, hero_npc, dc)
         # 解析器 / 本地 JSON 若已带结算统计，优先于战斗日志累加（无 OpenDota 时与客户端对齐）
         if pb_for_row is not None:
             if "hero_damage" in pb_for_row:
@@ -1679,7 +2444,9 @@ def build_slim_from_dem_events(
             )
             neutral_item_key_out = nk_snake or None
 
-            items_slot = _main_six_items_slot_from_combat_log(events, hero_npc, dc)
+            items_slot = _main_six_items_slot_from_combat_log(
+                events, hero_npc, dc, match_end_time=match_end_time
+            )
         elif not (str(neutral_item_key_out or "").strip()) and not str(
             neutral_img or ""
         ).strip():
@@ -1713,6 +2480,7 @@ def build_slim_from_dem_events(
                     "image_url": "",
                     "empty": True,
                 }
+        _apply_upgrade_dedupe_on_items_slot(items_slot, dc)
         _strip_neutral_trinkets_from_items_slot_main(items_slot, dc)
 
         keys_for_agh: List[Optional[str]] = []
@@ -1753,6 +2521,7 @@ def build_slim_from_dem_events(
                 "hero_damage": hero_dmg,
                 "tower_damage": tower_dmg,
                 "hero_healing": hero_heal,
+                "starting_items": starting_items,
                 "net_worth": int(iv.get("networth") or 0),
                 "items_slot": items_slot,
                 "neutral_img": neutral_img,
@@ -1764,6 +2533,21 @@ def build_slim_from_dem_events(
                 "hero_name_cn": "",
                 "_dem_items_source": dem_items_source,
         }
+        lane_role = lane_role_by_slot.get(slot) or {}
+        lane_early = str(lane_role.get("lane_early") or "").strip()
+        role_early = str(lane_role.get("role_early") or "").strip()
+        support_item_points_early = int(
+            lane_role.get("support_item_points_early") or 0
+        )
+        support_items_early = lane_role.get("support_items_early") or []
+        if lane_early:
+            player_row["lane_early"] = lane_early
+        if role_early:
+            player_row["role_early"] = role_early
+        if support_item_points_early > 0:
+            player_row["support_item_points_early"] = support_item_points_early
+        if isinstance(support_items_early, list) and support_items_early:
+            player_row["support_items_early"] = support_items_early
         if neutral_item_key_out:
             player_row["neutral_item_key"] = neutral_item_key_out
         if merged_tp:

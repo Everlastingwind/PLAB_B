@@ -5,6 +5,8 @@ export interface ReplayPlayerSummary {
   hero_id: number;
   /** 职业选手注册名；无则 UI 显示「匿名玩家」 */
   pro_name: string | null;
+  /** 对线期推断位置（可选）：carry/mid/offlane/support(4)/support(5) */
+  role_early?: string | null;
   is_radiant: boolean;
   kills: number;
   deaths: number;

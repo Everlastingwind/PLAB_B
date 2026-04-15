@@ -7,7 +7,7 @@
       "raw_ability_upgrade_like_events": 233,
       "talent_tree_selected_layers_total": 34
     },
-    "uploaded_at": "2026-04-15T05:18:38Z"
+    "uploaded_at": "2026-04-15T08:02:42Z"
   },
   "match_id": 8771902982,
   "radiant_win": true,
@@ -586,6 +586,8 @@
       "hero_name_en": "Batrider",
       "hero_name_cn": "蝙蝠骑士",
       "_dem_items_source": "combat_log_slot_last_purchase",
+      "lane_early": "top",
+      "role_early": "support(4)",
       "neutral_item_key": "conjurers_catalyst",
       "talent_picks": [
         {
@@ -1674,6 +1676,8 @@
       "hero_name_en": "Slardar",
       "hero_name_cn": "斯拉达",
       "_dem_items_source": "combat_log_slot_last_purchase",
+      "lane_early": "top",
+      "role_early": "offlane",
       "neutral_item_key": "enhancement_quickened",
       "talent_picks": [
         {
@@ -2800,6 +2804,8 @@
       "hero_name_en": "Lifestealer",
       "hero_name_cn": "噬魂鬼",
       "_dem_items_source": "combat_log_slot_last_purchase",
+      "lane_early": "bot",
+      "role_early": "carry",
       "neutral_item_key": "enhancement_tough",
       "talent_picks": [
         {
@@ -4012,6 +4018,8 @@
       "hero_name_en": "Rubick",
       "hero_name_cn": "拉比克",
       "_dem_items_source": "combat_log_slot_last_purchase",
+      "lane_early": "mid",
+      "role_early": "mid",
       "neutral_item_key": "enhancement_keen_eyed",
       "talent_picks": [
         {
@@ -5216,6 +5224,8 @@
       "hero_name_en": "Hoodwink",
       "hero_name_cn": "森海飞霞",
       "_dem_items_source": "combat_log_slot_last_purchase",
+      "lane_early": "bot",
+      "role_early": "support(5)",
       "neutral_item_key": "enhancement_brawny",
       "talent_picks": [
         {
@@ -6344,6 +6354,8 @@
       "hero_name_en": "Pangolier",
       "hero_name_cn": "石鳞剑士",
       "_dem_items_source": "combat_log_slot_last_purchase",
+      "lane_early": "mid",
+      "role_early": "mid",
       "neutral_item_key": "giant_maul",
       "talent_picks": [
         {
@@ -7557,6 +7569,8 @@
       "hero_name_en": "Phoenix",
       "hero_name_cn": "凤凰",
       "_dem_items_source": "combat_log_slot_last_purchase",
+      "lane_early": "top",
+      "role_early": "support(5)",
       "talent_picks": [
         {
           "level": 10,
@@ -8762,6 +8776,8 @@
       "hero_name_en": "Faceless Void",
       "hero_name_cn": "虚空假面",
       "_dem_items_source": "combat_log_slot_last_purchase",
+      "lane_early": "top",
+      "role_early": "carry",
       "neutral_item_key": "enhancement_alert",
       "talent_picks": [
         {
@@ -9910,6 +9926,8 @@
       "hero_name_en": "Muerta",
       "hero_name_cn": "琼英碧灵",
       "_dem_items_source": "combat_log_slot_last_purchase",
+      "lane_early": "bot",
+      "role_early": "support(4)",
       "neutral_item_key": "enhancement_keen_eyed",
       "talent_picks": [
         {
@@ -10997,6 +11015,8 @@
       "hero_name_en": "Marci",
       "hero_name_cn": "玛西",
       "_dem_items_source": "combat_log_slot_last_purchase",
+      "lane_early": "bot",
+      "role_early": "offlane",
       "neutral_item_key": "dandelion_amulet",
       "talent_picks": [
         {

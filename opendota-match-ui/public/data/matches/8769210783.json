@@ -5996,7 +5996,8 @@
       "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/divine_regalia_broken.png",
       "neutral_item_key": "divine_regalia_broken",
       "pro_name": "selfhate",
-      "team_name": "Sibe Team"
+      "team_name": "Sibe Team",
+      "role_early": "carry"
     },
     {
       "player_slot": 1,
@@ -8381,7 +8382,8 @@
       "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/divine_regalia.png",
       "neutral_item_key": "divine_regalia",
       "pro_name": null,
-      "team_name": null
+      "team_name": null,
+      "role_early": "offlane"
     },
     {
       "player_slot": 2,
@@ -10692,7 +10694,8 @@
       "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/fallen_sky.png",
       "neutral_item_key": "fallen_sky",
       "pro_name": null,
-      "team_name": null
+      "team_name": null,
+      "role_early": "mid"
     },
     {
       "player_slot": 3,
@@ -13127,7 +13130,8 @@
       "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/spider_legs.png",
       "neutral_item_key": "spider_legs",
       "pro_name": null,
-      "team_name": null
+      "team_name": null,
+      "role_early": "support(5)"
     },
     {
       "player_slot": 4,
@@ -15919,7 +15923,8 @@
       "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/conjurers_catalyst.png",
       "neutral_item_key": "conjurers_catalyst",
       "pro_name": null,
-      "team_name": null
+      "team_name": null,
+      "role_early": "support(4)"
     },
     {
       "player_slot": 128,
@@ -18314,7 +18319,8 @@
       "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/desolator_2.png",
       "neutral_item_key": "desolator_2",
       "pro_name": "v1olent–",
-      "team_name": "L1GA TEAM"
+      "team_name": "L1GA TEAM",
+      "role_early": "carry"
     },
     {
       "player_slot": 129,
@@ -20637,7 +20643,8 @@
       "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/seeds_of_serenity.png",
       "neutral_item_key": "seeds_of_serenity",
       "pro_name": null,
-      "team_name": null
+      "team_name": null,
+      "role_early": "offlane"
     },
     {
       "player_slot": 130,
@@ -23065,7 +23072,8 @@
       "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/demonicon.png",
       "neutral_item_key": "demonicon",
       "pro_name": "swedenstrong",
-      "team_name": "1w Team"
+      "team_name": "1w Team",
+      "role_early": "support(5)"
     },
     {
       "player_slot": 131,
@@ -25766,7 +25774,8 @@
       "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/demonicon.png",
       "neutral_item_key": "demonicon",
       "pro_name": "命運 reinprince",
-      "team_name": "One Move"
+      "team_name": "One Move",
+      "role_early": "support(4)"
     },
     {
       "player_slot": 132,
@@ -28134,7 +28143,8 @@
       "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/enchanters_bauble.png",
       "neutral_item_key": "enchanters_bauble",
       "pro_name": "squad1x",
-      "team_name": "1w Team"
+      "team_name": "1w Team",
+      "role_early": "mid"
     }
   ],
   "leagueid": 19448,

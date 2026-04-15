@@ -24,6 +24,7 @@ import {
   isRubickHero,
   isRubickNativeSlimSkillBuildStep,
 } from "../lib/rubickSkillBuild";
+import { cn } from "../lib/cn";
 import type { SlimMatchJson, SlimPlayer } from "../types/slimMatch";
 import { TalentTreeBadge } from "../components/TalentTreeBadge";
 import type { TalentPickUi, TalentTreeUi } from "../data/mockMatchPlayers";
@@ -130,6 +131,7 @@ export function HeroMatchesPage() {
   const { maps, loading: mapsLoading } = useEntityMaps();
   const [feed, setFeed] = useState<FeedSelection>({ pub: true, pro: false });
   const [replays, setReplays] = useState<ReplaySummary[]>([]);
+  const [roleFilter, setRoleFilter] = useState<string>("all");
   const [detailByMatch, setDetailByMatch] = useState<Record<number, SlimMatchJson>>(
     {}
   );
@@ -148,6 +150,7 @@ export function HeroMatchesPage() {
 
   useEffect(() => {
     setPage(1);
+    setRoleFilter("all");
   }, [decoded, feed]);
 
   useEffect(() => {
@@ -169,9 +172,65 @@ export function HeroMatchesPage() {
     };
   }, [decoded, maps, feed]);
 
+  const normalizeRole = (raw: unknown): string => {
+    const s = String(raw ?? "").trim().toLowerCase();
+    if (!s) return "";
+    if (s === "support4" || s === "support 4" || s === "support(4)") return "support(4)";
+    if (s === "support5" || s === "support 5" || s === "support(5)") return "support(5)";
+    if (s === "carry" || s === "mid" || s === "offlane") return s;
+    return s;
+  };
+
+  const roleLabel = (role: string): string => {
+    if (role === "support(4)") return "pos4";
+    if (role === "support(5)") return "pos5";
+    return role;
+  };
+
+  const replayRole = useCallback(
+    (r: ReplaySummary): string => {
+      const p0 = (r.players || []).find(
+        (x) => heroKeyFromId(x.hero_id, maps!) === decoded
+      );
+      const fromSummary = normalizeRole((p0 as { role_early?: unknown } | undefined)?.role_early);
+      if (fromSummary) return fromSummary;
+      const detail = detailByMatch[r.match_id];
+      const row = (detail?.players || []).find(
+        (x) => heroKeyFromId(Number(x.hero_id || 0), maps!) === decoded
+      );
+      return normalizeRole((row as { role_early?: unknown } | undefined)?.role_early);
+    },
+    [decoded, detailByMatch, maps]
+  );
+
+  const roleOptions = useMemo(
+    () => ["carry", "mid", "offlane", "support(4)", "support(5)"],
+    []
+  );
+
+  const filteredReplays = useMemo(() => {
+    if (roleFilter === "all") return replays;
+    return replays.filter((r) => replayRole(r) === roleFilter);
+  }, [replays, replayRole, roleFilter]);
+
+  const roleCounts = useMemo(() => {
+    const out: Record<string, number> = {
+      carry: 0,
+      mid: 0,
+      offlane: 0,
+      "support(4)": 0,
+      "support(5)": 0,
+    };
+    for (const r of replays) {
+      const rr = replayRole(r);
+      if (rr in out) out[rr] += 1;
+    }
+    return out;
+  }, [replays, replayRole]);
+
   const visible = useMemo(
-    () => slicePage(replays, page),
-    [replays, page]
+    () => slicePage(filteredReplays, page),
+    [filteredReplays, page]
   );
 
   useEffect(() => {
@@ -239,8 +298,8 @@ export function HeroMatchesPage() {
   }, [visible, detailByMatch, maps, decoded, replays]);
 
   const onIntersect = useCallback(() => {
-    setPage((p) => (hasMore(replays.length, p) ? p + 1 : p));
-  }, [replays.length]);
+    setPage((p) => (hasMore(filteredReplays.length, p) ? p + 1 : p));
+  }, [filteredReplays.length]);
 
   useEffect(() => {
     const el = sentinelRef.current;
@@ -266,23 +325,51 @@ export function HeroMatchesPage() {
             <h1 className="text-lg font-bold text-skin-ink">
               包含「{heroLabel?.nameCn || heroLabel?.nameEn || decoded}」的对局
             </h1>
-            <Link
-              to="/"
-              className="text-xs text-amber-600 hover:underline dark:text-amber-500"
-            >
-              返回主页
-            </Link>
+            <div className="flex flex-wrap items-center gap-1.5">
+              <button
+                type="button"
+                onClick={() => setRoleFilter("all")}
+                className={cn(
+                  "rounded border px-2 py-1 text-[11px] font-semibold uppercase tracking-wide",
+                  roleFilter === "all"
+                    ? "border-amber-500/50 bg-amber-100/70 text-amber-700 dark:border-amber-500/45 dark:bg-amber-500/15 dark:text-amber-300"
+                    : "border-slate-500/35 bg-slate-200/40 text-slate-700 hover:bg-slate-300/45 dark:border-slate-500/45 dark:bg-slate-700/40 dark:text-slate-200 dark:hover:bg-slate-700/60"
+                )}
+              >
+                all ({replays.length})
+              </button>
+              {roleOptions.map((role) => (
+                <button
+                  key={role}
+                  type="button"
+                  onClick={() => setRoleFilter(role)}
+                  className={cn(
+                    "rounded border px-2 py-1 text-[11px] font-semibold uppercase tracking-wide",
+                    roleFilter === role
+                      ? "border-emerald-500/45 bg-emerald-100/70 text-emerald-700 dark:border-emerald-500/40 dark:bg-emerald-500/15 dark:text-emerald-300"
+                      : "border-slate-500/35 bg-slate-200/40 text-slate-700 hover:bg-slate-300/45 dark:border-slate-500/45 dark:bg-slate-700/40 dark:text-slate-200 dark:hover:bg-slate-700/60"
+                  )}
+                >
+                  {roleLabel(role)} ({roleCounts[role] || 0})
+                </button>
+              ))}
+            </div>
           </div>
           {!mapsLoading && maps ? (
-            replays.length === 0 ? (
-              <p className="text-sm text-skin-sub">暂无该英雄的录像记录。</p>
+            filteredReplays.length === 0 ? (
+              <p className="text-sm text-skin-sub">
+                {replays.length === 0
+                  ? "暂无该英雄的录像记录。"
+                  : `暂无该英雄在 ${roleLabel(roleFilter)} 位置的对局。`}
+              </p>
             ) : (
               <>
                 <div className="overflow-hidden rounded-lg border border-skin-line">
-                  <div className="grid grid-cols-[200px_140px_90px_250px_280px_70px_160px] gap-2 border-b border-skin-line bg-skin-inset px-3 py-2 text-[11px] font-semibold text-skin-sub">
+                  <div className="grid grid-cols-[190px_120px_90px_90px_240px_260px_70px_160px] gap-2 border-b border-skin-line bg-skin-inset px-3 py-2 text-[11px] font-semibold text-skin-sub">
                     <div>英雄</div>
                     <div>选手</div>
                     <div>K/D/A</div>
+                    <div>位置</div>
                     <div>出装</div>
                     <div>技能加点</div>
                     <div className="text-center">天赋</div>
@@ -342,7 +429,7 @@ export function HeroMatchesPage() {
                     return (
                       <div
                         key={`${r.match_id}-${r.uploaded_at}`}
-                        className="grid cursor-pointer grid-cols-[200px_140px_90px_250px_280px_70px_160px] gap-2 border-b border-slate-500/55 px-3 py-2 text-xs transition-colors hover:bg-slate-100/60 dark:border-slate-700/80 dark:hover:bg-slate-800/40 last:border-b-0"
+                        className="grid cursor-pointer grid-cols-[190px_120px_90px_90px_240px_260px_70px_160px] gap-2 border-b border-slate-500/55 px-3 py-2 text-xs transition-colors hover:bg-slate-100/60 dark:border-slate-700/80 dark:hover:bg-slate-800/40 last:border-b-0"
                         title={`查看比赛 ${r.match_id}`}
                         role="button"
                         tabIndex={0}
@@ -390,6 +477,11 @@ export function HeroMatchesPage() {
                         </div>
                         <div className="font-mono tabular-nums text-skin-ink">
                           {k}/{d}/{a}
+                        </div>
+                        <div className="flex items-center">
+                          <span className="rounded border border-slate-500/35 bg-slate-200/40 px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-wide text-slate-700 dark:border-slate-500/45 dark:bg-slate-700/40 dark:text-slate-200">
+                            {String(row?.role_early || "-")}
+                          </span>
                         </div>
                         <div className="flex items-center gap-1">
                           {items.filter((it) => !it.empty && (it.item_key || it.image_url))

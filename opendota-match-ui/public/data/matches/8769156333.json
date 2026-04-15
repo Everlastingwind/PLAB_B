@@ -2790,7 +2790,8 @@
       "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/defiant_shell.png",
       "neutral_item_key": "defiant_shell",
       "pro_name": "v1olent–",
-      "team_name": "L1GA TEAM"
+      "team_name": "L1GA TEAM",
+      "role_early": "mid"
     },
     {
       "player_slot": 1,
@@ -4539,7 +4540,8 @@
       "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/poor_mans_shield.png",
       "neutral_item_key": "poor_mans_shield",
       "pro_name": null,
-      "team_name": null
+      "team_name": null,
+      "role_early": "offlane"
     },
     {
       "player_slot": 2,
@@ -6266,7 +6268,8 @@
       "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/essence_ring.png",
       "neutral_item_key": "essence_ring",
       "pro_name": "swedenstrong",
-      "team_name": "1w Team"
+      "team_name": "1w Team",
+      "role_early": "support(4)"
     },
     {
       "player_slot": 3,
@@ -8065,7 +8068,8 @@
       "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/ash_legion_shield.png",
       "neutral_item_key": "ash_legion_shield",
       "pro_name": "命運 reinprince",
-      "team_name": "One Move"
+      "team_name": "One Move",
+      "role_early": "support(5)"
     },
     {
       "player_slot": 4,
@@ -9837,7 +9841,8 @@
       "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/searing_signet.png",
       "neutral_item_key": "searing_signet",
       "pro_name": "squad1x",
-      "team_name": "1w Team"
+      "team_name": "1w Team",
+      "role_early": "carry"
     },
     {
       "player_slot": 128,
@@ -11449,7 +11454,8 @@
       "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/crippling_crossbow.png",
       "neutral_item_key": "crippling_crossbow",
       "pro_name": "selfhate",
-      "team_name": "Sibe Team"
+      "team_name": "Sibe Team",
+      "role_early": "mid"
     },
     {
       "player_slot": 129,
@@ -13027,7 +13033,8 @@
       "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/essence_ring.png",
       "neutral_item_key": "essence_ring",
       "pro_name": null,
-      "team_name": null
+      "team_name": null,
+      "role_early": "offlane"
     },
     {
       "player_slot": 130,
@@ -14698,7 +14705,8 @@
       "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/medallion_of_courage.png",
       "neutral_item_key": "medallion_of_courage",
       "pro_name": null,
-      "team_name": null
+      "team_name": null,
+      "role_early": "carry"
     },
     {
       "player_slot": 131,
@@ -16342,7 +16350,8 @@
       "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/pogo_stick.png",
       "neutral_item_key": "pogo_stick",
       "pro_name": null,
-      "team_name": null
+      "team_name": null,
+      "role_early": "support(5)"
     },
     {
       "player_slot": 132,
@@ -18088,7 +18097,8 @@
       "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/pogo_stick.png",
       "neutral_item_key": "pogo_stick",
       "pro_name": null,
-      "team_name": null
+      "team_name": null,
+      "role_early": "support(4)"
     }
   ],
   "leagueid": 19448,

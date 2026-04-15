@@ -5,6 +5,7 @@ import type {
   SkillBuildStepUi,
   TalentPickUi,
   TalentTreeUi,
+  StartingItemMock,
 } from "../data/mockMatchPlayers";
 import {
   abilityIconFallbackUrl,
@@ -90,6 +91,26 @@ function mapPlayerInventory(
     backpack: [null, null, null] as PlayerRowMock["items"]["backpack"],
     neutral: null,
   };
+}
+
+function mapStartingItems(raw: unknown): StartingItemMock[] | undefined {
+  if (!Array.isArray(raw) || raw.length === 0) return undefined;
+  const out: StartingItemMock[] = [];
+  for (const row of raw) {
+    if (!row || typeof row !== "object") continue;
+    const o = row as Record<string, unknown>;
+    const key = String(o.item_key ?? "").trim().replace(/^item_/, "");
+    const imageUrl = normalizeDotaAssetUrl(String(o.image_url ?? "").trim());
+    const countRaw = Number(o.count ?? 1);
+    const count = Number.isFinite(countRaw) && countRaw > 1 ? Math.floor(countRaw) : undefined;
+    if (!key && !imageUrl) continue;
+    out.push({
+      itemKey: key || "unknown",
+      ...(imageUrl ? { imageUrl } : {}),
+      ...(count ? { count } : {}),
+    });
+  }
+  return out.length ? out : undefined;
 }
 
 function mapAbilitySteps(raw: unknown): AbilityBuildStep[] | undefined {
@@ -1272,6 +1293,7 @@ function slimPlayerToRow(p: SlimPlayer, maps: EntityMapsPayload): PlayerRowMock 
   };
   const scepterActive = scepterShardBuff.scepter;
   const shardActive = scepterShardBuff.shard;
+  const startingItems = mapStartingItems((p as { starting_items?: unknown }).starting_items);
   skillBuild = filterRubickSkillBuildForDisplay(heroId, key, skillBuild);
   return {
     slot: numOrZero(p.player_slot),
@@ -1286,6 +1308,9 @@ function slimPlayerToRow(p: SlimPlayer, maps: EntityMapsPayload): PlayerRowMock 
     rankLabel: "",
     rankColorClass: "text-zinc-500",
     leaderboardRank,
+    laneEarly: String(p.lane_early ?? "").trim() || undefined,
+    roleEarly: String(p.role_early ?? "").trim() || undefined,
+    startingItems,
     level: numOrZero(p.level),
     kills: kda.kills,
     deaths: kda.deaths,

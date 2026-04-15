@@ -5300,7 +5300,8 @@
       "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/conjurers_catalyst.png",
       "neutral_item_key": "conjurers_catalyst",
       "pro_name": "Abed",
-      "team_name": "Aurora Gaming"
+      "team_name": "Aurora Gaming",
+      "role_early": "offlane"
     },
     {
       "player_slot": 1,
@@ -7549,7 +7550,8 @@
       "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/rattlecage.png",
       "neutral_item_key": "rattlecage",
       "pro_name": null,
-      "team_name": null
+      "team_name": null,
+      "role_early": "carry"
     },
     {
       "player_slot": 2,
@@ -9751,7 +9753,8 @@
       "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/giant_maul.png",
       "neutral_item_key": "giant_maul",
       "pro_name": "Saberlight",
-      "team_name": "AVULUS"
+      "team_name": "AVULUS",
+      "role_early": "mid"
     },
     {
       "player_slot": 3,
@@ -12158,7 +12161,8 @@
       "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/pogo_stick.png",
       "neutral_item_key": "pogo_stick",
       "pro_name": "Hellscream",
-      "team_name": "Nemiga Gaming"
+      "team_name": "Nemiga Gaming",
+      "role_early": "support(5)"
     },
     {
       "player_slot": 4,
@@ -14637,7 +14641,8 @@
       "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/partisans_brand.png",
       "neutral_item_key": "partisans_brand",
       "pro_name": "Fly",
-      "team_name": "nouns"
+      "team_name": "nouns",
+      "role_early": "support(4)"
     },
     {
       "player_slot": 128,
@@ -17172,7 +17177,8 @@
       "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/metamorphic_mandible.png",
       "neutral_item_key": "metamorphic_mandible",
       "pro_name": "aik",
-      "team_name": "Nemiga Gaming"
+      "team_name": "Nemiga Gaming",
+      "role_early": "support(5)"
     },
     {
       "player_slot": 129,
@@ -19354,7 +19360,8 @@
       "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/idol_of_screeauk.png",
       "neutral_item_key": "idol_of_screeauk",
       "pro_name": "BOOM",
-      "team_name": "Team Secret"
+      "team_name": "Team Secret",
+      "role_early": "offlane"
     },
     {
       "player_slot": 130,
@@ -21502,7 +21509,8 @@
       "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/giant_maul.png",
       "neutral_item_key": "giant_maul",
       "pro_name": "Crystallis",
-      "team_name": "Tundra Esports"
+      "team_name": "Tundra Esports",
+      "role_early": "mid"
     },
     {
       "player_slot": 131,
@@ -23865,7 +23873,8 @@
       "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/rattlecage.png",
       "neutral_item_key": "rattlecage",
       "pro_name": null,
-      "team_name": null
+      "team_name": null,
+      "role_early": "support(4)"
     },
     {
       "player_slot": 132,
@@ -26066,7 +26075,8 @@
       "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/idol_of_screeauk.png",
       "neutral_item_key": "idol_of_screeauk",
       "pro_name": "lorenof",
-      "team_name": "AVULUS"
+      "team_name": "AVULUS",
+      "role_early": "carry"
     }
   ],
   "leagueid": 19448,

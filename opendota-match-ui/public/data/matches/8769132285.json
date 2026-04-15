@@ -3321,7 +3321,8 @@
       "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/spellslinger.png",
       "neutral_item_key": "spellslinger",
       "pro_name": "not me",
-      "team_name": "One Move"
+      "team_name": "One Move",
+      "role_early": "support(4)"
     },
     {
       "player_slot": 1,
@@ -5319,7 +5320,8 @@
       "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/serrated_shiv.png",
       "neutral_item_key": "serrated_shiv",
       "pro_name": "shigetsu",
-      "team_name": "Natus Vincere"
+      "team_name": "Natus Vincere",
+      "role_early": "carry"
     },
     {
       "player_slot": 2,
@@ -7187,7 +7189,8 @@
       "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/stormcrafter.png",
       "neutral_item_key": "stormcrafter",
       "pro_name": null,
-      "team_name": null
+      "team_name": null,
+      "role_early": "mid"
     },
     {
       "player_slot": 3,
@@ -9000,7 +9003,8 @@
       "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/serrated_shiv.png",
       "neutral_item_key": "serrated_shiv",
       "pro_name": null,
-      "team_name": null
+      "team_name": null,
+      "role_early": "offlane"
     },
     {
       "player_slot": 4,
@@ -10922,7 +10926,8 @@
       "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/pogo_stick.png",
       "neutral_item_key": "pogo_stick",
       "pro_name": "Xakoda",
-      "team_name": "One Move"
+      "team_name": "One Move",
+      "role_early": "support(5)"
     },
     {
       "player_slot": 128,
@@ -12732,7 +12737,8 @@
       "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/gunpowder_gauntlets.png",
       "neutral_item_key": "gunpowder_gauntlets",
       "pro_name": null,
-      "team_name": null
+      "team_name": null,
+      "role_early": "mid"
     },
     {
       "player_slot": 129,
@@ -14613,7 +14619,8 @@
       "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/unrelenting_eye.png",
       "neutral_item_key": "unrelenting_eye",
       "pro_name": "mellojul",
-      "team_name": "Natus Vincere"
+      "team_name": "Natus Vincere",
+      "role_early": "offlane"
     },
     {
       "player_slot": 130,
@@ -16437,7 +16444,8 @@
       "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/serrated_shiv.png",
       "neutral_item_key": "serrated_shiv",
       "pro_name": null,
-      "team_name": null
+      "team_name": null,
+      "role_early": "carry"
     },
     {
       "player_slot": 131,
@@ -18432,7 +18440,8 @@
       "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/psychic_headband.png",
       "neutral_item_key": "psychic_headband",
       "pro_name": null,
-      "team_name": null
+      "team_name": null,
+      "role_early": "support(4)"
     },
     {
       "player_slot": 132,
@@ -20305,7 +20314,8 @@
       "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/pogo_stick.png",
       "neutral_item_key": "pogo_stick",
       "pro_name": null,
-      "team_name": null
+      "team_name": null,
+      "role_early": "support(5)"
     }
   ],
   "leagueid": 18866,

@@ -7,7 +7,7 @@
       "raw_ability_upgrade_like_events": 257,
       "talent_tree_selected_layers_total": 24
     },
-    "uploaded_at": "2026-04-15T05:17:59Z"
+    "uploaded_at": "2026-04-15T08:01:56Z"
   },
   "match_id": 8771034383,
   "radiant_win": true,
@@ -586,6 +586,8 @@
       "hero_name_en": "Enchantress",
       "hero_name_cn": "魅惑魔女",
       "_dem_items_source": "combat_log_slot_last_purchase",
+      "lane_early": "bot",
+      "role_early": "support(5)",
       "neutral_item_key": "gunpowder_gauntlets",
       "talent_picks": [
         {
@@ -1680,6 +1682,8 @@
       "hero_name_en": "Dawnbreaker",
       "hero_name_cn": "破晓辰星",
       "_dem_items_source": "combat_log_slot_last_purchase",
+      "lane_early": "top",
+      "role_early": "offlane",
       "neutral_item_key": "serrated_shiv",
       "talent_picks": [
         {
@@ -2900,6 +2904,8 @@
       "hero_name_en": "Faceless Void",
       "hero_name_cn": "虚空假面",
       "_dem_items_source": "combat_log_slot_last_purchase",
+      "lane_early": "bot",
+      "role_early": "carry",
       "neutral_item_key": "enhancement_brawny",
       "talent_picks": [
         {
@@ -3992,6 +3998,8 @@
       "hero_name_en": "Rubick",
       "hero_name_cn": "拉比克",
       "_dem_items_source": "combat_log_slot_last_purchase",
+      "lane_early": "top",
+      "role_early": "support(4)",
       "neutral_item_key": "stormcrafter",
       "talent_picks": [
         {
@@ -5176,6 +5184,8 @@
       "hero_name_en": "Monkey King",
       "hero_name_cn": "齐天大圣",
       "_dem_items_source": "combat_log_slot_last_purchase",
+      "lane_early": "mid",
+      "role_early": "mid",
       "neutral_item_key": "gunpowder_gauntlets",
       "talent_picks": [
         {
@@ -6386,6 +6396,8 @@
       "hero_name_en": "Kez",
       "hero_name_cn": "凯",
       "_dem_items_source": "combat_log_slot_last_purchase",
+      "lane_early": "top",
+      "role_early": "carry",
       "neutral_item_key": "enhancement_nimble",
       "talent_picks": [
         {
@@ -7577,6 +7589,8 @@
       "hero_name_en": "Puck",
       "hero_name_cn": "帕克",
       "_dem_items_source": "combat_log_slot_last_purchase",
+      "lane_early": "mid",
+      "role_early": "mid",
       "neutral_item_key": "serrated_shiv",
       "talent_picks": [
         {
@@ -8740,6 +8754,8 @@
       "hero_name_en": "Tusk",
       "hero_name_cn": "巨牙海民",
       "_dem_items_source": "combat_log_slot_last_purchase",
+      "lane_early": "bot",
+      "role_early": "support(4)",
       "neutral_item_key": "enhancement_tough",
       "talent_picks": [
         {
@@ -9800,6 +9816,8 @@
       "hero_name_en": "Io",
       "hero_name_cn": "艾欧",
       "_dem_items_source": "combat_log_slot_last_purchase",
+      "lane_early": "bot",
+      "role_early": "offlane",
       "neutral_item_key": "enhancement_mystical",
       "talent_picks": [
         {
@@ -10955,6 +10973,8 @@
       "hero_name_en": "Hoodwink",
       "hero_name_cn": "森海飞霞",
       "_dem_items_source": "combat_log_slot_last_purchase",
+      "lane_early": "top",
+      "role_early": "support(5)",
       "neutral_item_key": "enhancement_greedy",
       "talent_picks": [
         {

@@ -3439,7 +3439,8 @@
       "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/dagger_of_ristul.png",
       "neutral_item_key": "dagger_of_ristul",
       "pro_name": "Kiritych~",
-      "team_name": "BetBoom Team"
+      "team_name": "BetBoom Team",
+      "role_early": "carry"
     },
     {
       "player_slot": 1,
@@ -5388,7 +5389,8 @@
       "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/gunpowder_gauntlets.png",
       "neutral_item_key": "gunpowder_gauntlets",
       "pro_name": "gpk~",
-      "team_name": "BetBoom Team"
+      "team_name": "BetBoom Team",
+      "role_early": "mid"
     },
     {
       "player_slot": 2,
@@ -7259,7 +7261,8 @@
       "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/cloak_of_flames.png",
       "neutral_item_key": "cloak_of_flames",
       "pro_name": "MieRo",
-      "team_name": "BetBoom Team"
+      "team_name": "BetBoom Team",
+      "role_early": "offlane"
     },
     {
       "player_slot": 3,
@@ -9331,7 +9334,8 @@
       "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/mana_draught.png",
       "neutral_item_key": "mana_draught",
       "pro_name": "Save-",
-      "team_name": "BetBoom Team"
+      "team_name": "BetBoom Team",
+      "role_early": "support(5)"
     },
     {
       "player_slot": 4,
@@ -11611,7 +11615,8 @@
       "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/partisans_brand.png",
       "neutral_item_key": "partisans_brand",
       "pro_name": "Kataomi`",
-      "team_name": "BetBoom Team"
+      "team_name": "BetBoom Team",
+      "role_early": "support(4)"
     },
     {
       "player_slot": 128,
@@ -13428,7 +13433,8 @@
       "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/serrated_shiv.png",
       "neutral_item_key": "serrated_shiv",
       "pro_name": null,
-      "team_name": null
+      "team_name": null,
+      "role_early": "mid"
     },
     {
       "player_slot": 129,
@@ -15334,7 +15340,8 @@
       "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/crippling_crossbow.png",
       "neutral_item_key": "crippling_crossbow",
       "pro_name": "sayuw",
-      "team_name": "9Pandas"
+      "team_name": "9Pandas",
+      "role_early": "support(4)"
     },
     {
       "player_slot": 130,
@@ -17406,7 +17413,8 @@
       "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/partisans_brand.png",
       "neutral_item_key": "partisans_brand",
       "pro_name": "RESPECT",
-      "team_name": "1w Team"
+      "team_name": "1w Team",
+      "role_early": "support(5)"
     },
     {
       "player_slot": 131,
@@ -19220,7 +19228,8 @@
       "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/serrated_shiv.png",
       "neutral_item_key": "serrated_shiv",
       "pro_name": "ssnovv1",
-      "team_name": "AVULUS"
+      "team_name": "AVULUS",
+      "role_early": "carry"
     },
     {
       "player_slot": 132,
@@ -21001,7 +21010,8 @@
       "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/jidi_pollen_bag.png",
       "neutral_item_key": "jidi_pollen_bag",
       "pro_name": null,
-      "team_name": null
+      "team_name": null,
+      "role_early": "offlane"
     }
   ],
   "leagueid": 19448,

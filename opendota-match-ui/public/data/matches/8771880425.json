@@ -7,7 +7,7 @@
       "raw_ability_upgrade_like_events": 217,
       "talent_tree_selected_layers_total": 36
     },
-    "uploaded_at": "2026-04-15T05:18:31Z"
+    "uploaded_at": "2026-04-15T08:02:33Z"
   },
   "match_id": 8771880425,
   "radiant_win": false,
@@ -586,6 +586,8 @@
       "hero_name_en": "Treant Protector",
       "hero_name_cn": "树精卫士",
       "_dem_items_source": "combat_log_slot_last_purchase",
+      "lane_early": "bot",
+      "role_early": "support(5)",
       "neutral_item_key": "enhancement_greedy",
       "talent_picks": [
         {
@@ -1682,6 +1684,8 @@
       "hero_name_en": "Legion Commander",
       "hero_name_cn": "军团指挥官",
       "_dem_items_source": "combat_log_slot_last_purchase",
+      "lane_early": "top",
+      "role_early": "offlane",
       "neutral_item_key": "enhancement_tough",
       "talent_picks": [
         {
@@ -2769,6 +2773,8 @@
       "hero_name_en": "Keeper of the Light",
       "hero_name_cn": "光之守卫",
       "_dem_items_source": "combat_log_slot_last_purchase",
+      "lane_early": "mid",
+      "role_early": "mid",
       "neutral_item_key": "enchanters_bauble",
       "talent_picks": [
         {
@@ -3925,6 +3931,8 @@
       "hero_name_en": "Phoenix",
       "hero_name_cn": "凤凰",
       "_dem_items_source": "combat_log_slot_last_purchase",
+      "lane_early": "top",
+      "role_early": "support(4)",
       "talent_picks": [
         {
           "level": 10,
@@ -5137,6 +5145,8 @@
       "hero_name_en": "Luna",
       "hero_name_cn": "露娜",
       "_dem_items_source": "combat_log_slot_last_purchase",
+      "lane_early": "bot",
+      "role_early": "carry",
       "neutral_item_key": "giant_maul",
       "talent_picks": [
         {
@@ -6288,6 +6298,8 @@
       "hero_name_en": "Primal Beast",
       "hero_name_cn": "獸",
       "_dem_items_source": "combat_log_slot_last_purchase",
+      "lane_early": "bot",
+      "role_early": "offlane",
       "neutral_item_key": "enhancement_tough",
       "talent_picks": [
         {
@@ -7492,6 +7504,8 @@
       "hero_name_en": "Void Spirit",
       "hero_name_cn": "虚无之灵",
       "_dem_items_source": "combat_log_slot_last_purchase",
+      "lane_early": "mid",
+      "role_early": "mid",
       "talent_picks": [
         {
           "level": 10,
@@ -8613,6 +8627,8 @@
       "hero_name_en": "Lich",
       "hero_name_cn": "巫妖",
       "_dem_items_source": "combat_log_slot_last_purchase",
+      "lane_early": "top",
+      "role_early": "support(5)",
       "talent_picks": [
         {
           "level": 10,
@@ -9718,6 +9734,8 @@
       "hero_name_en": "Batrider",
       "hero_name_cn": "蝙蝠骑士",
       "_dem_items_source": "combat_log_slot_last_purchase",
+      "lane_early": "bot",
+      "role_early": "support(4)",
       "talent_picks": [
         {
           "level": 10,
@@ -10806,6 +10824,8 @@
       "hero_name_en": "Terrorblade",
       "hero_name_cn": "恐怖利刃",
       "_dem_items_source": "combat_log_slot_last_purchase",
+      "lane_early": "top",
+      "role_early": "carry",
       "neutral_item_key": "dandelion_amulet",
       "talent_picks": [
         {

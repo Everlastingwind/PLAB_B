@@ -6427,7 +6427,8 @@
       "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/partisans_brand.png",
       "neutral_item_key": "partisans_brand",
       "pro_name": null,
-      "team_name": null
+      "team_name": null,
+      "role_early": "support(4)"
     },
     {
       "player_slot": 1,
@@ -8713,7 +8714,8 @@
       "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/essence_ring.png",
       "neutral_item_key": "essence_ring",
       "pro_name": null,
-      "team_name": null
+      "team_name": null,
+      "role_early": "support(5)"
     },
     {
       "player_slot": 2,
@@ -10677,7 +10679,8 @@
       "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/jidi_pollen_bag.png",
       "neutral_item_key": "jidi_pollen_bag",
       "pro_name": null,
-      "team_name": null
+      "team_name": null,
+      "role_early": "mid"
     },
     {
       "player_slot": 3,
@@ -12576,7 +12579,8 @@
       "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/jidi_pollen_bag.png",
       "neutral_item_key": "jidi_pollen_bag",
       "pro_name": null,
-      "team_name": null
+      "team_name": null,
+      "role_early": "carry"
     },
     {
       "player_slot": 4,
@@ -14439,7 +14443,8 @@
       "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/essence_ring.png",
       "neutral_item_key": "essence_ring",
       "pro_name": null,
-      "team_name": null
+      "team_name": null,
+      "role_early": "offlane"
     },
     {
       "player_slot": 128,
@@ -16429,7 +16434,8 @@
       "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/flayers_bota.png",
       "neutral_item_key": "flayers_bota",
       "pro_name": null,
-      "team_name": null
+      "team_name": null,
+      "role_early": "mid"
     },
     {
       "player_slot": 129,
@@ -18509,7 +18515,8 @@
       "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/stormcrafter.png",
       "neutral_item_key": "stormcrafter",
       "pro_name": null,
-      "team_name": null
+      "team_name": null,
+      "role_early": "support(4)"
     },
     {
       "player_slot": 130,
@@ -20594,7 +20601,8 @@
       "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/prophets_pendulum.png",
       "neutral_item_key": "prophets_pendulum",
       "pro_name": null,
-      "team_name": null
+      "team_name": null,
+      "role_early": "offlane"
     },
     {
       "player_slot": 131,
@@ -22665,7 +22673,8 @@
       "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/flayers_bota.png",
       "neutral_item_key": "flayers_bota",
       "pro_name": null,
-      "team_name": null
+      "team_name": null,
+      "role_early": "carry"
     },
     {
       "player_slot": 132,
@@ -24797,7 +24806,8 @@
       "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/spellslinger.png",
       "neutral_item_key": "spellslinger",
       "pro_name": null,
-      "team_name": null
+      "team_name": null,
+      "role_early": "support(5)"
     }
   ],
   "leagueid": 18867,

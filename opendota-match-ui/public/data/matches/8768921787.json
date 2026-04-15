@@ -1121,7 +1121,8 @@
       "item_3": 156,
       "item_4": 116,
       "item_5": 108,
-      "item_neutral": 0
+      "item_neutral": 0,
+      "role_early": "carry"
     },
     {
       "account_id": 202464276,
@@ -2253,7 +2254,8 @@
       "item_3": 102,
       "item_4": 36,
       "item_5": 29,
-      "item_neutral": 0
+      "item_neutral": 0,
+      "role_early": "support(4)"
     },
     {
       "account_id": 412413765,
@@ -3480,7 +3482,8 @@
       "item_3": 168,
       "item_4": 36,
       "item_5": 50,
-      "item_neutral": 0
+      "item_neutral": 0,
+      "role_early": "offlane"
     },
     {
       "account_id": 170809075,
@@ -4691,7 +4694,8 @@
       "item_3": 116,
       "item_4": 36,
       "item_5": 63,
-      "item_neutral": 0
+      "item_neutral": 0,
+      "role_early": "mid"
     },
     {
       "account_id": 968545762,
@@ -5743,7 +5747,8 @@
       "item_3": 50,
       "item_4": 0,
       "item_5": 0,
-      "item_neutral": 0
+      "item_neutral": 0,
+      "role_early": "support(5)"
     },
     {
       "account_id": 919735867,
@@ -6919,7 +6924,8 @@
       "item_3": 50,
       "item_4": 1,
       "item_5": 0,
-      "item_neutral": 0
+      "item_neutral": 0,
+      "role_early": "support(5)"
     },
     {
       "account_id": 1134626011,
@@ -8130,7 +8136,8 @@
       "item_3": 267,
       "item_4": 36,
       "item_5": 214,
-      "item_neutral": 0
+      "item_neutral": 0,
+      "role_early": "support(4)"
     },
     {
       "account_id": 86738694,
@@ -9252,7 +9259,8 @@
       "item_3": 116,
       "item_4": 158,
       "item_5": 63,
-      "item_neutral": 0
+      "item_neutral": 0,
+      "role_early": "carry"
     },
     {
       "account_id": 50580004,
@@ -10339,7 +10347,8 @@
       "item_3": 1,
       "item_4": 267,
       "item_5": 214,
-      "item_neutral": 0
+      "item_neutral": 0,
+      "role_early": "offlane"
     },
     {
       "account_id": 399804216,
@@ -11515,7 +11524,8 @@
       "item_3": 63,
       "item_4": 174,
       "item_5": 36,
-      "item_neutral": 0
+      "item_neutral": 0,
+      "role_early": "mid"
     }
   ]
 }

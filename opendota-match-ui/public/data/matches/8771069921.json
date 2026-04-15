@@ -7,7 +7,7 @@
       "raw_ability_upgrade_like_events": 200,
       "talent_tree_selected_layers_total": 18
     },
-    "uploaded_at": "2026-04-15T05:18:04Z"
+    "uploaded_at": "2026-04-15T08:02:01Z"
   },
   "match_id": 8771069921,
   "radiant_win": false,
@@ -583,6 +583,8 @@
       "hero_name_en": "Lone Druid",
       "hero_name_cn": "德鲁伊",
       "_dem_items_source": "combat_log_slot_last_purchase",
+      "lane_early": "mid",
+      "role_early": "mid",
       "neutral_item_key": "enhancement_nimble",
       "talent_picks": [
         {
@@ -1588,6 +1590,8 @@
       "hero_name_en": "Ring Master",
       "hero_name_cn": "百戏大王",
       "_dem_items_source": "combat_log_slot_last_purchase",
+      "lane_early": "top",
+      "role_early": "support(4)",
       "neutral_item_key": "enhancement_greedy",
       "talent_picks": [
         {
@@ -2455,6 +2459,8 @@
       "hero_name_en": "Lifestealer",
       "hero_name_cn": "噬魂鬼",
       "_dem_items_source": "combat_log_slot_last_purchase",
+      "lane_early": "bot",
+      "role_early": "carry",
       "neutral_item_key": "enhancement_tough",
       "talent_picks": [
         {
@@ -3525,6 +3531,8 @@
       "hero_name_en": "Void Spirit",
       "hero_name_cn": "虚无之灵",
       "_dem_items_source": "combat_log_slot_last_purchase",
+      "lane_early": "top",
+      "role_early": "offlane",
       "neutral_item_key": "enhancement_mystical",
       "talent_picks": [
         {
@@ -4554,6 +4562,8 @@
       "hero_name_en": "Grimstroke",
       "hero_name_cn": "天涯墨客",
       "_dem_items_source": "combat_log_slot_last_purchase",
+      "lane_early": "bot",
+      "role_early": "support(5)",
       "neutral_item_key": "searing_signet",
       "talent_picks": [
         {
@@ -5516,6 +5526,8 @@
       "hero_name_en": "Primal Beast",
       "hero_name_cn": "獸",
       "_dem_items_source": "combat_log_slot_last_purchase",
+      "lane_early": "bot",
+      "role_early": "offlane",
       "neutral_item_key": "enhancement_brawny",
       "talent_picks": [
         {
@@ -6624,6 +6636,8 @@
       "hero_name_en": "Monkey King",
       "hero_name_cn": "齐天大圣",
       "_dem_items_source": "combat_log_slot_last_purchase",
+      "lane_early": "mid",
+      "role_early": "mid",
       "neutral_item_key": "enhancement_alert",
       "talent_picks": [
         {
@@ -7834,6 +7848,8 @@
       "hero_name_en": "Rubick",
       "hero_name_cn": "拉比克",
       "_dem_items_source": "combat_log_slot_last_purchase",
+      "lane_early": "top",
+      "role_early": "support(5)",
       "neutral_item_key": "medallion_of_courage",
       "talent_picks": [
         {
@@ -9014,6 +9030,8 @@
       "hero_name_en": "Luna",
       "hero_name_cn": "露娜",
       "_dem_items_source": "combat_log_slot_last_purchase",
+      "lane_early": "top",
+      "role_early": "carry",
       "neutral_item_key": "serrated_shiv",
       "talent_picks": [
         {
@@ -10104,6 +10122,8 @@
       "hero_name_en": "Io",
       "hero_name_cn": "艾欧",
       "_dem_items_source": "combat_log_slot_last_purchase",
+      "lane_early": "bot",
+      "role_early": "support(4)",
       "neutral_item_key": "seeds_of_serenity",
       "talent_picks": [
         {

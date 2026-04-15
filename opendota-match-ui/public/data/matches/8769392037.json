@@ -2881,7 +2881,8 @@
       "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/poor_mans_shield.png",
       "neutral_item_key": "poor_mans_shield",
       "pro_name": null,
-      "team_name": null
+      "team_name": null,
+      "role_early": "carry"
     },
     {
       "player_slot": 1,
@@ -4556,7 +4557,8 @@
       "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/mana_draught.png",
       "neutral_item_key": "mana_draught",
       "pro_name": null,
-      "team_name": null
+      "team_name": null,
+      "role_early": "mid"
     },
     {
       "player_slot": 2,
@@ -6154,7 +6156,8 @@
       "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/medallion_of_courage.png",
       "neutral_item_key": "medallion_of_courage",
       "pro_name": "YiSuS",
-      "team_name": "Chandogs"
+      "team_name": "Chandogs",
+      "role_early": "offlane"
     },
     {
       "player_slot": 3,
@@ -7891,7 +7894,8 @@
       "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/pogo_stick.png",
       "neutral_item_key": "pogo_stick",
       "pro_name": "CoYoTão",
-      "team_name": "Avalanche eSports"
+      "team_name": "Avalanche eSports",
+      "role_early": "support(5)"
     },
     {
       "player_slot": 4,
@@ -9602,7 +9606,8 @@
       "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/duelist_gloves.png",
       "neutral_item_key": "duelist_gloves",
       "pro_name": null,
-      "team_name": null
+      "team_name": null,
+      "role_early": "support(4)"
     },
     {
       "player_slot": 128,
@@ -11327,7 +11332,8 @@
       "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/seeds_of_serenity.png",
       "neutral_item_key": "seeds_of_serenity",
       "pro_name": "Yuma",
-      "team_name": "HEROIC"
+      "team_name": "HEROIC",
+      "role_early": "offlane"
     },
     {
       "player_slot": 129,
@@ -13167,7 +13173,8 @@
       "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/essence_ring.png",
       "neutral_item_key": "essence_ring",
       "pro_name": "osito",
-      "team_name": "Hokori"
+      "team_name": "Hokori",
+      "role_early": "carry"
     },
     {
       "player_slot": 130,
@@ -14886,7 +14893,8 @@
       "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/mana_draught.png",
       "neutral_item_key": "mana_draught",
       "pro_name": "Wisper",
-      "team_name": "HEROIC"
+      "team_name": "HEROIC",
+      "role_early": "mid"
     },
     {
       "player_slot": 131,
@@ -16664,7 +16672,8 @@
       "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/medallion_of_courage.png",
       "neutral_item_key": "medallion_of_courage",
       "pro_name": "Thiolicor",
-      "team_name": "Shopify Rebellion"
+      "team_name": "Shopify Rebellion",
+      "role_early": "support(5)"
     },
     {
       "player_slot": 132,
@@ -18454,7 +18463,8 @@
       "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/seeds_of_serenity.png",
       "neutral_item_key": "seeds_of_serenity",
       "pro_name": "KingJungles",
-      "team_name": "HEROIC"
+      "team_name": "HEROIC",
+      "role_early": "support(4)"
     }
   ],
   "leagueid": 19448,

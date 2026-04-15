@@ -107,6 +107,20 @@ export interface SlimPlayer {
   hero_damage?: number;
   tower_damage?: number;
   hero_healing?: number;
+  /** 对线期（前 5 分钟）分路：top/mid/bot */
+  lane_early?: "top" | "mid" | "bot" | string;
+  /** 对线期推断位置：carry/mid/offlane/support(4)/support(5) */
+  role_early?: "carry" | "mid" | "offlane" | "support(4)" | "support(5)" | string;
+  /** 出门装：开局前（默认前 30 秒）购买的物品聚合 */
+  starting_items?: Array<{
+    item_id?: number;
+    item_key?: string | null;
+    item_name_en?: string;
+    item_name_cn?: string;
+    image_url?: string;
+    count?: number;
+    first_purchase_time?: number;
+  }>;
   net_worth?: number;
   /** OpenDota API：是否持有 A 杖效果（0/1 或布尔） */
   aghanims_scepter?: number | boolean;

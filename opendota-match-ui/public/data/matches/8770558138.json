@@ -3429,7 +3429,8 @@
       "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/giant_maul.png",
       "neutral_item_key": "giant_maul",
       "pro_name": "Lumière",
-      "team_name": "Hokori"
+      "team_name": "Hokori",
+      "role_early": "carry"
     },
     {
       "player_slot": 1,
@@ -5790,7 +5791,8 @@
       "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/rattlecage.png",
       "neutral_item_key": "rattlecage",
       "pro_name": "Gardιck 鬼",
-      "team_name": "Infinity"
+      "team_name": "Infinity",
+      "role_early": "support(5)"
     },
     {
       "player_slot": 2,
@@ -7834,7 +7836,8 @@
       "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/rattlecage.png",
       "neutral_item_key": "rattlecage",
       "pro_name": "Vitaly 誇り",
-      "team_name": "beastcoast"
+      "team_name": "beastcoast",
+      "role_early": "offlane"
     },
     {
       "player_slot": 3,
@@ -9953,7 +9956,8 @@
       "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/enchanters_bauble.png",
       "neutral_item_key": "enchanters_bauble",
       "pro_name": "Genek",
-      "team_name": "Infinity"
+      "team_name": "Infinity",
+      "role_early": "support(4)"
     },
     {
       "player_slot": 4,
@@ -12030,7 +12034,8 @@
       "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/rattlecage.png",
       "neutral_item_key": "rattlecage",
       "pro_name": "Costabile",
-      "team_name": "Vivo Keyd Stars"
+      "team_name": "Vivo Keyd Stars",
+      "role_early": "mid"
     },
     {
       "player_slot": 128,
@@ -14389,7 +14394,8 @@
       "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/idol_of_screeauk.png",
       "neutral_item_key": "idol_of_screeauk",
       "pro_name": "Hanzama <",
-      "team_name": "Gods of Hell"
+      "team_name": "Gods of Hell",
+      "role_early": "support(4)"
     },
     {
       "player_slot": 129,
@@ -16441,7 +16447,8 @@
       "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/rattlecage.png",
       "neutral_item_key": "rattlecage",
       "pro_name": "SHEOL",
-      "team_name": "Qhali"
+      "team_name": "Qhali",
+      "role_early": "mid"
     },
     {
       "player_slot": 130,
@@ -18428,7 +18435,8 @@
       "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/rattlecage.png",
       "neutral_item_key": "rattlecage",
       "pro_name": null,
-      "team_name": null
+      "team_name": null,
+      "role_early": "offlane"
     },
     {
       "player_slot": 131,
@@ -20370,7 +20378,8 @@
       "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/enchanters_bauble.png",
       "neutral_item_key": "enchanters_bauble",
       "pro_name": null,
-      "team_name": null
+      "team_name": null,
+      "role_early": "support(5)"
     },
     {
       "player_slot": 132,
@@ -22360,7 +22369,8 @@
       "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/rattlecage.png",
       "neutral_item_key": "rattlecage",
       "pro_name": "Zasa",
-      "team_name": "NoLimitsGaming"
+      "team_name": "NoLimitsGaming",
+      "role_early": "carry"
     }
   ],
   "leagueid": 19448,

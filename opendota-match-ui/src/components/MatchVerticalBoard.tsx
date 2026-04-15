@@ -42,6 +42,7 @@ function GlobalColumnHeader() {
       <div className={cn(cell, "text-left")}>
         <span>英雄 / 玩家</span>
       </div>
+      <div className={cn(cell, "text-center")}>出门装</div>
       <div className={cn(cell, "text-center")}>
         <div>等级</div>
         <div className={cn(kdaHint, "mt-0.5")}>K / D / A</div>
@@ -138,7 +139,7 @@ export function MatchVerticalBoard({
         ))}
 
         <div
-          className="mt-6 border-t border-slate-300/35 pt-1 dark:border-slate-600/40"
+          className="mt-3 border-t border-slate-300/35 pt-0.5 dark:border-slate-600/40"
           aria-hidden
         />
 

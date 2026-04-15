@@ -4415,7 +4415,8 @@
       "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/possessed_mask.png",
       "neutral_item_key": "possessed_mask",
       "pro_name": null,
-      "team_name": null
+      "team_name": null,
+      "role_early": "carry"
     },
     {
       "player_slot": 1,
@@ -6333,7 +6334,8 @@
       "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/psychic_headband.png",
       "neutral_item_key": "psychic_headband",
       "pro_name": null,
-      "team_name": null
+      "team_name": null,
+      "role_early": "support(4)"
     },
     {
       "player_slot": 2,
@@ -8205,7 +8207,8 @@
       "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/stormcrafter.png",
       "neutral_item_key": "stormcrafter",
       "pro_name": null,
-      "team_name": null
+      "team_name": null,
+      "role_early": "offlane"
     },
     {
       "player_slot": 3,
@@ -10102,7 +10105,8 @@
       "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/pogo_stick.png",
       "neutral_item_key": "pogo_stick",
       "pro_name": "ArzenT",
-      "team_name": "Qhali"
+      "team_name": "Qhali",
+      "role_early": "mid"
     },
     {
       "player_slot": 4,
@@ -12484,7 +12488,8 @@
       "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/essence_ring.png",
       "neutral_item_key": "essence_ring",
       "pro_name": "Artemis",
-      "team_name": "EARTH GAMING"
+      "team_name": "EARTH GAMING",
+      "role_early": "support(5)"
     },
     {
       "player_slot": 128,
@@ -14736,7 +14741,8 @@
       "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/stormcrafter.png",
       "neutral_item_key": "stormcrafter",
       "pro_name": "Yanbura",
-      "team_name": "x5 Gaming"
+      "team_name": "x5 Gaming",
+      "role_early": "support(5)"
     },
     {
       "player_slot": 129,
@@ -16846,7 +16852,8 @@
       "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/idol_of_screeauk.png",
       "neutral_item_key": "idol_of_screeauk",
       "pro_name": null,
-      "team_name": null
+      "team_name": null,
+      "role_early": "support(4)"
     },
     {
       "player_slot": 130,
@@ -18839,7 +18846,8 @@
       "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/idol_of_screeauk.png",
       "neutral_item_key": "idol_of_screeauk",
       "pro_name": null,
-      "team_name": null
+      "team_name": null,
+      "role_early": "mid"
     },
     {
       "player_slot": 131,
@@ -20941,7 +20949,8 @@
       "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/giant_maul.png",
       "neutral_item_key": "giant_maul",
       "pro_name": "mini",
-      "team_name": "x5 Gaming"
+      "team_name": "x5 Gaming",
+      "role_early": "carry"
     },
     {
       "player_slot": 132,
@@ -22842,7 +22851,8 @@
       "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/medallion_of_courage.png",
       "neutral_item_key": "medallion_of_courage",
       "pro_name": null,
-      "team_name": null
+      "team_name": null,
+      "role_early": "offlane"
     }
   ],
   "leagueid": 19503,

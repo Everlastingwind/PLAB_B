@@ -7,7 +7,7 @@
       "raw_ability_upgrade_like_events": 174,
       "talent_tree_selected_layers_total": 19
     },
-    "uploaded_at": "2026-04-15T05:18:20Z"
+    "uploaded_at": "2026-04-15T08:02:19Z"
   },
   "match_id": 8771297796,
   "radiant_win": true,
@@ -586,6 +586,8 @@
       "hero_name_en": "Faceless Void",
       "hero_name_cn": "虚空假面",
       "_dem_items_source": "combat_log_slot_last_purchase",
+      "lane_early": "bot",
+      "role_early": "carry",
       "neutral_item_key": "serrated_shiv",
       "talent_picks": [
         {
@@ -1673,6 +1675,8 @@
       "hero_name_en": "Batrider",
       "hero_name_cn": "蝙蝠骑士",
       "_dem_items_source": "combat_log_slot_last_purchase",
+      "lane_early": "top",
+      "role_early": "offlane",
       "neutral_item_key": "unrelenting_eye",
       "talent_picks": [
         {
@@ -2760,6 +2764,8 @@
       "hero_name_en": "Void Spirit",
       "hero_name_cn": "虚无之灵",
       "_dem_items_source": "combat_log_slot_last_purchase",
+      "lane_early": "mid",
+      "role_early": "mid",
       "neutral_item_key": "partisans_brand",
       "talent_picks": [
         {
@@ -3851,6 +3857,8 @@
       "hero_name_en": "Techies",
       "hero_name_cn": "工程师",
       "_dem_items_source": "combat_log_slot_last_purchase",
+      "lane_early": "bot",
+      "role_early": "support(5)",
       "neutral_item_key": "stormcrafter",
       "talent_picks": [
         {
@@ -4994,6 +5002,8 @@
       "hero_name_en": "Tusk",
       "hero_name_cn": "巨牙海民",
       "_dem_items_source": "combat_log_slot_last_purchase",
+      "lane_early": "top",
+      "role_early": "support(4)",
       "neutral_item_key": "enhancement_brawny",
       "talent_picks": [
         {
@@ -6099,6 +6109,8 @@
       "hero_name_en": "Grimstroke",
       "hero_name_cn": "天涯墨客",
       "_dem_items_source": "combat_log_slot_last_purchase",
+      "lane_early": "bot",
+      "role_early": "support(4)",
       "neutral_item_key": "enhancement_greedy",
       "talent_picks": [
         {
@@ -7057,6 +7069,8 @@
       "hero_name_en": "Centaur Warrunner",
       "hero_name_cn": "半人马战行者",
       "_dem_items_source": "combat_log_slot_last_purchase",
+      "lane_early": "bot",
+      "role_early": "offlane",
       "neutral_item_key": "enhancement_quickened",
       "talent_picks": [
         {
@@ -8032,6 +8046,8 @@
       "hero_name_en": "Venomancer",
       "hero_name_cn": "剧毒术士",
       "_dem_items_source": "combat_log_slot_last_purchase",
+      "lane_early": "top",
+      "role_early": "support(5)",
       "neutral_item_key": "enhancement_greedy",
       "talent_picks": [
         {
@@ -8979,6 +8995,8 @@
       "hero_name_en": "Invoker",
       "hero_name_cn": "祈求者",
       "_dem_items_source": "combat_log_slot_last_purchase",
+      "lane_early": "mid",
+      "role_early": "mid",
       "neutral_item_key": "enhancement_greedy",
       "talent_picks": [
         {
@@ -10126,6 +10144,8 @@
       "hero_name_en": "Beastmaster",
       "hero_name_cn": "兽王",
       "_dem_items_source": "combat_log_slot_last_purchase",
+      "lane_early": "top",
+      "role_early": "carry",
       "neutral_item_key": "pogo_stick",
       "talent_picks": [
         {

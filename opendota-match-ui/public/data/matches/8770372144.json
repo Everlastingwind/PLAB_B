@@ -2684,7 +2684,8 @@
       "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/essence_ring.png",
       "neutral_item_key": "essence_ring",
       "pro_name": "Michael~",
-      "team_name": "Infinity"
+      "team_name": "Infinity",
+      "role_early": "support(5)"
     },
     {
       "player_slot": 1,
@@ -4484,7 +4485,8 @@
       "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/partisans_brand.png",
       "neutral_item_key": "partisans_brand",
       "pro_name": "wonderk1d^^<",
-      "team_name": "Hokori"
+      "team_name": "Hokori",
+      "role_early": "mid"
     },
     {
       "player_slot": 2,
@@ -6248,7 +6250,8 @@
       "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/unrelenting_eye.png",
       "neutral_item_key": "unrelenting_eye",
       "pro_name": "Oscar",
-      "team_name": "NoPing Esports"
+      "team_name": "NoPing Esports",
+      "role_early": "offlane"
     },
     {
       "player_slot": 3,
@@ -8043,7 +8046,8 @@
       "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/cloak_of_flames.png",
       "neutral_item_key": "cloak_of_flames",
       "pro_name": "k1 hector tqmM",
-      "team_name": "HEROIC"
+      "team_name": "HEROIC",
+      "role_early": "carry"
     },
     {
       "player_slot": 4,
@@ -10036,7 +10040,8 @@
       "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/cloak_of_flames.png",
       "neutral_item_key": "cloak_of_flames",
       "pro_name": "Panda",
-      "team_name": "BOOM Esports"
+      "team_name": "BOOM Esports",
+      "role_early": "support(4)"
     },
     {
       "player_slot": 128,
@@ -11947,7 +11952,8 @@
       "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/cloak_of_flames.png",
       "neutral_item_key": "cloak_of_flames",
       "pro_name": "Ghost",
-      "team_name": "GamerLegion"
+      "team_name": "GamerLegion",
+      "role_early": "offlane"
     },
     {
       "player_slot": 129,
@@ -13989,7 +13995,8 @@
       "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/psychic_headband.png",
       "neutral_item_key": "psychic_headband",
       "pro_name": "Bignum",
-      "team_name": "GamerLegion"
+      "team_name": "GamerLegion",
+      "role_early": "support(4)"
     },
     {
       "player_slot": 130,
@@ -15886,7 +15893,8 @@
       "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/cloak_of_flames.png",
       "neutral_item_key": "cloak_of_flames",
       "pro_name": "RCY",
-      "team_name": "GamerLegion"
+      "team_name": "GamerLegion",
+      "role_early": "mid"
     },
     {
       "player_slot": 131,
@@ -17924,7 +17932,8 @@
       "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/essence_ring.png",
       "neutral_item_key": "essence_ring",
       "pro_name": "Speeed",
-      "team_name": "GamerLegion"
+      "team_name": "GamerLegion",
+      "role_early": "support(5)"
     },
     {
       "player_slot": 132,
@@ -19749,7 +19758,8 @@
       "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/cloak_of_flames.png",
       "neutral_item_key": "cloak_of_flames",
       "pro_name": "Fayde",
-      "team_name": "GamerLegion"
+      "team_name": "GamerLegion",
+      "role_early": "carry"
     }
   ],
   "leagueid": 19448,

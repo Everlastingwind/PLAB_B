@@ -2395,7 +2395,8 @@
       "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/chipped_vest.png",
       "neutral_item_key": "chipped_vest",
       "pro_name": "shy",
-      "team_name": "BIZ GAMING"
+      "team_name": "BIZ GAMING",
+      "role_early": "carry"
     },
     {
       "player_slot": 1,
@@ -3794,7 +3795,8 @@
       "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/polliwog_charm.png",
       "neutral_item_key": "polliwog_charm",
       "pro_name": null,
-      "team_name": null
+      "team_name": null,
+      "role_early": "mid"
     },
     {
       "player_slot": 2,
@@ -5066,7 +5068,8 @@
       "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/kobold_cup.png",
       "neutral_item_key": "kobold_cup",
       "pro_name": null,
-      "team_name": null
+      "team_name": null,
+      "role_early": "support(5)"
     },
     {
       "player_slot": 3,
@@ -6313,7 +6316,8 @@
       "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/polliwog_charm.png",
       "neutral_item_key": "polliwog_charm",
       "pro_name": null,
-      "team_name": null
+      "team_name": null,
+      "role_early": "offlane"
     },
     {
       "player_slot": 4,
@@ -7639,7 +7643,8 @@
       "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/kobold_cup.png",
       "neutral_item_key": "kobold_cup",
       "pro_name": null,
-      "team_name": null
+      "team_name": null,
+      "role_early": "support(4)"
     },
     {
       "player_slot": 128,
@@ -8981,7 +8986,8 @@
       "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/foragers_kit.png",
       "neutral_item_key": "foragers_kit",
       "pro_name": "Yor",
-      "team_name": "Qhali"
+      "team_name": "Qhali",
+      "role_early": "support(5)"
     },
     {
       "player_slot": 129,
@@ -10359,7 +10365,8 @@
       "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/dagger_of_ristul.png",
       "neutral_item_key": "dagger_of_ristul",
       "pro_name": "pamplona",
-      "team_name": "Lava Esports"
+      "team_name": "Lava Esports",
+      "role_early": "support(4)"
     },
     {
       "player_slot": 130,
@@ -11754,7 +11761,8 @@
       "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/dagger_of_ristul.png",
       "neutral_item_key": "dagger_of_ristul",
       "pro_name": null,
-      "team_name": null
+      "team_name": null,
+      "role_early": "carry"
     },
     {
       "player_slot": 131,
@@ -13037,7 +13045,8 @@
       "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/possessed_mask.png",
       "neutral_item_key": "possessed_mask",
       "pro_name": "Hermit",
-      "team_name": "South Team"
+      "team_name": "South Team",
+      "role_early": "mid"
     },
     {
       "player_slot": 132,
@@ -14377,7 +14386,8 @@
       "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/dormant_curio.png",
       "neutral_item_key": "dormant_curio",
       "pro_name": "Faker",
-      "team_name": "Lava Esports"
+      "team_name": "Lava Esports",
+      "role_early": "offlane"
     }
   ],
   "leagueid": 19503,

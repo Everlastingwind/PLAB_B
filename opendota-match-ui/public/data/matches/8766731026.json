@@ -1046,7 +1046,8 @@
       "item_3": 214,
       "item_4": 0,
       "item_5": 0,
-      "item_neutral": 0
+      "item_neutral": 0,
+      "role_early": "support(4)"
     },
     {
       "account_id": 129204173,
@@ -2098,7 +2099,8 @@
       "item_3": 36,
       "item_4": 214,
       "item_5": 0,
-      "item_neutral": 0
+      "item_neutral": 0,
+      "role_early": "support(5)"
     },
     {
       "account_id": 88271237,
@@ -3194,7 +3196,8 @@
       "item_3": 100,
       "item_4": 92,
       "item_5": 50,
-      "item_neutral": 0
+      "item_neutral": 0,
+      "role_early": "mid"
     },
     {
       "account_id": 283494184,
@@ -4301,7 +4304,8 @@
       "item_3": 36,
       "item_4": 598,
       "item_5": 63,
-      "item_neutral": 0
+      "item_neutral": 0,
+      "role_early": "carry"
     },
     {
       "account_id": 1011445406,
@@ -5448,7 +5452,8 @@
       "item_3": 50,
       "item_4": 267,
       "item_5": 36,
-      "item_neutral": 0
+      "item_neutral": 0,
+      "role_early": "offlane"
     },
     {
       "account_id": 241884166,
@@ -6500,7 +6505,8 @@
       "item_3": 50,
       "item_4": 0,
       "item_5": 0,
-      "item_neutral": 0
+      "item_neutral": 0,
+      "role_early": "support(4)"
     },
     {
       "account_id": 275826428,
@@ -7711,7 +7717,8 @@
       "item_3": 609,
       "item_4": 108,
       "item_5": 63,
-      "item_neutral": 0
+      "item_neutral": 0,
+      "role_early": "offlane"
     },
     {
       "account_id": 120825388,
@@ -8798,7 +8805,8 @@
       "item_3": 116,
       "item_4": 1,
       "item_5": 29,
-      "item_neutral": 0
+      "item_neutral": 0,
+      "role_early": "mid"
     },
     {
       "account_id": 97658618,
@@ -9994,7 +10002,8 @@
       "item_3": 147,
       "item_4": 81,
       "item_5": 63,
-      "item_neutral": 0
+      "item_neutral": 0,
+      "role_early": "carry"
     },
     {
       "account_id": 108958769,
@@ -11194,7 +11203,8 @@
       "item_3": 180,
       "item_4": 36,
       "item_5": 0,
-      "item_neutral": 0
+      "item_neutral": 0,
+      "role_early": "support(5)"
     }
   ]
 }

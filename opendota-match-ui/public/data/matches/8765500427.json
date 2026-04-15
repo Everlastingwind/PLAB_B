@@ -1101,7 +1101,8 @@
       "item_3": 609,
       "item_4": 63,
       "item_5": 36,
-      "item_neutral": 0
+      "item_neutral": 0,
+      "role_early": "offlane"
     },
     {
       "account_id": 892869852,
@@ -2305,7 +2306,8 @@
       "item_3": 65,
       "item_4": 185,
       "item_5": 50,
-      "item_neutral": 0
+      "item_neutral": 0,
+      "role_early": "mid"
     },
     {
       "account_id": 126127817,
@@ -3337,7 +3339,8 @@
       "item_3": 0,
       "item_4": 0,
       "item_5": 0,
-      "item_neutral": 0
+      "item_neutral": 0,
+      "role_early": "support(4)"
     },
     {
       "account_id": 111030315,
@@ -4398,7 +4401,8 @@
       "item_3": 11,
       "item_4": 214,
       "item_5": 36,
-      "item_neutral": 0
+      "item_neutral": 0,
+      "role_early": "support(5)"
     },
     {
       "account_id": 177203952,
@@ -5485,7 +5489,8 @@
       "item_3": 263,
       "item_4": 172,
       "item_5": 63,
-      "item_neutral": 0
+      "item_neutral": 0,
+      "role_early": "carry"
     },
     {
       "account_id": 93618577,
@@ -6597,7 +6602,8 @@
       "item_3": 77,
       "item_4": 63,
       "item_5": 36,
-      "item_neutral": 0
+      "item_neutral": 0,
+      "role_early": "support(4)"
     },
     {
       "account_id": 1515184013,
@@ -7649,7 +7655,8 @@
       "item_3": 63,
       "item_4": 36,
       "item_5": 0,
-      "item_neutral": 0
+      "item_neutral": 0,
+      "role_early": "carry"
     },
     {
       "account_id": 119582553,
@@ -7682,12 +7689,12 @@
         },
         {
           "slot": 1,
-          "item_id": 104,
-          "item_key": "dagon",
-          "item_name_en": "Dagon",
-          "item_name_cn": "Dagon",
-          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/dagon.png",
-          "empty": false
+          "item_id": 0,
+          "item_key": null,
+          "item_name_en": "",
+          "item_name_cn": "",
+          "image_url": "",
+          "empty": true
         },
         {
           "slot": 2,
@@ -8710,7 +8717,8 @@
       "item_3": 1,
       "item_4": 48,
       "item_5": 65,
-      "item_neutral": 0
+      "item_neutral": 0,
+      "role_early": "mid"
     },
     {
       "account_id": 155564702,
@@ -9903,7 +9911,8 @@
       "item_3": 1852,
       "item_4": 36,
       "item_5": 0,
-      "item_neutral": 0
+      "item_neutral": 0,
+      "role_early": "support(5)"
     },
     {
       "account_id": 86698277,
@@ -10935,7 +10944,8 @@
       "item_3": 0,
       "item_4": 0,
       "item_5": 0,
-      "item_neutral": 0
+      "item_neutral": 0,
+      "role_early": "offlane"
     }
   ]
 }

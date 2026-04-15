@@ -1225,7 +1225,8 @@
       "item_3": 1,
       "item_4": 609,
       "item_5": 63,
-      "item_neutral": 0
+      "item_neutral": 0,
+      "role_early": "mid"
     },
     {
       "account_id": 365523159,
@@ -2337,7 +2338,8 @@
       "item_3": 36,
       "item_4": 11,
       "item_5": 0,
-      "item_neutral": 0
+      "item_neutral": 0,
+      "role_early": "support(5)"
     },
     {
       "account_id": 138543123,
@@ -3369,7 +3371,8 @@
       "item_3": 1,
       "item_4": 36,
       "item_5": 214,
-      "item_neutral": 0
+      "item_neutral": 0,
+      "role_early": "support(4)"
     },
     {
       "account_id": 1052101649,
@@ -4564,7 +4567,8 @@
       "item_3": 137,
       "item_4": 178,
       "item_5": 50,
-      "item_neutral": 0
+      "item_neutral": 0,
+      "role_early": "offlane"
     },
     {
       "account_id": 340421206,
@@ -5616,7 +5620,8 @@
       "item_3": 36,
       "item_4": 214,
       "item_5": 29,
-      "item_neutral": 0
+      "item_neutral": 0,
+      "role_early": "offlane"
     },
     {
       "account_id": 248111944,
@@ -6613,7 +6618,8 @@
       "item_3": 0,
       "item_4": 0,
       "item_5": 0,
-      "item_neutral": 0
+      "item_neutral": 0,
+      "role_early": "support(5)"
     },
     {
       "account_id": 198873981,
@@ -7517,7 +7523,8 @@
       "item_3": 36,
       "item_4": 0,
       "item_5": 0,
-      "item_neutral": 0
+      "item_neutral": 0,
+      "role_early": "support(4)"
     },
     {
       "account_id": 1171243748,
@@ -8664,7 +8671,8 @@
       "item_3": 259,
       "item_4": 598,
       "item_5": 50,
-      "item_neutral": 0
+      "item_neutral": 0,
+      "role_early": "mid"
     },
     {
       "account_id": 97658618,
@@ -9751,7 +9759,8 @@
       "item_3": 236,
       "item_4": 158,
       "item_5": 63,
-      "item_neutral": 0
+      "item_neutral": 0,
+      "role_early": "carry"
     },
     {
       "account_id": null,
@@ -10839,7 +10848,8 @@
       "item_4": 0,
       "item_5": 0,
       "item_neutral": 0,
-      "is_radiant": true
+      "is_radiant": true,
+      "role_early": "carry"
     }
   ]
 }

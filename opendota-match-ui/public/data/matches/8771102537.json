@@ -7,7 +7,7 @@
       "raw_ability_upgrade_like_events": 209,
       "talent_tree_selected_layers_total": 17
     },
-    "uploaded_at": "2026-04-15T05:18:08Z"
+    "uploaded_at": "2026-04-15T08:02:06Z"
   },
   "match_id": 8771102537,
   "radiant_win": false,
@@ -592,6 +592,8 @@
       "hero_name_en": "Kez",
       "hero_name_cn": "凯",
       "_dem_items_source": "combat_log_slot_last_purchase",
+      "lane_early": "top",
+      "role_early": "offlane",
       "neutral_item_key": "mana_draught",
       "talent_picks": [
         {
@@ -1772,6 +1774,8 @@
       "hero_name_en": "Io",
       "hero_name_cn": "艾欧",
       "_dem_items_source": "combat_log_slot_last_purchase",
+      "lane_early": "top",
+      "role_early": "support(4)",
       "neutral_item_key": "enhancement_greedy",
       "talent_picks": [
         {
@@ -2864,6 +2868,8 @@
       "hero_name_en": "Beastmaster",
       "hero_name_cn": "兽王",
       "_dem_items_source": "combat_log_slot_last_purchase",
+      "lane_early": "mid",
+      "role_early": "mid",
       "neutral_item_key": "enhancement_alert",
       "talent_picks": [
         {
@@ -3918,6 +3924,8 @@
       "hero_name_en": "Alchemist",
       "hero_name_cn": "炼金术士",
       "_dem_items_source": "combat_log_slot_last_purchase",
+      "lane_early": "bot",
+      "role_early": "carry",
       "neutral_item_key": "enhancement_tough",
       "talent_picks": [
         {
@@ -4991,6 +4999,8 @@
       "hero_name_en": "Jakiro",
       "hero_name_cn": "杰奇洛",
       "_dem_items_source": "combat_log_slot_last_purchase",
+      "lane_early": "bot",
+      "role_early": "support(5)",
       "neutral_item_key": "medallion_of_courage",
       "talent_picks": [
         {
@@ -5990,6 +6000,8 @@
       "hero_name_en": "Pudge",
       "hero_name_cn": "帕吉",
       "_dem_items_source": "combat_log_slot_last_purchase",
+      "lane_early": "mid",
+      "role_early": "mid",
       "neutral_item_key": "enhancement_brawny",
       "talent_picks": [
         {
@@ -7050,6 +7062,8 @@
       "hero_name_en": "Doom",
       "hero_name_cn": "末日使者",
       "_dem_items_source": "combat_log_slot_last_purchase",
+      "lane_early": "bot",
+      "role_early": "offlane",
       "talent_picks": [
         {
           "level": 15,
@@ -8239,6 +8253,8 @@
       "hero_name_en": "Sven",
       "hero_name_cn": "斯温",
       "_dem_items_source": "combat_log_slot_last_purchase",
+      "lane_early": "top",
+      "role_early": "carry",
       "neutral_item_key": "enhancement_tough",
       "talent_picks": [
         {
@@ -9325,6 +9341,8 @@
       "hero_name_en": "Hoodwink",
       "hero_name_cn": "森海飞霞",
       "_dem_items_source": "combat_log_slot_last_purchase",
+      "lane_early": "top",
+      "role_early": "support(5)",
       "neutral_item_key": "enhancement_quickened",
       "talent_picks": [
         {
@@ -10417,6 +10435,8 @@
       "hero_name_en": "Techies",
       "hero_name_cn": "工程师",
       "_dem_items_source": "combat_log_slot_last_purchase",
+      "lane_early": "bot",
+      "role_early": "support(4)",
       "neutral_item_key": "enhancement_greedy",
       "talent_picks": [
         {

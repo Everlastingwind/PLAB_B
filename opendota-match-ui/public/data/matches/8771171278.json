@@ -7,7 +7,7 @@
       "raw_ability_upgrade_like_events": 201,
       "talent_tree_selected_layers_total": 28
     },
-    "uploaded_at": "2026-04-15T05:18:14Z"
+    "uploaded_at": "2026-04-15T08:02:13Z"
   },
   "match_id": 8771171278,
   "radiant_win": true,
@@ -591,6 +591,8 @@
       "hero_name_en": "Alchemist",
       "hero_name_cn": "炼金术士",
       "_dem_items_source": "combat_log_slot_last_purchase",
+      "lane_early": "bot",
+      "role_early": "carry",
       "neutral_item_key": "enhancement_crude",
       "talent_picks": [
         {
@@ -1789,6 +1791,8 @@
       "hero_name_en": "Queen of Pain",
       "hero_name_cn": "痛苦女王",
       "_dem_items_source": "combat_log_slot_last_purchase",
+      "lane_early": "mid",
+      "role_early": "mid",
       "ability_upgrades_arr": [
         5175,
         5175,
@@ -2913,6 +2917,8 @@
       "hero_name_en": "Ember Spirit",
       "hero_name_cn": "灰烬之灵",
       "_dem_items_source": "combat_log_slot_last_purchase",
+      "lane_early": "mid",
+      "role_early": "mid",
       "talent_picks": [
         {
           "level": 10,
@@ -4089,6 +4095,8 @@
       "hero_name_en": "Lion",
       "hero_name_cn": "莱恩",
       "_dem_items_source": "combat_log_slot_last_purchase",
+      "lane_early": "bot",
+      "role_early": "support(5)",
       "neutral_item_key": "enhancement_greedy",
       "talent_picks": [
         {
@@ -5142,6 +5150,8 @@
       "hero_name_en": "Hoodwink",
       "hero_name_cn": "森海飞霞",
       "_dem_items_source": "combat_log_slot_last_purchase",
+      "lane_early": "top",
+      "role_early": "support(4)",
       "talent_picks": [
         {
           "level": 10,
@@ -6275,6 +6285,8 @@
       "hero_name_en": "Beastmaster",
       "hero_name_cn": "兽王",
       "_dem_items_source": "combat_log_slot_last_purchase",
+      "lane_early": "top",
+      "role_early": "offlane",
       "talent_picks": [
         {
           "level": 10,
@@ -7419,6 +7431,8 @@
       "hero_name_en": "Pangolier",
       "hero_name_cn": "石鳞剑士",
       "_dem_items_source": "combat_log_slot_last_purchase",
+      "lane_early": "bot",
+      "role_early": "offlane",
       "neutral_item_key": "enhancement_titanic",
       "talent_picks": [
         {
@@ -8624,6 +8638,8 @@
       "hero_name_en": "Bane",
       "hero_name_cn": "祸乱之源",
       "_dem_items_source": "combat_log_slot_last_purchase",
+      "lane_early": "bot",
+      "role_early": "support(4)",
       "neutral_item_key": "prophets_pendulum",
       "talent_picks": [
         {
@@ -9684,6 +9700,8 @@
       "hero_name_en": "Treant Protector",
       "hero_name_cn": "树精卫士",
       "_dem_items_source": "combat_log_slot_last_purchase",
+      "lane_early": "top",
+      "role_early": "support(5)",
       "talent_picks": [
         {
           "level": 10,
@@ -10726,6 +10744,8 @@
       "hero_name_en": "Drow Ranger",
       "hero_name_cn": "卓尔游侠",
       "_dem_items_source": "combat_log_slot_last_purchase",
+      "lane_early": "top",
+      "role_early": "carry",
       "neutral_item_key": "enhancement_alert",
       "talent_picks": [
         {

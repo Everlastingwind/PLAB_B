@@ -75,6 +75,12 @@ export interface ItemSlotMock {
   overlay?: ItemOverlay;
 }
 
+export interface StartingItemMock {
+  itemKey: string;
+  imageUrl?: string;
+  count?: number;
+}
+
 export interface PlayerBuffsMock {
   /** 是否显示 A 杖 / 魔晶 / 银月 等图标位 */
   aghanims?: "none" | "scepter" | "shard" | "both";
@@ -150,6 +156,12 @@ export interface PlayerRowMock {
   rankColorClass: string;
   /** OpenDota `leaderboard_rank`：全球天梯名次，有则显示为极简 Rank / 奖牌样式 */
   leaderboardRank?: number;
+  /** 对线期（前 5 分钟）分路 */
+  laneEarly?: string;
+  /** 对线期推断位置：carry/mid/offlane/support(4)/support(5) */
+  roleEarly?: string;
+  /** 出门装（通常来自 0 秒前购买日志） */
+  startingItems?: StartingItemMock[];
   level: number;
   kills: number;
   deaths: number;

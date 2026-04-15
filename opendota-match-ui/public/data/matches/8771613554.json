@@ -3769,7 +3769,8 @@
       "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/pogo_stick.png",
       "neutral_item_key": "pogo_stick",
       "pro_name": "tOfu",
-      "team_name": "Team Liquid"
+      "team_name": "Team Liquid",
+      "role_early": "support(4)"
     },
     {
       "player_slot": 1,
@@ -5664,7 +5665,8 @@
       "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/cloak_of_flames.png",
       "neutral_item_key": "cloak_of_flames",
       "pro_name": "Ace ♠",
-      "team_name": "Team Liquid"
+      "team_name": "Team Liquid",
+      "role_early": "offlane"
     },
     {
       "player_slot": 2,
@@ -7658,7 +7660,8 @@
       "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/unrelenting_eye.png",
       "neutral_item_key": "unrelenting_eye",
       "pro_name": "Nisha",
-      "team_name": "Team Liquid"
+      "team_name": "Team Liquid",
+      "role_early": "carry"
     },
     {
       "player_slot": 3,
@@ -9707,7 +9710,8 @@
       "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/stormcrafter.png",
       "neutral_item_key": "stormcrafter",
       "pro_name": "Ekki",
-      "team_name": "Pipsqueak+4"
+      "team_name": "Pipsqueak+4",
+      "role_early": "support(5)"
     },
     {
       "player_slot": 4,
@@ -11641,7 +11645,8 @@
       "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/serrated_shiv.png",
       "neutral_item_key": "serrated_shiv",
       "pro_name": "m1CKe",
-      "team_name": "Team Liquid"
+      "team_name": "Team Liquid",
+      "role_early": "mid"
     },
     {
       "player_slot": 128,
@@ -13591,7 +13596,8 @@
       "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/pogo_stick.png",
       "neutral_item_key": "pogo_stick",
       "pro_name": "aik",
-      "team_name": "Nemiga Gaming"
+      "team_name": "Nemiga Gaming",
+      "role_early": "support(4)"
     },
     {
       "player_slot": 129,
@@ -15398,7 +15404,8 @@
       "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/cloak_of_flames.png",
       "neutral_item_key": "cloak_of_flames",
       "pro_name": "BOOM",
-      "team_name": "Team Secret"
+      "team_name": "Team Secret",
+      "role_early": "offlane"
     },
     {
       "player_slot": 130,
@@ -17275,7 +17282,8 @@
       "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/gunpowder_gauntlets.png",
       "neutral_item_key": "gunpowder_gauntlets",
       "pro_name": "Crystallis",
-      "team_name": "Tundra Esports"
+      "team_name": "Tundra Esports",
+      "role_early": "carry"
     },
     {
       "player_slot": 131,
@@ -19181,7 +19189,8 @@
       "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/serrated_shiv.png",
       "neutral_item_key": "serrated_shiv",
       "pro_name": null,
-      "team_name": null
+      "team_name": null,
+      "role_early": "support(5)"
     },
     {
       "player_slot": 132,
@@ -21039,7 +21048,8 @@
       "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/gunpowder_gauntlets.png",
       "neutral_item_key": "gunpowder_gauntlets",
       "pro_name": "lorenof",
-      "team_name": "AVULUS"
+      "team_name": "AVULUS",
+      "role_early": "mid"
     }
   ],
   "leagueid": 19448,

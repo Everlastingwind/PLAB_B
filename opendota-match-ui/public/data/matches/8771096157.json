@@ -7,7 +7,7 @@
       "raw_ability_upgrade_like_events": 194,
       "talent_tree_selected_layers_total": 26
     },
-    "uploaded_at": "2026-04-15T05:18:06Z"
+    "uploaded_at": "2026-04-15T08:02:04Z"
   },
   "match_id": 8771096157,
   "radiant_win": false,
@@ -586,6 +586,8 @@
       "hero_name_en": "Queen of Pain",
       "hero_name_cn": "痛苦女王",
       "_dem_items_source": "combat_log_slot_last_purchase",
+      "lane_early": "mid",
+      "role_early": "mid",
       "neutral_item_key": "enhancement_keen_eyed",
       "ability_upgrades_arr": [
         5175,
@@ -1676,6 +1678,8 @@
       "hero_name_en": "Lifestealer",
       "hero_name_cn": "噬魂鬼",
       "_dem_items_source": "combat_log_slot_last_purchase",
+      "lane_early": "bot",
+      "role_early": "carry",
       "neutral_item_key": "enhancement_tough",
       "talent_picks": [
         {
@@ -2819,6 +2823,8 @@
       "hero_name_en": "Clockwerk",
       "hero_name_cn": "发条技师",
       "_dem_items_source": "combat_log_slot_last_purchase",
+      "lane_early": "top",
+      "role_early": "support(4)",
       "neutral_item_key": "psychic_headband",
       "talent_picks": [
         {
@@ -3879,6 +3885,8 @@
       "hero_name_en": "Pugna",
       "hero_name_cn": "帕格纳",
       "_dem_items_source": "combat_log_slot_last_purchase",
+      "lane_early": "bot",
+      "role_early": "support(5)",
       "neutral_item_key": "partisans_brand",
       "talent_picks": [
         {
@@ -4913,6 +4921,8 @@
       "hero_name_en": "Viper",
       "hero_name_cn": "冥界亚龙",
       "_dem_items_source": "combat_log_slot_last_purchase",
+      "lane_early": "top",
+      "role_early": "offlane",
       "neutral_item_key": "serrated_shiv",
       "talent_picks": [
         {
@@ -6000,6 +6010,8 @@
       "hero_name_en": "Grimstroke",
       "hero_name_cn": "天涯墨客",
       "_dem_items_source": "combat_log_slot_last_purchase",
+      "lane_early": "bot",
+      "role_early": "support(4)",
       "neutral_item_key": "enhancement_greedy",
       "talent_picks": [
         {
@@ -7088,6 +7100,8 @@
       "hero_name_en": "Enchantress",
       "hero_name_cn": "魅惑魔女",
       "_dem_items_source": "combat_log_slot_last_purchase",
+      "lane_early": "top",
+      "role_early": "support(5)",
       "neutral_item_key": "enhancement_mystical",
       "talent_picks": [
         {
@@ -8184,6 +8198,8 @@
       "hero_name_en": "Pangolier",
       "hero_name_cn": "石鳞剑士",
       "_dem_items_source": "combat_log_slot_last_purchase",
+      "lane_early": "bot",
+      "role_early": "offlane",
       "neutral_item_key": "enhancement_mystical",
       "talent_picks": [
         {
@@ -9395,6 +9411,8 @@
       "hero_name_en": "Puck",
       "hero_name_cn": "帕克",
       "_dem_items_source": "combat_log_slot_last_purchase",
+      "lane_early": "mid",
+      "role_early": "mid",
       "neutral_item_key": "enhancement_mystical",
       "talent_picks": [
         {
@@ -10593,6 +10611,8 @@
       "hero_name_en": "Bristleback",
       "hero_name_cn": "钢背兽",
       "_dem_items_source": "combat_log_slot_last_purchase",
+      "lane_early": "top",
+      "role_early": "carry",
       "neutral_item_key": "enhancement_crude",
       "talent_picks": [
         {

@@ -1066,7 +1066,8 @@
       "item_3": 36,
       "item_4": 29,
       "item_5": 0,
-      "item_neutral": 0
+      "item_neutral": 0,
+      "role_early": "carry"
     },
     {
       "account_id": 195539164,
@@ -2098,7 +2099,8 @@
       "item_3": 178,
       "item_4": 50,
       "item_5": 73,
-      "item_neutral": 0
+      "item_neutral": 0,
+      "role_early": "offlane"
     },
     {
       "account_id": 221532774,
@@ -3075,7 +3077,8 @@
       "item_3": 36,
       "item_4": 0,
       "item_5": 0,
-      "item_neutral": 0
+      "item_neutral": 0,
+      "role_early": "support(5)"
     },
     {
       "account_id": 274266360,
@@ -4132,7 +4135,8 @@
       "item_3": 36,
       "item_4": 0,
       "item_5": 0,
-      "item_neutral": 0
+      "item_neutral": 0,
+      "role_early": "support(4)"
     },
     {
       "account_id": 126212866,
@@ -5308,7 +5312,8 @@
       "item_3": 609,
       "item_4": 63,
       "item_5": 36,
-      "item_neutral": 0
+      "item_neutral": 0,
+      "role_early": "support(4)"
     },
     {
       "account_id": 248111944,
@@ -6512,7 +6517,8 @@
       "item_3": 36,
       "item_4": 92,
       "item_5": 29,
-      "item_neutral": 0
+      "item_neutral": 0,
+      "role_early": "support(5)"
     },
     {
       "account_id": 1041811781,
@@ -7679,7 +7685,8 @@
       "item_3": 77,
       "item_4": 36,
       "item_5": 63,
-      "item_neutral": 0
+      "item_neutral": 0,
+      "role_early": "mid"
     },
     {
       "account_id": 1220993352,
@@ -8786,7 +8793,8 @@
       "item_3": 249,
       "item_4": 172,
       "item_5": 63,
-      "item_neutral": 0
+      "item_neutral": 0,
+      "role_early": "carry"
     },
     {
       "account_id": null,
@@ -9838,7 +9846,8 @@
       "item_3": 0,
       "item_4": 0,
       "item_5": 0,
-      "item_neutral": 0
+      "item_neutral": 0,
+      "role_early": "offlane"
     },
     {
       "account_id": 383788462,
@@ -10911,7 +10920,8 @@
       "item_4": 180,
       "item_5": 77,
       "item_neutral": 0,
-      "is_radiant": true
+      "is_radiant": true,
+      "role_early": "mid"
     }
   ]
 }

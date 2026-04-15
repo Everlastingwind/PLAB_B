@@ -3322,7 +3322,8 @@
       "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/gunpowder_gauntlets.png",
       "neutral_item_key": "gunpowder_gauntlets",
       "pro_name": "gotthejuice",
-      "team_name": "Natus Vincere"
+      "team_name": "Natus Vincere",
+      "role_early": "carry"
     },
     {
       "player_slot": 1,
@@ -5388,7 +5389,8 @@
       "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/conjurers_catalyst.png",
       "neutral_item_key": "conjurers_catalyst",
       "pro_name": "Niku",
-      "team_name": "Natus Vincere"
+      "team_name": "Natus Vincere",
+      "role_early": "mid"
     },
     {
       "player_slot": 2,
@@ -7376,7 +7378,8 @@
       "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/conjurers_catalyst.png",
       "neutral_item_key": "conjurers_catalyst",
       "pro_name": "pma",
-      "team_name": "Natus Vincere"
+      "team_name": "Natus Vincere",
+      "role_early": "offlane"
     },
     {
       "player_slot": 3,
@@ -9441,7 +9444,8 @@
       "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/prophets_pendulum.png",
       "neutral_item_key": "prophets_pendulum",
       "pro_name": "daze",
-      "team_name": "Natus Vincere"
+      "team_name": "Natus Vincere",
+      "role_early": "support(4)"
     },
     {
       "player_slot": 4,
@@ -11634,7 +11638,8 @@
       "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/dandelion_amulet.png",
       "neutral_item_key": "dandelion_amulet",
       "pro_name": "Riddys",
-      "team_name": "Natus Vincere"
+      "team_name": "Natus Vincere",
+      "role_early": "support(5)"
     },
     {
       "player_slot": 128,
@@ -13711,7 +13716,8 @@
       "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/metamorphic_mandible.png",
       "neutral_item_key": "metamorphic_mandible",
       "pro_name": "tOfu",
-      "team_name": "Team Liquid"
+      "team_name": "Team Liquid",
+      "role_early": "support(5)"
     },
     {
       "player_slot": 129,
@@ -15630,7 +15636,8 @@
       "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/prophets_pendulum.png",
       "neutral_item_key": "prophets_pendulum",
       "pro_name": "Ace ♠",
-      "team_name": "Team Liquid"
+      "team_name": "Team Liquid",
+      "role_early": "offlane"
     },
     {
       "player_slot": 130,
@@ -17606,7 +17613,8 @@
       "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/serrated_shiv.png",
       "neutral_item_key": "serrated_shiv",
       "pro_name": "Nisha",
-      "team_name": "Team Liquid"
+      "team_name": "Team Liquid",
+      "role_early": "carry"
     },
     {
       "player_slot": 131,
@@ -19905,7 +19913,8 @@
       "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/partisans_brand.png",
       "neutral_item_key": "partisans_brand",
       "pro_name": "Ekki",
-      "team_name": "Pipsqueak+4"
+      "team_name": "Pipsqueak+4",
+      "role_early": "support(4)"
     },
     {
       "player_slot": 132,
@@ -21912,7 +21921,8 @@
       "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/giant_maul.png",
       "neutral_item_key": "giant_maul",
       "pro_name": "m1CKe",
-      "team_name": "Team Liquid"
+      "team_name": "Team Liquid",
+      "role_early": "mid"
     }
   ],
   "leagueid": 19448,

@@ -5502,7 +5502,8 @@
       "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/rattlecage.png",
       "neutral_item_key": "rattlecage",
       "pro_name": "Yuma",
-      "team_name": "HEROIC"
+      "team_name": "HEROIC",
+      "role_early": "mid"
     },
     {
       "player_slot": 1,
@@ -7831,7 +7832,8 @@
       "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/enchanters_bauble.png",
       "neutral_item_key": "enchanters_bauble",
       "pro_name": "osito",
-      "team_name": "Hokori"
+      "team_name": "Hokori",
+      "role_early": "carry"
     },
     {
       "player_slot": 2,
@@ -10100,7 +10102,8 @@
       "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/conjurers_catalyst.png",
       "neutral_item_key": "conjurers_catalyst",
       "pro_name": "Wisper",
-      "team_name": "HEROIC"
+      "team_name": "HEROIC",
+      "role_early": "offlane"
     },
     {
       "player_slot": 3,
@@ -12521,7 +12524,8 @@
       "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/conjurers_catalyst.png",
       "neutral_item_key": "conjurers_catalyst",
       "pro_name": "Thiolicor",
-      "team_name": "Shopify Rebellion"
+      "team_name": "Shopify Rebellion",
+      "role_early": "support(5)"
     },
     {
       "player_slot": 4,
@@ -15045,7 +15049,8 @@
       "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/dandelion_amulet.png",
       "neutral_item_key": "dandelion_amulet",
       "pro_name": "KingJungles",
-      "team_name": "HEROIC"
+      "team_name": "HEROIC",
+      "role_early": "support(4)"
     },
     {
       "player_slot": 128,
@@ -17322,7 +17327,8 @@
       "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/gunpowder_gauntlets.png",
       "neutral_item_key": "gunpowder_gauntlets",
       "pro_name": "Scofield",
-      "team_name": "paiN Gaming"
+      "team_name": "paiN Gaming",
+      "role_early": "support(5)"
     },
     {
       "player_slot": 129,
@@ -19466,7 +19472,8 @@
       "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/flayers_bota.png",
       "neutral_item_key": "flayers_bota",
       "pro_name": "DarkMago♡",
-      "team_name": "BOOM Esports"
+      "team_name": "BOOM Esports",
+      "role_early": "mid"
     },
     {
       "player_slot": 130,
@@ -21550,7 +21557,8 @@
       "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/cloak_of_flames.png",
       "neutral_item_key": "cloak_of_flames",
       "pro_name": "Wits",
-      "team_name": "Infinity"
+      "team_name": "Infinity",
+      "role_early": "carry"
     },
     {
       "player_slot": 131,
@@ -24116,7 +24124,8 @@
       "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/conjurers_catalyst.png",
       "neutral_item_key": "conjurers_catalyst",
       "pro_name": "Elmisho",
-      "team_name": "beastcoast"
+      "team_name": "beastcoast",
+      "role_early": "support(4)"
     },
     {
       "player_slot": 132,
@@ -26076,7 +26085,8 @@
       "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/dandelion_amulet.png",
       "neutral_item_key": "dandelion_amulet",
       "pro_name": null,
-      "team_name": null
+      "team_name": null,
+      "role_early": "offlane"
     }
   ],
   "leagueid": 19448,

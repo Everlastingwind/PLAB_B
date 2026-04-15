@@ -25,14 +25,14 @@ import { TalentTreeBadge } from "./TalentTreeBadge";
  */
 /** 列轨道（不含 `display:grid`，便于与 `hidden` / `md:grid` 组合） */
 export const MATCH_BOARD_GRID_TRACKS =
-  "w-full min-w-0 grid-cols-[minmax(0,2.35fr)_minmax(0,0.9fr)_minmax(0,0.9fr)_minmax(0,0.95fr)_minmax(0,1fr)_minmax(0,1.7fr)] gap-3";
+  "w-full min-w-0 grid-cols-[minmax(0,2.1fr)_minmax(0,0.95fr)_minmax(0,0.85fr)_minmax(0,0.85fr)_minmax(0,0.9fr)_minmax(0,0.9fr)_minmax(0,2fr)] gap-2";
 
 export const MATCH_BOARD_GRID_COLS = cn("grid", MATCH_BOARD_GRID_TRACKS);
 
 /** 与表头共用：列轨道 + 内边距；背景由阵营区分 */
 export const MATCH_STAT_GRID_TEMPLATE = cn(
   MATCH_BOARD_GRID_COLS,
-  "items-start rounded-lg p-3 mb-2"
+  "items-start rounded-lg p-2.5 mb-1.5"
 );
 
 function rowTint(side: "radiant" | "dire") {
@@ -44,7 +44,7 @@ function rowTint(side: "radiant" | "dire") {
 function rowShellClass(side: "radiant" | "dire") {
   return cn(
     MATCH_BOARD_GRID_TRACKS,
-    "hidden items-start rounded-lg p-3 mb-2 md:grid",
+    "hidden items-start rounded-lg p-2.5 mb-1.5 md:grid",
     "ring-1 ring-inset",
     rowTint(side)
   );
@@ -52,13 +52,24 @@ function rowShellClass(side: "radiant" | "dire") {
 
 function mobileCardShell(side: "radiant" | "dire") {
   return cn(
-    "relative mb-2 rounded-lg p-3 ring-1 ring-inset md:hidden",
+    "relative mb-1.5 rounded-lg p-2.5 ring-1 ring-inset md:hidden",
     rowTint(side)
   );
 }
 
 function itemKeyClean(key: string): string {
   return key.replace(/^item_/, "");
+}
+
+function roleEarlyLabel(role: string | undefined): string {
+  const r = String(role || "").trim();
+  if (!r) return "";
+  if (r === "support(4)") return "pos4";
+  if (r === "support(5)") return "pos5";
+  if (r === "carry") return "Carry";
+  if (r === "mid") return "Mid";
+  if (r === "offlane") return "Offlane";
+  return r;
 }
 
 const AGHANIM_SCEPTER_ICON = itemIconUrl("ultimate_scepter");
@@ -109,7 +120,7 @@ function GridInventorySlots({
   return (
     <div
       className={cn(
-        "flex w-fit max-w-full min-w-0 items-center overflow-hidden",
+        "flex w-fit max-w-full min-w-0 items-center overflow-visible",
         compact ? "gap-1" : "gap-2"
       )}
     >
@@ -279,6 +290,21 @@ export function PlayerMatchGridRow({
     (hasProName || Boolean(seededPro));
 
   const [mobileOpen, setMobileOpen] = useState(false);
+  const roleLabel = roleEarlyLabel(p.roleEarly);
+  const startingItemsExpanded = (() => {
+    const out: Array<{ itemKey: string; imageUrl?: string }> = [];
+    for (const it of p.startingItems || []) {
+      const ctRaw = Number(it.count || 1);
+      const ct = Number.isFinite(ctRaw) && ctRaw > 1 ? Math.floor(ctRaw) : 1;
+      for (let i = 0; i < ct; i += 1) {
+        out.push({ itemKey: String(it.itemKey || ""), imageUrl: it.imageUrl });
+      }
+    }
+    return out.slice(0, 6);
+  })();
+  while (startingItemsExpanded.length < 6) {
+    startingItemsExpanded.push({ itemKey: "", imageUrl: "" });
+  }
 
   const inkName =
     side === "radiant"
@@ -309,26 +335,54 @@ export function PlayerMatchGridRow({
             />
             <div className="min-w-0 flex-1">
               {canLinkPlayer ? (
-                <Link
-                  to={`/player/${accountId}`}
-                  className={cn(
-                    "pointer-events-auto block truncate text-sm font-semibold leading-tight underline-offset-2 hover:underline",
-                    inkName
-                  )}
-                  title={displayName || undefined}
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  {displayName || "—"}
-                </Link>
+                <div className="flex items-center gap-1.5">
+                  <Link
+                    to={`/player/${accountId}`}
+                    className={cn(
+                      "pointer-events-auto block truncate text-sm font-semibold leading-tight underline-offset-2 hover:underline",
+                      inkName
+                    )}
+                    title={displayName || undefined}
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    {displayName || "—"}
+                  </Link>
+                  {roleLabel ? (
+                    <span
+                      className={cn(
+                        "shrink-0 rounded border px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-wide",
+                        side === "radiant"
+                          ? "border-emerald-700/35 bg-emerald-900/10 text-emerald-900 dark:border-emerald-500/30 dark:bg-emerald-600/10 dark:text-emerald-300"
+                          : "border-rose-700/35 bg-rose-900/10 text-rose-900 dark:border-rose-500/30 dark:bg-rose-600/10 dark:text-rose-300"
+                      )}
+                    >
+                      {roleLabel}
+                    </span>
+                  ) : null}
+                </div>
               ) : (
-                <div
-                  className={cn(
-                    "truncate text-sm font-semibold leading-tight",
-                    inkName
-                  )}
-                  title={displayName || undefined}
-                >
-                  {displayName || "—"}
+                <div className="flex items-center gap-1.5">
+                  <div
+                    className={cn(
+                      "truncate text-sm font-semibold leading-tight",
+                      inkName
+                    )}
+                    title={displayName || undefined}
+                  >
+                    {displayName || "—"}
+                  </div>
+                  {roleLabel ? (
+                    <span
+                      className={cn(
+                        "shrink-0 rounded border px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-wide",
+                        side === "radiant"
+                          ? "border-emerald-700/35 bg-emerald-900/10 text-emerald-900 dark:border-emerald-500/30 dark:bg-emerald-600/10 dark:text-emerald-300"
+                          : "border-rose-700/35 bg-rose-900/10 text-rose-900 dark:border-rose-500/30 dark:bg-rose-600/10 dark:text-rose-300"
+                      )}
+                    >
+                      {roleLabel}
+                    </span>
+                  ) : null}
                 </div>
               )}
               <div className="mt-1.5 max-w-full overflow-x-auto">
@@ -479,29 +533,57 @@ export function PlayerMatchGridRow({
         ) : null}
         <div className="flex min-w-0 flex-1 flex-col gap-1">
           {canLinkPlayer ? (
-            <Link
-              to={`/player/${accountId}`}
-              className={cn(
-                "truncate text-left text-sm font-semibold leading-tight underline-offset-2 hover:underline",
-                side === "radiant"
-                  ? "text-emerald-950 dark:text-slate-100"
-                  : "text-rose-950 dark:text-slate-100"
-              )}
-              title={displayName || undefined}
-            >
-              {displayName || "—"}
-            </Link>
+            <div className="flex min-w-0 items-center gap-1.5">
+              <Link
+                to={`/player/${accountId}`}
+                className={cn(
+                  "truncate text-left text-sm font-semibold leading-tight underline-offset-2 hover:underline",
+                  side === "radiant"
+                    ? "text-emerald-950 dark:text-slate-100"
+                    : "text-rose-950 dark:text-slate-100"
+                )}
+                title={displayName || undefined}
+              >
+                {displayName || "—"}
+              </Link>
+              {roleLabel ? (
+                <span
+                  className={cn(
+                    "shrink-0 rounded border px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-wide",
+                    side === "radiant"
+                      ? "border-emerald-700/35 bg-emerald-900/10 text-emerald-900 dark:border-emerald-500/30 dark:bg-emerald-600/10 dark:text-emerald-300"
+                      : "border-rose-700/35 bg-rose-900/10 text-rose-900 dark:border-rose-500/30 dark:bg-rose-600/10 dark:text-rose-300"
+                  )}
+                >
+                  {roleLabel}
+                </span>
+              ) : null}
+            </div>
           ) : (
-            <div
-              className={cn(
-                "truncate text-left text-sm font-semibold leading-tight",
-                side === "radiant"
-                  ? "text-emerald-950 dark:text-slate-100"
-                  : "text-rose-950 dark:text-slate-100"
-              )}
-              title={displayName || undefined}
-            >
-              {displayName || "—"}
+            <div className="flex min-w-0 items-center gap-1.5">
+              <div
+                className={cn(
+                  "truncate text-left text-sm font-semibold leading-tight",
+                  side === "radiant"
+                    ? "text-emerald-950 dark:text-slate-100"
+                    : "text-rose-950 dark:text-slate-100"
+                )}
+                title={displayName || undefined}
+              >
+                {displayName || "—"}
+              </div>
+              {roleLabel ? (
+                <span
+                  className={cn(
+                    "shrink-0 rounded border px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-wide",
+                    side === "radiant"
+                      ? "border-emerald-700/35 bg-emerald-900/10 text-emerald-900 dark:border-emerald-500/30 dark:bg-emerald-600/10 dark:text-emerald-300"
+                      : "border-rose-700/35 bg-rose-900/10 text-rose-900 dark:border-rose-500/30 dark:bg-rose-600/10 dark:text-rose-300"
+                  )}
+                >
+                  {roleLabel}
+                </span>
+              ) : null}
             </div>
           )}
           {p.leaderboardRank != null && p.leaderboardRank > 0 ? (
@@ -523,7 +605,40 @@ export function PlayerMatchGridRow({
       </div>
       </div>
 
-      {/* 2. 等级 + K/D/A */}
+      {/* 2. 出门装（两排 3x2 固定 6 格） */}
+      <div className="min-w-0 text-center">
+        <div className="mx-auto grid w-fit grid-cols-3 gap-1">
+          {startingItemsExpanded.map((it, idx) => {
+            if (!it.itemKey && !it.imageUrl) {
+              return (
+                <div
+                  key={`start-empty-${idx}`}
+                  className="h-6 w-6 rounded border border-slate-500/30 bg-slate-800/35"
+                  aria-hidden
+                />
+              );
+            }
+            const src =
+              normalizeDotaAssetUrl(String(it.imageUrl || "").trim()) ||
+              itemIconUrl(itemKeyClean(String(it.itemKey || "")));
+            return (
+              <div
+                key={`start-it-${idx}`}
+                className="h-6 w-6 overflow-hidden rounded border border-slate-500/40 bg-slate-900/70"
+              >
+                <img
+                  src={src}
+                  alt=""
+                  className="h-full w-full object-cover"
+                  {...steamCdnImgDefer}
+                />
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* 3. 等级 + K/D/A */}
       <div className="min-w-0 text-center">
         <div
           className={cn(
@@ -544,7 +659,7 @@ export function PlayerMatchGridRow({
         </div>
       </div>
 
-      {/* 3. 正反补 */}
+      {/* 4. 正反补 */}
       <div className="min-w-0 text-center">
         <div className="whitespace-nowrap font-mono text-xs tabular-nums text-neutral-900 dark:text-slate-200">
           <span
@@ -563,7 +678,7 @@ export function PlayerMatchGridRow({
         </div>
       </div>
 
-      {/* 4. 经济 */}
+      {/* 5. 经济 */}
       <div className="min-w-0 text-center">
         <div
           className={cn(
@@ -577,15 +692,15 @@ export function PlayerMatchGridRow({
         </div>
       </div>
 
-      {/* 5. 伤害 */}
+      {/* 6. 伤害 */}
       <DamageCell
         value={p.heroDamage ?? 0}
         maxInTeam={maxH}
         side={side}
       />
 
-      {/* 6. 物品：列宽 max-content，格内左对齐，不占用装备右侧空白 */}
-      <div className="min-w-0 justify-self-start overflow-hidden">
+      {/* 7. 物品：列宽 max-content，格内左对齐，不占用装备右侧空白 */}
+      <div className="min-w-0 justify-self-start overflow-visible">
         <GridInventorySlots p={p} side={side} />
       </div>
     </div>

@@ -24,7 +24,8 @@
           "is_radiant": true,
           "kills": 5,
           "deaths": 2,
-          "assists": 4
+          "assists": 4,
+          "role_early": "mid"
         },
         {
           "player_slot": 1,
@@ -34,7 +35,8 @@
           "is_radiant": true,
           "kills": 3,
           "deaths": 3,
-          "assists": 7
+          "assists": 7,
+          "role_early": "carry"
         },
         {
           "player_slot": 2,
@@ -44,7 +46,8 @@
           "is_radiant": true,
           "kills": 2,
           "deaths": 7,
-          "assists": 10
+          "assists": 10,
+          "role_early": "support(5)"
         },
         {
           "player_slot": 3,
@@ -54,7 +57,8 @@
           "is_radiant": true,
           "kills": 5,
           "deaths": 5,
-          "assists": 8
+          "assists": 8,
+          "role_early": "support(4)"
         },
         {
           "player_slot": 4,
@@ -64,7 +68,8 @@
           "is_radiant": true,
           "kills": 0,
           "deaths": 7,
-          "assists": 7
+          "assists": 7,
+          "role_early": "offlane"
         },
         {
           "player_slot": 128,
@@ -74,7 +79,8 @@
           "is_radiant": false,
           "kills": 8,
           "deaths": 4,
-          "assists": 11
+          "assists": 11,
+          "role_early": "carry"
         },
         {
           "player_slot": 129,
@@ -84,7 +90,8 @@
           "is_radiant": false,
           "kills": 5,
           "deaths": 1,
-          "assists": 15
+          "assists": 15,
+          "role_early": "mid"
         },
         {
           "player_slot": 130,
@@ -94,7 +101,8 @@
           "is_radiant": false,
           "kills": 2,
           "deaths": 5,
-          "assists": 18
+          "assists": 18,
+          "role_early": "offlane"
         },
         {
           "player_slot": 131,
@@ -104,7 +112,8 @@
           "is_radiant": false,
           "kills": 4,
           "deaths": 5,
-          "assists": 14
+          "assists": 14,
+          "role_early": "support(5)"
         },
         {
           "player_slot": 132,
@@ -114,7 +123,8 @@
           "is_radiant": false,
           "kills": 5,
           "deaths": 0,
-          "assists": 17
+          "assists": 17,
+          "role_early": "support(4)"
         }
       ]
     },
@@ -135,7 +145,8 @@
           "is_radiant": true,
           "kills": 11,
           "deaths": 7,
-          "assists": 8
+          "assists": 8,
+          "role_early": "carry"
         },
         {
           "player_slot": 1,
@@ -145,7 +156,8 @@
           "is_radiant": true,
           "kills": 5,
           "deaths": 10,
-          "assists": 23
+          "assists": 23,
+          "role_early": "offlane"
         },
         {
           "player_slot": 2,
@@ -155,7 +167,8 @@
           "is_radiant": true,
           "kills": 10,
           "deaths": 6,
-          "assists": 13
+          "assists": 13,
+          "role_early": "mid"
         },
         {
           "player_slot": 3,
@@ -165,7 +178,8 @@
           "is_radiant": true,
           "kills": 4,
           "deaths": 9,
-          "assists": 22
+          "assists": 22,
+          "role_early": "support(5)"
         },
         {
           "player_slot": 4,
@@ -175,7 +189,8 @@
           "is_radiant": true,
           "kills": 4,
           "deaths": 10,
-          "assists": 21
+          "assists": 21,
+          "role_early": "support(4)"
         },
         {
           "player_slot": 128,
@@ -185,7 +200,8 @@
           "is_radiant": false,
           "kills": 17,
           "deaths": 4,
-          "assists": 14
+          "assists": 14,
+          "role_early": "mid"
         },
         {
           "player_slot": 129,
@@ -195,7 +211,8 @@
           "is_radiant": false,
           "kills": 9,
           "deaths": 5,
-          "assists": 21
+          "assists": 21,
+          "role_early": "carry"
         },
         {
           "player_slot": 130,
@@ -205,7 +222,8 @@
           "is_radiant": false,
           "kills": 2,
           "deaths": 10,
-          "assists": 30
+          "assists": 30,
+          "role_early": "support(5)"
         },
         {
           "player_slot": 131,
@@ -215,7 +233,8 @@
           "is_radiant": false,
           "kills": 5,
           "deaths": 10,
-          "assists": 21
+          "assists": 21,
+          "role_early": "support(4)"
         },
         {
           "player_slot": 132,
@@ -225,7 +244,8 @@
           "is_radiant": false,
           "kills": 8,
           "deaths": 5,
-          "assists": 24
+          "assists": 24,
+          "role_early": "offlane"
         }
       ]
     },
@@ -246,7 +266,8 @@
           "is_radiant": true,
           "kills": 8,
           "deaths": 2,
-          "assists": 15
+          "assists": 15,
+          "role_early": "mid"
         },
         {
           "player_slot": 1,
@@ -256,7 +277,8 @@
           "is_radiant": true,
           "kills": 17,
           "deaths": 0,
-          "assists": 10
+          "assists": 10,
+          "role_early": "carry"
         },
         {
           "player_slot": 2,
@@ -266,7 +288,8 @@
           "is_radiant": true,
           "kills": 4,
           "deaths": 3,
-          "assists": 17
+          "assists": 17,
+          "role_early": "support(5)"
         },
         {
           "player_slot": 3,
@@ -276,7 +299,8 @@
           "is_radiant": true,
           "kills": 4,
           "deaths": 5,
-          "assists": 13
+          "assists": 13,
+          "role_early": "offlane"
         },
         {
           "player_slot": 4,
@@ -286,7 +310,8 @@
           "is_radiant": true,
           "kills": 5,
           "deaths": 1,
-          "assists": 18
+          "assists": 18,
+          "role_early": "support(4)"
         },
         {
           "player_slot": 128,
@@ -296,7 +321,8 @@
           "is_radiant": false,
           "kills": 6,
           "deaths": 6,
-          "assists": 2
+          "assists": 2,
+          "role_early": "carry"
         },
         {
           "player_slot": 129,
@@ -306,7 +332,8 @@
           "is_radiant": false,
           "kills": 3,
           "deaths": 6,
-          "assists": 3
+          "assists": 3,
+          "role_early": "offlane"
         },
         {
           "player_slot": 130,
@@ -316,7 +343,8 @@
           "is_radiant": false,
           "kills": 1,
           "deaths": 6,
-          "assists": 4
+          "assists": 4,
+          "role_early": "mid"
         },
         {
           "player_slot": 131,
@@ -326,7 +354,8 @@
           "is_radiant": false,
           "kills": 0,
           "deaths": 10,
-          "assists": 7
+          "assists": 7,
+          "role_early": "support(4)"
         },
         {
           "player_slot": 132,
@@ -336,7 +365,8 @@
           "is_radiant": false,
           "kills": 1,
           "deaths": 10,
-          "assists": 6
+          "assists": 6,
+          "role_early": "support(5)"
         }
       ]
     },
@@ -357,7 +387,8 @@
           "is_radiant": true,
           "kills": 14,
           "deaths": 0,
-          "assists": 8
+          "assists": 8,
+          "role_early": "carry"
         },
         {
           "player_slot": 1,
@@ -367,7 +398,8 @@
           "is_radiant": true,
           "kills": 3,
           "deaths": 2,
-          "assists": 19
+          "assists": 19,
+          "role_early": "support(5)"
         },
         {
           "player_slot": 2,
@@ -377,7 +409,8 @@
           "is_radiant": true,
           "kills": 6,
           "deaths": 3,
-          "assists": 23
+          "assists": 23,
+          "role_early": "support(4)"
         },
         {
           "player_slot": 3,
@@ -387,7 +420,8 @@
           "is_radiant": true,
           "kills": 6,
           "deaths": 0,
-          "assists": 16
+          "assists": 16,
+          "role_early": "offlane"
         },
         {
           "player_slot": 4,
@@ -397,7 +431,8 @@
           "is_radiant": true,
           "kills": 10,
           "deaths": 4,
-          "assists": 21
+          "assists": 21,
+          "role_early": "mid"
         },
         {
           "player_slot": 128,
@@ -407,7 +442,8 @@
           "is_radiant": false,
           "kills": 6,
           "deaths": 2,
-          "assists": 2
+          "assists": 2,
+          "role_early": "carry"
         },
         {
           "player_slot": 129,
@@ -417,7 +453,8 @@
           "is_radiant": false,
           "kills": 0,
           "deaths": 8,
-          "assists": 6
+          "assists": 6,
+          "role_early": "offlane"
         },
         {
           "player_slot": 130,
@@ -427,7 +464,8 @@
           "is_radiant": false,
           "kills": 1,
           "deaths": 5,
-          "assists": 7
+          "assists": 7,
+          "role_early": "mid"
         },
         {
           "player_slot": 131,
@@ -437,7 +475,8 @@
           "is_radiant": false,
           "kills": 1,
           "deaths": 14,
-          "assists": 2
+          "assists": 2,
+          "role_early": "support(5)"
         },
         {
           "player_slot": 132,
@@ -447,7 +486,8 @@
           "is_radiant": false,
           "kills": 1,
           "deaths": 10,
-          "assists": 5
+          "assists": 5,
+          "role_early": "support(4)"
         }
       ]
     },
@@ -468,7 +508,8 @@
           "is_radiant": true,
           "kills": 7,
           "deaths": 1,
-          "assists": 10
+          "assists": 10,
+          "role_early": "offlane"
         },
         {
           "player_slot": 1,
@@ -478,7 +519,8 @@
           "is_radiant": true,
           "kills": 8,
           "deaths": 2,
-          "assists": 16
+          "assists": 16,
+          "role_early": "mid"
         },
         {
           "player_slot": 2,
@@ -488,7 +530,8 @@
           "is_radiant": true,
           "kills": 4,
           "deaths": 2,
-          "assists": 9
+          "assists": 9,
+          "role_early": "carry"
         },
         {
           "player_slot": 3,
@@ -498,7 +541,8 @@
           "is_radiant": true,
           "kills": 4,
           "deaths": 4,
-          "assists": 16
+          "assists": 16,
+          "role_early": "support(4)"
         },
         {
           "player_slot": 4,
@@ -508,7 +552,8 @@
           "is_radiant": true,
           "kills": 4,
           "deaths": 1,
-          "assists": 9
+          "assists": 9,
+          "role_early": "support(5)"
         },
         {
           "player_slot": 128,
@@ -518,7 +563,8 @@
           "is_radiant": false,
           "kills": 1,
           "deaths": 4,
-          "assists": 5
+          "assists": 5,
+          "role_early": "mid"
         },
         {
           "player_slot": 129,
@@ -528,7 +574,8 @@
           "is_radiant": false,
           "kills": 0,
           "deaths": 6,
-          "assists": 7
+          "assists": 7,
+          "role_early": "support(5)"
         },
         {
           "player_slot": 130,
@@ -538,7 +585,8 @@
           "is_radiant": false,
           "kills": 3,
           "deaths": 6,
-          "assists": 3
+          "assists": 3,
+          "role_early": "carry"
         },
         {
           "player_slot": 131,
@@ -548,7 +596,8 @@
           "is_radiant": false,
           "kills": 1,
           "deaths": 6,
-          "assists": 4
+          "assists": 4,
+          "role_early": "support(4)"
         },
         {
           "player_slot": 132,
@@ -558,7 +607,8 @@
           "is_radiant": false,
           "kills": 5,
           "deaths": 5,
-          "assists": 1
+          "assists": 1,
+          "role_early": "offlane"
         }
       ]
     },
@@ -579,7 +629,8 @@
           "is_radiant": true,
           "kills": 5,
           "deaths": 2,
-          "assists": 7
+          "assists": 7,
+          "role_early": "offlane"
         },
         {
           "player_slot": 1,
@@ -589,7 +640,8 @@
           "is_radiant": true,
           "kills": 6,
           "deaths": 1,
-          "assists": 15
+          "assists": 15,
+          "role_early": "support(4)"
         },
         {
           "player_slot": 2,
@@ -599,7 +651,8 @@
           "is_radiant": true,
           "kills": 14,
           "deaths": 1,
-          "assists": 11
+          "assists": 11,
+          "role_early": "carry"
         },
         {
           "player_slot": 3,
@@ -609,7 +662,8 @@
           "is_radiant": true,
           "kills": 5,
           "deaths": 3,
-          "assists": 14
+          "assists": 14,
+          "role_early": "support(5)"
         },
         {
           "player_slot": 4,
@@ -619,7 +673,8 @@
           "is_radiant": true,
           "kills": 7,
           "deaths": 0,
-          "assists": 13
+          "assists": 13,
+          "role_early": "mid"
         },
         {
           "player_slot": 128,
@@ -629,7 +684,8 @@
           "is_radiant": false,
           "kills": 0,
           "deaths": 7,
-          "assists": 5
+          "assists": 5,
+          "role_early": "offlane"
         },
         {
           "player_slot": 129,
@@ -639,7 +695,8 @@
           "is_radiant": false,
           "kills": 2,
           "deaths": 5,
-          "assists": 2
+          "assists": 2,
+          "role_early": "carry"
         },
         {
           "player_slot": 130,
@@ -649,7 +706,8 @@
           "is_radiant": false,
           "kills": 0,
           "deaths": 7,
-          "assists": 3
+          "assists": 3,
+          "role_early": "mid"
         },
         {
           "player_slot": 131,
@@ -659,7 +717,8 @@
           "is_radiant": false,
           "kills": 3,
           "deaths": 10,
-          "assists": 2
+          "assists": 2,
+          "role_early": "support(4)"
         },
         {
           "player_slot": 132,
@@ -669,7 +728,8 @@
           "is_radiant": false,
           "kills": 2,
           "deaths": 8,
-          "assists": 2
+          "assists": 2,
+          "role_early": "support(5)"
         }
       ]
     },
@@ -690,7 +750,8 @@
           "is_radiant": true,
           "kills": 7,
           "deaths": 6,
-          "assists": 5
+          "assists": 5,
+          "role_early": "carry"
         },
         {
           "player_slot": 1,
@@ -700,7 +761,8 @@
           "is_radiant": true,
           "kills": 2,
           "deaths": 5,
-          "assists": 11
+          "assists": 11,
+          "role_early": "support(4)"
         },
         {
           "player_slot": 2,
@@ -710,7 +772,8 @@
           "is_radiant": true,
           "kills": 2,
           "deaths": 4,
-          "assists": 5
+          "assists": 5,
+          "role_early": "offlane"
         },
         {
           "player_slot": 3,
@@ -720,7 +783,8 @@
           "is_radiant": true,
           "kills": 0,
           "deaths": 5,
-          "assists": 14
+          "assists": 14,
+          "role_early": "support(5)"
         },
         {
           "player_slot": 4,
@@ -730,7 +794,8 @@
           "is_radiant": true,
           "kills": 3,
           "deaths": 6,
-          "assists": 4
+          "assists": 4,
+          "role_early": "mid"
         },
         {
           "player_slot": 128,
@@ -740,7 +805,8 @@
           "is_radiant": false,
           "kills": 5,
           "deaths": 2,
-          "assists": 14
+          "assists": 14,
+          "role_early": "carry"
         },
         {
           "player_slot": 129,
@@ -750,7 +816,8 @@
           "is_radiant": false,
           "kills": 7,
           "deaths": 3,
-          "assists": 13
+          "assists": 13,
+          "role_early": "offlane"
         },
         {
           "player_slot": 130,
@@ -760,7 +827,8 @@
           "is_radiant": false,
           "kills": 7,
           "deaths": 2,
-          "assists": 14
+          "assists": 14,
+          "role_early": "mid"
         },
         {
           "player_slot": 131,
@@ -770,7 +838,8 @@
           "is_radiant": false,
           "kills": 6,
           "deaths": 4,
-          "assists": 15
+          "assists": 15,
+          "role_early": "support(4)"
         },
         {
           "player_slot": 132,
@@ -780,7 +849,8 @@
           "is_radiant": false,
           "kills": 1,
           "deaths": 4,
-          "assists": 17
+          "assists": 17,
+          "role_early": "support(5)"
         }
       ]
     },
@@ -801,7 +871,8 @@
           "is_radiant": true,
           "kills": 1,
           "deaths": 9,
-          "assists": 10
+          "assists": 10,
+          "role_early": "offlane"
         },
         {
           "player_slot": 1,
@@ -811,7 +882,8 @@
           "is_radiant": true,
           "kills": 1,
           "deaths": 12,
-          "assists": 12
+          "assists": 12,
+          "role_early": "support(5)"
         },
         {
           "player_slot": 2,
@@ -821,7 +893,8 @@
           "is_radiant": true,
           "kills": 5,
           "deaths": 7,
-          "assists": 11
+          "assists": 11,
+          "role_early": "support(4)"
         },
         {
           "player_slot": 3,
@@ -831,7 +904,8 @@
           "is_radiant": true,
           "kills": 3,
           "deaths": 8,
-          "assists": 6
+          "assists": 6,
+          "role_early": "mid"
         },
         {
           "player_slot": 4,
@@ -841,7 +915,8 @@
           "is_radiant": true,
           "kills": 7,
           "deaths": 4,
-          "assists": 8
+          "assists": 8,
+          "role_early": "carry"
         },
         {
           "player_slot": 128,
@@ -851,7 +926,8 @@
           "is_radiant": false,
           "kills": 3,
           "deaths": 6,
-          "assists": 19
+          "assists": 19,
+          "role_early": "support(5)"
         },
         {
           "player_slot": 129,
@@ -861,7 +937,8 @@
           "is_radiant": false,
           "kills": 10,
           "deaths": 3,
-          "assists": 19
+          "assists": 19,
+          "role_early": "mid"
         },
         {
           "player_slot": 130,
@@ -871,7 +948,8 @@
           "is_radiant": false,
           "kills": 11,
           "deaths": 2,
-          "assists": 16
+          "assists": 16,
+          "role_early": "carry"
         },
         {
           "player_slot": 131,
@@ -881,7 +959,8 @@
           "is_radiant": false,
           "kills": 3,
           "deaths": 2,
-          "assists": 25
+          "assists": 25,
+          "role_early": "support(4)"
         },
         {
           "player_slot": 132,
@@ -891,7 +970,8 @@
           "is_radiant": false,
           "kills": 13,
           "deaths": 4,
-          "assists": 13
+          "assists": 13,
+          "role_early": "offlane"
         }
       ]
     },
@@ -912,7 +992,8 @@
           "is_radiant": true,
           "kills": 0,
           "deaths": 6,
-          "assists": 4
+          "assists": 4,
+          "role_early": "carry"
         },
         {
           "player_slot": 1,
@@ -922,7 +1003,8 @@
           "is_radiant": true,
           "kills": 2,
           "deaths": 7,
-          "assists": 3
+          "assists": 3,
+          "role_early": "mid"
         },
         {
           "player_slot": 2,
@@ -932,7 +1014,8 @@
           "is_radiant": true,
           "kills": 2,
           "deaths": 7,
-          "assists": 4
+          "assists": 4,
+          "role_early": "offlane"
         },
         {
           "player_slot": 3,
@@ -942,7 +1025,8 @@
           "is_radiant": true,
           "kills": 3,
           "deaths": 10,
-          "assists": 6
+          "assists": 6,
+          "role_early": "support(5)"
         },
         {
           "player_slot": 4,
@@ -952,7 +1036,8 @@
           "is_radiant": true,
           "kills": 3,
           "deaths": 5,
-          "assists": 3
+          "assists": 3,
+          "role_early": "support(4)"
         },
         {
           "player_slot": 128,
@@ -962,7 +1047,8 @@
           "is_radiant": false,
           "kills": 9,
           "deaths": 1,
-          "assists": 8
+          "assists": 8,
+          "role_early": "mid"
         },
         {
           "player_slot": 129,
@@ -972,7 +1058,8 @@
           "is_radiant": false,
           "kills": 11,
           "deaths": 1,
-          "assists": 11
+          "assists": 11,
+          "role_early": "carry"
         },
         {
           "player_slot": 130,
@@ -982,7 +1069,8 @@
           "is_radiant": false,
           "kills": 5,
           "deaths": 3,
-          "assists": 21
+          "assists": 21,
+          "role_early": "support(4)"
         },
         {
           "player_slot": 131,
@@ -992,7 +1080,8 @@
           "is_radiant": false,
           "kills": 2,
           "deaths": 5,
-          "assists": 25
+          "assists": 25,
+          "role_early": "support(5)"
         },
         {
           "player_slot": 132,
@@ -1002,7 +1091,8 @@
           "is_radiant": false,
           "kills": 7,
           "deaths": 0,
-          "assists": 16
+          "assists": 16,
+          "role_early": "offlane"
         }
       ]
     },
@@ -1023,7 +1113,8 @@
           "is_radiant": true,
           "kills": 3,
           "deaths": 3,
-          "assists": 2
+          "assists": 2,
+          "role_early": "mid"
         },
         {
           "player_slot": 1,
@@ -1033,7 +1124,8 @@
           "is_radiant": true,
           "kills": 7,
           "deaths": 7,
-          "assists": 3
+          "assists": 3,
+          "role_early": "carry"
         },
         {
           "player_slot": 2,
@@ -1043,7 +1135,8 @@
           "is_radiant": true,
           "kills": 2,
           "deaths": 5,
-          "assists": 6
+          "assists": 6,
+          "role_early": "offlane"
         },
         {
           "player_slot": 3,
@@ -1053,7 +1146,8 @@
           "is_radiant": true,
           "kills": 0,
           "deaths": 8,
-          "assists": 8
+          "assists": 8,
+          "role_early": "support(4)"
         },
         {
           "player_slot": 4,
@@ -1063,7 +1157,8 @@
           "is_radiant": true,
           "kills": 1,
           "deaths": 9,
-          "assists": 9
+          "assists": 9,
+          "role_early": "support(5)"
         },
         {
           "player_slot": 128,
@@ -1073,7 +1168,8 @@
           "is_radiant": false,
           "kills": 15,
           "deaths": 0,
-          "assists": 12
+          "assists": 12,
+          "role_early": "carry"
         },
         {
           "player_slot": 129,
@@ -1083,7 +1179,8 @@
           "is_radiant": false,
           "kills": 3,
           "deaths": 3,
-          "assists": 18
+          "assists": 18,
+          "role_early": "offlane"
         },
         {
           "player_slot": 130,
@@ -1093,7 +1190,8 @@
           "is_radiant": false,
           "kills": 7,
           "deaths": 4,
-          "assists": 19
+          "assists": 19,
+          "role_early": "mid"
         },
         {
           "player_slot": 131,
@@ -1103,7 +1201,8 @@
           "is_radiant": false,
           "kills": 1,
           "deaths": 4,
-          "assists": 24
+          "assists": 24,
+          "role_early": "support(5)"
         },
         {
           "player_slot": 132,
@@ -1113,7 +1212,8 @@
           "is_radiant": false,
           "kills": 6,
           "deaths": 3,
-          "assists": 20
+          "assists": 20,
+          "role_early": "support(4)"
         }
       ]
     },
@@ -1134,7 +1234,8 @@
           "is_radiant": true,
           "kills": 3,
           "deaths": 0,
-          "assists": 8
+          "assists": 8,
+          "role_early": "carry"
         },
         {
           "player_slot": 1,
@@ -1144,7 +1245,8 @@
           "is_radiant": true,
           "kills": 3,
           "deaths": 4,
-          "assists": 12
+          "assists": 12,
+          "role_early": "support(4)"
         },
         {
           "player_slot": 2,
@@ -1154,7 +1256,8 @@
           "is_radiant": true,
           "kills": 7,
           "deaths": 1,
-          "assists": 5
+          "assists": 5,
+          "role_early": "mid"
         },
         {
           "player_slot": 3,
@@ -1164,7 +1267,8 @@
           "is_radiant": true,
           "kills": 0,
           "deaths": 2,
-          "assists": 9
+          "assists": 9,
+          "role_early": "support(5)"
         },
         {
           "player_slot": 4,
@@ -1174,7 +1278,8 @@
           "is_radiant": true,
           "kills": 7,
           "deaths": 1,
-          "assists": 10
+          "assists": 10,
+          "role_early": "offlane"
         },
         {
           "player_slot": 128,
@@ -1184,7 +1289,8 @@
           "is_radiant": false,
           "kills": 2,
           "deaths": 2,
-          "assists": 5
+          "assists": 5,
+          "role_early": "mid"
         },
         {
           "player_slot": 129,
@@ -1194,7 +1300,8 @@
           "is_radiant": false,
           "kills": 5,
           "deaths": 1,
-          "assists": 2
+          "assists": 2,
+          "role_early": "carry"
         },
         {
           "player_slot": 130,
@@ -1204,7 +1311,8 @@
           "is_radiant": false,
           "kills": 1,
           "deaths": 5,
-          "assists": 1
+          "assists": 1,
+          "role_early": "offlane"
         },
         {
           "player_slot": 131,
@@ -1214,7 +1322,8 @@
           "is_radiant": false,
           "kills": 0,
           "deaths": 6,
-          "assists": 7
+          "assists": 7,
+          "role_early": "support(5)"
         },
         {
           "player_slot": 132,
@@ -1224,7 +1333,8 @@
           "is_radiant": false,
           "kills": 0,
           "deaths": 6,
-          "assists": 4
+          "assists": 4,
+          "role_early": "support(4)"
         }
       ]
     },
@@ -1245,7 +1355,8 @@
           "is_radiant": true,
           "kills": 11,
           "deaths": 3,
-          "assists": 9
+          "assists": 9,
+          "role_early": "carry"
         },
         {
           "player_slot": 1,
@@ -1255,7 +1366,8 @@
           "is_radiant": true,
           "kills": 11,
           "deaths": 1,
-          "assists": 11
+          "assists": 11,
+          "role_early": "mid"
         },
         {
           "player_slot": 2,
@@ -1265,7 +1377,8 @@
           "is_radiant": true,
           "kills": 6,
           "deaths": 12,
-          "assists": 16
+          "assists": 16,
+          "role_early": "offlane"
         },
         {
           "player_slot": 3,
@@ -1275,7 +1388,8 @@
           "is_radiant": true,
           "kills": 0,
           "deaths": 22,
-          "assists": 24
+          "assists": 24,
+          "role_early": "support(4)"
         },
         {
           "player_slot": 4,
@@ -1285,7 +1399,8 @@
           "is_radiant": true,
           "kills": 2,
           "deaths": 9,
-          "assists": 26
+          "assists": 26,
+          "role_early": "support(5)"
         },
         {
           "player_slot": 128,
@@ -1295,7 +1410,8 @@
           "is_radiant": false,
           "kills": 25,
           "deaths": 8,
-          "assists": 9
+          "assists": 9,
+          "role_early": "carry"
         },
         {
           "player_slot": 129,
@@ -1305,7 +1421,8 @@
           "is_radiant": false,
           "kills": 9,
           "deaths": 4,
-          "assists": 17
+          "assists": 17,
+          "role_early": "mid"
         },
         {
           "player_slot": 130,
@@ -1315,7 +1432,8 @@
           "is_radiant": false,
           "kills": 3,
           "deaths": 5,
-          "assists": 24
+          "assists": 24,
+          "role_early": "support(5)"
         },
         {
           "player_slot": 131,
@@ -1325,7 +1443,8 @@
           "is_radiant": false,
           "kills": 4,
           "deaths": 6,
-          "assists": 19
+          "assists": 19,
+          "role_early": "offlane"
         },
         {
           "player_slot": 132,
@@ -1335,7 +1454,8 @@
           "is_radiant": false,
           "kills": 4,
           "deaths": 10,
-          "assists": 29
+          "assists": 29,
+          "role_early": "support(4)"
         }
       ]
     },
@@ -1356,7 +1476,8 @@
           "is_radiant": true,
           "kills": 22,
           "deaths": 6,
-          "assists": 9
+          "assists": 9,
+          "role_early": "offlane"
         },
         {
           "player_slot": 1,
@@ -1366,7 +1487,8 @@
           "is_radiant": true,
           "kills": 13,
           "deaths": 4,
-          "assists": 19
+          "assists": 19,
+          "role_early": "carry"
         },
         {
           "player_slot": 2,
@@ -1376,7 +1498,8 @@
           "is_radiant": true,
           "kills": 3,
           "deaths": 1,
-          "assists": 24
+          "assists": 24,
+          "role_early": "mid"
         },
         {
           "player_slot": 3,
@@ -1386,7 +1509,8 @@
           "is_radiant": true,
           "kills": 7,
           "deaths": 9,
-          "assists": 30
+          "assists": 30,
+          "role_early": "support(4)"
         },
         {
           "player_slot": 4,
@@ -1396,7 +1520,8 @@
           "is_radiant": true,
           "kills": 0,
           "deaths": 7,
-          "assists": 21
+          "assists": 21,
+          "role_early": "support(5)"
         },
         {
           "player_slot": 128,
@@ -1406,7 +1531,8 @@
           "is_radiant": false,
           "kills": 8,
           "deaths": 6,
-          "assists": 7
+          "assists": 7,
+          "role_early": "mid"
         },
         {
           "player_slot": 129,
@@ -1416,7 +1542,8 @@
           "is_radiant": false,
           "kills": 4,
           "deaths": 8,
-          "assists": 13
+          "assists": 13,
+          "role_early": "carry"
         },
         {
           "player_slot": 130,
@@ -1426,7 +1553,8 @@
           "is_radiant": false,
           "kills": 9,
           "deaths": 9,
-          "assists": 9
+          "assists": 9,
+          "role_early": "offlane"
         },
         {
           "player_slot": 131,
@@ -1436,7 +1564,8 @@
           "is_radiant": false,
           "kills": 2,
           "deaths": 9,
-          "assists": 12
+          "assists": 12,
+          "role_early": "support(5)"
         },
         {
           "player_slot": 132,
@@ -1446,7 +1575,8 @@
           "is_radiant": false,
           "kills": 4,
           "deaths": 13,
-          "assists": 17
+          "assists": 17,
+          "role_early": "support(4)"
         }
       ]
     },
@@ -1467,7 +1597,8 @@
           "is_radiant": true,
           "kills": 10,
           "deaths": 5,
-          "assists": 14
+          "assists": 14,
+          "role_early": "mid"
         },
         {
           "player_slot": 1,
@@ -1477,7 +1608,8 @@
           "is_radiant": true,
           "kills": 6,
           "deaths": 6,
-          "assists": 10
+          "assists": 10,
+          "role_early": "offlane"
         },
         {
           "player_slot": 2,
@@ -1487,7 +1619,8 @@
           "is_radiant": true,
           "kills": 4,
           "deaths": 8,
-          "assists": 16
+          "assists": 16,
+          "role_early": "support(4)"
         },
         {
           "player_slot": 3,
@@ -1497,7 +1630,8 @@
           "is_radiant": true,
           "kills": 7,
           "deaths": 11,
-          "assists": 19
+          "assists": 19,
+          "role_early": "support(5)"
         },
         {
           "player_slot": 4,
@@ -1507,7 +1641,8 @@
           "is_radiant": true,
           "kills": 11,
           "deaths": 3,
-          "assists": 10
+          "assists": 10,
+          "role_early": "carry"
         },
         {
           "player_slot": 128,
@@ -1517,7 +1652,8 @@
           "is_radiant": false,
           "kills": 10,
           "deaths": 5,
-          "assists": 9
+          "assists": 9,
+          "role_early": "carry"
         },
         {
           "player_slot": 129,
@@ -1527,7 +1663,8 @@
           "is_radiant": false,
           "kills": 2,
           "deaths": 5,
-          "assists": 14
+          "assists": 14,
+          "role_early": "support(5)"
         },
         {
           "player_slot": 130,
@@ -1537,7 +1674,8 @@
           "is_radiant": false,
           "kills": 6,
           "deaths": 12,
-          "assists": 16
+          "assists": 16,
+          "role_early": "offlane"
         },
         {
           "player_slot": 131,
@@ -1547,7 +1685,8 @@
           "is_radiant": false,
           "kills": 13,
           "deaths": 7,
-          "assists": 14
+          "assists": 14,
+          "role_early": "mid"
         },
         {
           "player_slot": 132,
@@ -1557,7 +1696,8 @@
           "is_radiant": false,
           "kills": 2,
           "deaths": 10,
-          "assists": 22
+          "assists": 22,
+          "role_early": "support(4)"
         }
       ]
     },
@@ -1578,7 +1718,8 @@
           "is_radiant": true,
           "kills": 9,
           "deaths": 11,
-          "assists": 7
+          "assists": 7,
+          "role_early": "carry"
         },
         {
           "player_slot": 1,
@@ -1588,7 +1729,8 @@
           "is_radiant": true,
           "kills": 2,
           "deaths": 15,
-          "assists": 13
+          "assists": 13,
+          "role_early": "support(5)"
         },
         {
           "player_slot": 2,
@@ -1598,7 +1740,8 @@
           "is_radiant": true,
           "kills": 7,
           "deaths": 2,
-          "assists": 8
+          "assists": 8,
+          "role_early": "mid"
         },
         {
           "player_slot": 3,
@@ -1608,7 +1751,8 @@
           "is_radiant": true,
           "kills": 4,
           "deaths": 10,
-          "assists": 10
+          "assists": 10,
+          "role_early": "offlane"
         },
         {
           "player_slot": 4,
@@ -1618,7 +1762,8 @@
           "is_radiant": true,
           "kills": 2,
           "deaths": 14,
-          "assists": 13
+          "assists": 13,
+          "role_early": "support(4)"
         },
         {
           "player_slot": 128,
@@ -1628,7 +1773,8 @@
           "is_radiant": false,
           "kills": 10,
           "deaths": 5,
-          "assists": 12
+          "assists": 12,
+          "role_early": "offlane"
         },
         {
           "player_slot": 129,
@@ -1638,7 +1784,8 @@
           "is_radiant": false,
           "kills": 17,
           "deaths": 2,
-          "assists": 16
+          "assists": 16,
+          "role_early": "mid"
         },
         {
           "player_slot": 130,
@@ -1648,7 +1795,8 @@
           "is_radiant": false,
           "kills": 2,
           "deaths": 8,
-          "assists": 21
+          "assists": 21,
+          "role_early": "support(5)"
         },
         {
           "player_slot": 131,
@@ -1658,7 +1806,8 @@
           "is_radiant": false,
           "kills": 7,
           "deaths": 8,
-          "assists": 22
+          "assists": 22,
+          "role_early": "support(4)"
         },
         {
           "player_slot": 132,
@@ -1668,7 +1817,8 @@
           "is_radiant": false,
           "kills": 16,
           "deaths": 2,
-          "assists": 7
+          "assists": 7,
+          "role_early": "carry"
         }
       ]
     },
@@ -1689,7 +1839,8 @@
           "is_radiant": true,
           "kills": 13,
           "deaths": 3,
-          "assists": 10
+          "assists": 10,
+          "role_early": "carry"
         },
         {
           "player_slot": 1,
@@ -1699,7 +1850,8 @@
           "is_radiant": true,
           "kills": 7,
           "deaths": 5,
-          "assists": 8
+          "assists": 8,
+          "role_early": "mid"
         },
         {
           "player_slot": 2,
@@ -1709,7 +1861,8 @@
           "is_radiant": true,
           "kills": 5,
           "deaths": 8,
-          "assists": 10
+          "assists": 10,
+          "role_early": "support(4)"
         },
         {
           "player_slot": 3,
@@ -1719,7 +1872,8 @@
           "is_radiant": true,
           "kills": 2,
           "deaths": 14,
-          "assists": 20
+          "assists": 20,
+          "role_early": "support(5)"
         },
         {
           "player_slot": 4,
@@ -1729,7 +1883,8 @@
           "is_radiant": true,
           "kills": 5,
           "deaths": 6,
-          "assists": 15
+          "assists": 15,
+          "role_early": "offlane"
         },
         {
           "player_slot": 128,
@@ -1739,7 +1894,8 @@
           "is_radiant": false,
           "kills": 13,
           "deaths": 3,
-          "assists": 16
+          "assists": 16,
+          "role_early": "carry"
         },
         {
           "player_slot": 129,
@@ -1749,7 +1905,8 @@
           "is_radiant": false,
           "kills": 8,
           "deaths": 5,
-          "assists": 18
+          "assists": 18,
+          "role_early": "mid"
         },
         {
           "player_slot": 130,
@@ -1759,7 +1916,8 @@
           "is_radiant": false,
           "kills": 8,
           "deaths": 5,
-          "assists": 16
+          "assists": 16,
+          "role_early": "offlane"
         },
         {
           "player_slot": 131,
@@ -1769,7 +1927,8 @@
           "is_radiant": false,
           "kills": 3,
           "deaths": 10,
-          "assists": 23
+          "assists": 23,
+          "role_early": "support(4)"
         },
         {
           "player_slot": 132,
@@ -1779,7 +1938,8 @@
           "is_radiant": false,
           "kills": 4,
           "deaths": 9,
-          "assists": 18
+          "assists": 18,
+          "role_early": "support(5)"
         }
       ]
     },
@@ -1800,7 +1960,8 @@
           "is_radiant": true,
           "kills": 7,
           "deaths": 1,
-          "assists": 11
+          "assists": 11,
+          "role_early": "carry"
         },
         {
           "player_slot": 1,
@@ -1810,7 +1971,8 @@
           "is_radiant": true,
           "kills": 18,
           "deaths": 0,
-          "assists": 7
+          "assists": 7,
+          "role_early": "mid"
         },
         {
           "player_slot": 2,
@@ -1820,7 +1982,8 @@
           "is_radiant": true,
           "kills": 3,
           "deaths": 0,
-          "assists": 14
+          "assists": 14,
+          "role_early": "offlane"
         },
         {
           "player_slot": 3,
@@ -1830,7 +1993,8 @@
           "is_radiant": true,
           "kills": 1,
           "deaths": 2,
-          "assists": 14
+          "assists": 14,
+          "role_early": "support(5)"
         },
         {
           "player_slot": 4,
@@ -1840,7 +2004,8 @@
           "is_radiant": true,
           "kills": 4,
           "deaths": 2,
-          "assists": 11
+          "assists": 11,
+          "role_early": "support(4)"
         },
         {
           "player_slot": 128,
@@ -1850,7 +2015,8 @@
           "is_radiant": false,
           "kills": 1,
           "deaths": 7,
-          "assists": 2
+          "assists": 2,
+          "role_early": "mid"
         },
         {
           "player_slot": 129,
@@ -1860,7 +2026,8 @@
           "is_radiant": false,
           "kills": 3,
           "deaths": 8,
-          "assists": 2
+          "assists": 2,
+          "role_early": "support(4)"
         },
         {
           "player_slot": 130,
@@ -1870,7 +2037,8 @@
           "is_radiant": false,
           "kills": 0,
           "deaths": 8,
-          "assists": 2
+          "assists": 2,
+          "role_early": "support(5)"
         },
         {
           "player_slot": 131,
@@ -1880,7 +2048,8 @@
           "is_radiant": false,
           "kills": 1,
           "deaths": 6,
-          "assists": 1
+          "assists": 1,
+          "role_early": "carry"
         },
         {
           "player_slot": 132,
@@ -1890,7 +2059,8 @@
           "is_radiant": false,
           "kills": 0,
           "deaths": 4,
-          "assists": 3
+          "assists": 3,
+          "role_early": "offlane"
         }
       ]
     },
@@ -1911,7 +2081,8 @@
           "is_radiant": true,
           "kills": 8,
           "deaths": 4,
-          "assists": 15
+          "assists": 15,
+          "role_early": "support(4)"
         },
         {
           "player_slot": 1,
@@ -1921,7 +2092,8 @@
           "is_radiant": true,
           "kills": 2,
           "deaths": 6,
-          "assists": 18
+          "assists": 18,
+          "role_early": "offlane"
         },
         {
           "player_slot": 2,
@@ -1931,7 +2103,8 @@
           "is_radiant": true,
           "kills": 11,
           "deaths": 2,
-          "assists": 8
+          "assists": 8,
+          "role_early": "carry"
         },
         {
           "player_slot": 3,
@@ -1941,7 +2114,8 @@
           "is_radiant": true,
           "kills": 2,
           "deaths": 5,
-          "assists": 19
+          "assists": 19,
+          "role_early": "support(5)"
         },
         {
           "player_slot": 4,
@@ -1951,7 +2125,8 @@
           "is_radiant": true,
           "kills": 7,
           "deaths": 1,
-          "assists": 14
+          "assists": 14,
+          "role_early": "mid"
         },
         {
           "player_slot": 128,
@@ -1961,7 +2136,8 @@
           "is_radiant": false,
           "kills": 5,
           "deaths": 5,
-          "assists": 10
+          "assists": 10,
+          "role_early": "support(4)"
         },
         {
           "player_slot": 129,
@@ -1971,7 +2147,8 @@
           "is_radiant": false,
           "kills": 0,
           "deaths": 6,
-          "assists": 8
+          "assists": 8,
+          "role_early": "offlane"
         },
         {
           "player_slot": 130,
@@ -1981,7 +2158,8 @@
           "is_radiant": false,
           "kills": 12,
           "deaths": 6,
-          "assists": 3
+          "assists": 3,
+          "role_early": "carry"
         },
         {
           "player_slot": 131,
@@ -1991,7 +2169,8 @@
           "is_radiant": false,
           "kills": 0,
           "deaths": 6,
-          "assists": 14
+          "assists": 14,
+          "role_early": "support(5)"
         },
         {
           "player_slot": 132,
@@ -2001,7 +2180,8 @@
           "is_radiant": false,
           "kills": 1,
           "deaths": 7,
-          "assists": 10
+          "assists": 10,
+          "role_early": "mid"
         }
       ]
     },
@@ -2022,7 +2202,8 @@
           "is_radiant": true,
           "kills": 3,
           "deaths": 5,
-          "assists": 5
+          "assists": 5,
+          "role_early": "offlane"
         },
         {
           "player_slot": 1,
@@ -2032,7 +2213,8 @@
           "is_radiant": true,
           "kills": 2,
           "deaths": 3,
-          "assists": 6
+          "assists": 6,
+          "role_early": "mid"
         },
         {
           "player_slot": 2,
@@ -2042,7 +2224,8 @@
           "is_radiant": true,
           "kills": 5,
           "deaths": 7,
-          "assists": 8
+          "assists": 8,
+          "role_early": "carry"
         },
         {
           "player_slot": 3,
@@ -2052,7 +2235,8 @@
           "is_radiant": true,
           "kills": 5,
           "deaths": 10,
-          "assists": 10
+          "assists": 10,
+          "role_early": "support(5)"
         },
         {
           "player_slot": 4,
@@ -2062,7 +2246,8 @@
           "is_radiant": true,
           "kills": 3,
           "deaths": 8,
-          "assists": 7
+          "assists": 7,
+          "role_early": "support(4)"
         },
         {
           "player_slot": 128,
@@ -2072,7 +2257,8 @@
           "is_radiant": false,
           "kills": 6,
           "deaths": 2,
-          "assists": 14
+          "assists": 14,
+          "role_early": "carry"
         },
         {
           "player_slot": 129,
@@ -2082,7 +2268,8 @@
           "is_radiant": false,
           "kills": 13,
           "deaths": 3,
-          "assists": 11
+          "assists": 11,
+          "role_early": "mid"
         },
         {
           "player_slot": 130,
@@ -2092,7 +2279,8 @@
           "is_radiant": false,
           "kills": 4,
           "deaths": 3,
-          "assists": 21
+          "assists": 21,
+          "role_early": "support(4)"
         },
         {
           "player_slot": 131,
@@ -2102,7 +2290,8 @@
           "is_radiant": false,
           "kills": 6,
           "deaths": 3,
-          "assists": 17
+          "assists": 17,
+          "role_early": "offlane"
         },
         {
           "player_slot": 132,
@@ -2112,7 +2301,8 @@
           "is_radiant": false,
           "kills": 2,
           "deaths": 7,
-          "assists": 21
+          "assists": 21,
+          "role_early": "support(5)"
         }
       ]
     },
@@ -2133,7 +2323,8 @@
           "is_radiant": true,
           "kills": 9,
           "deaths": 7,
-          "assists": 4
+          "assists": 4,
+          "role_early": "carry"
         },
         {
           "player_slot": 1,
@@ -2143,7 +2334,8 @@
           "is_radiant": true,
           "kills": 3,
           "deaths": 9,
-          "assists": 10
+          "assists": 10,
+          "role_early": "support(5)"
         },
         {
           "player_slot": 2,
@@ -2153,7 +2345,8 @@
           "is_radiant": true,
           "kills": 2,
           "deaths": 7,
-          "assists": 8
+          "assists": 8,
+          "role_early": "support(4)"
         },
         {
           "player_slot": 3,
@@ -2163,7 +2356,8 @@
           "is_radiant": true,
           "kills": 1,
           "deaths": 6,
-          "assists": 3
+          "assists": 3,
+          "role_early": "mid"
         },
         {
           "player_slot": 4,
@@ -2173,7 +2367,8 @@
           "is_radiant": true,
           "kills": 1,
           "deaths": 5,
-          "assists": 9
+          "assists": 9,
+          "role_early": "offlane"
         },
         {
           "player_slot": 128,
@@ -2183,7 +2378,8 @@
           "is_radiant": false,
           "kills": 18,
           "deaths": 0,
-          "assists": 8
+          "assists": 8,
+          "role_early": "carry"
         },
         {
           "player_slot": 129,
@@ -2193,7 +2389,8 @@
           "is_radiant": false,
           "kills": 9,
           "deaths": 1,
-          "assists": 16
+          "assists": 16,
+          "role_early": "mid"
         },
         {
           "player_slot": 130,
@@ -2203,7 +2400,8 @@
           "is_radiant": false,
           "kills": 1,
           "deaths": 3,
-          "assists": 21
+          "assists": 21,
+          "role_early": "offlane"
         },
         {
           "player_slot": 131,
@@ -2213,7 +2411,8 @@
           "is_radiant": false,
           "kills": 3,
           "deaths": 5,
-          "assists": 22
+          "assists": 22,
+          "role_early": "support(4)"
         },
         {
           "player_slot": 132,
@@ -2223,7 +2422,8 @@
           "is_radiant": false,
           "kills": 2,
           "deaths": 7,
-          "assists": 15
+          "assists": 15,
+          "role_early": "support(5)"
         }
       ]
     }

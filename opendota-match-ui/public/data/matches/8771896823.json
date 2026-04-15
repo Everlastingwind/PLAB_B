@@ -4998,7 +4998,8 @@
       "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/poor_mans_shield.png",
       "neutral_item_key": "poor_mans_shield",
       "pro_name": null,
-      "team_name": null
+      "team_name": null,
+      "role_early": "offlane"
     },
     {
       "player_slot": 1,
@@ -6890,7 +6891,8 @@
       "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/occult_bracelet.png",
       "neutral_item_key": "occult_bracelet",
       "pro_name": null,
-      "team_name": null
+      "team_name": null,
+      "role_early": "support(5)"
     },
     {
       "player_slot": 2,
@@ -8720,7 +8722,8 @@
       "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/dormant_curio.png",
       "neutral_item_key": "dormant_curio",
       "pro_name": null,
-      "team_name": null
+      "team_name": null,
+      "role_early": "support(4)"
     },
     {
       "player_slot": 3,
@@ -10372,7 +10375,8 @@
       "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/medallion_of_courage.png",
       "neutral_item_key": "medallion_of_courage",
       "pro_name": null,
-      "team_name": null
+      "team_name": null,
+      "role_early": "mid"
     },
     {
       "player_slot": 4,
@@ -12117,7 +12121,8 @@
       "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/dagger_of_ristul.png",
       "neutral_item_key": "dagger_of_ristul",
       "pro_name": null,
-      "team_name": null
+      "team_name": null,
+      "role_early": "carry"
     },
     {
       "player_slot": 128,
@@ -13875,7 +13880,8 @@
       "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/ash_legion_shield.png",
       "neutral_item_key": "ash_legion_shield",
       "pro_name": "CoYoTão",
-      "team_name": "Avalanche eSports"
+      "team_name": "Avalanche eSports",
+      "role_early": "support(5)"
     },
     {
       "player_slot": 129,
@@ -15618,7 +15624,8 @@
       "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/essence_ring.png",
       "neutral_item_key": "essence_ring",
       "pro_name": null,
-      "team_name": null
+      "team_name": null,
+      "role_early": "mid"
     },
     {
       "player_slot": 130,
@@ -17360,7 +17367,8 @@
       "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/medallion_of_courage.png",
       "neutral_item_key": "medallion_of_courage",
       "pro_name": "YiSuS",
-      "team_name": "Chandogs"
+      "team_name": "Chandogs",
+      "role_early": "carry"
     },
     {
       "player_slot": 131,
@@ -19308,7 +19316,8 @@
       "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/kobold_cup.png",
       "neutral_item_key": "kobold_cup",
       "pro_name": null,
-      "team_name": null
+      "team_name": null,
+      "role_early": "support(4)"
     },
     {
       "player_slot": 132,
@@ -21072,7 +21081,8 @@
       "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/medallion_of_courage.png",
       "neutral_item_key": "medallion_of_courage",
       "pro_name": "Tala",
-      "team_name": "Puraka esports"
+      "team_name": "Puraka esports",
+      "role_early": "offlane"
     }
   ],
   "leagueid": 19503,

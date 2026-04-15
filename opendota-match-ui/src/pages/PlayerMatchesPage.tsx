@@ -66,6 +66,7 @@ export function PlayerMatchesPage() {
   const { maps, loading: mapsLoading } = useEntityMaps();
   const [feed, setFeed] = useState<FeedSelection>({ pub: true, pro: false });
   const [replays, setReplays] = useState<ReplaySummary[]>([]);
+  const [roleFilter, setRoleFilter] = useState<string>("all");
   const [detailByMatch, setDetailByMatch] = useState<Record<number, SlimPlayer>>(
     {}
   );
@@ -74,6 +75,7 @@ export function PlayerMatchesPage() {
 
   useEffect(() => {
     setPage(1);
+    setRoleFilter("all");
   }, [aid, feed]);
 
   useEffect(() => {
@@ -93,9 +95,62 @@ export function PlayerMatchesPage() {
     };
   }, [aid, feed]);
 
+  const normalizeRole = (raw: unknown): string => {
+    const s = String(raw ?? "").trim().toLowerCase();
+    if (!s) return "";
+    if (s === "support4" || s === "support 4" || s === "support(4)") return "support(4)";
+    if (s === "support5" || s === "support 5" || s === "support(5)") return "support(5)";
+    if (s === "carry" || s === "mid" || s === "offlane") return s;
+    return s;
+  };
+
+  const roleLabel = (role: string): string => {
+    if (role === "support(4)") return "pos4";
+    if (role === "support(5)") return "pos5";
+    return role;
+  };
+
+  const replayRole = useCallback(
+    (r: ReplaySummary): string => {
+      const ps = (r.players || []).find((x) => Number(x.account_id || 0) === aid) as
+        | ({ role_early?: unknown } & typeof r.players[number])
+        | undefined;
+      const fromSummary = normalizeRole(ps?.role_early);
+      if (fromSummary) return fromSummary;
+      const row = detailByMatch[r.match_id];
+      return normalizeRole((row as { role_early?: unknown } | undefined)?.role_early);
+    },
+    [aid, detailByMatch]
+  );
+
+  const roleOptions = useMemo(
+    () => ["carry", "mid", "offlane", "support(4)", "support(5)"],
+    []
+  );
+
+  const filteredReplays = useMemo(() => {
+    if (roleFilter === "all") return replays;
+    return replays.filter((r) => replayRole(r) === roleFilter);
+  }, [replays, replayRole, roleFilter]);
+
+  const roleCounts = useMemo(() => {
+    const out: Record<string, number> = {
+      carry: 0,
+      mid: 0,
+      offlane: 0,
+      "support(4)": 0,
+      "support(5)": 0,
+    };
+    for (const r of replays) {
+      const rr = replayRole(r);
+      if (rr in out) out[rr] += 1;
+    }
+    return out;
+  }, [replays, replayRole]);
+
   const visible = useMemo(
-    () => slicePage(replays, page),
-    [replays, page]
+    () => slicePage(filteredReplays, page),
+    [filteredReplays, page]
   );
 
   useEffect(() => {
@@ -131,8 +186,8 @@ export function PlayerMatchesPage() {
   }, [visible, aid, detailByMatch]);
 
   const onIntersect = useCallback(() => {
-    setPage((p) => (hasMore(replays.length, p) ? p + 1 : p));
-  }, [replays.length]);
+    setPage((p) => (hasMore(filteredReplays.length, p) ? p + 1 : p));
+  }, [filteredReplays.length]);
 
   useEffect(() => {
     const el = sentinelRef.current;
@@ -188,23 +243,36 @@ export function PlayerMatchesPage() {
                 ? `选手 ${titleName}`
                 : `玩家 #${accountId}`}
             </h1>
-            <Link
-              to="/"
-              className="text-xs text-amber-600 hover:underline dark:text-amber-500"
-            >
-              返回主页
-            </Link>
+            <div className="flex flex-wrap items-center gap-1.5">
+              <button
+                type="button"
+                onClick={() => setRoleFilter("all")}
+                className={cn(
+                  "rounded border px-2 py-1 text-[11px] font-semibold uppercase tracking-wide",
+                  roleFilter === "all"
+                    ? "border-amber-500/50 bg-amber-100/70 text-amber-700 dark:border-amber-500/45 dark:bg-amber-500/15 dark:text-amber-300"
+                    : "border-slate-500/35 bg-slate-200/40 text-slate-700 hover:bg-slate-300/45 dark:border-slate-500/45 dark:bg-slate-700/40 dark:text-slate-200 dark:hover:bg-slate-700/60"
+                )}
+              >
+                all ({replays.length})
+              </button>
+              {roleOptions.map((role) => (
+                <button
+                  key={role}
+                  type="button"
+                  onClick={() => setRoleFilter(role)}
+                  className={cn(
+                    "rounded border px-2 py-1 text-[11px] font-semibold uppercase tracking-wide",
+                    roleFilter === role
+                      ? "border-emerald-500/45 bg-emerald-100/70 text-emerald-700 dark:border-emerald-500/40 dark:bg-emerald-500/15 dark:text-emerald-300"
+                      : "border-slate-500/35 bg-slate-200/40 text-slate-700 hover:bg-slate-300/45 dark:border-slate-500/45 dark:bg-slate-700/40 dark:text-slate-200 dark:hover:bg-slate-700/60"
+                  )}
+                >
+                  {roleLabel(role)} ({roleCounts[role] || 0})
+                </button>
+              ))}
+            </div>
           </div>
-
-          {titleName === "匿名玩家" || !titleName ? (
-            <p className="mb-6 text-sm text-skin-sub">
-              非职业选手以「匿名玩家」展示；完整出装与加点请点进单场录像查看。
-            </p>
-          ) : (
-            <p className="mb-6 text-sm text-skin-sub">
-              以下为该职业选手最近出现的对局；点进比赛可查看技能加点与出装。
-            </p>
-          )}
 
           {!mapsLoading && maps && heroSummaries.length > 0 ? (
             <section className="mb-8">
@@ -244,17 +312,22 @@ export function PlayerMatchesPage() {
           ) : null}
 
           {!mapsLoading && maps ? (
-            replays.length === 0 ? (
-              <p className="text-sm text-skin-sub">暂无该账号的录像记录。</p>
+            filteredReplays.length === 0 ? (
+              <p className="text-sm text-skin-sub">
+                {replays.length === 0
+                  ? "暂无该账号的录像记录。"
+                  : `暂无该选手在 ${roleLabel(roleFilter)} 位置的对局。`}
+              </p>
             ) : (
               <>
                 <h2 className="mb-3 text-xs font-bold uppercase tracking-[0.15em] text-skin-sub">
                   对局明细
                 </h2>
                 <div className="overflow-hidden rounded-lg border border-skin-line">
-                  <div className="grid grid-cols-[220px_90px_250px_300px_70px_170px] gap-2 border-b border-skin-line bg-skin-inset px-3 py-2 text-[11px] font-semibold text-skin-sub">
+                  <div className="grid grid-cols-[210px_90px_90px_230px_290px_70px_170px] gap-2 border-b border-skin-line bg-skin-inset px-3 py-2 text-[11px] font-semibold text-skin-sub">
                     <div>英雄</div>
                     <div>K/D/A</div>
+                    <div>位置</div>
                     <div>出装</div>
                     <div>技能加点</div>
                     <div className="text-center">天赋</div>
@@ -276,7 +349,7 @@ export function PlayerMatchesPage() {
                     return (
                       <div
                         key={`${r.match_id}-${r.uploaded_at}`}
-                        className="grid grid-cols-[220px_90px_250px_300px_70px_170px] gap-2 border-b border-skin-line/70 px-3 py-2 text-xs last:border-b-0"
+                        className="grid grid-cols-[210px_90px_90px_230px_290px_70px_170px] gap-2 border-b border-skin-line/70 px-3 py-2 text-xs last:border-b-0"
                       >
                         <Link
                           to={`/match/${r.match_id}`}
@@ -300,6 +373,11 @@ export function PlayerMatchesPage() {
                         </Link>
                         <div className="font-mono tabular-nums text-skin-ink">
                           {k}/{d}/{a}
+                        </div>
+                        <div className="flex items-center">
+                          <span className="rounded border border-slate-500/35 bg-slate-200/40 px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-wide text-slate-700 dark:border-slate-500/45 dark:bg-slate-700/40 dark:text-slate-200">
+                            {String(row?.role_early || "-")}
+                          </span>
                         </div>
                         <div className="flex items-center gap-1">
                           {items.filter((it) => !it.empty && (it.item_key || it.image_url)).length

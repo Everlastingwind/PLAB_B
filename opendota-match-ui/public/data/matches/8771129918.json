@@ -7,7 +7,7 @@
       "raw_ability_upgrade_like_events": 203,
       "talent_tree_selected_layers_total": 29
     },
-    "uploaded_at": "2026-04-15T05:18:11Z"
+    "uploaded_at": "2026-04-15T08:02:09Z"
   },
   "match_id": 8771129918,
   "radiant_win": true,
@@ -586,6 +586,8 @@
       "hero_name_en": "Underlord",
       "hero_name_cn": "孽主",
       "_dem_items_source": "combat_log_slot_last_purchase",
+      "lane_early": "top",
+      "role_early": "offlane",
       "neutral_item_key": "spellslinger",
       "talent_picks": [
         {
@@ -1674,6 +1676,8 @@
       "hero_name_en": "Spirit Breaker",
       "hero_name_cn": "裂魂人",
       "_dem_items_source": "combat_log_slot_last_purchase",
+      "lane_early": "top",
+      "role_early": "support(4)",
       "neutral_item_key": "enhancement_greedy",
       "talent_picks": [
         {
@@ -2259,21 +2263,21 @@
         },
         {
           "slot": 3,
-          "item_id": 203,
-          "item_key": "dagon_4",
-          "item_name_en": "Dagon",
-          "item_name_cn": "Dagon",
-          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/dagon_4.png",
-          "empty": false
+          "item_id": 0,
+          "item_key": null,
+          "item_name_en": "",
+          "item_name_cn": "",
+          "image_url": "",
+          "empty": true
         },
         {
           "slot": 4,
-          "item_id": 202,
-          "item_key": "dagon_3",
-          "item_name_en": "Dagon",
-          "item_name_cn": "Dagon",
-          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/dagon_3.png",
-          "empty": false
+          "item_id": 0,
+          "item_key": null,
+          "item_name_en": "",
+          "item_name_cn": "",
+          "image_url": "",
+          "empty": true
         },
         {
           "slot": 5,
@@ -2780,6 +2784,8 @@
       "hero_name_en": "Keeper of the Light",
       "hero_name_cn": "光之守卫",
       "_dem_items_source": "combat_log_slot_last_purchase",
+      "lane_early": "mid",
+      "role_early": "mid",
       "neutral_item_key": "conjurers_catalyst",
       "talent_picks": [
         {
@@ -3937,6 +3943,8 @@
       "hero_name_en": "Sven",
       "hero_name_cn": "斯温",
       "_dem_items_source": "combat_log_slot_last_purchase",
+      "lane_early": "bot",
+      "role_early": "carry",
       "neutral_item_key": "enhancement_quickened",
       "talent_picks": [
         {
@@ -5026,6 +5034,8 @@
       "hero_name_en": "Enchantress",
       "hero_name_cn": "魅惑魔女",
       "_dem_items_source": "combat_log_slot_last_purchase",
+      "lane_early": "bot",
+      "role_early": "support(5)",
       "neutral_item_key": "idol_of_screeauk",
       "talent_picks": [
         {
@@ -6151,6 +6161,8 @@
       "hero_name_en": "Lone Druid",
       "hero_name_cn": "德鲁伊",
       "_dem_items_source": "combat_log_slot_last_purchase",
+      "lane_early": "mid",
+      "role_early": "mid",
       "neutral_item_key": "enhancement_alert",
       "talent_picks": [
         {
@@ -7245,6 +7257,8 @@
       "hero_name_en": "Doom",
       "hero_name_cn": "末日使者",
       "_dem_items_source": "combat_log_slot_last_purchase",
+      "lane_early": "top",
+      "role_early": "carry",
       "neutral_item_key": "enhancement_tough",
       "talent_picks": [
         {
@@ -8450,6 +8464,8 @@
       "hero_name_en": "Clockwerk",
       "hero_name_cn": "发条技师",
       "_dem_items_source": "combat_log_slot_last_purchase",
+      "lane_early": "bot",
+      "role_early": "support(4)",
       "neutral_item_key": "enhancement_greedy",
       "talent_picks": [
         {
@@ -9531,6 +9547,8 @@
       "hero_name_en": "Axe",
       "hero_name_cn": "斧王",
       "_dem_items_source": "combat_log_slot_last_purchase",
+      "lane_early": "bot",
+      "role_early": "offlane",
       "neutral_item_key": "dandelion_amulet",
       "talent_picks": [
         {
@@ -10621,6 +10639,8 @@
       "hero_name_en": "Techies",
       "hero_name_cn": "工程师",
       "_dem_items_source": "combat_log_slot_last_purchase",
+      "lane_early": "top",
+      "role_early": "support(5)",
       "neutral_item_key": "spellslinger",
       "talent_picks": [
         {

@@ -1046,7 +1046,8 @@
       "item_3": 63,
       "item_4": 569,
       "item_5": 0,
-      "item_neutral": 0
+      "item_neutral": 0,
+      "role_early": "carry"
     },
     {
       "account_id": 50580004,
@@ -2003,7 +2004,8 @@
       "item_3": 50,
       "item_4": 0,
       "item_5": 0,
-      "item_neutral": 0
+      "item_neutral": 0,
+      "role_early": "mid"
     },
     {
       "account_id": 163061132,
@@ -2920,7 +2922,8 @@
       "item_3": 0,
       "item_4": 0,
       "item_5": 0,
-      "item_neutral": 0
+      "item_neutral": 0,
+      "role_early": "support(5)"
     },
     {
       "account_id": 98885811,
@@ -3877,7 +3880,8 @@
       "item_3": 36,
       "item_4": 41,
       "item_5": 0,
-      "item_neutral": 0
+      "item_neutral": 0,
+      "role_early": "offlane"
     },
     {
       "account_id": 101356886,
@@ -4854,7 +4858,8 @@
       "item_3": 0,
       "item_4": 0,
       "item_5": 0,
-      "item_neutral": 0
+      "item_neutral": 0,
+      "role_early": "support(4)"
     },
     {
       "account_id": 292921272,
@@ -5926,7 +5931,8 @@
       "item_3": 180,
       "item_4": 178,
       "item_5": 11,
-      "item_neutral": 0
+      "item_neutral": 0,
+      "role_early": "offlane"
     },
     {
       "account_id": 170809075,
@@ -6958,7 +6964,8 @@
       "item_3": 267,
       "item_4": 29,
       "item_5": 36,
-      "item_neutral": 0
+      "item_neutral": 0,
+      "role_early": "mid"
     },
     {
       "account_id": 383788462,
@@ -8135,7 +8142,8 @@
       "item_3": 593,
       "item_4": 180,
       "item_5": 0,
-      "item_neutral": 0
+      "item_neutral": 0,
+      "role_early": "support(4)"
     },
     {
       "account_id": 140288368,
@@ -9072,7 +9080,8 @@
       "item_3": 0,
       "item_4": 0,
       "item_5": 0,
-      "item_neutral": 0
+      "item_neutral": 0,
+      "role_early": "support(5)"
     },
     {
       "account_id": 458287006,
@@ -10124,7 +10133,8 @@
       "item_3": 36,
       "item_4": 63,
       "item_5": 77,
-      "item_neutral": 0
+      "item_neutral": 0,
+      "role_early": "carry"
     }
   ]
 }

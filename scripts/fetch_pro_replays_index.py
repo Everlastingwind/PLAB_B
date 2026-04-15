@@ -52,6 +52,7 @@ def summarize_players(players: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
                 "account_id": int(p.get("account_id") or 0),
                 "hero_id": int(p.get("hero_id") or 0),
                 "pro_name": p.get("pro_name"),
+                "role_early": p.get("role_early"),
                 "is_radiant": bool(p.get("isRadiant", p.get("is_radiant", True))),
                 "kills": int(p.get("kills") or 0),
                 "deaths": int(p.get("deaths") or 0),

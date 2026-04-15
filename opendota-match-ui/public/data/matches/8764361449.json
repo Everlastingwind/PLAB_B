@@ -1200,7 +1200,8 @@
       "item_3": 121,
       "item_4": 119,
       "item_5": 609,
-      "item_neutral": 0
+      "item_neutral": 0,
+      "role_early": "carry"
     },
     {
       "account_id": 111656727,
@@ -2370,7 +2371,8 @@
       "item_3": 147,
       "item_4": 108,
       "item_5": 63,
-      "item_neutral": 0
+      "item_neutral": 0,
+      "role_early": "mid"
     },
     {
       "account_id": 1171243748,
@@ -3457,7 +3459,8 @@
       "item_3": 225,
       "item_4": 116,
       "item_5": 50,
-      "item_neutral": 0
+      "item_neutral": 0,
+      "role_early": "support(4)"
     },
     {
       "account_id": 293082908,
@@ -4553,7 +4556,8 @@
       "item_3": 180,
       "item_4": 0,
       "item_5": 0,
-      "item_neutral": 0
+      "item_neutral": 0,
+      "role_early": "support(5)"
     },
     {
       "account_id": 269930820,
@@ -5780,7 +5784,8 @@
       "item_3": 1,
       "item_4": 1854,
       "item_5": 50,
-      "item_neutral": 0
+      "item_neutral": 0,
+      "role_early": "offlane"
     },
     {
       "account_id": 96183976,
@@ -7010,7 +7015,8 @@
       "item_3": 249,
       "item_4": 123,
       "item_5": 63,
-      "item_neutral": 0
+      "item_neutral": 0,
+      "role_early": "carry"
     },
     {
       "account_id": 373489202,
@@ -8116,7 +8122,8 @@
       "item_3": 0,
       "item_4": 0,
       "item_5": 0,
-      "item_neutral": 0
+      "item_neutral": 0,
+      "role_early": "support(5)"
     },
     {
       "account_id": 412413765,
@@ -9350,7 +9357,8 @@
       "item_3": 939,
       "item_4": 168,
       "item_5": 50,
-      "item_neutral": 0
+      "item_neutral": 0,
+      "role_early": "mid"
     },
     {
       "account_id": 217472313,
@@ -10437,7 +10445,8 @@
       "item_3": 254,
       "item_4": 36,
       "item_5": 180,
-      "item_neutral": 0
+      "item_neutral": 0,
+      "role_early": "support(4)"
     },
     {
       "account_id": 206642367,
@@ -11558,7 +11567,8 @@
       "item_3": 939,
       "item_4": 1,
       "item_5": 63,
-      "item_neutral": 0
+      "item_neutral": 0,
+      "role_early": "offlane"
     }
   ]
 }

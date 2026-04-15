@@ -7,7 +7,7 @@
       "raw_ability_upgrade_like_events": 186,
       "talent_tree_selected_layers_total": 20
     },
-    "uploaded_at": "2026-04-15T05:18:01Z"
+    "uploaded_at": "2026-04-15T08:01:58Z"
   },
   "match_id": 8771045376,
   "radiant_win": true,
@@ -587,6 +587,8 @@
       "hero_name_en": "Terrorblade",
       "hero_name_cn": "恐怖利刃",
       "_dem_items_source": "combat_log_slot_last_purchase",
+      "lane_early": "bot",
+      "role_early": "carry",
       "neutral_item_key": "enhancement_alert",
       "talent_picks": [
         {
@@ -1691,6 +1693,8 @@
       "hero_name_en": "Shadow Shaman",
       "hero_name_cn": "暗影萨满",
       "_dem_items_source": "combat_log_slot_last_purchase",
+      "lane_early": "bot",
+      "role_early": "support(5)",
       "neutral_item_key": "enhancement_greedy",
       "talent_picks": [
         {
@@ -2725,6 +2729,8 @@
       "hero_name_en": "Batrider",
       "hero_name_cn": "蝙蝠骑士",
       "_dem_items_source": "combat_log_slot_last_purchase",
+      "lane_early": "mid",
+      "role_early": "mid",
       "neutral_item_key": "enhancement_alert",
       "talent_picks": [
         {
@@ -3812,6 +3818,8 @@
       "hero_name_en": "Dark Willow",
       "hero_name_cn": "邪影芳灵",
       "_dem_items_source": "combat_log_slot_last_purchase",
+      "lane_early": "top",
+      "role_early": "support(4)",
       "neutral_item_key": "partisans_brand",
       "talent_picks": [
         {
@@ -4885,6 +4893,8 @@
       "hero_name_en": "Primal Beast",
       "hero_name_cn": "獸",
       "_dem_items_source": "combat_log_slot_last_purchase",
+      "lane_early": "top",
+      "role_early": "offlane",
       "neutral_item_key": "unrelenting_eye",
       "talent_picks": [
         {
@@ -6018,6 +6028,8 @@
       "hero_name_en": "Dark Seer",
       "hero_name_cn": "黑暗贤者",
       "_dem_items_source": "combat_log_slot_last_purchase",
+      "lane_early": "bot",
+      "role_early": "offlane",
       "neutral_item_key": "enhancement_greedy",
       "talent_picks": [
         {
@@ -7050,6 +7062,8 @@
       "hero_name_en": "Slark",
       "hero_name_cn": "斯拉克",
       "_dem_items_source": "combat_log_slot_last_purchase",
+      "lane_early": "top",
+      "role_early": "carry",
       "neutral_item_key": "enhancement_alert",
       "talent_picks": [
         {
@@ -8085,6 +8099,8 @@
       "hero_name_en": "Jakiro",
       "hero_name_cn": "杰奇洛",
       "_dem_items_source": "combat_log_slot_last_purchase",
+      "lane_early": "top",
+      "role_early": "support(5)",
       "neutral_item_key": "pogo_stick",
       "talent_picks": [
         {
@@ -9162,6 +9178,8 @@
       "hero_name_en": "Tusk",
       "hero_name_cn": "巨牙海民",
       "_dem_items_source": "combat_log_slot_last_purchase",
+      "lane_early": "bot",
+      "role_early": "support(4)",
       "neutral_item_key": "enhancement_greedy",
       "talent_picks": [
         {
@@ -10241,6 +10259,8 @@
       "hero_name_en": "Pangolier",
       "hero_name_cn": "石鳞剑士",
       "_dem_items_source": "combat_log_slot_last_purchase",
+      "lane_early": "mid",
+      "role_early": "mid",
       "neutral_item_key": "enhancement_mystical",
       "talent_picks": [
         {
