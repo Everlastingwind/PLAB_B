@@ -6,11 +6,7 @@ import type { ReplayPlayerSummary, ReplaySummary } from "../types/replaysIndex";
 import { displayPlayerLabel } from "../lib/playerDisplay";
 import { heroKeyFromId } from "../lib/replaysApi";
 import { cn } from "../lib/cn";
-import {
-  compareByPlayerSlot,
-  isCanonicalDotaLobbyPlayerSlot,
-  isRadiantFromPlayer,
-} from "../lib/matchGrouping";
+import { compareByPlayerSlot, partitionReplayRowPlayers } from "../lib/matchGrouping";
 import { kdaFromPlayerRecord } from "../lib/playerKda";
 
 function sumKills(players: ReplayPlayerSummary[]): number {
@@ -92,21 +88,8 @@ export function ReplayCard({
   replay: ReplaySummary;
   maps: EntityMapsPayload;
 }) {
-  const rad = replay.players.filter(
-    (p) =>
-      isCanonicalDotaLobbyPlayerSlot(p.player_slot) &&
-      isRadiantFromPlayer({
-        player_slot: p.player_slot,
-        is_radiant: p.is_radiant,
-      })
-  );
-  const dire = replay.players.filter(
-    (p) =>
-      isCanonicalDotaLobbyPlayerSlot(p.player_slot) &&
-      !isRadiantFromPlayer({
-        player_slot: p.player_slot,
-        is_radiant: p.is_radiant,
-      })
+  const { radiantPlayers: rad, direPlayers: dire } = partitionReplayRowPlayers(
+    replay.players
   );
   const radWon = replay.radiant_win;
 

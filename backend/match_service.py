@@ -75,14 +75,21 @@ def _is_canonical_dota_lobby_slot(slot: int) -> bool:
     return False
 
 
+def _is_overflow_lobby_slot_for_index(slot: int) -> bool:
+    """DEM 偶发把选手写在 133–137；有英雄时写入索引供首页补位（与前端 partitionReplayRowPlayers 一致）。"""
+    return 133 <= slot <= 137
+
+
 def _summarize_players_for_index(players: List[Any]) -> List[Dict[str, Any]]:
     out: List[Dict[str, Any]] = []
+    seen: set[int] = set()
     for p in players:
         if not isinstance(p, dict):
             continue
         ps = int(p.get("player_slot") or 0)
         if not _is_canonical_dota_lobby_slot(ps):
             continue
+        seen.add(ps)
         out.append(
             {
                 "player_slot": ps,
@@ -95,6 +102,32 @@ def _summarize_players_for_index(players: List[Any]) -> List[Dict[str, Any]]:
                 "assists": int(p.get("assists") or 0),
             }
         )
+    if len(out) < 10:
+        for p in players:
+            if not isinstance(p, dict):
+                continue
+            ps = int(p.get("player_slot") or 0)
+            if _is_canonical_dota_lobby_slot(ps):
+                continue
+            if not _is_overflow_lobby_slot_for_index(ps):
+                continue
+            if int(p.get("hero_id") or 0) <= 0:
+                continue
+            if ps in seen:
+                continue
+            seen.add(ps)
+            out.append(
+                {
+                    "player_slot": ps,
+                    "account_id": int(p.get("account_id") or 0),
+                    "hero_id": int(p.get("hero_id") or 0),
+                    "pro_name": p.get("pro_name"),
+                    "is_radiant": _is_radiant_from_player_dict(p),
+                    "kills": int(p.get("kills") or 0),
+                    "deaths": int(p.get("deaths") or 0),
+                    "assists": int(p.get("assists") or 0),
+                }
+            )
     return out
 
 

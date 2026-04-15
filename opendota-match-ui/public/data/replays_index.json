@@ -210,6 +210,16 @@
           "kills": 14,
           "deaths": 6,
           "assists": 6
+        },
+        {
+          "player_slot": 133,
+          "account_id": 269930820,
+          "hero_id": 120,
+          "pro_name": null,
+          "is_radiant": false,
+          "kills": 7,
+          "deaths": 7,
+          "assists": 15
         }
       ]
     },
@@ -8525,6 +8535,16 @@
           "kills": 0,
           "deaths": 4,
           "assists": 0
+        },
+        {
+          "player_slot": 133,
+          "account_id": 0,
+          "hero_id": 39,
+          "pro_name": null,
+          "is_radiant": false,
+          "kills": 8,
+          "deaths": 4,
+          "assists": 7
         }
       ]
     },
@@ -9847,6 +9867,16 @@
           "kills": 4,
           "deaths": 3,
           "assists": 7
+        },
+        {
+          "player_slot": 133,
+          "account_id": 148180390,
+          "hero_id": 155,
+          "pro_name": null,
+          "is_radiant": false,
+          "kills": 2,
+          "deaths": 1,
+          "assists": 15
         }
       ]
     },

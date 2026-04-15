@@ -7,6 +7,7 @@
  *
  * 标准 5v5  Lobby：天辉 0–4，夜魇 128–132（或 5–9）。133–137 等常为教练/旁观者，DEM 偶发写入为第 11 条玩家，须剔除以免一侧出现 6 人。
  */
+import type { ReplayPlayerSummary } from "../types/replaysIndex";
 import type { SlimPlayer } from "../types/slimMatch";
 
 function slotNum(v: unknown): number {
@@ -25,6 +26,15 @@ export function isCanonicalDotaLobbyPlayerSlot(player_slot: unknown): boolean {
   if (ps >= 5 && ps <= 9) return true;
   if (ps >= 128 && ps <= 132) return true;
   return false;
+}
+
+/** DEM 偶发把真实选手写在 133–137；有英雄 id 时供补位，不当作「已有 10 人」的教练位 */
+function isOverflowLobbyPlayerSlot(player_slot: unknown): boolean {
+  if (player_slot === null || player_slot === undefined) return false;
+  const raw = Number(player_slot);
+  if (!Number.isFinite(raw)) return false;
+  const ps = Math.floor(raw);
+  return ps >= 133 && ps <= 137;
 }
 
 /**
@@ -79,6 +89,90 @@ export function splitRadiantDirePlayers(players: SlimPlayer[]): {
     if (!isCanonicalDotaLobbyPlayerSlot(p.player_slot)) continue;
     if (isRadiantFromPlayer(p as Record<string, unknown>)) radiantPlayers.push(p);
     else direPlayers.push(p);
+  }
+  const hid = (p: SlimPlayer) => {
+    const n = Number(p.hero_id ?? 0);
+    return Number.isFinite(n) && n > 0;
+  };
+  if (radiantPlayers.length + direPlayers.length < 10) {
+    const overflow = players.filter(
+      (p) =>
+        !isCanonicalDotaLobbyPlayerSlot(p.player_slot) &&
+        isOverflowLobbyPlayerSlot(p.player_slot) &&
+        hid(p)
+    );
+    overflow.sort(compareByPlayerSlot);
+    for (const p of overflow) {
+      if (radiantPlayers.length >= 5 && direPlayers.length >= 5) break;
+      if (
+        radiantPlayers.length < 5 &&
+        radiantPlayers.length <= direPlayers.length
+      ) {
+        radiantPlayers.push(p);
+      } else if (
+        direPlayers.length < 5 &&
+        direPlayers.length <= radiantPlayers.length
+      ) {
+        direPlayers.push(p);
+      } else if (radiantPlayers.length < 5) {
+        radiantPlayers.push(p);
+      } else if (direPlayers.length < 5) {
+        direPlayers.push(p);
+      } else {
+        break;
+      }
+    }
+  }
+  return { radiantPlayers, direPlayers };
+}
+
+/** 首页 `replays_index` 行：与 {@link splitRadiantDirePlayers} 相同的 133–137 补位逻辑 */
+export function partitionReplayRowPlayers(
+  players: readonly ReplayPlayerSummary[]
+): {
+  radiantPlayers: ReplayPlayerSummary[];
+  direPlayers: ReplayPlayerSummary[];
+} {
+  const radiantPlayers: ReplayPlayerSummary[] = [];
+  const direPlayers: ReplayPlayerSummary[] = [];
+  for (const p of players) {
+    if (!isCanonicalDotaLobbyPlayerSlot(p.player_slot)) continue;
+    if (isRadiantFromPlayer(p as unknown as Record<string, unknown>))
+      radiantPlayers.push(p);
+    else direPlayers.push(p);
+  }
+  const hid = (p: ReplayPlayerSummary) => {
+    const n = Number(p.hero_id ?? 0);
+    return Number.isFinite(n) && n > 0;
+  };
+  if (radiantPlayers.length + direPlayers.length < 10) {
+    const overflow = players.filter(
+      (p) =>
+        !isCanonicalDotaLobbyPlayerSlot(p.player_slot) &&
+        isOverflowLobbyPlayerSlot(p.player_slot) &&
+        hid(p)
+    );
+    overflow.sort(compareByPlayerSlot);
+    for (const p of overflow) {
+      if (radiantPlayers.length >= 5 && direPlayers.length >= 5) break;
+      if (
+        radiantPlayers.length < 5 &&
+        radiantPlayers.length <= direPlayers.length
+      ) {
+        radiantPlayers.push(p);
+      } else if (
+        direPlayers.length < 5 &&
+        direPlayers.length <= radiantPlayers.length
+      ) {
+        direPlayers.push(p);
+      } else if (radiantPlayers.length < 5) {
+        radiantPlayers.push(p);
+      } else if (direPlayers.length < 5) {
+        direPlayers.push(p);
+      } else {
+        break;
+      }
+    }
   }
   return { radiantPlayers, direPlayers };
 }
