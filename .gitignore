@@ -4,6 +4,7 @@ data/d2vpkr_raw/
 # 依赖与构建
 node_modules/
 dist/
+opendota-match-ui/tsconfig.tsbuildinfo
 
 # 密钥（切勿提交）
 .env
