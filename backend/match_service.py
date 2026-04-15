@@ -64,14 +64,28 @@ def _is_radiant_from_player_dict(p: Mapping[str, Any]) -> bool:
     return False
 
 
+def _is_canonical_dota_lobby_slot(slot: int) -> bool:
+    """标准 5v5：天辉 0–4，夜魇 128–132 或 5–9。133+ 常为教练槽，不参与索引头像行。"""
+    if 0 <= slot <= 4:
+        return True
+    if 5 <= slot <= 9:
+        return True
+    if 128 <= slot <= 132:
+        return True
+    return False
+
+
 def _summarize_players_for_index(players: List[Any]) -> List[Dict[str, Any]]:
     out: List[Dict[str, Any]] = []
     for p in players:
         if not isinstance(p, dict):
             continue
+        ps = int(p.get("player_slot") or 0)
+        if not _is_canonical_dota_lobby_slot(ps):
+            continue
         out.append(
             {
-                "player_slot": int(p.get("player_slot") or 0),
+                "player_slot": ps,
                 "account_id": int(p.get("account_id") or 0),
                 "hero_id": int(p.get("hero_id") or 0),
                 "pro_name": p.get("pro_name"),
@@ -148,10 +162,13 @@ def rebuild_replays_index() -> int:
     return len(replays)
 
 
-def save_uploaded_match_slim(slim: Mapping[str, Any]) -> Path:
+def save_uploaded_match_slim(
+    slim: Mapping[str, Any], *, rebuild_index: bool = True
+) -> Path:
     """
     接收已是 ``translate_match_data`` 结果的 JSON，写入 ``public/data/matches/{match_id}.json``、
-    ``latest_match.json``，并重建 ``replays_index.json``（新上传排在列表最前）。
+    ``latest_match.json``；默认重建 ``replays_index.json``（新上传排在列表最前）。
+    批量导入时可设 ``rebuild_index=False``，全部写完后再调用 ``rebuild_replays_index()``。
     """
     mid = int(slim.get("match_id") or 0)
     if mid <= 0:
@@ -171,8 +188,11 @@ def save_uploaded_match_slim(slim: Mapping[str, Any]) -> Path:
     latest = FRONTEND_PUBLIC_DATA / "latest_match.json"
     latest.write_text(json.dumps(out, ensure_ascii=False, indent=2), encoding="utf-8")
 
-    n = rebuild_replays_index()
-    print(f"[save_uploaded_match_slim] match_id={mid} replays_index entries={n}", flush=True)
+    if rebuild_index:
+        n = rebuild_replays_index()
+        print(f"[save_uploaded_match_slim] match_id={mid} replays_index entries={n}", flush=True)
+    else:
+        print(f"[save_uploaded_match_slim] match_id={mid} (index 延迟重建)", flush=True)
     return match_path
 
 

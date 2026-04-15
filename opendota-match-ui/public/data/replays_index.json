@@ -2,6 +2,449 @@
   "version": 1,
   "replays": [
     {
+      "match_id": 8771902982,
+      "uploaded_at": "2026-04-15T01:19:57Z",
+      "duration_sec": 0,
+      "radiant_win": false,
+      "league_name": "—",
+      "radiant_score": 0,
+      "dire_score": 0,
+      "players": []
+    },
+    {
+      "match_id": 8771901078,
+      "uploaded_at": "2026-04-15T01:19:55Z",
+      "duration_sec": 0,
+      "radiant_win": false,
+      "league_name": "—",
+      "radiant_score": 0,
+      "dire_score": 0,
+      "players": []
+    },
+    {
+      "match_id": 8771880425,
+      "uploaded_at": "2026-04-15T01:19:54Z",
+      "duration_sec": 0,
+      "radiant_win": false,
+      "league_name": "—",
+      "radiant_score": 0,
+      "dire_score": 0,
+      "players": []
+    },
+    {
+      "match_id": 8771877850,
+      "uploaded_at": "2026-04-15T01:19:51Z",
+      "duration_sec": 2723,
+      "radiant_win": false,
+      "league_name": "本地录像",
+      "radiant_score": 0,
+      "dire_score": 0,
+      "players": [
+        {
+          "player_slot": 0,
+          "account_id": 101356886,
+          "hero_id": 90,
+          "pro_name": "GH",
+          "is_radiant": true,
+          "kills": 1,
+          "deaths": 10,
+          "assists": 10
+        },
+        {
+          "player_slot": 1,
+          "account_id": 994004852,
+          "hero_id": 10,
+          "pro_name": null,
+          "is_radiant": true,
+          "kills": 4,
+          "deaths": 6,
+          "assists": 7
+        },
+        {
+          "player_slot": 2,
+          "account_id": 185001854,
+          "hero_id": 51,
+          "pro_name": "Yor",
+          "is_radiant": true,
+          "kills": 2,
+          "deaths": 18,
+          "assists": 9
+        },
+        {
+          "player_slot": 3,
+          "account_id": 1150028510,
+          "hero_id": 110,
+          "pro_name": null,
+          "is_radiant": true,
+          "kills": 5,
+          "deaths": 9,
+          "assists": 9
+        },
+        {
+          "player_slot": 4,
+          "account_id": 1281944743,
+          "hero_id": 106,
+          "pro_name": null,
+          "is_radiant": true,
+          "kills": 9,
+          "deaths": 5,
+          "assists": 8
+        },
+        {
+          "player_slot": 128,
+          "account_id": 168126336,
+          "hero_id": 120,
+          "pro_name": "Cloud",
+          "is_radiant": false,
+          "kills": 14,
+          "deaths": 4,
+          "assists": 19
+        },
+        {
+          "player_slot": 129,
+          "account_id": 131854728,
+          "hero_id": 29,
+          "pro_name": null,
+          "is_radiant": false,
+          "kills": 3,
+          "deaths": 4,
+          "assists": 16
+        },
+        {
+          "player_slot": 130,
+          "account_id": 6922000,
+          "hero_id": 22,
+          "pro_name": null,
+          "is_radiant": false,
+          "kills": 6,
+          "deaths": 7,
+          "assists": 26
+        },
+        {
+          "player_slot": 131,
+          "account_id": 1091648587,
+          "hero_id": 73,
+          "pro_name": null,
+          "is_radiant": false,
+          "kills": 17,
+          "deaths": 2,
+          "assists": 10
+        },
+        {
+          "player_slot": 132,
+          "account_id": 25907144,
+          "hero_id": 128,
+          "pro_name": "Cr1t-",
+          "is_radiant": false,
+          "kills": 8,
+          "deaths": 5,
+          "assists": 17
+        }
+      ]
+    },
+    {
+      "match_id": 8771854870,
+      "uploaded_at": "2026-04-15T01:19:46Z",
+      "duration_sec": 0,
+      "radiant_win": false,
+      "league_name": "—",
+      "radiant_score": 0,
+      "dire_score": 0,
+      "players": []
+    },
+    {
+      "match_id": 8771297796,
+      "uploaded_at": "2026-04-15T01:19:44Z",
+      "duration_sec": 0,
+      "radiant_win": false,
+      "league_name": "—",
+      "radiant_score": 0,
+      "dire_score": 0,
+      "players": []
+    },
+    {
+      "match_id": 8771216693,
+      "uploaded_at": "2026-04-15T01:19:43Z",
+      "duration_sec": 0,
+      "radiant_win": false,
+      "league_name": "—",
+      "radiant_score": 0,
+      "dire_score": 0,
+      "players": []
+    },
+    {
+      "match_id": 8771171278,
+      "uploaded_at": "2026-04-15T01:19:42Z",
+      "duration_sec": 2611,
+      "radiant_win": true,
+      "league_name": "本地录像",
+      "radiant_score": 0,
+      "dire_score": 0,
+      "players": [
+        {
+          "player_slot": 0,
+          "account_id": 98885811,
+          "hero_id": 73,
+          "pro_name": "lowskill",
+          "is_radiant": true,
+          "kills": 6,
+          "deaths": 5,
+          "assists": 8
+        },
+        {
+          "player_slot": 1,
+          "account_id": 0,
+          "hero_id": 39,
+          "pro_name": null,
+          "is_radiant": true,
+          "kills": 18,
+          "deaths": 7,
+          "assists": 13
+        },
+        {
+          "player_slot": 2,
+          "account_id": 208181197,
+          "hero_id": 106,
+          "pro_name": null,
+          "is_radiant": true,
+          "kills": 13,
+          "deaths": 5,
+          "assists": 23
+        },
+        {
+          "player_slot": 3,
+          "account_id": 199666759,
+          "hero_id": 26,
+          "pro_name": null,
+          "is_radiant": true,
+          "kills": 2,
+          "deaths": 18,
+          "assists": 21
+        },
+        {
+          "player_slot": 4,
+          "account_id": 117015167,
+          "hero_id": 123,
+          "pro_name": "PABLO",
+          "is_radiant": true,
+          "kills": 7,
+          "deaths": 8,
+          "assists": 24
+        },
+        {
+          "player_slot": 5,
+          "account_id": 194999745,
+          "hero_id": 38,
+          "pro_name": null,
+          "is_radiant": false,
+          "kills": 16,
+          "deaths": 5,
+          "assists": 9
+        },
+        {
+          "player_slot": 128,
+          "account_id": 417604379,
+          "hero_id": 120,
+          "pro_name": null,
+          "is_radiant": false,
+          "kills": 8,
+          "deaths": 8,
+          "assists": 18
+        },
+        {
+          "player_slot": 129,
+          "account_id": 349472155,
+          "hero_id": 3,
+          "pro_name": null,
+          "is_radiant": false,
+          "kills": 5,
+          "deaths": 9,
+          "assists": 19
+        },
+        {
+          "player_slot": 130,
+          "account_id": 1037817328,
+          "hero_id": 83,
+          "pro_name": null,
+          "is_radiant": false,
+          "kills": 1,
+          "deaths": 13,
+          "assists": 24
+        },
+        {
+          "player_slot": 131,
+          "account_id": 1657135701,
+          "hero_id": 6,
+          "pro_name": "nesfeer",
+          "is_radiant": false,
+          "kills": 8,
+          "deaths": 8,
+          "assists": 12
+        }
+      ]
+    },
+    {
+      "match_id": 8771129918,
+      "uploaded_at": "2026-04-15T01:19:37Z",
+      "duration_sec": 0,
+      "radiant_win": false,
+      "league_name": "—",
+      "radiant_score": 0,
+      "dire_score": 0,
+      "players": []
+    },
+    {
+      "match_id": 8771102537,
+      "uploaded_at": "2026-04-15T01:19:35Z",
+      "duration_sec": 0,
+      "radiant_win": false,
+      "league_name": "—",
+      "radiant_score": 0,
+      "dire_score": 0,
+      "players": []
+    },
+    {
+      "match_id": 8771096157,
+      "uploaded_at": "2026-04-15T01:19:34Z",
+      "duration_sec": 0,
+      "radiant_win": false,
+      "league_name": "—",
+      "radiant_score": 0,
+      "dire_score": 0,
+      "players": []
+    },
+    {
+      "match_id": 8771069921,
+      "uploaded_at": "2026-04-15T01:19:33Z",
+      "duration_sec": 0,
+      "radiant_win": false,
+      "league_name": "—",
+      "radiant_score": 0,
+      "dire_score": 0,
+      "players": []
+    },
+    {
+      "match_id": 8771045376,
+      "uploaded_at": "2026-04-15T01:19:31Z",
+      "duration_sec": 0,
+      "radiant_win": false,
+      "league_name": "—",
+      "radiant_score": 0,
+      "dire_score": 0,
+      "players": []
+    },
+    {
+      "match_id": 8771034383,
+      "uploaded_at": "2026-04-15T01:19:30Z",
+      "duration_sec": 2239,
+      "radiant_win": true,
+      "league_name": "本地录像",
+      "radiant_score": 0,
+      "dire_score": 0,
+      "players": [
+        {
+          "player_slot": 0,
+          "account_id": 369342470,
+          "hero_id": 58,
+          "pro_name": null,
+          "is_radiant": true,
+          "kills": 6,
+          "deaths": 3,
+          "assists": 21
+        },
+        {
+          "player_slot": 1,
+          "account_id": 88809428,
+          "hero_id": 135,
+          "pro_name": null,
+          "is_radiant": true,
+          "kills": 3,
+          "deaths": 4,
+          "assists": 16
+        },
+        {
+          "player_slot": 2,
+          "account_id": 1053231904,
+          "hero_id": 41,
+          "pro_name": null,
+          "is_radiant": true,
+          "kills": 10,
+          "deaths": 1,
+          "assists": 20
+        },
+        {
+          "player_slot": 3,
+          "account_id": 181774949,
+          "hero_id": 86,
+          "pro_name": null,
+          "is_radiant": true,
+          "kills": 5,
+          "deaths": 7,
+          "assists": 26
+        },
+        {
+          "player_slot": 4,
+          "account_id": 309345956,
+          "hero_id": 114,
+          "pro_name": "Volshebnik",
+          "is_radiant": true,
+          "kills": 13,
+          "deaths": 6,
+          "assists": 14
+        },
+        {
+          "player_slot": 128,
+          "account_id": 185908355,
+          "hero_id": 145,
+          "pro_name": "楼",
+          "is_radiant": false,
+          "kills": 6,
+          "deaths": 9,
+          "assists": 4
+        },
+        {
+          "player_slot": 129,
+          "account_id": 838503879,
+          "hero_id": 13,
+          "pro_name": null,
+          "is_radiant": false,
+          "kills": 7,
+          "deaths": 4,
+          "assists": 9
+        },
+        {
+          "player_slot": 130,
+          "account_id": 135269892,
+          "hero_id": 100,
+          "pro_name": null,
+          "is_radiant": false,
+          "kills": 0,
+          "deaths": 11,
+          "assists": 13
+        },
+        {
+          "player_slot": 131,
+          "account_id": 150354245,
+          "hero_id": 91,
+          "pro_name": null,
+          "is_radiant": false,
+          "kills": 3,
+          "deaths": 8,
+          "assists": 8
+        },
+        {
+          "player_slot": 132,
+          "account_id": 198851570,
+          "hero_id": 123,
+          "pro_name": null,
+          "is_radiant": false,
+          "kills": 4,
+          "deaths": 5,
+          "assists": 12
+        }
+      ]
+    },
+    {
       "match_id": 8770432466,
       "uploaded_at": "2026-04-14T09:08:33Z",
       "duration_sec": 2162,
@@ -6981,16 +7424,6 @@
           "kills": 0,
           "deaths": 4,
           "assists": 0
-        },
-        {
-          "player_slot": 133,
-          "account_id": 0,
-          "hero_id": 39,
-          "pro_name": null,
-          "is_radiant": false,
-          "kills": 8,
-          "deaths": 4,
-          "assists": 7
         }
       ]
     },
@@ -8313,16 +8746,6 @@
           "kills": 4,
           "deaths": 3,
           "assists": 7
-        },
-        {
-          "player_slot": 133,
-          "account_id": 148180390,
-          "hero_id": 155,
-          "pro_name": null,
-          "is_radiant": false,
-          "kills": 2,
-          "deaths": 1,
-          "assists": 15
         }
       ]
     },
