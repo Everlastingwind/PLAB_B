@@ -3323,7 +3323,24 @@
       "neutral_item_key": "gunpowder_gauntlets",
       "pro_name": "gotthejuice",
       "team_name": "Natus Vincere",
-      "role_early": "carry"
+      "role_early": "carry",
+      "starting_items": [
+        {
+          "item_key": "branches",
+          "count": 1,
+          "first_purchase_time": -89
+        },
+        {
+          "item_key": "faerie_fire",
+          "count": 1,
+          "first_purchase_time": -89
+        },
+        {
+          "item_key": "magic_wand",
+          "count": 1,
+          "first_purchase_time": -89
+        }
+      ]
     },
     {
       "player_slot": 1,
@@ -5390,7 +5407,29 @@
       "neutral_item_key": "conjurers_catalyst",
       "pro_name": "Niku",
       "team_name": "Natus Vincere",
-      "role_early": "mid"
+      "role_early": "mid",
+      "starting_items": [
+        {
+          "item_key": "branches",
+          "count": 2,
+          "first_purchase_time": -89
+        },
+        {
+          "item_key": "circlet",
+          "count": 2,
+          "first_purchase_time": -89
+        },
+        {
+          "item_key": "slippers",
+          "count": 1,
+          "first_purchase_time": -89
+        },
+        {
+          "item_key": "ward_observer",
+          "count": 1,
+          "first_purchase_time": -89
+        }
+      ]
     },
     {
       "player_slot": 2,
@@ -7379,7 +7418,34 @@
       "neutral_item_key": "conjurers_catalyst",
       "pro_name": "pma",
       "team_name": "Natus Vincere",
-      "role_early": "offlane"
+      "role_early": "offlane",
+      "starting_items": [
+        {
+          "item_key": "branches",
+          "count": 2,
+          "first_purchase_time": -89
+        },
+        {
+          "item_key": "circlet",
+          "count": 1,
+          "first_purchase_time": -89
+        },
+        {
+          "item_key": "faerie_fire",
+          "count": 1,
+          "first_purchase_time": -89
+        },
+        {
+          "item_key": "gauntlets",
+          "count": 1,
+          "first_purchase_time": -89
+        },
+        {
+          "item_key": "tango",
+          "count": 1,
+          "first_purchase_time": -89
+        }
+      ]
     },
     {
       "player_slot": 3,
@@ -9445,7 +9511,34 @@
       "neutral_item_key": "prophets_pendulum",
       "pro_name": "daze",
       "team_name": "Natus Vincere",
-      "role_early": "support(4)"
+      "role_early": "support(4)",
+      "starting_items": [
+        {
+          "item_key": "blood_grenade",
+          "count": 1,
+          "first_purchase_time": -89
+        },
+        {
+          "item_key": "branches",
+          "count": 2,
+          "first_purchase_time": -89
+        },
+        {
+          "item_key": "faerie_fire",
+          "count": 2,
+          "first_purchase_time": -89
+        },
+        {
+          "item_key": "tango",
+          "count": 1,
+          "first_purchase_time": -89
+        },
+        {
+          "item_key": "ward_sentry",
+          "count": 1,
+          "first_purchase_time": -89
+        }
+      ]
     },
     {
       "player_slot": 4,
@@ -11639,7 +11732,24 @@
       "neutral_item_key": "dandelion_amulet",
       "pro_name": "Riddys",
       "team_name": "Natus Vincere",
-      "role_early": "support(5)"
+      "role_early": "support(5)",
+      "starting_items": [
+        {
+          "item_key": "boots",
+          "count": 1,
+          "first_purchase_time": -89
+        },
+        {
+          "item_key": "tango",
+          "count": 1,
+          "first_purchase_time": -89
+        },
+        {
+          "item_key": "ward_observer",
+          "count": 1,
+          "first_purchase_time": -89
+        }
+      ]
     },
     {
       "player_slot": 128,
@@ -13717,7 +13827,39 @@
       "neutral_item_key": "metamorphic_mandible",
       "pro_name": "tOfu",
       "team_name": "Team Liquid",
-      "role_early": "support(5)"
+      "role_early": "support(5)",
+      "starting_items": [
+        {
+          "item_key": "blood_grenade",
+          "count": 1,
+          "first_purchase_time": -89
+        },
+        {
+          "item_key": "branches",
+          "count": 2,
+          "first_purchase_time": -84
+        },
+        {
+          "item_key": "faerie_fire",
+          "count": 1,
+          "first_purchase_time": -83
+        },
+        {
+          "item_key": "smoke_of_deceit",
+          "count": 1,
+          "first_purchase_time": -82
+        },
+        {
+          "item_key": "tango",
+          "count": 2,
+          "first_purchase_time": -89
+        },
+        {
+          "item_key": "ward_sentry",
+          "count": 2,
+          "first_purchase_time": -82
+        }
+      ]
     },
     {
       "player_slot": 129,
@@ -15637,7 +15779,29 @@
       "neutral_item_key": "prophets_pendulum",
       "pro_name": "Ace ♠",
       "team_name": "Team Liquid",
-      "role_early": "offlane"
+      "role_early": "offlane",
+      "starting_items": [
+        {
+          "item_key": "boots",
+          "count": 1,
+          "first_purchase_time": -89
+        },
+        {
+          "item_key": "branches",
+          "count": 1,
+          "first_purchase_time": -64
+        },
+        {
+          "item_key": "gauntlets",
+          "count": 3,
+          "first_purchase_time": -64
+        },
+        {
+          "item_key": "quelling_blade",
+          "count": 1,
+          "first_purchase_time": -89
+        }
+      ]
     },
     {
       "player_slot": 130,
@@ -17614,7 +17778,24 @@
       "neutral_item_key": "serrated_shiv",
       "pro_name": "Nisha",
       "team_name": "Team Liquid",
-      "role_early": "carry"
+      "role_early": "carry",
+      "starting_items": [
+        {
+          "item_key": "branches",
+          "count": 5,
+          "first_purchase_time": -89
+        },
+        {
+          "item_key": "tango",
+          "count": 1,
+          "first_purchase_time": -89
+        },
+        {
+          "item_key": "ward_observer",
+          "count": 1,
+          "first_purchase_time": -89
+        }
+      ]
     },
     {
       "player_slot": 131,
@@ -19914,7 +20095,34 @@
       "neutral_item_key": "partisans_brand",
       "pro_name": "Ekki",
       "team_name": "Pipsqueak+4",
-      "role_early": "support(4)"
+      "role_early": "support(4)",
+      "starting_items": [
+        {
+          "item_key": "blood_grenade",
+          "count": 1,
+          "first_purchase_time": -89
+        },
+        {
+          "item_key": "branches",
+          "count": 2,
+          "first_purchase_time": -89
+        },
+        {
+          "item_key": "circlet",
+          "count": 1,
+          "first_purchase_time": -89
+        },
+        {
+          "item_key": "faerie_fire",
+          "count": 2,
+          "first_purchase_time": -89
+        },
+        {
+          "item_key": "tango",
+          "count": 2,
+          "first_purchase_time": -89
+        }
+      ]
     },
     {
       "player_slot": 132,
@@ -21922,7 +22130,24 @@
       "neutral_item_key": "giant_maul",
       "pro_name": "m1CKe",
       "team_name": "Team Liquid",
-      "role_early": "mid"
+      "role_early": "mid",
+      "starting_items": [
+        {
+          "item_key": "faerie_fire",
+          "count": 1,
+          "first_purchase_time": -89
+        },
+        {
+          "item_key": "gauntlets",
+          "count": 3,
+          "first_purchase_time": -89
+        },
+        {
+          "item_key": "quelling_blade",
+          "count": 1,
+          "first_purchase_time": -89
+        }
+      ]
     }
   ],
   "leagueid": 19448,

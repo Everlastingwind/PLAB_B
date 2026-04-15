@@ -2373,31 +2373,31 @@
       "benchmarks": {
         "gold_per_min": {
           "raw": 479,
-          "pct": null
+          "pct": 0.4693200663349917
         },
         "xp_per_min": {
           "raw": 554,
-          "pct": null
+          "pct": 0.33001658374792703
         },
         "kills_per_min": {
           "raw": 0,
-          "pct": null
+          "pct": 0.011608623548922056
         },
         "last_hits_per_min": {
           "raw": 9.452054794520548,
-          "pct": null
+          "pct": 0.8009950248756219
         },
         "hero_damage_per_min": {
           "raw": 293.527397260274,
-          "pct": null
+          "pct": 0.0845771144278607
         },
         "hero_healing_per_min": {
           "raw": 0,
-          "pct": null
+          "pct": 0.8905472636815921
         },
         "tower_damage": {
           "raw": 0,
-          "pct": null
+          "pct": 0.1724709784411277
         }
       },
       "hero_name_en": "Gyrocopter",
@@ -4115,31 +4115,31 @@
       "benchmarks": {
         "gold_per_min": {
           "raw": 468,
-          "pct": null
+          "pct": 0.4866920152091255
         },
         "xp_per_min": {
           "raw": 475,
-          "pct": null
+          "pct": 0.19771863117870722
         },
         "kills_per_min": {
           "raw": 0.0684931506849315,
-          "pct": null
+          "pct": 0.17363751584283904
         },
         "last_hits_per_min": {
           "raw": 8.561643835616438,
-          "pct": null
+          "pct": 0.8948035487959443
         },
         "hero_damage_per_min": {
           "raw": 333.972602739726,
-          "pct": null
+          "pct": 0.09759188846641319
         },
         "hero_healing_per_min": {
           "raw": 88.39041095890411,
-          "pct": null
+          "pct": 0.2623574144486692
         },
         "tower_damage": {
           "raw": 0,
-          "pct": null
+          "pct": 0.16856780735107732
         }
       },
       "hero_name_en": "Keeper of the Light",
@@ -5846,31 +5846,31 @@
       "benchmarks": {
         "gold_per_min": {
           "raw": 410,
-          "pct": null
+          "pct": 0.30419977298524403
         },
         "xp_per_min": {
           "raw": 512,
-          "pct": null
+          "pct": 0.21793416572077184
         },
         "kills_per_min": {
           "raw": 0.0684931506849315,
-          "pct": null
+          "pct": 0.20715096481271283
         },
         "last_hits_per_min": {
           "raw": 6.232876712328767,
-          "pct": null
+          "pct": 0.764472190692395
         },
         "hero_damage_per_min": {
           "raw": 197.3972602739726,
-          "pct": null
+          "pct": 0.02724177071509648
         },
         "hero_healing_per_min": {
           "raw": 0,
-          "pct": null
+          "pct": 0.38649262202043133
         },
         "tower_damage": {
           "raw": 255,
-          "pct": null
+          "pct": 0.29625425652667425
         }
       },
       "hero_name_en": "Tidehunter",
@@ -7620,31 +7620,31 @@
       "benchmarks": {
         "gold_per_min": {
           "raw": 233,
-          "pct": null
+          "pct": 0.04046242774566474
         },
         "xp_per_min": {
           "raw": 268,
-          "pct": null
+          "pct": 0.0449582530507386
         },
         "kills_per_min": {
           "raw": 0.10273972602739725,
-          "pct": null
+          "pct": 0.3365446371226718
         },
         "last_hits_per_min": {
           "raw": 1.1643835616438356,
-          "pct": null
+          "pct": 0.1252408477842004
         },
         "hero_damage_per_min": {
           "raw": 377.7054794520548,
-          "pct": null
+          "pct": 0.26332691072575465
         },
         "hero_healing_per_min": {
           "raw": 0,
-          "pct": null
+          "pct": 0.6287732819524727
         },
         "tower_damage": {
           "raw": 0,
-          "pct": null
+          "pct": 0.1907514450867052
         }
       },
       "hero_name_en": "Hoodwink",
@@ -9674,31 +9674,31 @@
       "benchmarks": {
         "gold_per_min": {
           "raw": 303,
-          "pct": null
+          "pct": 0.4365079365079365
         },
         "xp_per_min": {
           "raw": 288,
-          "pct": null
+          "pct": 0.23015873015873015
         },
         "kills_per_min": {
           "raw": 0.10273972602739725,
-          "pct": null
+          "pct": 0.6666666666666666
         },
         "last_hits_per_min": {
           "raw": 2.6369863013698627,
-          "pct": null
+          "pct": 0.8015873015873016
         },
         "hero_damage_per_min": {
           "raw": 187.60273972602738,
-          "pct": null
+          "pct": 0.36507936507936506
         },
         "hero_healing_per_min": {
           "raw": 81.23287671232876,
-          "pct": null
+          "pct": 0.24603174603174602
         },
         "tower_damage": {
           "raw": 810,
-          "pct": null
+          "pct": 0.47619047619047616
         }
       },
       "hero_name_en": "Chen",
@@ -11454,31 +11454,31 @@
       "benchmarks": {
         "gold_per_min": {
           "raw": 675,
-          "pct": null
+          "pct": 0.9476082004555809
         },
         "xp_per_min": {
           "raw": 795,
-          "pct": null
+          "pct": 0.70083523158694
         },
         "kills_per_min": {
           "raw": 0.3082191780821918,
-          "pct": null
+          "pct": 0.7220956719817767
         },
         "last_hits_per_min": {
           "raw": 9.726027397260273,
-          "pct": null
+          "pct": 0.996962794229309
         },
         "hero_damage_per_min": {
           "raw": 580.2739726027397,
-          "pct": null
+          "pct": 0.2938496583143508
         },
         "hero_healing_per_min": {
           "raw": 0,
-          "pct": null
+          "pct": 0.8891419893697798
         },
         "tower_damage": {
           "raw": 6463,
-          "pct": null
+          "pct": 0.7835990888382688
         }
       },
       "hero_name_en": "Viper",
@@ -13363,31 +13363,31 @@
       "benchmarks": {
         "gold_per_min": {
           "raw": 770,
-          "pct": null
+          "pct": 0.9207630227439472
         },
         "xp_per_min": {
           "raw": 985,
-          "pct": null
+          "pct": 0.7718268525311812
         },
         "kills_per_min": {
           "raw": 0.37671232876712324,
-          "pct": null
+          "pct": 0.7901687454145268
         },
         "last_hits_per_min": {
           "raw": 11.506849315068493,
-          "pct": null
+          "pct": 0.9809244314013206
         },
         "hero_damage_per_min": {
           "raw": 815.1712328767123,
-          "pct": null
+          "pct": 0.6038151137197358
         },
         "hero_healing_per_min": {
           "raw": 0,
-          "pct": null
+          "pct": 0.9229640498899486
         },
         "tower_damage": {
           "raw": 4459,
-          "pct": null
+          "pct": 0.5818048422597212
         }
       },
       "hero_name_en": "Beastmaster",
@@ -15473,31 +15473,31 @@
       "benchmarks": {
         "gold_per_min": {
           "raw": 486,
-          "pct": null
+          "pct": 0.8829787234042553
         },
         "xp_per_min": {
           "raw": 520,
-          "pct": null
+          "pct": 0.4540873460246361
         },
         "kills_per_min": {
           "raw": 0.17123287671232876,
-          "pct": null
+          "pct": 0.7161254199328108
         },
         "last_hits_per_min": {
           "raw": 4.554794520547945,
-          "pct": null
+          "pct": 0.9003359462486002
         },
         "hero_damage_per_min": {
           "raw": 547.6712328767123,
-          "pct": null
+          "pct": 0.3784994400895857
         },
         "hero_healing_per_min": {
           "raw": 4.280821917808219,
-          "pct": null
+          "pct": 0.39249720044792835
         },
         "tower_damage": {
           "raw": 537,
-          "pct": null
+          "pct": 0.40985442329227323
         }
       },
       "hero_name_en": "Venomancer",
@@ -17413,31 +17413,31 @@
       "benchmarks": {
         "gold_per_min": {
           "raw": 337,
-          "pct": null
+          "pct": 0.2559938128383604
         },
         "xp_per_min": {
           "raw": 474,
-          "pct": null
+          "pct": 0.2003093580819799
         },
         "kills_per_min": {
           "raw": 0.0684931506849315,
-          "pct": null
+          "pct": 0.10324825986078887
         },
         "last_hits_per_min": {
           "raw": 1.2671232876712328,
-          "pct": null
+          "pct": 0.154292343387471
         },
         "hero_damage_per_min": {
           "raw": 302.08904109589037,
-          "pct": null
+          "pct": 0.09667440061871617
         },
         "hero_healing_per_min": {
           "raw": 4.280821917808219,
-          "pct": null
+          "pct": 0.8283062645011601
         },
         "tower_damage": {
           "raw": 0,
-          "pct": null
+          "pct": 0.22815158546017014
         }
       },
       "hero_name_en": "Spirit Breaker",
@@ -19237,31 +19237,31 @@
       "benchmarks": {
         "gold_per_min": {
           "raw": 603,
-          "pct": null
+          "pct": 0.9474393530997305
         },
         "xp_per_min": {
           "raw": 882,
-          "pct": null
+          "pct": 0.8840970350404312
         },
         "kills_per_min": {
           "raw": 0.23972602739726026,
-          "pct": null
+          "pct": 0.8908355795148248
         },
         "last_hits_per_min": {
           "raw": 8.116438356164384,
-          "pct": null
+          "pct": 0.9811320754716981
         },
         "hero_damage_per_min": {
           "raw": 463.3219178082192,
-          "pct": null
+          "pct": 0.3140161725067385
         },
         "hero_healing_per_min": {
           "raw": 0,
-          "pct": null
+          "pct": 0.4380053908355795
         },
         "tower_damage": {
           "raw": 2522,
-          "pct": null
+          "pct": 0.5997304582210242
         }
       },
       "hero_name_en": "Underlord",

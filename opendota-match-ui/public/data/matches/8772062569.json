@@ -2918,31 +2918,31 @@
       "benchmarks": {
         "gold_per_min": {
           "raw": 699,
-          "pct": null
+          "pct": 0.8125318390219053
         },
         "xp_per_min": {
           "raw": 649,
-          "pct": null
+          "pct": 0.25522159959246055
         },
         "kills_per_min": {
           "raw": 0.074757039621231,
-          "pct": null
+          "pct": 0.1380539989811513
         },
         "last_hits_per_min": {
           "raw": 11.437827062048344,
-          "pct": null
+          "pct": 0.9928680590932246
         },
         "hero_damage_per_min": {
           "raw": 373.11238474956394,
-          "pct": null
+          "pct": 0.2042791645440652
         },
         "hero_healing_per_min": {
           "raw": 11.796660852230252,
-          "pct": null
+          "pct": 0.16760061130922058
         },
         "tower_damage": {
           "raw": 11638,
-          "pct": null
+          "pct": 0.7692307692307693
         }
       },
       "hero_name_en": "Lifestealer",
@@ -5231,31 +5231,31 @@
       "benchmarks": {
         "gold_per_min": {
           "raw": 727,
-          "pct": null
+          "pct": 0.9802581624905087
         },
         "xp_per_min": {
           "raw": 900,
-          "pct": null
+          "pct": 0.8215641609719059
         },
         "kills_per_min": {
           "raw": 0.044854223772738594,
-          "pct": null
+          "pct": 0.03492786636294609
         },
         "last_hits_per_min": {
           "raw": 12.379765761275854,
-          "pct": null
+          "pct": 1
         },
         "hero_damage_per_min": {
           "raw": 622.2177921754298,
-          "pct": null
+          "pct": 0.3530751708428246
         },
         "hero_healing_per_min": {
           "raw": 0,
-          "pct": null
+          "pct": 0.8891419893697798
         },
         "tower_damage": {
           "raw": 3177,
-          "pct": null
+          "pct": 0.5937737281700836
         }
       },
       "hero_name_en": "Viper",
@@ -8139,31 +8139,31 @@
       "benchmarks": {
         "gold_per_min": {
           "raw": 292,
-          "pct": null
+          "pct": 0.09518599562363239
         },
         "xp_per_min": {
           "raw": 432,
-          "pct": null
+          "pct": 0.14770240700218817
         },
         "kills_per_min": {
           "raw": 0.0299028158484924,
-          "pct": null
+          "pct": 0.02954048140043764
         },
         "last_hits_per_min": {
           "raw": 1.3605781211064043,
-          "pct": null
+          "pct": 0.058533916849015315
         },
         "hero_damage_per_min": {
           "raw": 194.2038375280339,
-          "pct": null
+          "pct": 0.019693654266958426
         },
         "hero_healing_per_min": {
           "raw": 5.980563169698479,
-          "pct": null
+          "pct": 0.9113785557986871
         },
         "tower_damage": {
           "raw": 143,
-          "pct": null
+          "pct": 0.14824945295404815
         }
       },
       "hero_name_en": "Windranger",
@@ -10258,31 +10258,31 @@
       "benchmarks": {
         "gold_per_min": {
           "raw": 335,
-          "pct": null
+          "pct": 0.10520319027725028
         },
         "xp_per_min": {
           "raw": 452,
-          "pct": null
+          "pct": 0.13938473224458792
         },
         "kills_per_min": {
           "raw": 0.074757039621231,
-          "pct": null
+          "pct": 0.10482339536650209
         },
         "last_hits_per_min": {
           "raw": 3.6032893097433343,
-          "pct": null
+          "pct": 0.24838587162932016
         },
         "hero_damage_per_min": {
           "raw": 249.23997009718414,
-          "pct": null
+          "pct": 0.03987846562856058
         },
         "hero_healing_per_min": {
           "raw": 63.304261151258416,
-          "pct": null
+          "pct": 0.8047854158754273
         },
         "tower_damage": {
           "raw": 458,
-          "pct": null
+          "pct": 0.33497911127990887
         }
       },
       "hero_name_en": "Legion Commander",
@@ -12787,31 +12787,31 @@
       "benchmarks": {
         "gold_per_min": {
           "raw": 365,
-          "pct": null
+          "pct": 0.5518072289156627
         },
         "xp_per_min": {
           "raw": 555,
-          "pct": null
+          "pct": 0.44096385542168676
         },
         "kills_per_min": {
           "raw": 0,
-          "pct": null
+          "pct": 0.05301204819277108
         },
         "last_hits_per_min": {
           "raw": 3.3192125591826565,
-          "pct": null
+          "pct": 0.7879518072289157
         },
         "hero_damage_per_min": {
           "raw": 216.67580363817592,
-          "pct": null
+          "pct": 0.12771084337349398
         },
         "hero_healing_per_min": {
           "raw": 159.56142536755544,
-          "pct": null
+          "pct": 0.8168674698795181
         },
         "tower_damage": {
           "raw": 4028,
-          "pct": null
+          "pct": 0.7686746987951807
         }
       },
       "hero_name_en": "Enchantress",
@@ -15099,31 +15099,31 @@
       "benchmarks": {
         "gold_per_min": {
           "raw": 851,
-          "pct": null
+          "pct": 0.967741935483871
         },
         "xp_per_min": {
           "raw": 664,
-          "pct": null
+          "pct": 0.4159592529711375
         },
         "kills_per_min": {
           "raw": 0.1196112633939696,
-          "pct": null
+          "pct": 0.30220713073005095
         },
         "last_hits_per_min": {
           "raw": 14.786942437079492,
-          "pct": null
+          "pct": 0.9932088285229203
         },
         "hero_damage_per_min": {
           "raw": 698.2457014702218,
-          "pct": null
+          "pct": 0.6689303904923599
         },
         "hero_healing_per_min": {
           "raw": 0,
-          "pct": null
+          "pct": 0.9252971137521222
         },
         "tower_damage": {
           "raw": 21999,
-          "pct": null
+          "pct": 0.8964346349745331
         }
       },
       "hero_name_en": "Terrorblade",
@@ -17447,31 +17447,31 @@
       "benchmarks": {
         "gold_per_min": {
           "raw": 722,
-          "pct": null
+          "pct": 0.9363507779349364
         },
         "xp_per_min": {
           "raw": 928,
-          "pct": null
+          "pct": 0.7468175388967468
         },
         "kills_per_min": {
           "raw": 0.074757039621231,
-          "pct": null
+          "pct": 0.1188118811881188
         },
         "last_hits_per_min": {
           "raw": 11.258410166957388,
-          "pct": null
+          "pct": 0.9929278642149929
         },
         "hero_damage_per_min": {
           "raw": 826.9324694742088,
-          "pct": null
+          "pct": 0.7001414427157001
         },
         "hero_healing_per_min": {
           "raw": 0,
-          "pct": null
+          "pct": 0.8444130127298444
         },
         "tower_damage": {
           "raw": 5456,
-          "pct": null
+          "pct": 0.8472418670438473
         }
       },
       "hero_name_en": "Puck",
@@ -19761,31 +19761,31 @@
       "benchmarks": {
         "gold_per_min": {
           "raw": 584,
-          "pct": null
+          "pct": 0.8802395209580839
         },
         "xp_per_min": {
           "raw": 816,
-          "pct": null
+          "pct": 0.7621899059024807
         },
         "kills_per_min": {
           "raw": 0.0299028158484924,
-          "pct": null
+          "pct": 0.06330196749358426
         },
         "last_hits_per_min": {
           "raw": 8.402691253426365,
-          "pct": null
+          "pct": 0.9837467921300257
         },
         "hero_damage_per_min": {
           "raw": 340.36880139546474,
-          "pct": null
+          "pct": 0.1727972626176219
         },
         "hero_healing_per_min": {
           "raw": 39.157737353600794,
-          "pct": null
+          "pct": 0.9272882805816938
         },
         "tower_damage": {
           "raw": 1474,
-          "pct": null
+          "pct": 0.6381522668947819
         }
       },
       "hero_name_en": "Mars",
@@ -22346,31 +22346,31 @@
       "benchmarks": {
         "gold_per_min": {
           "raw": 348,
-          "pct": null
+          "pct": 0.5331905781584583
         },
         "xp_per_min": {
           "raw": 542,
-          "pct": null
+          "pct": 0.5931477516059958
         },
         "kills_per_min": {
           "raw": 0.0598056316969848,
-          "pct": null
+          "pct": 0.1777301927194861
         },
         "last_hits_per_min": {
           "raw": 2.3174682282581607,
-          "pct": null
+          "pct": 0.8072805139186295
         },
         "hero_damage_per_min": {
           "raw": 357.1143782706205,
-          "pct": null
+          "pct": 0.33832976445396146
         },
         "hero_healing_per_min": {
           "raw": 60.493396461500126,
-          "pct": null
+          "pct": 0.9207708779443254
         },
         "tower_damage": {
           "raw": 1961,
-          "pct": null
+          "pct": 0.8779443254817987
         }
       },
       "hero_name_en": "Shadow Demon",
@@ -25202,31 +25202,31 @@
       "benchmarks": {
         "gold_per_min": {
           "raw": 453,
-          "pct": null
+          "pct": 0.5830721003134797
         },
         "xp_per_min": {
           "raw": 661,
-          "pct": null
+          "pct": 0.5274294670846394
         },
         "kills_per_min": {
           "raw": 0.074757039621231,
-          "pct": null
+          "pct": 0.14106583072100312
         },
         "last_hits_per_min": {
           "raw": 3.9621230999252433,
-          "pct": null
+          "pct": 0.6238244514106583
         },
         "hero_damage_per_min": {
           "raw": 453.1472713680538,
-          "pct": null
+          "pct": 0.14184952978056425
         },
         "hero_healing_per_min": {
           "raw": 322.71118863693,
-          "pct": null
+          "pct": 0.9898119122257053
         },
         "tower_damage": {
           "raw": 1345,
-          "pct": null
+          "pct": 0.7351097178683386
         }
       },
       "hero_name_en": "Phoenix",

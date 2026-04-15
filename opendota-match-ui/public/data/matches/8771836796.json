@@ -2182,31 +2182,31 @@
       "benchmarks": {
         "gold_per_min": {
           "raw": 717,
-          "pct": null
+          "pct": 0.6664139499620925
         },
         "xp_per_min": {
           "raw": 728,
-          "pct": null
+          "pct": 0.34040940106141016
         },
         "kills_per_min": {
           "raw": 0.10962241169305724,
-          "pct": null
+          "pct": 0.20318423047763456
         },
         "last_hits_per_min": {
           "raw": 12.168087697929353,
-          "pct": null
+          "pct": 0.8263836239575436
         },
         "hero_damage_per_min": {
           "raw": 649.0377588306943,
-          "pct": null
+          "pct": 0.4404852160727824
         },
         "hero_healing_per_min": {
           "raw": 0,
-          "pct": null
+          "pct": 0.9651250947687642
         },
         "tower_damage": {
           "raw": 14529,
-          "pct": null
+          "pct": 0.6944655041698257
         }
       },
       "hero_name_en": "Luna",
@@ -4132,31 +4132,31 @@
       "benchmarks": {
         "gold_per_min": {
           "raw": 322,
-          "pct": null
+          "pct": 0.2543352601156069
         },
         "xp_per_min": {
           "raw": 334,
-          "pct": null
+          "pct": 0.08156711624919717
         },
         "kills_per_min": {
           "raw": 0.10962241169305724,
-          "pct": null
+          "pct": 0.365446371226718
         },
         "last_hits_per_min": {
           "raw": 1.0962241169305724,
-          "pct": null
+          "pct": 0.10404624277456648
         },
         "hero_damage_per_min": {
           "raw": 388.8306942752741,
-          "pct": null
+          "pct": 0.2935131663455363
         },
         "hero_healing_per_min": {
           "raw": 0,
-          "pct": null
+          "pct": 0.6287732819524727
         },
         "tower_damage": {
           "raw": 123,
-          "pct": null
+          "pct": 0.2922286448298009
         }
       },
       "hero_name_en": "Hoodwink",
@@ -5854,31 +5854,31 @@
       "benchmarks": {
         "gold_per_min": {
           "raw": 667,
-          "pct": null
+          "pct": 0.9216061185468452
         },
         "xp_per_min": {
           "raw": 788,
-          "pct": null
+          "pct": 0.6462715105162524
         },
         "kills_per_min": {
           "raw": 0.2557856272838003,
-          "pct": null
+          "pct": 0.6978967495219885
         },
         "last_hits_per_min": {
           "raw": 10.158343483556639,
-          "pct": null
+          "pct": 1
         },
         "hero_damage_per_min": {
           "raw": 446.6382460414129,
-          "pct": null
+          "pct": 0.27915869980879543
         },
         "hero_healing_per_min": {
           "raw": 0,
-          "pct": null
+          "pct": 0.8986615678776291
         },
         "tower_damage": {
           "raw": 1213,
-          "pct": null
+          "pct": 0.6367112810707457
         }
       },
       "hero_name_en": "Timbersaw",
@@ -7688,31 +7688,31 @@
       "benchmarks": {
         "gold_per_min": {
           "raw": 286,
-          "pct": null
+          "pct": 0.23132530120481928
         },
         "xp_per_min": {
           "raw": 369,
-          "pct": null
+          "pct": 0.1493975903614458
         },
         "kills_per_min": {
           "raw": 0,
-          "pct": null
+          "pct": 0.05301204819277108
         },
         "last_hits_per_min": {
           "raw": 1.7539585870889158,
-          "pct": null
+          "pct": 0.4
         },
         "hero_damage_per_min": {
           "raw": 228.05115712545677,
-          "pct": null
+          "pct": 0.13734939759036144
         },
         "hero_healing_per_min": {
           "raw": 237.47868453105968,
-          "pct": null
+          "pct": 0.9301204819277108
         },
         "tower_damage": {
           "raw": 3649,
-          "pct": null
+          "pct": 0.7349397590361446
         }
       },
       "hero_name_en": "Enchantress",
@@ -9368,31 +9368,31 @@
       "benchmarks": {
         "gold_per_min": {
           "raw": 503,
-          "pct": null
+          "pct": 0.6411716842961758
         },
         "xp_per_min": {
           "raw": 654,
-          "pct": null
+          "pct": 0.45565500406834825
         },
         "kills_per_min": {
           "raw": 0.2557856272838003,
-          "pct": null
+          "pct": 0.7152156224572823
         },
         "last_hits_per_min": {
           "raw": 5.590742996345919,
-          "pct": null
+          "pct": 0.7778681855166802
         },
         "hero_damage_per_min": {
           "raw": 577.2716199756394,
-          "pct": null
+          "pct": 0.6932465419039869
         },
         "hero_healing_per_min": {
           "raw": 0,
-          "pct": null
+          "pct": 0.9454841334418226
         },
         "tower_damage": {
           "raw": 1118,
-          "pct": null
+          "pct": 0.5117982099267697
         }
       },
       "hero_name_en": "Slardar",
@@ -11115,31 +11115,31 @@
       "benchmarks": {
         "gold_per_min": {
           "raw": 440,
-          "pct": null
+          "pct": 0.32
         },
         "xp_per_min": {
           "raw": 481,
-          "pct": null
+          "pct": 0.18125
         },
         "kills_per_min": {
           "raw": 0.0730816077953715,
-          "pct": null
+          "pct": 0.0825
         },
         "last_hits_per_min": {
           "raw": 7.30816077953715,
-          "pct": null
+          "pct": 0.9125
         },
         "hero_damage_per_min": {
           "raw": 590.6820950060901,
-          "pct": null
+          "pct": 0.31875
         },
         "hero_healing_per_min": {
           "raw": 0,
-          "pct": null
+          "pct": 0.80125
         },
         "tower_damage": {
           "raw": 783,
-          "pct": null
+          "pct": 0.2025
         }
       },
       "hero_name_en": "Death Prophet",
@@ -12839,31 +12839,31 @@
       "benchmarks": {
         "gold_per_min": {
           "raw": 481,
-          "pct": null
+          "pct": 0.35343035343035345
         },
         "xp_per_min": {
           "raw": 503,
-          "pct": null
+          "pct": 0.20166320166320167
         },
         "kills_per_min": {
           "raw": 0.18270401948842874,
-          "pct": null
+          "pct": 0.448024948024948
         },
         "last_hits_per_min": {
           "raw": 7.9293544457978085,
-          "pct": null
+          "pct": 0.5519750519750519
         },
         "hero_damage_per_min": {
           "raw": 566.6017052375153,
-          "pct": null
+          "pct": 0.3607068607068607
         },
         "hero_healing_per_min": {
           "raw": 0,
-          "pct": null
+          "pct": 0.9345114345114345
         },
         "tower_damage": {
           "raw": 545,
-          "pct": null
+          "pct": 0.30457380457380456
         }
       },
       "hero_name_en": "Muerta",
@@ -14541,31 +14541,31 @@
       "benchmarks": {
         "gold_per_min": {
           "raw": 335,
-          "pct": null
+          "pct": 0.11464245175936436
         },
         "xp_per_min": {
           "raw": 372,
-          "pct": null
+          "pct": 0.061861520998864925
         },
         "kills_per_min": {
           "raw": 0.03654080389768575,
-          "pct": null
+          "pct": 0.08967082860385925
         },
         "last_hits_per_min": {
           "raw": 4.713763702801462,
-          "pct": null
+          "pct": 0.4370034052213394
         },
         "hero_damage_per_min": {
           "raw": 214.8599269183922,
-          "pct": null
+          "pct": 0.032917139614074914
         },
         "hero_healing_per_min": {
           "raw": 24.080389768574907,
-          "pct": null
+          "pct": 0.48354143019296253
         },
         "tower_damage": {
           "raw": 0,
-          "pct": null
+          "pct": 0.15777525539160045
         }
       },
       "hero_name_en": "Tidehunter",
@@ -16248,31 +16248,31 @@
       "benchmarks": {
         "gold_per_min": {
           "raw": 212,
-          "pct": null
+          "pct": 0.041182170542635656
         },
         "xp_per_min": {
           "raw": 320,
-          "pct": null
+          "pct": 0.08018410852713179
         },
         "kills_per_min": {
           "raw": 0,
-          "pct": null
+          "pct": 0.01937984496124031
         },
         "last_hits_per_min": {
           "raw": 0.8769792935444579,
-          "pct": null
+          "pct": 0.2868217054263566
         },
         "hero_damage_per_min": {
           "raw": 233.02070645554204,
-          "pct": null
+          "pct": 0.17781007751937986
         },
         "hero_healing_per_min": {
           "raw": 0,
-          "pct": null
+          "pct": 0.7676841085271318
         },
         "tower_damage": {
           "raw": 0,
-          "pct": null
+          "pct": 0.2366763565891473
         }
       },
       "hero_name_en": "Lion",
@@ -17948,7 +17948,7 @@
       "name": null,
       "last_login": null,
       "rank_tier": 80,
-      "computed_mmr": 4258.84,
+      "computed_mmr": 4235.42,
       "is_subscriber": false,
       "radiant_win": true,
       "start_time": 1776196466,
@@ -18070,31 +18070,31 @@
       "benchmarks": {
         "gold_per_min": {
           "raw": 203,
-          "pct": null
+          "pct": 0.04434589800443459
         },
         "xp_per_min": {
           "raw": 249,
-          "pct": null
+          "pct": 0.07982261640798226
         },
         "kills_per_min": {
           "raw": 0,
-          "pct": null
+          "pct": 0.07760532150776053
         },
         "last_hits_per_min": {
           "raw": 0.5115712545676006,
-          "pct": null
+          "pct": 0.037694013303769404
         },
         "hero_damage_per_min": {
           "raw": 194.8721071863581,
-          "pct": null
+          "pct": 0.09534368070953436
         },
         "hero_healing_per_min": {
           "raw": 76.88185140073081,
-          "pct": null
+          "pct": 0.43237250554323725
         },
         "tower_damage": {
           "raw": 0,
-          "pct": null
+          "pct": 0.3082039911308204
         }
       },
       "hero_name_en": "Treant Protector",

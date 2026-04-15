@@ -3322,7 +3322,44 @@
       "neutral_item_key": "spellslinger",
       "pro_name": "not me",
       "team_name": "One Move",
-      "role_early": "support(4)"
+      "role_early": "support(4)",
+      "starting_items": [
+        {
+          "item_key": "blood_grenade",
+          "count": 1,
+          "first_purchase_time": -90
+        },
+        {
+          "item_key": "branches",
+          "count": 2,
+          "first_purchase_time": -90
+        },
+        {
+          "item_key": "circlet",
+          "count": 1,
+          "first_purchase_time": -90
+        },
+        {
+          "item_key": "faerie_fire",
+          "count": 1,
+          "first_purchase_time": -90
+        },
+        {
+          "item_key": "tango",
+          "count": 1,
+          "first_purchase_time": -90
+        },
+        {
+          "item_key": "ward_observer",
+          "count": 1,
+          "first_purchase_time": -90
+        },
+        {
+          "item_key": "ward_sentry",
+          "count": 1,
+          "first_purchase_time": -90
+        }
+      ]
     },
     {
       "player_slot": 1,
@@ -5321,7 +5358,24 @@
       "neutral_item_key": "serrated_shiv",
       "pro_name": "shigetsu",
       "team_name": "Natus Vincere",
-      "role_early": "carry"
+      "role_early": "carry",
+      "starting_items": [
+        {
+          "item_key": "branches",
+          "count": 1,
+          "first_purchase_time": -89
+        },
+        {
+          "item_key": "faerie_fire",
+          "count": 1,
+          "first_purchase_time": -89
+        },
+        {
+          "item_key": "magic_wand",
+          "count": 1,
+          "first_purchase_time": -89
+        }
+      ]
     },
     {
       "player_slot": 2,
@@ -7190,7 +7244,24 @@
       "neutral_item_key": "stormcrafter",
       "pro_name": null,
       "team_name": null,
-      "role_early": "mid"
+      "role_early": "mid",
+      "starting_items": [
+        {
+          "item_key": "branches",
+          "count": 1,
+          "first_purchase_time": -89
+        },
+        {
+          "item_key": "faerie_fire",
+          "count": 1,
+          "first_purchase_time": -89
+        },
+        {
+          "item_key": "gauntlets",
+          "count": 3,
+          "first_purchase_time": -89
+        }
+      ]
     },
     {
       "player_slot": 3,
@@ -9004,7 +9075,29 @@
       "neutral_item_key": "serrated_shiv",
       "pro_name": null,
       "team_name": null,
-      "role_early": "offlane"
+      "role_early": "offlane",
+      "starting_items": [
+        {
+          "item_key": "branches",
+          "count": 2,
+          "first_purchase_time": -89
+        },
+        {
+          "item_key": "circlet",
+          "count": 2,
+          "first_purchase_time": -89
+        },
+        {
+          "item_key": "slippers",
+          "count": 1,
+          "first_purchase_time": -89
+        },
+        {
+          "item_key": "ward_observer",
+          "count": 1,
+          "first_purchase_time": -89
+        }
+      ]
     },
     {
       "player_slot": 4,
@@ -10927,7 +11020,44 @@
       "neutral_item_key": "pogo_stick",
       "pro_name": "Xakoda",
       "team_name": "One Move",
-      "role_early": "support(5)"
+      "role_early": "support(5)",
+      "starting_items": [
+        {
+          "item_key": "blood_grenade",
+          "count": 1,
+          "first_purchase_time": -89
+        },
+        {
+          "item_key": "branches",
+          "count": 2,
+          "first_purchase_time": -89
+        },
+        {
+          "item_key": "enchanted_mango",
+          "count": 1,
+          "first_purchase_time": -89
+        },
+        {
+          "item_key": "faerie_fire",
+          "count": 1,
+          "first_purchase_time": -89
+        },
+        {
+          "item_key": "smoke_of_deceit",
+          "count": 1,
+          "first_purchase_time": -89
+        },
+        {
+          "item_key": "tango",
+          "count": 1,
+          "first_purchase_time": -89
+        },
+        {
+          "item_key": "ward_sentry",
+          "count": 1,
+          "first_purchase_time": -89
+        }
+      ]
     },
     {
       "player_slot": 128,
@@ -12738,7 +12868,14 @@
       "neutral_item_key": "gunpowder_gauntlets",
       "pro_name": null,
       "team_name": null,
-      "role_early": "mid"
+      "role_early": "mid",
+      "starting_items": [
+        {
+          "item_key": "tango",
+          "count": 1,
+          "first_purchase_time": 0
+        }
+      ]
     },
     {
       "player_slot": 129,
@@ -14620,7 +14757,29 @@
       "neutral_item_key": "unrelenting_eye",
       "pro_name": "mellojul",
       "team_name": "Natus Vincere",
-      "role_early": "offlane"
+      "role_early": "offlane",
+      "starting_items": [
+        {
+          "item_key": "branches",
+          "count": 4,
+          "first_purchase_time": -89
+        },
+        {
+          "item_key": "faerie_fire",
+          "count": 1,
+          "first_purchase_time": -89
+        },
+        {
+          "item_key": "tango",
+          "count": 1,
+          "first_purchase_time": -89
+        },
+        {
+          "item_key": "ward_observer",
+          "count": 1,
+          "first_purchase_time": -89
+        }
+      ]
     },
     {
       "player_slot": 130,
@@ -16445,7 +16604,14 @@
       "neutral_item_key": "serrated_shiv",
       "pro_name": null,
       "team_name": null,
-      "role_early": "carry"
+      "role_early": "carry",
+      "starting_items": [
+        {
+          "item_key": "tango",
+          "count": 1,
+          "first_purchase_time": 0
+        }
+      ]
     },
     {
       "player_slot": 131,
@@ -18441,7 +18607,34 @@
       "neutral_item_key": "psychic_headband",
       "pro_name": null,
       "team_name": null,
-      "role_early": "support(4)"
+      "role_early": "support(4)",
+      "starting_items": [
+        {
+          "item_key": "blood_grenade",
+          "count": 1,
+          "first_purchase_time": -89
+        },
+        {
+          "item_key": "branches",
+          "count": 2,
+          "first_purchase_time": -89
+        },
+        {
+          "item_key": "circlet",
+          "count": 1,
+          "first_purchase_time": -89
+        },
+        {
+          "item_key": "faerie_fire",
+          "count": 1,
+          "first_purchase_time": -89
+        },
+        {
+          "item_key": "tango",
+          "count": 1,
+          "first_purchase_time": -89
+        }
+      ]
     },
     {
       "player_slot": 132,
@@ -20315,7 +20508,39 @@
       "neutral_item_key": "pogo_stick",
       "pro_name": null,
       "team_name": null,
-      "role_early": "support(5)"
+      "role_early": "support(5)",
+      "starting_items": [
+        {
+          "item_key": "blood_grenade",
+          "count": 1,
+          "first_purchase_time": -89
+        },
+        {
+          "item_key": "branches",
+          "count": 2,
+          "first_purchase_time": -89
+        },
+        {
+          "item_key": "enchanted_mango",
+          "count": 1,
+          "first_purchase_time": -89
+        },
+        {
+          "item_key": "smoke_of_deceit",
+          "count": 1,
+          "first_purchase_time": -89
+        },
+        {
+          "item_key": "tango",
+          "count": 1,
+          "first_purchase_time": -89
+        },
+        {
+          "item_key": "ward_sentry",
+          "count": 1,
+          "first_purchase_time": -89
+        }
+      ]
     }
   ],
   "leagueid": 18866,

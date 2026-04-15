@@ -11339,7 +11339,14 @@
       "item_4": 1,
       "item_5": 232,
       "item_neutral": 0,
-      "role_early": "mid"
+      "role_early": "mid",
+      "starting_items": [
+        {
+          "item_key": "ring_of_regen",
+          "count": 1,
+          "first_purchase_time": -80
+        }
+      ]
     }
   ]
 }

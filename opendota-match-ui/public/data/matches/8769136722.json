@@ -3730,7 +3730,19 @@
       "neutral_item_key": "mana_draught",
       "pro_name": "Wits",
       "team_name": "Infinity",
-      "role_early": "carry"
+      "role_early": "carry",
+      "starting_items": [
+        {
+          "item_key": "branches",
+          "count": 2,
+          "first_purchase_time": -89
+        },
+        {
+          "item_key": "magic_wand",
+          "count": 1,
+          "first_purchase_time": -89
+        }
+      ]
     },
     {
       "player_slot": 1,
@@ -5406,7 +5418,34 @@
       "neutral_item_key": "essence_ring",
       "pro_name": null,
       "team_name": null,
-      "role_early": "offlane"
+      "role_early": "offlane",
+      "starting_items": [
+        {
+          "item_key": "branches",
+          "count": 1,
+          "first_purchase_time": -89
+        },
+        {
+          "item_key": "faerie_fire",
+          "count": 1,
+          "first_purchase_time": -89
+        },
+        {
+          "item_key": "gauntlets",
+          "count": 1,
+          "first_purchase_time": -89
+        },
+        {
+          "item_key": "magic_stick",
+          "count": 1,
+          "first_purchase_time": -89
+        },
+        {
+          "item_key": "tango",
+          "count": 1,
+          "first_purchase_time": -89
+        }
+      ]
     },
     {
       "player_slot": 2,
@@ -7145,7 +7184,24 @@
       "neutral_item_key": "mana_draught",
       "pro_name": "DarkMago♡",
       "team_name": "BOOM Esports",
-      "role_early": "mid"
+      "role_early": "mid",
+      "starting_items": [
+        {
+          "item_key": "branches",
+          "count": 5,
+          "first_purchase_time": -89
+        },
+        {
+          "item_key": "tango",
+          "count": 1,
+          "first_purchase_time": -89
+        },
+        {
+          "item_key": "ward_observer",
+          "count": 1,
+          "first_purchase_time": -89
+        }
+      ]
     },
     {
       "player_slot": 3,
@@ -8857,7 +8913,39 @@
       "neutral_item_key": "searing_signet",
       "pro_name": "Scofield",
       "team_name": "paiN Gaming",
-      "role_early": "support(5)"
+      "role_early": "support(5)",
+      "starting_items": [
+        {
+          "item_key": "blood_grenade",
+          "count": 1,
+          "first_purchase_time": -89
+        },
+        {
+          "item_key": "branches",
+          "count": 2,
+          "first_purchase_time": -89
+        },
+        {
+          "item_key": "circlet",
+          "count": 1,
+          "first_purchase_time": -89
+        },
+        {
+          "item_key": "faerie_fire",
+          "count": 1,
+          "first_purchase_time": -89
+        },
+        {
+          "item_key": "tango",
+          "count": 1,
+          "first_purchase_time": -89
+        },
+        {
+          "item_key": "ward_sentry",
+          "count": 1,
+          "first_purchase_time": -86
+        }
+      ]
     },
     {
       "player_slot": 4,
@@ -10578,7 +10666,39 @@
       "neutral_item_key": "foragers_kit",
       "pro_name": "Elmisho",
       "team_name": "beastcoast",
-      "role_early": "support(4)"
+      "role_early": "support(4)",
+      "starting_items": [
+        {
+          "item_key": "blood_grenade",
+          "count": 1,
+          "first_purchase_time": -89
+        },
+        {
+          "item_key": "branches",
+          "count": 1,
+          "first_purchase_time": -89
+        },
+        {
+          "item_key": "faerie_fire",
+          "count": 2,
+          "first_purchase_time": -89
+        },
+        {
+          "item_key": "magic_stick",
+          "count": 1,
+          "first_purchase_time": -89
+        },
+        {
+          "item_key": "smoke_of_deceit",
+          "count": 1,
+          "first_purchase_time": -89
+        },
+        {
+          "item_key": "tango",
+          "count": 1,
+          "first_purchase_time": -89
+        }
+      ]
     },
     {
       "player_slot": 128,
@@ -12249,7 +12369,44 @@
       "neutral_item_key": "searing_signet",
       "pro_name": "Hanzama <",
       "team_name": "Gods of Hell",
-      "role_early": "support(5)"
+      "role_early": "support(5)",
+      "starting_items": [
+        {
+          "item_key": "blood_grenade",
+          "count": 1,
+          "first_purchase_time": -89
+        },
+        {
+          "item_key": "branches",
+          "count": 1,
+          "first_purchase_time": -89
+        },
+        {
+          "item_key": "circlet",
+          "count": 1,
+          "first_purchase_time": -89
+        },
+        {
+          "item_key": "faerie_fire",
+          "count": 1,
+          "first_purchase_time": -89
+        },
+        {
+          "item_key": "smoke_of_deceit",
+          "count": 1,
+          "first_purchase_time": -89
+        },
+        {
+          "item_key": "tango",
+          "count": 1,
+          "first_purchase_time": -89
+        },
+        {
+          "item_key": "ward_sentry",
+          "count": 1,
+          "first_purchase_time": -89
+        }
+      ]
     },
     {
       "player_slot": 129,
@@ -13840,7 +13997,29 @@
       "neutral_item_key": "poor_mans_shield",
       "pro_name": "SHEOL",
       "team_name": "Qhali",
-      "role_early": "mid"
+      "role_early": "mid",
+      "starting_items": [
+        {
+          "item_key": "branches",
+          "count": 5,
+          "first_purchase_time": -89
+        },
+        {
+          "item_key": "tango",
+          "count": 1,
+          "first_purchase_time": -89
+        },
+        {
+          "item_key": "ward_observer",
+          "count": 1,
+          "first_purchase_time": -89
+        },
+        {
+          "item_key": "ward_sentry",
+          "count": 1,
+          "first_purchase_time": -89
+        }
+      ]
     },
     {
       "player_slot": 130,
@@ -15380,7 +15559,24 @@
       "neutral_item_key": "poor_mans_shield",
       "pro_name": null,
       "team_name": null,
-      "role_early": "offlane"
+      "role_early": "offlane",
+      "starting_items": [
+        {
+          "item_key": "faerie_fire",
+          "count": 1,
+          "first_purchase_time": -89
+        },
+        {
+          "item_key": "gauntlets",
+          "count": 3,
+          "first_purchase_time": -89
+        },
+        {
+          "item_key": "tango",
+          "count": 1,
+          "first_purchase_time": -89
+        }
+      ]
     },
     {
       "player_slot": 131,
@@ -16981,7 +17177,39 @@
       "neutral_item_key": "mana_draught",
       "pro_name": null,
       "team_name": null,
-      "role_early": "support(4)"
+      "role_early": "support(4)",
+      "starting_items": [
+        {
+          "item_key": "branches",
+          "count": 2,
+          "first_purchase_time": -89
+        },
+        {
+          "item_key": "faerie_fire",
+          "count": 1,
+          "first_purchase_time": -89
+        },
+        {
+          "item_key": "gauntlets",
+          "count": 1,
+          "first_purchase_time": -89
+        },
+        {
+          "item_key": "tango",
+          "count": 1,
+          "first_purchase_time": -89
+        },
+        {
+          "item_key": "ward_observer",
+          "count": 1,
+          "first_purchase_time": -89
+        },
+        {
+          "item_key": "ward_sentry",
+          "count": 1,
+          "first_purchase_time": -89
+        }
+      ]
     },
     {
       "player_slot": 132,
@@ -18677,7 +18905,34 @@
       "neutral_item_key": "crippling_crossbow",
       "pro_name": "Zasa",
       "team_name": "NoLimitsGaming",
-      "role_early": "carry"
+      "role_early": "carry",
+      "starting_items": [
+        {
+          "item_key": "branches",
+          "count": 1,
+          "first_purchase_time": -89
+        },
+        {
+          "item_key": "circlet",
+          "count": 1,
+          "first_purchase_time": -89
+        },
+        {
+          "item_key": "faerie_fire",
+          "count": 1,
+          "first_purchase_time": -89
+        },
+        {
+          "item_key": "magic_stick",
+          "count": 1,
+          "first_purchase_time": -89
+        },
+        {
+          "item_key": "quelling_blade",
+          "count": 1,
+          "first_purchase_time": -89
+        }
+      ]
     }
   ],
   "leagueid": 19448,
