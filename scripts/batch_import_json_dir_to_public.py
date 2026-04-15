@@ -80,17 +80,25 @@ def _parse_events_blob(
 
 
 def _looks_like_dem_event_stream(raw: Any) -> bool:
-    if isinstance(raw, list) and len(raw) >= 1 and isinstance(raw[0], dict):
-        t = raw[0].get("type")
-        if t in ("interval", "player_slot", "epilogue", "DOTA_COMBATLOG"):
-            return True
+    """
+    解析器导出多为超长事件数组；首条 type 可能是 combatlog 等而非 interval。
+    若误判为「非 DEM」会走 purify 的 player_match 路径 → players=[] → 首页空白。
+    """
     if isinstance(raw, dict) and isinstance(raw.get("events"), list):
-        ev = raw["events"]
-        if ev and isinstance(ev[0], dict):
-            t = ev[0].get("type")
-            if t in ("interval", "player_slot", "epilogue", "DOTA_COMBATLOG"):
-                return True
-    return False
+        if len(raw["events"]) >= 20:
+            return True
+    if not isinstance(raw, list) or len(raw) < 20:
+        return False
+    if isinstance(raw[0], dict):
+        t0 = raw[0].get("type")
+        if isinstance(t0, str) and (
+            t0 in ("interval", "player_slot", "epilogue", "DOTA_COMBATLOG", "chat", "start")
+            or t0.startswith("DOTA_COMBATLOG")
+        ):
+            return True
+        if "time" in raw[0] and len(raw) >= 200:
+            return True
+    return len(raw) >= 200
 
 
 def _apply_filename_match_id(slim: Dict[str, Any], path: Path) -> None:
@@ -147,6 +155,29 @@ def _process_dem_file(
     if mid_out <= 0:
         raise ValueError("match_id 无效（DEM 管线）")
     npl = len(final_slim.get("players") or [])
+    # DEM 未能还原 10 人时，用 OpenDota 同 match_id 整局兜底（避免写入空 players）
+    if npl < 2 and mid_int > 0:
+        raw_od, od_err = dem_mod._fetch_opendota_match_json(mid_int)
+        pl_od = raw_od.get("players") if isinstance(raw_od, dict) else None
+        if (
+            isinstance(raw_od, dict)
+            and isinstance(pl_od, list)
+            and len(pl_od) >= 2
+        ):
+            print(
+                f"  提示: DEM 仅 {npl} 人，改用 OpenDota 整局数据 (match_id={mid_int})",
+                flush=True,
+            )
+            final_slim = translate_match_data(raw_od)
+            mid_out = int(final_slim.get("match_id") or mid_int)
+        else:
+            print(
+                f"  警告: DEM 玩家数={npl}，OpenDota 拉取失败或未含 players: {od_err!r}",
+                flush=True,
+            )
+    npl = len(final_slim.get("players") or [])
+    if npl < 2:
+        raise ValueError(f"DEM+OpenDota 后仍无有效玩家 (players={npl})")
     if dry_run:
         print(f"  OK dry-run match_id={mid_out} players={npl}", flush=True)
         return mid_out
@@ -156,6 +187,10 @@ def _process_dem_file(
 
 def _process_purify_file(path: Path, *, dry_run: bool) -> int:
     raw: Any = json.loads(path.read_text(encoding="utf-8"))
+    if isinstance(raw, list) and len(raw) >= 50:
+        raise ValueError(
+            "根为长数组：应走 DEM 管线。若仍进入本分支，请检查 batch_import 的 _looks_like_dem_event_stream。"
+        )
     data = normalize_match_input_for_translate(raw)
     if not isinstance(data, dict) or not data:
         raise ValueError("提纯后非有效对象")
