@@ -62,6 +62,109 @@ def summarize_players(players: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
     return out
 
 
+def _starting_items_from_purchase_log(
+    purchase_log: Any,
+    *,
+    start_sec: int = -30,
+    end_sec: int = 0,
+) -> List[Dict[str, Any]]:
+    if not isinstance(purchase_log, list) or not purchase_log:
+        return []
+
+    def _collect(ws: int, we: int) -> List[Dict[str, Any]]:
+        cnt: Dict[str, int] = {}
+        first_t: Dict[str, int] = {}
+        for row in purchase_log:
+            if not isinstance(row, dict):
+                continue
+            try:
+                t = int(row.get("time") or 0)
+            except (TypeError, ValueError):
+                continue
+            if t < ws or t > we:
+                continue
+            key = str(row.get("key") or "").strip().replace("item_", "")
+            if not key:
+                continue
+            cnt[key] = int(cnt.get(key) or 0) + 1
+            if key not in first_t or t < first_t[key]:
+                first_t[key] = t
+        out: List[Dict[str, Any]] = []
+        for k in sorted(cnt.keys()):
+            out.append(
+                {
+                    "item_key": k,
+                    "count": int(cnt[k]),
+                    "first_purchase_time": int(first_t.get(k, 0)),
+                }
+            )
+        return out
+
+    out = _collect(start_sec, end_sec)
+    if out:
+        return out
+
+    non_pos_times: List[int] = []
+    for row in purchase_log:
+        if not isinstance(row, dict):
+            continue
+        try:
+            t = int(row.get("time") or 0)
+        except (TypeError, ValueError):
+            continue
+        if t <= 0:
+            non_pos_times.append(t)
+    if not non_pos_times:
+        return []
+    fallback_start = max(min(non_pos_times), -120)
+    return _collect(fallback_start, 0)
+
+
+def _merge_starting_items_from_opendota(
+    slim: Dict[str, Any],
+    raw_players: Any,
+) -> None:
+    if not isinstance(raw_players, list):
+        return
+    raw_by_slot: Dict[int, Dict[str, Any]] = {}
+    for rp in raw_players:
+        if not isinstance(rp, dict):
+            continue
+        try:
+            ps = int(rp.get("player_slot") or 0)
+        except (TypeError, ValueError):
+            continue
+        raw_by_slot[ps] = rp
+
+    players = slim.get("players")
+    if not isinstance(players, list):
+        return
+    for sp in players:
+        if not isinstance(sp, dict):
+            continue
+        try:
+            ps = int(sp.get("player_slot") or 0)
+        except (TypeError, ValueError):
+            ps = 0
+        rp = raw_by_slot.get(ps) or {}
+        si = _starting_items_from_purchase_log(rp.get("purchase_log"))
+        if si:
+            sp["starting_items"] = si
+
+
+def _mark_slim_as_pro_source(slim: Dict[str, Any]) -> Dict[str, Any]:
+    """给职业赛 slim 打上来源/分类标记，前端可稳定归入 pro 分栏。"""
+    meta = slim.get("_meta")
+    if not isinstance(meta, dict):
+        meta = {}
+    meta["source"] = "opendota_pro"
+    meta["category"] = "pro"
+    slim["_meta"] = meta
+    slim["source"] = "pro"
+    slim["category"] = "pro"
+    return slim
+
+
 def main() -> None:
     team_ids: Set[int] = set()
     if TEAM_IDS_PATH.is_file():
@@ -116,7 +219,8 @@ def main() -> None:
                 time.sleep(REQUEST_SLEEP_SEC)
                 continue
 
-        slim = translate_match_data(raw)
+        slim = _mark_slim_as_pro_source(translate_match_data(raw))
+        _merge_starting_items_from_opendota(slim, raw.get("players"))
         MATCH_DIR.mkdir(parents=True, exist_ok=True)
         slim_path = MATCH_DIR / f"{mid}.json"
         slim_path.write_text(
@@ -136,6 +240,8 @@ def main() -> None:
         replays.append(
             {
                 "match_id": mid,
+                "source": "pro",
+                "category": "pro",
                 "uploaded_at": uploaded,
                 "duration_sec": int(slim.get("duration") or m.get("duration") or 0),
                 "radiant_win": bool(slim.get("radiant_win")),

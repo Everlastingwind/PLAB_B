@@ -479,6 +479,40 @@ export function PlayerMatchGridRow({
                   side={side}
                 />
               </div>
+              <div className="col-span-2">
+                <div className="mb-1 text-[10px] font-medium uppercase tracking-wide text-neutral-500 dark:text-slate-500">
+                  出门装
+                </div>
+                <div className="grid w-fit grid-cols-3 gap-1">
+                  {startingItemsExpanded.map((it, idx) => {
+                    if (!it.itemKey && !it.imageUrl) {
+                      return (
+                        <div
+                          key={`m-start-empty-${idx}`}
+                          className="h-6 w-6 rounded border border-slate-500/30 bg-slate-800/35"
+                          aria-hidden
+                        />
+                      );
+                    }
+                    const src =
+                      normalizeDotaAssetUrl(String(it.imageUrl || "").trim()) ||
+                      itemIconUrl(itemKeyClean(String(it.itemKey || "")));
+                    return (
+                      <div
+                        key={`m-start-it-${idx}`}
+                        className="h-6 w-6 overflow-hidden rounded border border-slate-500/40 bg-slate-900/70"
+                      >
+                        <img
+                          src={src}
+                          alt=""
+                          className="h-full w-full object-cover"
+                          {...steamCdnImgDefer}
+                        />
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
             </div>
             {p.leaderboardRank != null && p.leaderboardRank > 0 ? (
               <div

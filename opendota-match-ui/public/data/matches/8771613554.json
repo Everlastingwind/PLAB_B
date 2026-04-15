@@ -2696,31 +2696,31 @@
       "benchmarks": {
         "gold_per_min": {
           "raw": 472,
-          "pct": 0.7061224489795919
+          "pct": null
         },
         "xp_per_min": {
           "raw": 642,
-          "pct": 0.5578231292517006
+          "pct": null
         },
         "kills_per_min": {
           "raw": 0.2257761053621825,
-          "pct": 0.7183673469387755
+          "pct": null
         },
         "last_hits_per_min": {
           "raw": 3.7817497648165572,
-          "pct": 0.6517006802721088
+          "pct": null
         },
         "hero_damage_per_min": {
           "raw": 663.8381937911571,
-          "pct": 0.5020408163265306
+          "pct": null
         },
         "hero_healing_per_min": {
           "raw": 108.45719661335842,
-          "pct": 0.7496598639455783
+          "pct": null
         },
         "tower_damage": {
           "raw": 224,
-          "pct": 0.3836734693877551
+          "pct": null
         }
       },
       "hero_name_en": "Phoenix",
@@ -3770,7 +3770,43 @@
       "neutral_item_key": "pogo_stick",
       "pro_name": "tOfu",
       "team_name": "Team Liquid",
-      "role_early": "support(4)"
+      "starting_items": [
+        {
+          "item_key": "blood_grenade",
+          "count": 1,
+          "first_purchase_time": -89
+        },
+        {
+          "item_key": "branches",
+          "count": 2,
+          "first_purchase_time": -89
+        },
+        {
+          "item_key": "circlet",
+          "count": 1,
+          "first_purchase_time": -89
+        },
+        {
+          "item_key": "faerie_fire",
+          "count": 1,
+          "first_purchase_time": -89
+        },
+        {
+          "item_key": "smoke_of_deceit",
+          "count": 1,
+          "first_purchase_time": -84
+        },
+        {
+          "item_key": "tango",
+          "count": 1,
+          "first_purchase_time": -89
+        },
+        {
+          "item_key": "ward_sentry",
+          "count": 1,
+          "first_purchase_time": -89
+        }
+      ]
     },
     {
       "player_slot": 1,
@@ -4592,31 +4628,31 @@
       "benchmarks": {
         "gold_per_min": {
           "raw": 610,
-          "pct": 0.8225524475524476
+          "pct": null
         },
         "xp_per_min": {
           "raw": 696,
-          "pct": 0.4938811188811189
+          "pct": null
         },
         "kills_per_min": {
           "raw": 0.05644402634054563,
-          "pct": 0.11713286713286714
+          "pct": null
         },
         "last_hits_per_min": {
           "raw": 9.031044214487299,
-          "pct": 0.9842657342657343
+          "pct": null
         },
         "hero_damage_per_min": {
           "raw": 504.4402634054563,
-          "pct": 0.18094405594405594
+          "pct": null
         },
         "hero_healing_per_min": {
           "raw": 0,
-          "pct": 0.9370629370629371
+          "pct": null
         },
         "tower_damage": {
           "raw": 5265,
-          "pct": 0.7036713286713286
+          "pct": null
         }
       },
       "hero_name_en": "Bristleback",
@@ -5666,7 +5702,23 @@
       "neutral_item_key": "cloak_of_flames",
       "pro_name": "Ace ♠",
       "team_name": "Team Liquid",
-      "role_early": "offlane"
+      "starting_items": [
+        {
+          "item_key": "branches",
+          "count": 2,
+          "first_purchase_time": -89
+        },
+        {
+          "item_key": "gauntlets",
+          "count": 2,
+          "first_purchase_time": -89
+        },
+        {
+          "item_key": "magic_stick",
+          "count": 1,
+          "first_purchase_time": -89
+        }
+      ]
     },
     {
       "player_slot": 2,
@@ -6587,31 +6639,31 @@
       "benchmarks": {
         "gold_per_min": {
           "raw": 715,
-          "pct": 0.9619921363040629
+          "pct": null
         },
         "xp_per_min": {
           "raw": 992,
-          "pct": 0.9174311926605505
+          "pct": null
         },
         "kills_per_min": {
           "raw": 0.310442144873001,
-          "pct": 0.6199213630406291
+          "pct": null
         },
         "last_hits_per_min": {
           "raw": 10.01881467544685,
-          "pct": 0.9986893840104849
+          "pct": null
         },
         "hero_damage_per_min": {
           "raw": 503.59360301034803,
-          "pct": 0.24770642201834864
+          "pct": null
         },
         "hero_healing_per_min": {
           "raw": 0,
-          "pct": 0.9737876802096985
+          "pct": null
         },
         "tower_damage": {
           "raw": 11877,
-          "pct": 0.9226736566186108
+          "pct": null
         }
       },
       "hero_name_en": "Huskar",
@@ -7661,7 +7713,33 @@
       "neutral_item_key": "unrelenting_eye",
       "pro_name": "Nisha",
       "team_name": "Team Liquid",
-      "role_early": "carry"
+      "starting_items": [
+        {
+          "item_key": "branches",
+          "count": 1,
+          "first_purchase_time": -89
+        },
+        {
+          "item_key": "faerie_fire",
+          "count": 1,
+          "first_purchase_time": -89
+        },
+        {
+          "item_key": "gauntlets",
+          "count": 2,
+          "first_purchase_time": -89
+        },
+        {
+          "item_key": "magic_stick",
+          "count": 1,
+          "first_purchase_time": -89
+        },
+        {
+          "item_key": "ward_observer",
+          "count": 1,
+          "first_purchase_time": -89
+        }
+      ]
     },
     {
       "player_slot": 3,
@@ -8671,31 +8749,31 @@
       "benchmarks": {
         "gold_per_min": {
           "raw": 366,
-          "pct": 0.3860852523272905
+          "pct": null
         },
         "xp_per_min": {
           "raw": 582,
-          "pct": 0.4017638412542871
+          "pct": null
         },
         "kills_per_min": {
           "raw": 0.05644402634054563,
-          "pct": 0.08182263596276335
+          "pct": null
         },
         "last_hits_per_min": {
           "raw": 2.0037629350893695,
-          "pct": 0.37383635472807447
+          "pct": null
         },
         "hero_damage_per_min": {
           "raw": 302.34242709313264,
-          "pct": 0.11415972562469377
+          "pct": null
         },
         "hero_healing_per_min": {
           "raw": 0,
-          "pct": 0.7030867221950025
+          "pct": null
         },
         "tower_damage": {
           "raw": 930,
-          "pct": 0.6859382655560999
+          "pct": null
         }
       },
       "hero_name_en": "Spirit Breaker",
@@ -9711,7 +9789,48 @@
       "neutral_item_key": "stormcrafter",
       "pro_name": "Ekki",
       "team_name": "Pipsqueak+4",
-      "role_early": "support(5)"
+      "starting_items": [
+        {
+          "item_key": "blood_grenade",
+          "count": 1,
+          "first_purchase_time": -85
+        },
+        {
+          "item_key": "boots",
+          "count": 1,
+          "first_purchase_time": -89
+        },
+        {
+          "item_key": "branches",
+          "count": 1,
+          "first_purchase_time": -83
+        },
+        {
+          "item_key": "faerie_fire",
+          "count": 1,
+          "first_purchase_time": -83
+        },
+        {
+          "item_key": "tango",
+          "count": 1,
+          "first_purchase_time": -89
+        },
+        {
+          "item_key": "ward_observer",
+          "count": 1,
+          "first_purchase_time": -89
+        },
+        {
+          "item_key": "ward_sentry",
+          "count": 1,
+          "first_purchase_time": -85
+        },
+        {
+          "item_key": "wind_lace",
+          "count": 1,
+          "first_purchase_time": -84
+        }
+      ]
     },
     {
       "player_slot": 4,
@@ -10572,31 +10691,31 @@
       "benchmarks": {
         "gold_per_min": {
           "raw": 645,
-          "pct": 0.923130677847659
+          "pct": null
         },
         "xp_per_min": {
           "raw": 853,
-          "pct": 0.7966457023060797
+          "pct": null
         },
         "kills_per_min": {
           "raw": 0.1975540921919097,
-          "pct": 0.5108315863032844
+          "pct": null
         },
         "last_hits_per_min": {
           "raw": 10.01881467544685,
-          "pct": 0.9958071278825996
+          "pct": null
         },
         "hero_damage_per_min": {
           "raw": 474.72248353715895,
-          "pct": 0.38504542278127185
+          "pct": null
         },
         "hero_healing_per_min": {
           "raw": 0,
-          "pct": 0.8364779874213837
+          "pct": null
         },
         "tower_damage": {
           "raw": 7507,
-          "pct": 0.8190076869322153
+          "pct": null
         }
       },
       "hero_name_en": "Windranger",
@@ -11646,7 +11765,23 @@
       "neutral_item_key": "serrated_shiv",
       "pro_name": "m1CKe",
       "team_name": "Team Liquid",
-      "role_early": "mid"
+      "starting_items": [
+        {
+          "item_key": "branches",
+          "count": 3,
+          "first_purchase_time": -89
+        },
+        {
+          "item_key": "circlet",
+          "count": 2,
+          "first_purchase_time": -89
+        },
+        {
+          "item_key": "tango",
+          "count": 1,
+          "first_purchase_time": -89
+        }
+      ]
     },
     {
       "player_slot": 128,
@@ -12743,31 +12878,31 @@
       "benchmarks": {
         "gold_per_min": {
           "raw": 339,
-          "pct": 0.5266272189349113
+          "pct": null
         },
         "xp_per_min": {
           "raw": 369,
-          "pct": 0.20414201183431951
+          "pct": null
         },
         "kills_per_min": {
           "raw": 0.14111006585136404,
-          "pct": 0.7189349112426036
+          "pct": null
         },
         "last_hits_per_min": {
           "raw": 1.4111006585136405,
-          "pct": 0.4171597633136095
+          "pct": null
         },
         "hero_damage_per_min": {
           "raw": 408.34430856067735,
-          "pct": 0.46153846153846156
+          "pct": null
         },
         "hero_healing_per_min": {
           "raw": 0,
-          "pct": 0.621301775147929
+          "pct": null
         },
         "tower_damage": {
           "raw": 0,
-          "pct": 0.3136094674556213
+          "pct": null
         }
       },
       "hero_name_en": "Ring Master",
@@ -13597,7 +13732,43 @@
       "neutral_item_key": "pogo_stick",
       "pro_name": "aik",
       "team_name": "Nemiga Gaming",
-      "role_early": "support(4)"
+      "starting_items": [
+        {
+          "item_key": "blood_grenade",
+          "count": 1,
+          "first_purchase_time": -89
+        },
+        {
+          "item_key": "branches",
+          "count": 2,
+          "first_purchase_time": -89
+        },
+        {
+          "item_key": "faerie_fire",
+          "count": 1,
+          "first_purchase_time": -89
+        },
+        {
+          "item_key": "magic_stick",
+          "count": 1,
+          "first_purchase_time": -84
+        },
+        {
+          "item_key": "smoke_of_deceit",
+          "count": 1,
+          "first_purchase_time": -89
+        },
+        {
+          "item_key": "tango",
+          "count": 2,
+          "first_purchase_time": -89
+        },
+        {
+          "item_key": "ward_sentry",
+          "count": 2,
+          "first_purchase_time": -89
+        }
+      ]
     },
     {
       "player_slot": 129,
@@ -14365,31 +14536,31 @@
       "benchmarks": {
         "gold_per_min": {
           "raw": 473,
-          "pct": 0.5811209439528023
+          "pct": null
         },
         "xp_per_min": {
           "raw": 583,
-          "pct": 0.4424778761061947
+          "pct": null
         },
         "kills_per_min": {
           "raw": 0,
-          "pct": 0.032448377581120944
+          "pct": null
         },
         "last_hits_per_min": {
           "raw": 8.32549388523048,
-          "pct": 0.9646017699115044
+          "pct": null
         },
         "hero_damage_per_min": {
           "raw": 368.1843838193791,
-          "pct": 0.26843657817109146
+          "pct": null
         },
         "hero_healing_per_min": {
           "raw": 0,
-          "pct": 0.9454277286135693
+          "pct": null
         },
         "tower_damage": {
           "raw": 1238,
-          "pct": 0.5398230088495575
+          "pct": null
         }
       },
       "hero_name_en": "Centaur Warrunner",
@@ -15405,7 +15576,23 @@
       "neutral_item_key": "cloak_of_flames",
       "pro_name": "BOOM",
       "team_name": "Team Secret",
-      "role_early": "offlane"
+      "starting_items": [
+        {
+          "item_key": "branches",
+          "count": 4,
+          "first_purchase_time": -89
+        },
+        {
+          "item_key": "ring_of_protection",
+          "count": 1,
+          "first_purchase_time": -89
+        },
+        {
+          "item_key": "tango",
+          "count": 1,
+          "first_purchase_time": -89
+        }
+      ]
     },
     {
       "player_slot": 130,
@@ -16209,31 +16396,31 @@
       "benchmarks": {
         "gold_per_min": {
           "raw": 549,
-          "pct": 0.5617977528089888
+          "pct": null
         },
         "xp_per_min": {
           "raw": 624,
-          "pct": 0.34831460674157305
+          "pct": null
         },
         "kills_per_min": {
           "raw": 0.33866415804327377,
-          "pct": 0.766637856525497
+          "pct": null
         },
         "last_hits_per_min": {
           "raw": 7.22483537158984,
-          "pct": 0.7337942955920485
+          "pct": null
         },
         "hero_damage_per_min": {
           "raw": 812.5682031984948,
-          "pct": 0.6508210890233362
+          "pct": null
         },
         "hero_healing_per_min": {
           "raw": 0,
-          "pct": 0.9593777009507347
+          "pct": null
         },
         "tower_damage": {
           "raw": 111,
-          "pct": 0.21694036300777875
+          "pct": null
         }
       },
       "hero_name_en": "Monkey King",
@@ -17283,7 +17470,23 @@
       "neutral_item_key": "gunpowder_gauntlets",
       "pro_name": "Crystallis",
       "team_name": "Tundra Esports",
-      "role_early": "carry"
+      "starting_items": [
+        {
+          "item_key": "branches",
+          "count": 1,
+          "first_purchase_time": -89
+        },
+        {
+          "item_key": "faerie_fire",
+          "count": 1,
+          "first_purchase_time": -89
+        },
+        {
+          "item_key": "magic_wand",
+          "count": 1,
+          "first_purchase_time": -89
+        }
+      ]
     },
     {
       "player_slot": 131,
@@ -18169,31 +18372,31 @@
       "benchmarks": {
         "gold_per_min": {
           "raw": 256,
-          "pct": 0.15598885793871867
+          "pct": null
         },
         "xp_per_min": {
           "raw": 360,
-          "pct": 0.18662952646239556
+          "pct": null
         },
         "kills_per_min": {
           "raw": 0,
-          "pct": 0.033426183844011144
+          "pct": null
         },
         "last_hits_per_min": {
           "raw": 0.5926622765757291,
-          "pct": 0.08217270194986072
+          "pct": null
         },
         "hero_damage_per_min": {
           "raw": 190.72436500470369,
-          "pct": 0.06824512534818941
+          "pct": null
         },
         "hero_healing_per_min": {
           "raw": 1.6933207902163687,
-          "pct": 0.7632311977715878
+          "pct": null
         },
         "tower_damage": {
           "raw": 61,
-          "pct": 0.34958217270194986
+          "pct": null
         }
       },
       "hero_name_en": "Tusk",
@@ -19190,7 +19393,28 @@
       "neutral_item_key": "serrated_shiv",
       "pro_name": null,
       "team_name": null,
-      "role_early": "support(5)"
+      "starting_items": [
+        {
+          "item_key": "blood_grenade",
+          "count": 1,
+          "first_purchase_time": -89
+        },
+        {
+          "item_key": "branches",
+          "count": 2,
+          "first_purchase_time": -89
+        },
+        {
+          "item_key": "tango",
+          "count": 1,
+          "first_purchase_time": -89
+        },
+        {
+          "item_key": "wind_lace",
+          "count": 1,
+          "first_purchase_time": -89
+        }
+      ]
     },
     {
       "player_slot": 132,
@@ -20009,31 +20233,31 @@
       "benchmarks": {
         "gold_per_min": {
           "raw": 429,
-          "pct": 0.24076147816349383
+          "pct": null
         },
         "xp_per_min": {
           "raw": 499,
-          "pct": 0.1534154535274356
+          "pct": null
         },
         "kills_per_min": {
           "raw": 0.028222013170272814,
-          "pct": 0.029115341545352745
+          "pct": null
         },
         "last_hits_per_min": {
           "raw": 6.011288805268109,
-          "pct": 0.5845464725643897
+          "pct": null
         },
         "hero_damage_per_min": {
           "raw": 404.788334901223,
-          "pct": 0.06606942889137737
+          "pct": null
         },
         "hero_healing_per_min": {
           "raw": 0,
-          "pct": 0.799552071668533
+          "pct": null
         },
         "tower_damage": {
           "raw": 314,
-          "pct": 0.303471444568869
+          "pct": null
         }
       },
       "hero_name_en": "Ember Spirit",
@@ -21049,7 +21273,28 @@
       "neutral_item_key": "gunpowder_gauntlets",
       "pro_name": "lorenof",
       "team_name": "AVULUS",
-      "role_early": "mid"
+      "starting_items": [
+        {
+          "item_key": "branches",
+          "count": 4,
+          "first_purchase_time": -89
+        },
+        {
+          "item_key": "faerie_fire",
+          "count": 1,
+          "first_purchase_time": -89
+        },
+        {
+          "item_key": "tango",
+          "count": 1,
+          "first_purchase_time": -89
+        },
+        {
+          "item_key": "ward_observer",
+          "count": 1,
+          "first_purchase_time": -89
+        }
+      ]
     }
   ],
   "leagueid": 19448,
@@ -21265,5 +21510,11 @@
   },
   "my_word_counts": {},
   "throw": 442,
-  "loss": 23373
+  "loss": 23373,
+  "_meta": {
+    "source": "opendota_pro",
+    "category": "pro"
+  },
+  "source": "pro",
+  "category": "pro"
 }
