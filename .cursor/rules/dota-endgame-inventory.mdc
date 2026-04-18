@@ -26,3 +26,7 @@ alwaysApply: true
 ## 若需改逻辑
 
 - **只改** `dem_result_to_slim_match.py`（及相关共用辅助函数），保持全项目一条路径，避免与前端展示分叉。
+
+## 独行德鲁伊（本体 + 熊灵）
+
+- 双单位读取、`spirit_bear_items_slot` 与拆分校正的细节见同目录 **`lone-druid-spirit-bear-inventory.mdc`**（处理 `dem_result_to_slim_match.py` / `slimToUi` / 对阵表熊栏时由编辑器按 glob 附带）。

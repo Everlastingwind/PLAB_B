@@ -3734,12 +3734,12 @@
           {
             "group": "backpack",
             "slot": 1,
-            "item_id": 41,
-            "item_key": "bottle",
-            "item_name_en": "Bottle",
-            "item_name_cn": "魔瓶",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/bottle.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
@@ -5472,12 +5472,12 @@
           {
             "group": "backpack",
             "slot": 0,
-            "item_id": 4204,
-            "item_key": "famango",
-            "item_name_en": "Healing Lotus",
-            "item_name_cn": "Healing Lotus",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/famango.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
@@ -5494,12 +5494,12 @@
           {
             "group": "backpack",
             "slot": 2,
-            "item_id": 73,
-            "item_key": "bracer",
-            "item_name_en": "Bracer",
-            "item_name_cn": "Bracer",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/bracer.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           }
         ],
@@ -7294,23 +7294,23 @@
           {
             "group": "backpack",
             "slot": 1,
-            "item_id": 43,
-            "item_key": "ward_sentry",
-            "item_name_en": "Sentry Ward",
-            "item_name_cn": "岗哨守卫",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/ward_sentry.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
             "group": "backpack",
             "slot": 2,
-            "item_id": 1849,
-            "item_key": "wizard_hat",
-            "item_name_en": "Wizard Hat",
-            "item_name_cn": "Wizard Hat",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/wizard_hat.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           }
         ],
@@ -12904,23 +12904,23 @@
           {
             "group": "backpack",
             "slot": 1,
-            "item_id": 188,
-            "item_key": "smoke_of_deceit",
-            "item_name_en": "Smoke of Deceit",
-            "item_name_cn": "诡计之雾",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/smoke_of_deceit.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
             "group": "backpack",
             "slot": 2,
-            "item_id": 1123,
-            "item_key": "blood_grenade",
-            "item_name_en": "Blood Grenade",
-            "item_name_cn": "Blood Grenade",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/blood_grenade.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           }
         ],
@@ -19212,7 +19212,9 @@
   "loss": 14361,
   "_meta": {
     "source": "opendota_pro",
-    "category": "pro"
+    "category": "pro",
+    "match_id": 8772680011,
+    "uploaded_at": "2026-04-16T02:30:10Z"
   },
   "source": "pro",
   "category": "pro"

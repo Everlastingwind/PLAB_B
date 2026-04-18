@@ -8628,12 +8628,12 @@
           {
             "group": "backpack",
             "slot": 0,
-            "item_id": 220,
-            "item_key": "travel_boots_2",
-            "item_name_en": "Boots of Travel 2",
-            "item_name_cn": "Boots of Travel 2",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/travel_boots_2.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
@@ -15884,12 +15884,12 @@
           {
             "group": "backpack",
             "slot": 0,
-            "item_id": 188,
-            "item_key": "smoke_of_deceit",
-            "item_name_en": "Smoke of Deceit",
-            "item_name_cn": "诡计之雾",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/smoke_of_deceit.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
@@ -18484,12 +18484,12 @@
           {
             "group": "backpack",
             "slot": 0,
-            "item_id": 188,
-            "item_key": "smoke_of_deceit",
-            "item_name_en": "Smoke of Deceit",
-            "item_name_cn": "诡计之雾",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/smoke_of_deceit.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
@@ -25683,12 +25683,12 @@
           {
             "group": "backpack",
             "slot": 0,
-            "item_id": 4206,
-            "item_key": "greater_famango",
-            "item_name_en": "Greater Healing Lotus",
-            "item_name_cn": "Greater Healing Lotus",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/greater_famango.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
@@ -28668,23 +28668,23 @@
           {
             "group": "backpack",
             "slot": 0,
-            "item_id": 4205,
-            "item_key": "great_famango",
-            "item_name_en": "Great Healing Lotus",
-            "item_name_cn": "Great Healing Lotus",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/great_famango.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
             "group": "backpack",
             "slot": 1,
-            "item_id": 188,
-            "item_key": "smoke_of_deceit",
-            "item_name_en": "Smoke of Deceit",
-            "item_name_cn": "诡计之雾",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/smoke_of_deceit.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
@@ -29946,7 +29946,9 @@
   "loss": 11337,
   "_meta": {
     "source": "opendota_pro",
-    "category": "pro"
+    "category": "pro",
+    "match_id": 8772930238,
+    "uploaded_at": "2026-04-16T02:30:19Z"
   },
   "source": "pro",
   "category": "pro"

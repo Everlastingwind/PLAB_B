@@ -1,22 +1,82 @@
 /**
  * 比赛玩家表格 + 扳选 Mock（对齐 OpenDota「物品」页结构）
- * 图片 CDN：Steam Cloudflare（与客户端资源路径一致）
+ * 图片 CDN：Steam 多节点（Cloudflare / Akamai）；单节点慢或失败时用 `onDotaSteamAssetImgError` 切换。
  */
-export const STEAM_CDN =
-  "https://cdn.cloudflare.steamstatic.com";
+export const DOTA_ASSET_CDN_BASES = [
+  "https://cdn.cloudflare.steamstatic.com",
+  "https://steamcdn-a.akamaihd.net",
+] as const;
+
+/** 与客户端资源及历史字段拼接一致的主域名 */
+export const STEAM_CDN = DOTA_ASSET_CDN_BASES[0];
+
+/** 当前完整图标 URL 失败后换下一 Steam CDN；无则返回 null */
+export function nextDotaAssetCdnUrl(src: string): string | null {
+  let trimmed = src.trim();
+  if (trimmed.startsWith("http://")) {
+    trimmed = `https://${trimmed.slice("http://".length)}`;
+  }
+  if (!trimmed) return null;
+  const qIdx = trimmed.indexOf("?");
+  const pathNoQuery = qIdx >= 0 ? trimmed.slice(0, qIdx) : trimmed;
+  const query = qIdx >= 0 ? trimmed.slice(qIdx + 1) : "";
+  for (let i = 0; i < DOTA_ASSET_CDN_BASES.length; i++) {
+    const b = DOTA_ASSET_CDN_BASES[i];
+    if (pathNoQuery.startsWith(b)) {
+      const nextB = DOTA_ASSET_CDN_BASES[i + 1];
+      if (!nextB) return null;
+      const rest = pathNoQuery.slice(b.length);
+      const out = `${nextB}${rest}`;
+      return query ? `${out}?${query}` : out;
+    }
+  }
+  return null;
+}
+
+/**
+ * Steam `dota_react/heroes/*.png` 与 `heroes/icons/*.png` → 本站 `/images/heroes/*.webp`
+ */
+function heroReactPortraitToLocalPath(pathOrHttpsUrl: string): string | null {
+  const clean = pathOrHttpsUrl.split("?")[0];
+  const re = /\/dota_react\/heroes\/(?:icons\/)?([a-z0-9_]+)\.png$/i;
+  const m = clean.match(re);
+  if (!m) return null;
+  return `/images/heroes/${m[1].toLowerCase()}.webp`;
+}
 
 /**
  * dotaconstants / 管线常见 `/apps/dota2/...` 相对路径；若不拼 CDN，浏览器会向本站请求 → 404空白。
- * 协议相对 `//cdn...` 亦归一为 https。
+ * 协议相对 `//cdn...` 亦归一为 https。英雄竖版/图标 PNG 改指本地 WebP。
  */
 export function normalizeDotaAssetUrl(raw: string): string {
-  const u = (raw || "").trim();
-  if (!u) return "";
-  if (u.startsWith("https://") || u.startsWith("http://")) return u.split("?")[0];
-  if (u.startsWith("//")) return `https:${u}`.split("?")[0];
-  if (u.startsWith("/")) return `${STEAM_CDN}${u}`;
-  if (u.startsWith("apps/")) return `${STEAM_CDN}/${u}`;
-  return u;
+  const u0 = (raw || "").trim();
+  if (!u0) return "";
+
+  let u = u0;
+  if (u.startsWith("//")) u = `https:${u}`;
+  if (u.startsWith("http://")) u = `https://${u.slice("http://".length)}`;
+
+  if (u.startsWith("https://")) {
+    const base = u.split("?")[0];
+    const loc = heroReactPortraitToLocalPath(base);
+    return loc ?? base;
+  }
+
+  if (u.startsWith("/")) {
+    const pathOnly = u.split("?")[0];
+    const loc = heroReactPortraitToLocalPath(pathOnly);
+    if (loc) return loc;
+    return `${STEAM_CDN}${pathOnly}`;
+  }
+
+  if (u.startsWith("apps/")) {
+    const pathOnly = u.split("?")[0];
+    const loc = heroReactPortraitToLocalPath(`/${pathOnly}`);
+    if (loc) return loc;
+    return `${STEAM_CDN}/${pathOnly}`;
+  }
+
+  return u0;
 }
 
 /**
@@ -27,18 +87,21 @@ export const steamCdnImgHero = {
   loading: "eager" as const,
   decoding: "async" as const,
   referrerPolicy: "no-referrer" as const,
+  fetchPriority: "high" as const,
 };
 
+/** 非首屏/大量图标：懒加载 + 低优先级，减轻与主 JS 的带宽与连接竞争 */
 export const steamCdnImgDefer = {
   loading: "lazy" as const,
   decoding: "async" as const,
   referrerPolicy: "no-referrer" as const,
+  fetchPriority: "low" as const,
 };
 
-/** 英雄：`dota_react/heroes/{英文名}.png` */
+/** 英雄竖版头像：本地 WebP（`npm run fetch-heroes-webp` 写入 `public/images/heroes/`） */
 export function heroIconUrl(heroKey: string): string {
-  const key = heroKey.replace(/^npc_dota_hero_/, "");
-  return `${STEAM_CDN}/apps/dota2/images/dota_react/heroes/${key}.png`;
+  const key = heroKey.replace(/^npc_dota_hero_/, "").trim().toLowerCase();
+  return `/images/heroes/${key}.webp`;
 }
 
 /** 物品：`dota_react/items/{英文名}.png` */
@@ -54,6 +117,34 @@ export function abilityIconUrl(abilityKey: string): string {
 
 /** CDN 404 或未知 ability 时的占位（与客户端 filler 一致） */
 export const abilityIconFallbackUrl = `${STEAM_CDN}/apps/dota2/images/dota_react/abilities/filler_ability.png`;
+
+/**
+ * 绑定到 `<img onError={...} />`：先换备用 Steam CDN，技能图可选再试 filler。
+ */
+export function onDotaSteamAssetImgError(
+  e: { currentTarget: HTMLImageElement },
+  opts?: { tryAbilityFiller?: boolean }
+): void {
+  const el = e.currentTarget;
+  const next = nextDotaAssetCdnUrl(el.src);
+  if (next) {
+    el.src = next;
+    return;
+  }
+  if (
+    opts?.tryAbilityFiller &&
+    /\/dota_react\/abilities\//.test(el.src) &&
+    !/\/filler_ability\./.test(el.src)
+  ) {
+    el.src = abilityIconFallbackUrl;
+    return;
+  }
+  if (/\/images\/heroes\//.test(el.src) && !/\/invoker\.webp(\?|$)/.test(el.src)) {
+    el.src = "/images/heroes/invoker.webp";
+    return;
+  }
+  el.onerror = null;
+}
 
 /** 中立物品格底图（仅作槽位背景，非物品图标） */
 export const neutralSlotBgUrl = `${STEAM_CDN}/apps/dota2/images/dota_react/icons/neutral_slot.png`;
@@ -187,6 +278,8 @@ export interface PlayerRowMock {
     backpack: [ItemSlotMock | null, ItemSlotMock | null, ItemSlotMock | null];
     neutral: ItemSlotMock | null;
   };
+  /** 独行德鲁伊熊灵终局主 6 格（可选） */
+  spiritBearItems?: [ItemSlotMock | null, ItemSlotMock | null, ItemSlotMock | null, ItemSlotMock | null, ItemSlotMock | null, ItemSlotMock | null];
   buffs: PlayerBuffsMock;
   /** 已弃用：详情页不展示中立槽，适配层恒为 null */
   neutralImg?: string | null;

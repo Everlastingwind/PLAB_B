@@ -3817,12 +3817,12 @@
           {
             "group": "backpack",
             "slot": 1,
-            "item_id": 145,
-            "item_key": "bfury",
-            "item_name_en": "Battle Fury",
-            "item_name_cn": "狂战斧",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/bfury.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
@@ -3993,17 +3993,8 @@
           "ability_key": "special_bonus_unique_kez_falcon_rush_duration"
         },
         {
-          "type": "ability",
-          "level": 17,
-          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/kez_ravens_veil.png",
-          "name_en": "Raven's Veil",
-          "name_cn": "Raven's Veil",
-          "ability_id": 1506,
-          "ability_key": "kez_ravens_veil"
-        },
-        {
           "type": "talent",
-          "level": 18,
+          "level": 17,
           "name": "+{s:bonus_katana_bleed_attack_damage_pct}% Kazurai Katana Damage Per Second",
           "name_en": "+{s:bonus_katana_bleed_attack_damage_pct}% Kazurai Katana Damage Per Second",
           "ability_id": 1510,
@@ -4011,7 +4002,7 @@
         },
         {
           "type": "talent",
-          "level": 19,
+          "level": 18,
           "name": "+{s:bonus_base_crit_pct}% Shodo Sai Critical Strike",
           "name_en": "+{s:bonus_base_crit_pct}% Shodo Sai Critical Strike",
           "ability_id": 1514,
@@ -4019,7 +4010,7 @@
         },
         {
           "type": "talent",
-          "level": 20,
+          "level": 19,
           "name": "+{s:bonus_radius} Raptor Dance Radius",
           "name_en": "+{s:bonus_radius} Raptor Dance Radius",
           "ability_id": 1509,
@@ -4027,7 +4018,7 @@
         },
         {
           "type": "talent",
-          "level": 21,
+          "level": 20,
           "name": "+{s:bonus_strikes} Raptor Dance Strike",
           "name_en": "+{s:bonus_strikes} Raptor Dance Strike",
           "ability_id": 1655,
@@ -17485,23 +17476,23 @@
           {
             "group": "backpack",
             "slot": 0,
-            "item_id": 4206,
-            "item_key": "greater_famango",
-            "item_name_en": "Greater Healing Lotus",
-            "item_name_cn": "Greater Healing Lotus",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/greater_famango.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
             "group": "backpack",
             "slot": 1,
-            "item_id": 4205,
-            "item_key": "great_famango",
-            "item_name_en": "Great Healing Lotus",
-            "item_name_cn": "Great Healing Lotus",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/great_famango.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
@@ -22192,23 +22183,23 @@
           {
             "group": "backpack",
             "slot": 0,
-            "item_id": 43,
-            "item_key": "ward_sentry",
-            "item_name_en": "Sentry Ward",
-            "item_name_cn": "岗哨守卫",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/ward_sentry.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
             "group": "backpack",
             "slot": 1,
-            "item_id": 38,
-            "item_key": "clarity",
-            "item_name_en": "Clarity",
-            "item_name_cn": "净化药水",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/clarity.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
@@ -24617,23 +24608,23 @@
           {
             "group": "backpack",
             "slot": 0,
-            "item_id": 188,
-            "item_key": "smoke_of_deceit",
-            "item_name_en": "Smoke of Deceit",
-            "item_name_cn": "诡计之雾",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/smoke_of_deceit.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
             "group": "backpack",
             "slot": 1,
-            "item_id": 40,
-            "item_key": "dust",
-            "item_name_en": "Dust of Appearance",
-            "item_name_cn": "显影之尘",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/dust.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
@@ -25806,5 +25797,10 @@
   },
   "my_word_counts": {},
   "throw": 1478,
-  "loss": 16304
+  "loss": 16304,
+  "_meta": {
+    "source": "api_upload",
+    "match_id": 8770453510,
+    "uploaded_at": "2026-04-16T02:27:59Z"
+  }
 }

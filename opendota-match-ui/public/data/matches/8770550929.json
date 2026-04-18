@@ -2388,12 +2388,12 @@
           {
             "group": "backpack",
             "slot": 0,
-            "item_id": 40,
-            "item_key": "dust",
-            "item_name_en": "Dust of Appearance",
-            "item_name_cn": "显影之尘",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/dust.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
@@ -4431,16 +4431,8 @@
           "ability_key": "slark_pounce"
         },
         {
-          "type": "talent",
-          "level": 12,
-          "name": "special_bonus_attributes",
-          "name_en": "special_bonus_attributes",
-          "ability_id": 730,
-          "ability_key": "special_bonus_attributes"
-        },
-        {
           "type": "ability",
-          "level": 13,
+          "level": 12,
           "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/slark_shadow_dance.png",
           "name_en": "Shadow Dance",
           "name_cn": "Shadow Dance",
@@ -4449,55 +4441,15 @@
         },
         {
           "type": "talent",
-          "level": 14,
-          "name": "special_bonus_attributes",
-          "name_en": "special_bonus_attributes",
-          "ability_id": 730,
-          "ability_key": "special_bonus_attributes"
-        },
-        {
-          "type": "talent",
-          "level": 15,
-          "name": "special_bonus_attributes",
-          "name_en": "special_bonus_attributes",
-          "ability_id": 730,
-          "ability_key": "special_bonus_attributes"
-        },
-        {
-          "type": "talent",
-          "level": 16,
+          "level": 13,
           "name": "+{s:bonus_total_damage} Dark Pact Damage",
           "name_en": "+{s:bonus_total_damage} Dark Pact Damage",
           "ability_id": 6892,
           "ability_key": "special_bonus_unique_slark_2"
         },
         {
-          "type": "talent",
-          "level": 17,
-          "name": "special_bonus_attributes",
-          "name_en": "special_bonus_attributes",
-          "ability_id": 730,
-          "ability_key": "special_bonus_attributes"
-        },
-        {
-          "type": "talent",
-          "level": 18,
-          "name": "special_bonus_attributes",
-          "name_en": "special_bonus_attributes",
-          "ability_id": 730,
-          "ability_key": "special_bonus_attributes"
-        },
-        {
-          "type": "talent",
-          "level": 19,
-          "name": "special_bonus_attributes",
-          "name_en": "special_bonus_attributes",
-          "ability_id": 730,
-          "ability_key": "special_bonus_attributes"
-        },
-        {
           "type": "ability",
-          "level": 20,
+          "level": 14,
           "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/slark_shadow_dance.png",
           "name_en": "Shadow Dance",
           "name_cn": "Shadow Dance",
@@ -4506,15 +4458,7 @@
         },
         {
           "type": "talent",
-          "level": 21,
-          "name": "special_bonus_attributes",
-          "name_en": "special_bonus_attributes",
-          "ability_id": 730,
-          "ability_key": "special_bonus_attributes"
-        },
-        {
-          "type": "talent",
-          "level": 22,
+          "level": 15,
           "name": "+{s:bonus_attack_speed} Shadow Dance Attack Speed",
           "name_en": "+{s:bonus_attack_speed} Shadow Dance Attack Speed",
           "ability_id": 892,
@@ -4522,7 +4466,7 @@
         },
         {
           "type": "ability",
-          "level": 23,
+          "level": 16,
           "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/slark_saltwater_shiv.png",
           "name_en": "Saltwater Shiv",
           "name_cn": "Saltwater Shiv",
@@ -4531,7 +4475,7 @@
         },
         {
           "type": "ability",
-          "level": 24,
+          "level": 17,
           "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/slark_saltwater_shiv.png",
           "name_en": "Saltwater Shiv",
           "name_cn": "Saltwater Shiv",
@@ -8239,12 +8183,12 @@
           {
             "group": "backpack",
             "slot": 0,
-            "item_id": 218,
-            "item_key": "ward_dispenser",
-            "item_name_en": "Observer and Sentry Wards",
-            "item_name_cn": "眼粉合一",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/ward_dispenser.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
@@ -8261,12 +8205,12 @@
           {
             "group": "backpack",
             "slot": 2,
-            "item_id": 188,
-            "item_key": "smoke_of_deceit",
-            "item_name_en": "Smoke of Deceit",
-            "item_name_cn": "诡计之雾",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/smoke_of_deceit.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           }
         ],
@@ -10218,12 +10162,12 @@
           {
             "group": "backpack",
             "slot": 1,
-            "item_id": 188,
-            "item_key": "smoke_of_deceit",
-            "item_name_en": "Smoke of Deceit",
-            "item_name_cn": "诡计之雾",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/smoke_of_deceit.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
@@ -16088,34 +16032,34 @@
           {
             "group": "backpack",
             "slot": 0,
-            "item_id": 34,
-            "item_key": "magic_stick",
-            "item_name_en": "Magic Stick",
-            "item_name_cn": "Magic Stick",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/magic_stick.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
             "group": "backpack",
             "slot": 1,
-            "item_id": 1804,
-            "item_key": "roshans_banner",
-            "item_name_en": "Roshan's Banner",
-            "item_name_cn": "Roshan's Banner",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/roshans_banner.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
             "group": "backpack",
             "slot": 2,
-            "item_id": 178,
-            "item_key": "soul_ring",
-            "item_name_en": "Soul Ring",
-            "item_name_cn": "Soul Ring",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/soul_ring.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           }
         ],
@@ -18063,12 +18007,12 @@
           {
             "group": "backpack",
             "slot": 0,
-            "item_id": 188,
-            "item_key": "smoke_of_deceit",
-            "item_name_en": "Smoke of Deceit",
-            "item_name_cn": "诡计之雾",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/smoke_of_deceit.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
@@ -20014,12 +19958,12 @@
           {
             "group": "backpack",
             "slot": 0,
-            "item_id": 41,
-            "item_key": "bottle",
-            "item_name_en": "Bottle",
-            "item_name_cn": "魔瓶",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/bottle.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
@@ -21205,5 +21149,10 @@
   },
   "my_word_counts": {},
   "comeback": 1803,
-  "stomp": 23518
+  "stomp": 23518,
+  "_meta": {
+    "source": "api_upload",
+    "match_id": 8770550929,
+    "uploaded_at": "2026-04-16T02:28:06Z"
+  }
 }

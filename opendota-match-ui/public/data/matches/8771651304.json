@@ -8805,12 +8805,12 @@
           {
             "group": "backpack",
             "slot": 0,
-            "item_id": 188,
-            "item_key": "smoke_of_deceit",
-            "item_name_en": "Smoke of Deceit",
-            "item_name_cn": "诡计之雾",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/smoke_of_deceit.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
@@ -11095,23 +11095,23 @@
           {
             "group": "backpack",
             "slot": 0,
-            "item_id": 188,
-            "item_key": "smoke_of_deceit",
-            "item_name_en": "Smoke of Deceit",
-            "item_name_cn": "诡计之雾",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/smoke_of_deceit.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
             "group": "backpack",
             "slot": 1,
-            "item_id": 244,
-            "item_key": "wind_lace",
-            "item_name_en": "Wind Lace",
-            "item_name_cn": "Wind Lace",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/wind_lace.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
@@ -13017,12 +13017,12 @@
           {
             "group": "backpack",
             "slot": 1,
-            "item_id": 4205,
-            "item_key": "great_famango",
-            "item_name_en": "Great Healing Lotus",
-            "item_name_cn": "Great Healing Lotus",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/great_famango.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
@@ -15212,14 +15212,6 @@
         {
           "type": "talent",
           "level": 10,
-          "name": "special_bonus_attributes",
-          "name_en": "special_bonus_attributes",
-          "ability_id": 730,
-          "ability_key": "special_bonus_attributes"
-        },
-        {
-          "type": "talent",
-          "level": 11,
           "name": "+15% Magic Resistance",
           "name_en": "+15% Magic Resistance",
           "ability_id": 6138,
@@ -15227,7 +15219,7 @@
         },
         {
           "type": "ability",
-          "level": 12,
+          "level": 11,
           "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/morphling_adaptive_strike_agi.png",
           "name_en": "Adaptive Strike",
           "name_cn": "Adaptive Strike",
@@ -15236,12 +15228,21 @@
         },
         {
           "type": "ability",
-          "level": 13,
+          "level": 12,
           "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/morphling_replicate.png",
           "name_en": "Morph",
           "name_cn": "Morph",
           "ability_id": 5057,
           "ability_key": "morphling_replicate"
+        },
+        {
+          "type": "ability",
+          "level": 13,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/morphling_morph_agi.png",
+          "name_en": "Attribute Shift (Agility Gain)",
+          "name_cn": "Attribute Shift (Agility Gain)",
+          "ability_id": 5055,
+          "ability_key": "morphling_morph_agi"
         },
         {
           "type": "ability",
@@ -15253,17 +15254,8 @@
           "ability_key": "morphling_morph_agi"
         },
         {
-          "type": "ability",
-          "level": 15,
-          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/morphling_morph_agi.png",
-          "name_en": "Attribute Shift (Agility Gain)",
-          "name_cn": "Attribute Shift (Agility Gain)",
-          "ability_id": 5055,
-          "ability_key": "morphling_morph_agi"
-        },
-        {
           "type": "talent",
-          "level": 16,
+          "level": 15,
           "name": "+{s:bonus_AbilityCastRange} Waveform Range",
           "name_en": "+{s:bonus_AbilityCastRange} Waveform Range",
           "ability_id": 6062,
@@ -15271,63 +15263,15 @@
         },
         {
           "type": "talent",
-          "level": 17,
-          "name": "special_bonus_attributes",
-          "name_en": "special_bonus_attributes",
-          "ability_id": 730,
-          "ability_key": "special_bonus_attributes"
-        },
-        {
-          "type": "talent",
-          "level": 18,
-          "name": "special_bonus_attributes",
-          "name_en": "special_bonus_attributes",
-          "ability_id": 730,
-          "ability_key": "special_bonus_attributes"
-        },
-        {
-          "type": "talent",
-          "level": 19,
-          "name": "special_bonus_attributes",
-          "name_en": "special_bonus_attributes",
-          "ability_id": 730,
-          "ability_key": "special_bonus_attributes"
-        },
-        {
-          "type": "talent",
-          "level": 20,
-          "name": "special_bonus_attributes",
-          "name_en": "special_bonus_attributes",
-          "ability_id": 730,
-          "ability_key": "special_bonus_attributes"
-        },
-        {
-          "type": "talent",
-          "level": 21,
-          "name": "special_bonus_attributes",
-          "name_en": "special_bonus_attributes",
-          "ability_id": 730,
-          "ability_key": "special_bonus_attributes"
-        },
-        {
-          "type": "talent",
-          "level": 22,
+          "level": 16,
           "name": "+15 Agility",
           "name_en": "+15 Agility",
           "ability_id": 5929,
           "ability_key": "special_bonus_agility_15"
         },
         {
-          "type": "talent",
-          "level": 23,
-          "name": "special_bonus_attributes",
-          "name_en": "special_bonus_attributes",
-          "ability_id": 730,
-          "ability_key": "special_bonus_attributes"
-        },
-        {
           "type": "ability",
-          "level": 24,
+          "level": 17,
           "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/morphling_replicate.png",
           "name_en": "Morph",
           "name_cn": "Morph",
@@ -15336,7 +15280,7 @@
         },
         {
           "type": "ability",
-          "level": 25,
+          "level": 18,
           "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/morphling_morph_replicate.png",
           "name_en": "Morph Replicate",
           "name_cn": "Morph Replicate",
@@ -17179,12 +17123,12 @@
           {
             "group": "backpack",
             "slot": 1,
-            "item_id": 41,
-            "item_key": "bottle",
-            "item_name_en": "Bottle",
-            "item_name_cn": "魔瓶",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/bottle.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
@@ -21235,12 +21179,12 @@
           {
             "group": "backpack",
             "slot": 0,
-            "item_id": 4206,
-            "item_key": "greater_famango",
-            "item_name_en": "Greater Healing Lotus",
-            "item_name_cn": "Greater Healing Lotus",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/greater_famango.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
@@ -23783,12 +23727,12 @@
           {
             "group": "backpack",
             "slot": 0,
-            "item_id": 36,
-            "item_key": "magic_wand",
-            "item_name_en": "Magic Wand",
-            "item_name_cn": "魔棒",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/magic_wand.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
@@ -24964,7 +24908,9 @@
   "stomp": 15736,
   "_meta": {
     "source": "opendota_pro",
-    "category": "pro"
+    "category": "pro",
+    "match_id": 8771651304,
+    "uploaded_at": "2026-04-16T02:29:06Z"
   },
   "source": "pro",
   "category": "pro"

@@ -4629,12 +4629,12 @@
           {
             "group": "backpack",
             "slot": 0,
-            "item_id": 110,
-            "item_key": "refresher",
-            "item_name_en": "Refresher Orb",
-            "item_name_cn": "刷新球",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/refresher.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
@@ -4816,24 +4816,8 @@
           "ability_key": "special_bonus_evasion_15"
         },
         {
-          "type": "talent",
-          "level": 17,
-          "name": "special_bonus_attributes",
-          "name_en": "special_bonus_attributes",
-          "ability_id": 730,
-          "ability_key": "special_bonus_attributes"
-        },
-        {
-          "type": "talent",
-          "level": 18,
-          "name": "special_bonus_attributes",
-          "name_en": "special_bonus_attributes",
-          "ability_id": 730,
-          "ability_key": "special_bonus_attributes"
-        },
-        {
           "type": "ability",
-          "level": 19,
+          "level": 17,
           "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/meepo_divided_we_stand.png",
           "name_en": "Divided We Stand",
           "name_cn": "Divided We Stand",
@@ -4842,51 +4826,11 @@
         },
         {
           "type": "talent",
-          "level": 20,
-          "name": "special_bonus_attributes",
-          "name_en": "special_bonus_attributes",
-          "ability_id": 730,
-          "ability_key": "special_bonus_attributes"
-        },
-        {
-          "type": "talent",
-          "level": 21,
-          "name": "special_bonus_attributes",
-          "name_en": "special_bonus_attributes",
-          "ability_id": 730,
-          "ability_key": "special_bonus_attributes"
-        },
-        {
-          "type": "talent",
-          "level": 22,
+          "level": 18,
           "name": "+{s:bonus_health_steal_heroes} Ransack Health Steal",
           "name_en": "+{s:bonus_health_steal_heroes} Ransack Health Steal",
           "ability_id": 618,
           "ability_key": "special_bonus_unique_meepo_6"
-        },
-        {
-          "type": "talent",
-          "level": 23,
-          "name": "special_bonus_attributes",
-          "name_en": "special_bonus_attributes",
-          "ability_id": 730,
-          "ability_key": "special_bonus_attributes"
-        },
-        {
-          "type": "talent",
-          "level": 24,
-          "name": "special_bonus_attributes",
-          "name_en": "special_bonus_attributes",
-          "ability_id": 730,
-          "ability_key": "special_bonus_attributes"
-        },
-        {
-          "type": "talent",
-          "level": 25,
-          "name": "special_bonus_attributes",
-          "name_en": "special_bonus_attributes",
-          "ability_id": 730,
-          "ability_key": "special_bonus_attributes"
         }
       ],
       "items_slot": [
@@ -6909,12 +6853,12 @@
           {
             "group": "backpack",
             "slot": 2,
-            "item_id": 41,
-            "item_key": "bottle",
-            "item_name_en": "Bottle",
-            "item_name_cn": "魔瓶",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/bottle.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           }
         ],
@@ -9312,12 +9256,12 @@
           {
             "group": "backpack",
             "slot": 0,
-            "item_id": 242,
-            "item_key": "crimson_guard",
-            "item_name_en": "Crimson Guard",
-            "item_name_cn": "Crimson Guard",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/crimson_guard.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
@@ -11957,12 +11901,12 @@
           {
             "group": "backpack",
             "slot": 2,
-            "item_id": 4204,
-            "item_key": "famango",
-            "item_name_en": "Healing Lotus",
-            "item_name_cn": "Healing Lotus",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/famango.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           }
         ],
@@ -15122,12 +15066,12 @@
           {
             "group": "backpack",
             "slot": 0,
-            "item_id": 188,
-            "item_key": "smoke_of_deceit",
-            "item_name_en": "Smoke of Deceit",
-            "item_name_cn": "诡计之雾",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/smoke_of_deceit.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
@@ -17346,23 +17290,23 @@
           {
             "group": "backpack",
             "slot": 0,
-            "item_id": 4205,
-            "item_key": "great_famango",
-            "item_name_en": "Great Healing Lotus",
-            "item_name_cn": "Great Healing Lotus",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/great_famango.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
             "group": "backpack",
             "slot": 1,
-            "item_id": 143,
-            "item_key": "basher",
-            "item_name_en": "Skull Basher",
-            "item_name_cn": "碎颅锤",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/basher.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
@@ -19771,23 +19715,23 @@
           {
             "group": "backpack",
             "slot": 0,
-            "item_id": 154,
-            "item_key": "sange_and_yasha",
-            "item_name_en": "Sange and Yasha",
-            "item_name_cn": "Sange and Yasha",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/sange_and_yasha.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
             "group": "backpack",
             "slot": 1,
-            "item_id": 41,
-            "item_key": "bottle",
-            "item_name_en": "Bottle",
-            "item_name_cn": "魔瓶",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/bottle.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
@@ -22261,12 +22205,12 @@
           {
             "group": "backpack",
             "slot": 1,
-            "item_id": 81,
-            "item_key": "vladmir",
-            "item_name_en": "Vladmir's Offering",
-            "item_name_cn": "Vladmir's Offering",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/vladmir.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
@@ -25342,12 +25286,12 @@
           {
             "group": "backpack",
             "slot": 0,
-            "item_id": 116,
-            "item_key": "black_king_bar",
-            "item_name_en": "Black King Bar",
-            "item_name_cn": "黑皇杖",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/black_king_bar.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
@@ -27685,23 +27629,23 @@
           {
             "group": "backpack",
             "slot": 0,
-            "item_id": 260,
-            "item_key": "refresher_shard",
-            "item_name_en": "Refresher Shard",
-            "item_name_cn": "Refresher Shard",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/refresher_shard.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
             "group": "backpack",
             "slot": 1,
-            "item_id": 4204,
-            "item_key": "famango",
-            "item_name_en": "Healing Lotus",
-            "item_name_cn": "Healing Lotus",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/famango.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
@@ -29070,7 +29014,9 @@
   "stomp": 17355,
   "_meta": {
     "source": "opendota_pro",
-    "category": "pro"
+    "category": "pro",
+    "match_id": 8772012963,
+    "uploaded_at": "2026-04-16T02:29:38Z"
   },
   "source": "pro",
   "category": "pro"

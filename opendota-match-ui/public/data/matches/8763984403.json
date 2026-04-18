@@ -7,9 +7,8 @@
       "raw_ability_upgrade_like_events": 206,
       "talent_tree_selected_layers_total": 31
     },
-    "endgame_items_source": "opendota_api_match_8763984403",
-    "endgame_items_merged_players": 10,
-    "uploaded_at": "2026-04-13T09:03:28Z"
+    "uploaded_at": "2026-04-16T02:25:39Z",
+    "batch_reimport": true
   },
   "match_id": 8763984403,
   "radiant_win": true,
@@ -33,18 +32,65 @@
       "denies": 8,
       "gold_per_min": 767,
       "xp_per_min": 945,
-      "hero_damage": 25435,
+      "hero_damage": 25403,
       "tower_damage": 22176,
       "hero_healing": 2138,
+      "starting_items": [
+        {
+          "item_id": 20,
+          "item_key": "circlet",
+          "item_name_en": "Circlet",
+          "item_name_cn": "圆环",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/circlet.png",
+          "count": 1,
+          "first_purchase_time": -89
+        },
+        {
+          "item_id": 14,
+          "item_key": "slippers",
+          "item_name_en": "Slippers of Agility",
+          "item_name_cn": "敏捷便鞋",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/slippers.png",
+          "count": 1,
+          "first_purchase_time": -89
+        },
+        {
+          "item_id": 44,
+          "item_key": "tango",
+          "item_name_en": "Tango",
+          "item_name_cn": "树之祭祀",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/tango.png",
+          "count": 1,
+          "first_purchase_time": -89
+        },
+        {
+          "item_id": 16,
+          "item_key": "branches",
+          "item_name_en": "Iron Branch",
+          "item_name_cn": "树枝",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/branches.png",
+          "count": 2,
+          "first_purchase_time": -89
+        },
+        {
+          "item_id": 11,
+          "item_key": "quelling_blade",
+          "item_name_en": "Quelling Blade",
+          "item_name_cn": "补刀斧",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/quelling_blade.png",
+          "count": 1,
+          "first_purchase_time": -89
+        }
+      ],
       "net_worth": 37691,
       "items_slot": [
         {
           "slot": 0,
-          "item_id": 116,
-          "item_key": "black_king_bar",
-          "item_name_en": "Black King Bar",
-          "item_name_cn": "黑皇杖",
-          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/black_king_bar.png",
+          "item_id": 271,
+          "item_key": "ultimate_scepter_2",
+          "item_name_en": "Aghanim's Blessing",
+          "item_name_cn": "Aghanim's Blessing",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/ultimate_scepter_2.png",
           "empty": false
         },
         {
@@ -67,6 +113,15 @@
         },
         {
           "slot": 3,
+          "item_id": 116,
+          "item_key": "black_king_bar",
+          "item_name_en": "Black King Bar",
+          "item_name_cn": "黑皇杖",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/black_king_bar.png",
+          "empty": false
+        },
+        {
+          "slot": 4,
           "item_id": 263,
           "item_key": "hurricane_pike",
           "item_name_en": "Hurricane Pike",
@@ -75,21 +130,12 @@
           "empty": false
         },
         {
-          "slot": 4,
-          "item_id": 147,
-          "item_key": "manta",
-          "item_name_en": "Manta Style",
-          "item_name_cn": "幻影斧",
-          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/manta.png",
-          "empty": false
-        },
-        {
           "slot": 5,
-          "item_id": 1804,
-          "item_key": "roshans_banner",
-          "item_name_en": "Roshan's Banner",
-          "item_name_cn": "Roshan's Banner",
-          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/roshans_banner.png",
+          "item_id": 63,
+          "item_key": "power_treads",
+          "item_name_en": "Power Treads",
+          "item_name_cn": "动力鞋",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/power_treads.png",
           "empty": false
         }
       ],
@@ -590,6 +636,8 @@
       "hero_name_en": "Drow Ranger",
       "hero_name_cn": "卓尔游侠",
       "_dem_items_source": "combat_log_slot_last_purchase",
+      "lane_early": "bot",
+      "role_early": "carry",
       "neutral_item_key": "giant_maul",
       "talent_picks": [
         {
@@ -645,13 +693,6 @@
       ],
       "player_slot": 0,
       "isRadiant": true,
-      "permanent_buffs": [
-        {
-          "permanent_buff": 2,
-          "stack_count": 0,
-          "grant_time": 3606
-        }
-      ],
       "hero_portrait_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/drow_ranger.png",
       "hero_icon_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/icons/drow_ranger.png",
       "hero_internal_name": "npc_dota_hero_drow_ranger",
@@ -1167,14 +1208,13 @@
           "is_talent": true
         }
       ],
-      "item_0": 116,
+      "item_0": 271,
       "item_1": 141,
       "item_2": 249,
-      "item_3": 263,
-      "item_4": 147,
-      "item_5": 1804,
-      "item_neutral": 0,
-      "role_early": "carry"
+      "item_3": 116,
+      "item_4": 263,
+      "item_5": 63,
+      "item_neutral": 0
     },
     {
       "account_id": 108958769,
@@ -1191,27 +1231,74 @@
       "denies": 9,
       "gold_per_min": 299,
       "xp_per_min": 489,
-      "hero_damage": 7607,
+      "hero_damage": 7366,
       "tower_damage": 138,
       "hero_healing": 2981,
+      "starting_items": [
+        {
+          "item_id": 188,
+          "item_key": "smoke_of_deceit",
+          "item_name_en": "Smoke of Deceit",
+          "item_name_cn": "诡计之雾",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/smoke_of_deceit.png",
+          "count": 1,
+          "first_purchase_time": -89
+        },
+        {
+          "item_id": 44,
+          "item_key": "tango",
+          "item_name_en": "Tango",
+          "item_name_cn": "树之祭祀",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/tango.png",
+          "count": 1,
+          "first_purchase_time": -89
+        },
+        {
+          "item_id": 11,
+          "item_key": "quelling_blade",
+          "item_name_en": "Quelling Blade",
+          "item_name_cn": "补刀斧",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/quelling_blade.png",
+          "count": 1,
+          "first_purchase_time": -89
+        },
+        {
+          "item_id": 16,
+          "item_key": "branches",
+          "item_name_en": "Iron Branch",
+          "item_name_cn": "树枝",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/branches.png",
+          "count": 2,
+          "first_purchase_time": -89
+        },
+        {
+          "item_id": 1123,
+          "item_key": "blood_grenade",
+          "item_name_en": "Blood Grenade",
+          "item_name_cn": "Blood Grenade",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/blood_grenade.png",
+          "count": 1,
+          "first_purchase_time": -89
+        }
+      ],
       "net_worth": 13082,
       "items_slot": [
         {
           "slot": 0,
-          "item_id": 29,
-          "item_key": "boots",
-          "item_name_en": "Boots of Speed",
-          "item_name_cn": "速度之靴",
-          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/boots.png",
+          "item_id": 40,
+          "item_key": "dust",
+          "item_name_en": "Dust of Appearance",
+          "item_name_cn": "显影之尘",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/dust.png",
           "empty": false
         },
         {
           "slot": 1,
-          "item_id": 1,
-          "item_key": "blink",
-          "item_name_en": "Blink Dagger",
-          "item_name_cn": "闪烁匕首",
-          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/blink.png",
+          "item_id": 226,
+          "item_key": "lotus_orb",
+          "item_name_en": "Lotus Orb",
+          "item_name_cn": "莲花球",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/lotus_orb.png",
           "empty": false
         },
         {
@@ -1225,33 +1312,33 @@
         },
         {
           "slot": 3,
-          "item_id": 226,
-          "item_key": "lotus_orb",
-          "item_name_en": "Lotus Orb",
-          "item_name_cn": "莲花球",
-          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/lotus_orb.png",
+          "item_id": 1,
+          "item_key": "blink",
+          "item_name_en": "Blink Dagger",
+          "item_name_cn": "闪烁匕首",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/blink.png",
           "empty": false
         },
         {
           "slot": 4,
-          "item_id": 40,
-          "item_key": "dust",
-          "item_name_en": "Dust of Appearance",
-          "item_name_cn": "显影之尘",
-          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/dust.png",
+          "item_id": 36,
+          "item_key": "magic_wand",
+          "item_name_en": "Magic Wand",
+          "item_name_cn": "魔棒",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/magic_wand.png",
           "empty": false
         },
         {
           "slot": 5,
-          "item_id": 11,
-          "item_key": "quelling_blade",
-          "item_name_en": "Quelling Blade",
-          "item_name_cn": "补刀斧",
-          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/quelling_blade.png",
+          "item_id": 29,
+          "item_key": "boots",
+          "item_name_en": "Boots of Speed",
+          "item_name_cn": "速度之靴",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/boots.png",
           "empty": false
         }
       ],
-      "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/medallion_of_courage.png",
+      "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/enhancement_greedy.png",
       "aghanims_scepter": 0,
       "aghanims_shard": 0,
       "skill_build": [
@@ -1750,7 +1837,28 @@
       "hero_name_en": "Tusk",
       "hero_name_cn": "巨牙海民",
       "_dem_items_source": "combat_log_slot_last_purchase",
-      "neutral_item_key": "medallion_of_courage",
+      "lane_early": "bot",
+      "role_early": "support(5)",
+      "support_item_points_early": 25,
+      "support_items_early": [
+        {
+          "item_key": "dust",
+          "count": 1
+        },
+        {
+          "item_key": "smoke_of_deceit",
+          "count": 1
+        },
+        {
+          "item_key": "ward_observer",
+          "count": 1
+        },
+        {
+          "item_key": "ward_sentry",
+          "count": 4
+        }
+      ],
+      "neutral_item_key": "enhancement_greedy",
       "talent_picks": [
         {
           "level": 10,
@@ -1800,7 +1908,6 @@
       ],
       "player_slot": 1,
       "isRadiant": true,
-      "permanent_buffs": [],
       "hero_portrait_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/tusk.png",
       "hero_icon_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/icons/tusk.png",
       "hero_internal_name": "npc_dota_hero_tusk",
@@ -2336,14 +2443,13 @@
           "is_talent": true
         }
       ],
-      "item_0": 29,
-      "item_1": 1,
+      "item_0": 40,
+      "item_1": 226,
       "item_2": 102,
-      "item_3": 226,
-      "item_4": 40,
-      "item_5": 11,
-      "item_neutral": 0,
-      "role_early": "support(5)"
+      "item_3": 1,
+      "item_4": 36,
+      "item_5": 29,
+      "item_neutral": 0
     },
     {
       "account_id": 106305042,
@@ -2363,46 +2469,57 @@
       "hero_damage": 34420,
       "tower_damage": 22547,
       "hero_healing": 6610,
+      "starting_items": [
+        {
+          "item_id": 16,
+          "item_key": "branches",
+          "item_name_en": "Iron Branch",
+          "item_name_cn": "树枝",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/branches.png",
+          "count": 4,
+          "first_purchase_time": -89
+        },
+        {
+          "item_id": 237,
+          "item_key": "faerie_fire",
+          "item_name_en": "Faerie Fire",
+          "item_name_cn": "仙灵之火",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/faerie_fire.png",
+          "count": 1,
+          "first_purchase_time": -89
+        },
+        {
+          "item_id": 44,
+          "item_key": "tango",
+          "item_name_en": "Tango",
+          "item_name_cn": "树之祭祀",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/tango.png",
+          "count": 1,
+          "first_purchase_time": -89
+        },
+        {
+          "item_id": 43,
+          "item_key": "ward_sentry",
+          "item_name_en": "Sentry Ward",
+          "item_name_cn": "岗哨守卫",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/ward_sentry.png",
+          "count": 1,
+          "first_purchase_time": -89
+        }
+      ],
       "net_worth": 28768,
       "items_slot": [
         {
           "slot": 0,
-          "item_id": 273,
-          "item_key": "kaya_and_sange",
-          "item_name_en": "Kaya and Sange",
-          "item_name_cn": "Kaya and Sange",
-          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/kaya_and_sange.png",
+          "item_id": 119,
+          "item_key": "shivas_guard",
+          "item_name_en": "Shiva's Guard",
+          "item_name_cn": "Shiva's Guard",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/shivas_guard.png",
           "empty": false
         },
         {
           "slot": 1,
-          "item_id": 121,
-          "item_key": "bloodstone",
-          "item_name_en": "Bloodstone",
-          "item_name_cn": "Bloodstone",
-          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/bloodstone.png",
-          "empty": false
-        },
-        {
-          "slot": 2,
-          "item_id": 116,
-          "item_key": "black_king_bar",
-          "item_name_en": "Black King Bar",
-          "item_name_cn": "黑皇杖",
-          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/black_king_bar.png",
-          "empty": false
-        },
-        {
-          "slot": 3,
-          "item_id": 48,
-          "item_key": "travel_boots",
-          "item_name_en": "Boots of Travel",
-          "item_name_cn": "远行鞋",
-          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/travel_boots.png",
-          "empty": false
-        },
-        {
-          "slot": 4,
           "item_id": 1,
           "item_key": "blink",
           "item_name_en": "Blink Dagger",
@@ -2411,16 +2528,43 @@
           "empty": false
         },
         {
+          "slot": 2,
+          "item_id": 121,
+          "item_key": "bloodstone",
+          "item_name_en": "Bloodstone",
+          "item_name_cn": "Bloodstone",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/bloodstone.png",
+          "empty": false
+        },
+        {
+          "slot": 3,
+          "item_id": 116,
+          "item_key": "black_king_bar",
+          "item_name_en": "Black King Bar",
+          "item_name_cn": "黑皇杖",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/black_king_bar.png",
+          "empty": false
+        },
+        {
+          "slot": 4,
+          "item_id": 0,
+          "item_key": null,
+          "item_name_en": "",
+          "item_name_cn": "",
+          "image_url": "",
+          "empty": true
+        },
+        {
           "slot": 5,
-          "item_id": 119,
-          "item_key": "shivas_guard",
-          "item_name_en": "Shiva's Guard",
-          "item_name_cn": "Shiva's Guard",
-          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/shivas_guard.png",
+          "item_id": 48,
+          "item_key": "travel_boots",
+          "item_name_en": "Boots of Travel",
+          "item_name_cn": "远行鞋",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/travel_boots.png",
           "empty": false
         }
       ],
-      "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/rattlecage.png",
+      "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/enhancement_mystical.png",
       "aghanims_scepter": 0,
       "aghanims_shard": 0,
       "skill_build": [
@@ -2917,7 +3061,24 @@
       "hero_name_en": "Leshrac",
       "hero_name_cn": "拉席克",
       "_dem_items_source": "combat_log_slot_last_purchase",
-      "neutral_item_key": "rattlecage",
+      "lane_early": "mid",
+      "role_early": "mid",
+      "support_item_points_early": 14,
+      "support_items_early": [
+        {
+          "item_key": "dust",
+          "count": 1
+        },
+        {
+          "item_key": "ward_observer",
+          "count": 1
+        },
+        {
+          "item_key": "ward_sentry",
+          "count": 2
+        }
+      ],
+      "neutral_item_key": "enhancement_mystical",
       "talent_picks": [
         {
           "level": 10,
@@ -2972,7 +3133,6 @@
       ],
       "player_slot": 2,
       "isRadiant": true,
-      "permanent_buffs": [],
       "hero_portrait_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/leshrac.png",
       "hero_icon_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/icons/leshrac.png",
       "hero_internal_name": "npc_dota_hero_leshrac",
@@ -3488,14 +3648,13 @@
           "is_talent": true
         }
       ],
-      "item_0": 273,
-      "item_1": 121,
-      "item_2": 116,
-      "item_3": 48,
-      "item_4": 1,
-      "item_5": 119,
-      "item_neutral": 0,
-      "role_early": "mid"
+      "item_0": 119,
+      "item_1": 1,
+      "item_2": 121,
+      "item_3": 116,
+      "item_4": 0,
+      "item_5": 48,
+      "item_neutral": 0
     },
     {
       "account_id": 847565596,
@@ -3512,22 +3671,51 @@
       "denies": 1,
       "gold_per_min": 322,
       "xp_per_min": 567,
-      "hero_damage": 16320,
+      "hero_damage": 15908,
       "tower_damage": 387,
       "hero_healing": 2988,
+      "starting_items": [
+        {
+          "item_id": 44,
+          "item_key": "tango",
+          "item_name_en": "Tango",
+          "item_name_cn": "树之祭祀",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/tango.png",
+          "count": 1,
+          "first_purchase_time": -89
+        },
+        {
+          "item_id": 237,
+          "item_key": "faerie_fire",
+          "item_name_en": "Faerie Fire",
+          "item_name_cn": "仙灵之火",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/faerie_fire.png",
+          "count": 2,
+          "first_purchase_time": -89
+        },
+        {
+          "item_id": 1123,
+          "item_key": "blood_grenade",
+          "item_name_en": "Blood Grenade",
+          "item_name_cn": "Blood Grenade",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/blood_grenade.png",
+          "count": 1,
+          "first_purchase_time": -89
+        },
+        {
+          "item_id": 16,
+          "item_key": "branches",
+          "item_name_en": "Iron Branch",
+          "item_name_cn": "树枝",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/branches.png",
+          "count": 2,
+          "first_purchase_time": -89
+        }
+      ],
       "net_worth": 13951,
       "items_slot": [
         {
           "slot": 0,
-          "item_id": 1,
-          "item_key": "blink",
-          "item_name_en": "Blink Dagger",
-          "item_name_cn": "闪烁匕首",
-          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/blink.png",
-          "empty": false
-        },
-        {
-          "slot": 1,
           "item_id": 254,
           "item_key": "glimmer_cape",
           "item_name_en": "Glimmer Cape",
@@ -3536,21 +3724,30 @@
           "empty": false
         },
         {
-          "slot": 2,
-          "item_id": 40,
-          "item_key": "dust",
-          "item_name_en": "Dust of Appearance",
-          "item_name_cn": "显影之尘",
-          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/dust.png",
+          "slot": 1,
+          "item_id": 1,
+          "item_key": "blink",
+          "item_name_en": "Blink Dagger",
+          "item_name_cn": "闪烁匕首",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/blink.png",
           "empty": false
         },
         {
-          "slot": 3,
+          "slot": 2,
           "item_id": 102,
           "item_key": "force_staff",
           "item_name_en": "Force Staff",
           "item_name_cn": "原力法杖",
           "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/force_staff.png",
+          "empty": false
+        },
+        {
+          "slot": 3,
+          "item_id": 232,
+          "item_key": "aether_lens",
+          "item_name_en": "Aether Lens",
+          "item_name_cn": "Aether Lens",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/aether_lens.png",
           "empty": false
         },
         {
@@ -3564,17 +3761,17 @@
         },
         {
           "slot": 5,
-          "item_id": 232,
-          "item_key": "aether_lens",
-          "item_name_en": "Aether Lens",
-          "item_name_cn": "Aether Lens",
-          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/aether_lens.png",
-          "empty": false
+          "item_id": 0,
+          "item_key": null,
+          "item_name_en": "",
+          "item_name_cn": "",
+          "image_url": "",
+          "empty": true
         }
       ],
-      "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/metamorphic_mandible.png",
+      "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/enhancement_quickened.png",
       "aghanims_scepter": 0,
-      "aghanims_shard": 1,
+      "aghanims_shard": 0,
       "skill_build": [
         {
           "step": 1,
@@ -4067,7 +4264,28 @@
       "hero_name_en": "Lion",
       "hero_name_cn": "莱恩",
       "_dem_items_source": "combat_log_slot_last_purchase",
-      "neutral_item_key": "metamorphic_mandible",
+      "lane_early": "top",
+      "role_early": "support(4)",
+      "support_item_points_early": 20,
+      "support_items_early": [
+        {
+          "item_key": "dust",
+          "count": 1
+        },
+        {
+          "item_key": "smoke_of_deceit",
+          "count": 1
+        },
+        {
+          "item_key": "ward_observer",
+          "count": 2
+        },
+        {
+          "item_key": "ward_sentry",
+          "count": 2
+        }
+      ],
+      "neutral_item_key": "enhancement_quickened",
       "talent_picks": [
         {
           "level": 10,
@@ -4113,18 +4331,6 @@
       ],
       "player_slot": 3,
       "isRadiant": true,
-      "permanent_buffs": [
-        {
-          "permanent_buff": 7,
-          "stack_count": 12,
-          "grant_time": 1923
-        },
-        {
-          "permanent_buff": 12,
-          "stack_count": 0,
-          "grant_time": 3072
-        }
-      ],
       "hero_portrait_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/lion.png",
       "hero_icon_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/icons/lion.png",
       "hero_internal_name": "npc_dota_hero_lion",
@@ -4588,14 +4794,13 @@
           "is_talent": true
         }
       ],
-      "item_0": 1,
-      "item_1": 254,
-      "item_2": 40,
-      "item_3": 102,
+      "item_0": 254,
+      "item_1": 1,
+      "item_2": 102,
+      "item_3": 232,
       "item_4": 214,
-      "item_5": 232,
-      "item_neutral": 0,
-      "role_early": "support(4)"
+      "item_5": 0,
+      "item_neutral": 0
     },
     {
       "account_id": 140835095,
@@ -4615,15 +4820,35 @@
       "hero_damage": 23952,
       "tower_damage": 6587,
       "hero_healing": 1303,
+      "starting_items": [
+        {
+          "item_id": 11,
+          "item_key": "quelling_blade",
+          "item_name_en": "Quelling Blade",
+          "item_name_cn": "补刀斧",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/quelling_blade.png",
+          "count": 1,
+          "first_purchase_time": -89
+        },
+        {
+          "item_id": 36,
+          "item_key": "magic_wand",
+          "item_name_en": "Magic Wand",
+          "item_name_cn": "魔棒",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/magic_wand.png",
+          "count": 1,
+          "first_purchase_time": -89
+        }
+      ],
       "net_worth": 26646,
       "items_slot": [
         {
           "slot": 0,
-          "item_id": 598,
-          "item_key": "mage_slayer",
-          "item_name_en": "Mage Slayer",
-          "item_name_cn": "Mage Slayer",
-          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/mage_slayer.png",
+          "item_id": 1,
+          "item_key": "blink",
+          "item_name_en": "Blink Dagger",
+          "item_name_cn": "闪烁匕首",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/blink.png",
           "empty": false
         },
         {
@@ -4637,11 +4862,11 @@
         },
         {
           "slot": 2,
-          "item_id": 143,
-          "item_key": "basher",
-          "item_name_en": "Skull Basher",
-          "item_name_cn": "碎颅锤",
-          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/basher.png",
+          "item_id": 1097,
+          "item_key": "disperser",
+          "item_name_en": "Disperser",
+          "item_name_cn": "Disperser",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/disperser.png",
           "empty": false
         },
         {
@@ -4655,11 +4880,11 @@
         },
         {
           "slot": 4,
-          "item_id": 1,
-          "item_key": "blink",
-          "item_name_en": "Blink Dagger",
-          "item_name_cn": "闪烁匕首",
-          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/blink.png",
+          "item_id": 143,
+          "item_key": "basher",
+          "item_name_en": "Skull Basher",
+          "item_name_cn": "碎颅锤",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/basher.png",
           "empty": false
         },
         {
@@ -4672,9 +4897,9 @@
           "empty": false
         }
       ],
-      "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/rattlecage.png",
-      "aghanims_scepter": 0,
-      "aghanims_shard": 1,
+      "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/enhancement_mystical.png",
+      "aghanims_scepter": 1,
+      "aghanims_shard": 0,
       "skill_build": [
         {
           "step": 1,
@@ -5172,7 +5397,9 @@
       "hero_name_en": "Pangolier",
       "hero_name_cn": "石鳞剑士",
       "_dem_items_source": "combat_log_slot_last_purchase",
-      "neutral_item_key": "rattlecage",
+      "lane_early": "top",
+      "role_early": "offlane",
+      "neutral_item_key": "enhancement_mystical",
       "talent_picks": [
         {
           "level": 10,
@@ -5230,13 +5457,6 @@
       ],
       "player_slot": 4,
       "isRadiant": true,
-      "permanent_buffs": [
-        {
-          "permanent_buff": 12,
-          "stack_count": 0,
-          "grant_time": 2741
-        }
-      ],
       "hero_portrait_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/pangolier.png",
       "hero_icon_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/icons/pangolier.png",
       "hero_internal_name": "npc_dota_hero_pangolier",
@@ -5807,14 +6027,13 @@
           "is_talent": true
         }
       ],
-      "item_0": 598,
+      "item_0": 1,
       "item_1": 110,
-      "item_2": 143,
+      "item_2": 1097,
       "item_3": 63,
-      "item_4": 1,
+      "item_4": 143,
       "item_5": 108,
-      "item_neutral": 0,
-      "role_early": "offlane"
+      "item_neutral": 0
     },
     {
       "account_id": 206642367,
@@ -5831,22 +6050,42 @@
       "denies": 13,
       "gold_per_min": 619,
       "xp_per_min": 638,
-      "hero_damage": 37488,
+      "hero_damage": 26969,
       "tower_damage": 13067,
       "hero_healing": 1109,
+      "starting_items": [
+        {
+          "item_id": 36,
+          "item_key": "magic_wand",
+          "item_name_en": "Magic Wand",
+          "item_name_cn": "魔棒",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/magic_wand.png",
+          "count": 1,
+          "first_purchase_time": -89
+        },
+        {
+          "item_id": 237,
+          "item_key": "faerie_fire",
+          "item_name_en": "Faerie Fire",
+          "item_name_cn": "仙灵之火",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/faerie_fire.png",
+          "count": 1,
+          "first_purchase_time": -89
+        },
+        {
+          "item_id": 16,
+          "item_key": "branches",
+          "item_name_en": "Iron Branch",
+          "item_name_cn": "树枝",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/branches.png",
+          "count": 1,
+          "first_purchase_time": -89
+        }
+      ],
       "net_worth": 25267,
       "items_slot": [
         {
           "slot": 0,
-          "item_id": 1,
-          "item_key": "blink",
-          "item_name_en": "Blink Dagger",
-          "item_name_cn": "闪烁匕首",
-          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/blink.png",
-          "empty": false
-        },
-        {
-          "slot": 1,
           "item_id": 116,
           "item_key": "black_king_bar",
           "item_name_en": "Black King Bar",
@@ -5855,25 +6094,16 @@
           "empty": false
         },
         {
+          "slot": 1,
+          "item_id": 1,
+          "item_key": "blink",
+          "item_name_en": "Blink Dagger",
+          "item_name_cn": "闪烁匕首",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/blink.png",
+          "empty": false
+        },
+        {
           "slot": 2,
-          "item_id": 939,
-          "item_key": "harpoon",
-          "item_name_en": "Harpoon",
-          "item_name_cn": "Harpoon",
-          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/harpoon.png",
-          "empty": false
-        },
-        {
-          "slot": 3,
-          "item_id": 112,
-          "item_key": "assault",
-          "item_name_en": "Assault Cuirass",
-          "item_name_cn": "强袭胸甲",
-          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/assault.png",
-          "empty": false
-        },
-        {
-          "slot": 4,
           "item_id": 50,
           "item_key": "phase_boots",
           "item_name_en": "Phase Boots",
@@ -5882,18 +6112,36 @@
           "empty": false
         },
         {
+          "slot": 3,
+          "item_id": 939,
+          "item_key": "harpoon",
+          "item_name_en": "Harpoon",
+          "item_name_cn": "Harpoon",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/harpoon.png",
+          "empty": false
+        },
+        {
+          "slot": 4,
+          "item_id": 65,
+          "item_key": "hand_of_midas",
+          "item_name_en": "Hand of Midas",
+          "item_name_cn": "点金手",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/hand_of_midas.png",
+          "empty": false
+        },
+        {
           "slot": 5,
-          "item_id": 154,
-          "item_key": "sange_and_yasha",
-          "item_name_en": "Sange and Yasha",
-          "item_name_cn": "Sange and Yasha",
-          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/sange_and_yasha.png",
+          "item_id": 112,
+          "item_key": "assault",
+          "item_name_en": "Assault Cuirass",
+          "item_name_cn": "强袭胸甲",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/assault.png",
           "empty": false
         }
       ],
-      "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/unrelenting_eye.png",
+      "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/enhancement_tough.png",
       "aghanims_scepter": 0,
-      "aghanims_shard": 1,
+      "aghanims_shard": 0,
       "skill_build": [
         {
           "step": 1,
@@ -6393,7 +6641,9 @@
       "hero_name_en": "Doom",
       "hero_name_cn": "末日使者",
       "_dem_items_source": "combat_log_slot_last_purchase",
-      "neutral_item_key": "unrelenting_eye",
+      "lane_early": "top",
+      "role_early": "carry",
+      "neutral_item_key": "enhancement_tough",
       "talent_picks": [
         {
           "level": 15,
@@ -6439,13 +6689,6 @@
       ],
       "player_slot": 128,
       "isRadiant": false,
-      "permanent_buffs": [
-        {
-          "permanent_buff": 12,
-          "stack_count": 0,
-          "grant_time": 2047
-        }
-      ],
       "hero_portrait_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/doom_bringer.png",
       "hero_icon_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/icons/doom_bringer.png",
       "hero_internal_name": "npc_dota_hero_doom_bringer",
@@ -7019,14 +7262,13 @@
           "is_talent": true
         }
       ],
-      "item_0": 1,
-      "item_1": 116,
-      "item_2": 939,
-      "item_3": 112,
-      "item_4": 50,
-      "item_5": 154,
-      "item_neutral": 0,
-      "role_early": "carry"
+      "item_0": 116,
+      "item_1": 1,
+      "item_2": 50,
+      "item_3": 939,
+      "item_4": 65,
+      "item_5": 112,
+      "item_neutral": 0
     },
     {
       "account_id": 191362875,
@@ -7043,27 +7285,74 @@
       "denies": 4,
       "gold_per_min": 263,
       "xp_per_min": 382,
-      "hero_damage": 7079,
+      "hero_damage": 7004,
       "tower_damage": 141,
       "hero_healing": 1973,
+      "starting_items": [
+        {
+          "item_id": 34,
+          "item_key": "magic_stick",
+          "item_name_en": "Magic Stick",
+          "item_name_cn": "Magic Stick",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/magic_stick.png",
+          "count": 1,
+          "first_purchase_time": -88
+        },
+        {
+          "item_id": 44,
+          "item_key": "tango",
+          "item_name_en": "Tango",
+          "item_name_cn": "树之祭祀",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/tango.png",
+          "count": 1,
+          "first_purchase_time": -88
+        },
+        {
+          "item_id": 1123,
+          "item_key": "blood_grenade",
+          "item_name_en": "Blood Grenade",
+          "item_name_cn": "Blood Grenade",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/blood_grenade.png",
+          "count": 1,
+          "first_purchase_time": -88
+        },
+        {
+          "item_id": 16,
+          "item_key": "branches",
+          "item_name_en": "Iron Branch",
+          "item_name_cn": "树枝",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/branches.png",
+          "count": 2,
+          "first_purchase_time": -88
+        },
+        {
+          "item_id": 188,
+          "item_key": "smoke_of_deceit",
+          "item_name_en": "Smoke of Deceit",
+          "item_name_cn": "诡计之雾",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/smoke_of_deceit.png",
+          "count": 1,
+          "first_purchase_time": -88
+        }
+      ],
       "net_worth": 10198,
       "items_slot": [
         {
           "slot": 0,
-          "item_id": 43,
-          "item_key": "ward_sentry",
-          "item_name_en": "Sentry Ward",
-          "item_name_cn": "岗哨守卫",
-          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/ward_sentry.png",
+          "item_id": 36,
+          "item_key": "magic_wand",
+          "item_name_en": "Magic Wand",
+          "item_name_cn": "魔棒",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/magic_wand.png",
           "empty": false
         },
         {
           "slot": 1,
-          "item_id": 254,
-          "item_key": "glimmer_cape",
-          "item_name_en": "Glimmer Cape",
-          "item_name_cn": "微光披风",
-          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/glimmer_cape.png",
+          "item_id": 102,
+          "item_key": "force_staff",
+          "item_name_en": "Force Staff",
+          "item_name_cn": "原力法杖",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/force_staff.png",
           "empty": false
         },
         {
@@ -7077,33 +7366,33 @@
         },
         {
           "slot": 3,
-          "item_id": 102,
-          "item_key": "force_staff",
-          "item_name_en": "Force Staff",
-          "item_name_cn": "原力法杖",
-          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/force_staff.png",
+          "item_id": 254,
+          "item_key": "glimmer_cape",
+          "item_name_en": "Glimmer Cape",
+          "item_name_cn": "微光披风",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/glimmer_cape.png",
           "empty": false
         },
         {
           "slot": 4,
-          "item_id": 36,
-          "item_key": "magic_wand",
-          "item_name_en": "Magic Wand",
-          "item_name_cn": "魔棒",
-          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/magic_wand.png",
-          "empty": false
-        },
-        {
-          "slot": 5,
           "item_id": 180,
           "item_key": "arcane_boots",
           "item_name_en": "Arcane Boots",
           "item_name_cn": "奥术鞋",
           "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/arcane_boots.png",
           "empty": false
+        },
+        {
+          "slot": 5,
+          "item_id": 0,
+          "item_key": null,
+          "item_name_en": "",
+          "item_name_cn": "",
+          "image_url": "",
+          "empty": true
         }
       ],
-      "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/pogo_stick.png",
+      "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/enhancement_greedy.png",
       "aghanims_scepter": 0,
       "aghanims_shard": 0,
       "skill_build": [
@@ -7597,7 +7886,24 @@
       "hero_name_en": "Grimstroke",
       "hero_name_cn": "天涯墨客",
       "_dem_items_source": "combat_log_slot_last_purchase",
-      "neutral_item_key": "pogo_stick",
+      "lane_early": "top",
+      "role_early": "support(5)",
+      "support_item_points_early": 20,
+      "support_items_early": [
+        {
+          "item_key": "smoke_of_deceit",
+          "count": 2
+        },
+        {
+          "item_key": "ward_observer",
+          "count": 2
+        },
+        {
+          "item_key": "ward_sentry",
+          "count": 2
+        }
+      ],
+      "neutral_item_key": "enhancement_greedy",
       "talent_picks": [
         {
           "level": 10,
@@ -7635,7 +7941,6 @@
       ],
       "player_slot": 129,
       "isRadiant": false,
-      "permanent_buffs": [],
       "hero_portrait_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/grimstroke.png",
       "hero_icon_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/icons/grimstroke.png",
       "hero_internal_name": "npc_dota_hero_grimstroke",
@@ -8073,14 +8378,13 @@
           "is_talent": true
         }
       ],
-      "item_0": 43,
-      "item_1": 254,
+      "item_0": 36,
+      "item_1": 102,
       "item_2": 1,
-      "item_3": 102,
-      "item_4": 36,
-      "item_5": 180,
-      "item_neutral": 0,
-      "role_early": "support(5)"
+      "item_3": 254,
+      "item_4": 180,
+      "item_5": 0,
+      "item_neutral": 0
     },
     {
       "account_id": 90423751,
@@ -8097,18 +8401,47 @@
       "denies": 1,
       "gold_per_min": 277,
       "xp_per_min": 346,
-      "hero_damage": 8843,
+      "hero_damage": 5879,
       "tower_damage": 94,
       "hero_healing": 6031,
+      "starting_items": [
+        {
+          "item_id": 43,
+          "item_key": "ward_sentry",
+          "item_name_en": "Sentry Ward",
+          "item_name_cn": "岗哨守卫",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/ward_sentry.png",
+          "count": 1,
+          "first_purchase_time": -88
+        },
+        {
+          "item_id": 1123,
+          "item_key": "blood_grenade",
+          "item_name_en": "Blood Grenade",
+          "item_name_cn": "Blood Grenade",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/blood_grenade.png",
+          "count": 1,
+          "first_purchase_time": -88
+        },
+        {
+          "item_id": 29,
+          "item_key": "boots",
+          "item_name_en": "Boots of Speed",
+          "item_name_cn": "速度之靴",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/boots.png",
+          "count": 1,
+          "first_purchase_time": -88
+        }
+      ],
       "net_worth": 11044,
       "items_slot": [
         {
           "slot": 0,
-          "item_id": 1,
-          "item_key": "blink",
-          "item_name_en": "Blink Dagger",
-          "item_name_cn": "闪烁匕首",
-          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/blink.png",
+          "item_id": 229,
+          "item_key": "solar_crest",
+          "item_name_en": "Solar Crest",
+          "item_name_cn": "Solar Crest",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/solar_crest.png",
           "empty": false
         },
         {
@@ -8122,15 +8455,24 @@
         },
         {
           "slot": 2,
-          "item_id": 229,
-          "item_key": "solar_crest",
-          "item_name_en": "Solar Crest",
-          "item_name_cn": "Solar Crest",
-          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/solar_crest.png",
+          "item_id": 1,
+          "item_key": "blink",
+          "item_name_en": "Blink Dagger",
+          "item_name_cn": "闪烁匕首",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/blink.png",
           "empty": false
         },
         {
           "slot": 3,
+          "item_id": 214,
+          "item_key": "tranquil_boots",
+          "item_name_en": "Tranquil Boots",
+          "item_name_cn": "静谧之鞋",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/tranquil_boots.png",
+          "empty": false
+        },
+        {
+          "slot": 4,
           "item_id": 0,
           "item_key": null,
           "item_name_en": "",
@@ -8139,27 +8481,18 @@
           "empty": true
         },
         {
-          "slot": 4,
-          "item_id": 40,
-          "item_key": "dust",
-          "item_name_en": "Dust of Appearance",
-          "item_name_cn": "显影之尘",
-          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/dust.png",
-          "empty": false
-        },
-        {
           "slot": 5,
-          "item_id": 214,
-          "item_key": "tranquil_boots",
-          "item_name_en": "Tranquil Boots",
-          "item_name_cn": "静谧之鞋",
-          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/tranquil_boots.png",
-          "empty": false
+          "item_id": 0,
+          "item_key": null,
+          "item_name_en": "",
+          "item_name_cn": "",
+          "image_url": "",
+          "empty": true
         }
       ],
-      "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/psychic_headband.png",
+      "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/enhancement_greedy.png",
       "aghanims_scepter": 0,
-      "aghanims_shard": 1,
+      "aghanims_shard": 0,
       "skill_build": [
         {
           "step": 1,
@@ -8651,7 +8984,24 @@
       "hero_name_en": "Treant Protector",
       "hero_name_cn": "树精卫士",
       "_dem_items_source": "combat_log_slot_last_purchase",
-      "neutral_item_key": "psychic_headband",
+      "lane_early": "bot",
+      "role_early": "support(4)",
+      "support_item_points_early": 30,
+      "support_items_early": [
+        {
+          "item_key": "smoke_of_deceit",
+          "count": 1
+        },
+        {
+          "item_key": "ward_observer",
+          "count": 1
+        },
+        {
+          "item_key": "ward_sentry",
+          "count": 6
+        }
+      ],
+      "neutral_item_key": "enhancement_greedy",
       "talent_picks": [
         {
           "level": 10,
@@ -8689,13 +9039,6 @@
       ],
       "player_slot": 130,
       "isRadiant": false,
-      "permanent_buffs": [
-        {
-          "permanent_buff": 12,
-          "stack_count": 0,
-          "grant_time": 2468
-        }
-      ],
       "hero_portrait_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/treant.png",
       "hero_icon_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/icons/treant.png",
       "hero_internal_name": "npc_dota_hero_treant",
@@ -9142,14 +9485,13 @@
           "is_talent": true
         }
       ],
-      "item_0": 1,
+      "item_0": 229,
       "item_1": 37,
-      "item_2": 229,
-      "item_3": 0,
-      "item_4": 40,
-      "item_5": 214,
-      "item_neutral": 0,
-      "role_early": "support(4)"
+      "item_2": 1,
+      "item_3": 214,
+      "item_4": 0,
+      "item_5": 0,
+      "item_neutral": 0
     },
     {
       "account_id": 154974246,
@@ -9166,31 +9508,51 @@
       "denies": 7,
       "gold_per_min": 505,
       "xp_per_min": 638,
-      "hero_damage": 32267,
+      "hero_damage": 26165,
       "tower_damage": 158,
       "hero_healing": 4173,
+      "starting_items": [
+        {
+          "item_id": 16,
+          "item_key": "branches",
+          "item_name_en": "Iron Branch",
+          "item_name_cn": "树枝",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/branches.png",
+          "count": 5,
+          "first_purchase_time": -88
+        },
+        {
+          "item_id": 42,
+          "item_key": "ward_observer",
+          "item_name_en": "Observer Ward",
+          "item_name_cn": "侦查守卫",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/ward_observer.png",
+          "count": 1,
+          "first_purchase_time": -88
+        },
+        {
+          "item_id": 44,
+          "item_key": "tango",
+          "item_name_en": "Tango",
+          "item_name_cn": "树之祭祀",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/tango.png",
+          "count": 1,
+          "first_purchase_time": -88
+        },
+        {
+          "item_id": 43,
+          "item_key": "ward_sentry",
+          "item_name_en": "Sentry Ward",
+          "item_name_cn": "岗哨守卫",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/ward_sentry.png",
+          "count": 1,
+          "first_purchase_time": -88
+        }
+      ],
       "net_worth": 23001,
       "items_slot": [
         {
           "slot": 0,
-          "item_id": 108,
-          "item_key": "ultimate_scepter",
-          "item_name_en": "Aghanim's Scepter",
-          "item_name_cn": "阿哈利姆神杖",
-          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/ultimate_scepter.png",
-          "empty": false
-        },
-        {
-          "slot": 1,
-          "item_id": 116,
-          "item_key": "black_king_bar",
-          "item_name_en": "Black King Bar",
-          "item_name_cn": "黑皇杖",
-          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/black_king_bar.png",
-          "empty": false
-        },
-        {
-          "slot": 2,
           "item_id": 50,
           "item_key": "phase_boots",
           "item_name_en": "Phase Boots",
@@ -9199,7 +9561,34 @@
           "empty": false
         },
         {
+          "slot": 1,
+          "item_id": 1,
+          "item_key": "blink",
+          "item_name_en": "Blink Dagger",
+          "item_name_cn": "闪烁匕首",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/blink.png",
+          "empty": false
+        },
+        {
+          "slot": 2,
+          "item_id": 116,
+          "item_key": "black_king_bar",
+          "item_name_en": "Black King Bar",
+          "item_name_cn": "黑皇杖",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/black_king_bar.png",
+          "empty": false
+        },
+        {
           "slot": 3,
+          "item_id": 41,
+          "item_key": "bottle",
+          "item_name_en": "Bottle",
+          "item_name_cn": "魔瓶",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/bottle.png",
+          "empty": false
+        },
+        {
+          "slot": 4,
           "item_id": 143,
           "item_key": "basher",
           "item_name_en": "Skull Basher",
@@ -9208,27 +9597,18 @@
           "empty": false
         },
         {
-          "slot": 4,
+          "slot": 5,
           "item_id": 121,
           "item_key": "bloodstone",
           "item_name_en": "Bloodstone",
           "item_name_cn": "Bloodstone",
           "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/bloodstone.png",
           "empty": false
-        },
-        {
-          "slot": 5,
-          "item_id": 1,
-          "item_key": "blink",
-          "item_name_en": "Blink Dagger",
-          "item_name_cn": "闪烁匕首",
-          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/blink.png",
-          "empty": false
         }
       ],
       "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/giant_maul.png",
       "aghanims_scepter": 0,
-      "aghanims_shard": 1,
+      "aghanims_shard": 0,
       "skill_build": [
         {
           "step": 1,
@@ -9721,6 +10101,19 @@
       "hero_name_en": "Sand King",
       "hero_name_cn": "沙王",
       "_dem_items_source": "combat_log_slot_last_purchase",
+      "lane_early": "mid",
+      "role_early": "mid",
+      "support_item_points_early": 14,
+      "support_items_early": [
+        {
+          "item_key": "ward_observer",
+          "count": 2
+        },
+        {
+          "item_key": "ward_sentry",
+          "count": 2
+        }
+      ],
       "neutral_item_key": "giant_maul",
       "talent_picks": [
         {
@@ -9767,13 +10160,6 @@
       ],
       "player_slot": 131,
       "isRadiant": false,
-      "permanent_buffs": [
-        {
-          "permanent_buff": 12,
-          "stack_count": 0,
-          "grant_time": 3514
-        }
-      ],
       "hero_portrait_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/sand_king.png",
       "hero_icon_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/icons/sand_king.png",
       "hero_internal_name": "npc_dota_hero_sand_king",
@@ -10237,14 +10623,13 @@
           "is_talent": true
         }
       ],
-      "item_0": 108,
-      "item_1": 116,
-      "item_2": 50,
-      "item_3": 143,
-      "item_4": 121,
-      "item_5": 1,
-      "item_neutral": 0,
-      "role_early": "offlane"
+      "item_0": 50,
+      "item_1": 1,
+      "item_2": 116,
+      "item_3": 41,
+      "item_4": 143,
+      "item_5": 121,
+      "item_neutral": 0
     },
     {
       "account_id": 160119017,
@@ -10261,9 +10646,47 @@
       "denies": 10,
       "gold_per_min": 494,
       "xp_per_min": 595,
-      "hero_damage": 31019,
+      "hero_damage": 13348,
       "tower_damage": 393,
       "hero_healing": 1113,
+      "starting_items": [
+        {
+          "item_id": 244,
+          "item_key": "wind_lace",
+          "item_name_en": "Wind Lace",
+          "item_name_cn": "Wind Lace",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/wind_lace.png",
+          "count": 1,
+          "first_purchase_time": -88
+        },
+        {
+          "item_id": 20,
+          "item_key": "circlet",
+          "item_name_en": "Circlet",
+          "item_name_cn": "圆环",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/circlet.png",
+          "count": 1,
+          "first_purchase_time": -88
+        },
+        {
+          "item_id": 16,
+          "item_key": "branches",
+          "item_name_en": "Iron Branch",
+          "item_name_cn": "树枝",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/branches.png",
+          "count": 3,
+          "first_purchase_time": -88
+        },
+        {
+          "item_id": 27,
+          "item_key": "ring_of_regen",
+          "item_name_en": "Ring of Regen",
+          "item_name_cn": "Ring of Regen",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/ring_of_regen.png",
+          "count": 1,
+          "first_purchase_time": -80
+        }
+      ],
       "net_worth": 23470,
       "items_slot": [
         {
@@ -10277,6 +10700,15 @@
         },
         {
           "slot": 1,
+          "item_id": 232,
+          "item_key": "aether_lens",
+          "item_name_en": "Aether Lens",
+          "item_name_cn": "Aether Lens",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/aether_lens.png",
+          "empty": false
+        },
+        {
+          "slot": 2,
           "item_id": 116,
           "item_key": "black_king_bar",
           "item_name_en": "Black King Bar",
@@ -10285,16 +10717,16 @@
           "empty": false
         },
         {
-          "slot": 2,
-          "item_id": 108,
-          "item_key": "ultimate_scepter",
-          "item_name_en": "Aghanim's Scepter",
-          "item_name_cn": "阿哈利姆神杖",
-          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/ultimate_scepter.png",
+          "slot": 3,
+          "item_id": 178,
+          "item_key": "soul_ring",
+          "item_name_en": "Soul Ring",
+          "item_name_cn": "Soul Ring",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/soul_ring.png",
           "empty": false
         },
         {
-          "slot": 3,
+          "slot": 4,
           "item_id": 931,
           "item_key": "boots_of_bearing",
           "item_name_en": "Boots of Bearing",
@@ -10303,27 +10735,18 @@
           "empty": false
         },
         {
-          "slot": 4,
-          "item_id": 1,
-          "item_key": "blink",
-          "item_name_en": "Blink Dagger",
-          "item_name_cn": "闪烁匕首",
-          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/blink.png",
-          "empty": false
-        },
-        {
           "slot": 5,
-          "item_id": 232,
-          "item_key": "aether_lens",
-          "item_name_en": "Aether Lens",
-          "item_name_cn": "Aether Lens",
-          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/aether_lens.png",
+          "item_id": 214,
+          "item_key": "tranquil_boots",
+          "item_name_en": "Tranquil Boots",
+          "item_name_cn": "静谧之鞋",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/tranquil_boots.png",
           "empty": false
         }
       ],
-      "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/pogo_stick.png",
+      "neutral_img": "",
       "aghanims_scepter": 0,
-      "aghanims_shard": 1,
+      "aghanims_shard": 0,
       "skill_build": [
         {
           "step": 1,
@@ -10816,6 +11239,8 @@
       "hero_name_en": "Enigma",
       "hero_name_cn": "谜团",
       "_dem_items_source": "combat_log_slot_last_purchase",
+      "lane_early": "bot",
+      "role_early": "offlane",
       "talent_picks": [
         {
           "level": 10,
@@ -10861,14 +11286,6 @@
       ],
       "player_slot": 132,
       "isRadiant": false,
-      "neutral_item_key": "pogo_stick",
-      "permanent_buffs": [
-        {
-          "permanent_buff": 12,
-          "stack_count": 0,
-          "grant_time": 2206
-        }
-      ],
       "hero_portrait_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/enigma.png",
       "hero_icon_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/icons/enigma.png",
       "hero_internal_name": "npc_dota_hero_enigma",
@@ -11333,20 +11750,12 @@
         }
       ],
       "item_0": 119,
-      "item_1": 116,
-      "item_2": 108,
-      "item_3": 931,
-      "item_4": 1,
-      "item_5": 232,
-      "item_neutral": 0,
-      "role_early": "mid",
-      "starting_items": [
-        {
-          "item_key": "ring_of_regen",
-          "count": 1,
-          "first_purchase_time": -80
-        }
-      ]
+      "item_1": 232,
+      "item_2": 116,
+      "item_3": 178,
+      "item_4": 931,
+      "item_5": 214,
+      "item_neutral": 0
     }
   ]
 }

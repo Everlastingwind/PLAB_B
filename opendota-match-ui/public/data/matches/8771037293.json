@@ -2648,12 +2648,12 @@
           {
             "group": "backpack",
             "slot": 0,
-            "item_id": 248,
-            "item_key": "recipe_silver_edge",
-            "item_name_en": "Silver Edge Recipe",
-            "item_name_cn": "Silver Edge Recipe",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/recipe.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
@@ -4408,12 +4408,12 @@
           {
             "group": "backpack",
             "slot": 0,
-            "item_id": 19,
-            "item_key": "robe",
-            "item_name_en": "Robe of the Magi",
-            "item_name_cn": "法师长袍",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/robe.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
@@ -19572,23 +19572,23 @@
           {
             "group": "backpack",
             "slot": 0,
-            "item_id": 188,
-            "item_key": "smoke_of_deceit",
-            "item_name_en": "Smoke of Deceit",
-            "item_name_cn": "诡计之雾",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/smoke_of_deceit.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
             "group": "backpack",
             "slot": 1,
-            "item_id": 4204,
-            "item_key": "famango",
-            "item_name_en": "Healing Lotus",
-            "item_name_cn": "Healing Lotus",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/famango.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
@@ -20724,7 +20724,9 @@
   "stomp": 28184,
   "_meta": {
     "source": "opendota_pro",
-    "category": "pro"
+    "category": "pro",
+    "match_id": 8771037293,
+    "uploaded_at": "2026-04-16T02:28:29Z"
   },
   "source": "pro",
   "category": "pro"

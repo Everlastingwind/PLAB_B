@@ -1,0 +1,5 @@
+{
+  "_readme": "复制本文件为项目根目录的 site_upload.json 并填写；site_upload.json 已在 .gitignore 中勿提交。",
+  "match_upload_url": "https://你的域名/api/matches/upload",
+  "match_upload_token": "与服务器 MATCH_UPLOAD_TOKEN 一致"
+}

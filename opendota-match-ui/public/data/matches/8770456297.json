@@ -6754,12 +6754,12 @@
           {
             "group": "backpack",
             "slot": 0,
-            "item_id": 1804,
-            "item_key": "roshans_banner",
-            "item_name_en": "Roshan's Banner",
-            "item_name_cn": "Roshan's Banner",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/roshans_banner.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
@@ -10979,12 +10979,12 @@
           {
             "group": "backpack",
             "slot": 2,
-            "item_id": 4206,
-            "item_key": "greater_famango",
-            "item_name_en": "Greater Healing Lotus",
-            "item_name_cn": "Greater Healing Lotus",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/greater_famango.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           }
         ],
@@ -12990,23 +12990,23 @@
           {
             "group": "backpack",
             "slot": 0,
-            "item_id": 48,
-            "item_key": "travel_boots",
-            "item_name_en": "Boots of Travel",
-            "item_name_cn": "远行鞋",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/travel_boots.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
             "group": "backpack",
             "slot": 1,
-            "item_id": 43,
-            "item_key": "ward_sentry",
-            "item_name_en": "Sentry Ward",
-            "item_name_cn": "岗哨守卫",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/ward_sentry.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
@@ -15082,12 +15082,12 @@
           {
             "group": "backpack",
             "slot": 0,
-            "item_id": 63,
-            "item_key": "power_treads",
-            "item_name_en": "Power Treads",
-            "item_name_cn": "动力鞋",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/power_treads.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
@@ -21590,23 +21590,23 @@
           {
             "group": "backpack",
             "slot": 0,
-            "item_id": 42,
-            "item_key": "ward_observer",
-            "item_name_en": "Observer Ward",
-            "item_name_cn": "侦查守卫",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/ward_observer.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
             "group": "backpack",
             "slot": 1,
-            "item_id": 188,
-            "item_key": "smoke_of_deceit",
-            "item_name_en": "Smoke of Deceit",
-            "item_name_cn": "诡计之雾",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/smoke_of_deceit.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
@@ -22725,5 +22725,10 @@
   },
   "my_word_counts": {},
   "comeback": 5263,
-  "stomp": 8658
+  "stomp": 8658,
+  "_meta": {
+    "source": "api_upload",
+    "match_id": 8770456297,
+    "uploaded_at": "2026-04-16T02:28:00Z"
+  }
 }

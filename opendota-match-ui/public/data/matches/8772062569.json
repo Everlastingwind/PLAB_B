@@ -8244,12 +8244,12 @@
           {
             "group": "backpack",
             "slot": 0,
-            "item_id": 188,
-            "item_key": "smoke_of_deceit",
-            "item_name_en": "Smoke of Deceit",
-            "item_name_cn": "诡计之雾",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/smoke_of_deceit.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
@@ -8407,81 +8407,41 @@
         {
           "type": "talent",
           "level": 14,
-          "name": "special_bonus_attributes",
-          "name_en": "special_bonus_attributes",
-          "ability_id": 730,
-          "ability_key": "special_bonus_attributes"
-        },
-        {
-          "type": "talent",
-          "level": 15,
-          "name": "special_bonus_attributes",
-          "name_en": "special_bonus_attributes",
-          "ability_id": 730,
-          "ability_key": "special_bonus_attributes"
-        },
-        {
-          "type": "talent",
-          "level": 16,
           "name": "+{s:bonus_max_movespeed} Tailwind Max Movespeed",
           "name_en": "+{s:bonus_max_movespeed} Tailwind Max Movespeed",
           "ability_id": 6993,
           "ability_key": "special_bonus_unique_windranger_5"
         },
         {
-          "type": "talent",
+          "type": "ability",
+          "level": 15,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/windrunner_focusfire.png",
+          "name_en": "Focus Fire",
+          "name_cn": "Focus Fire",
+          "ability_id": 5133,
+          "ability_key": "windrunner_focusfire"
+        },
+        {
+          "type": "ability",
+          "level": 16,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/windrunner_focusfire.png",
+          "name_en": "Focus Fire",
+          "name_cn": "Focus Fire",
+          "ability_id": 5133,
+          "ability_key": "windrunner_focusfire"
+        },
+        {
+          "type": "ability",
           "level": 17,
-          "name": "special_bonus_attributes",
-          "name_en": "special_bonus_attributes",
-          "ability_id": 730,
-          "ability_key": "special_bonus_attributes"
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/windrunner_focusfire.png",
+          "name_en": "Focus Fire",
+          "name_cn": "Focus Fire",
+          "ability_id": 5133,
+          "ability_key": "windrunner_focusfire"
         },
         {
           "type": "talent",
           "level": 18,
-          "name": "special_bonus_attributes",
-          "name_en": "special_bonus_attributes",
-          "ability_id": 730,
-          "ability_key": "special_bonus_attributes"
-        },
-        {
-          "type": "talent",
-          "level": 19,
-          "name": "special_bonus_attributes",
-          "name_en": "special_bonus_attributes",
-          "ability_id": 730,
-          "ability_key": "special_bonus_attributes"
-        },
-        {
-          "type": "ability",
-          "level": 20,
-          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/windrunner_focusfire.png",
-          "name_en": "Focus Fire",
-          "name_cn": "Focus Fire",
-          "ability_id": 5133,
-          "ability_key": "windrunner_focusfire"
-        },
-        {
-          "type": "ability",
-          "level": 21,
-          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/windrunner_focusfire.png",
-          "name_en": "Focus Fire",
-          "name_cn": "Focus Fire",
-          "ability_id": 5133,
-          "ability_key": "windrunner_focusfire"
-        },
-        {
-          "type": "ability",
-          "level": 22,
-          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/windrunner_focusfire.png",
-          "name_en": "Focus Fire",
-          "name_cn": "Focus Fire",
-          "ability_id": 5133,
-          "ability_key": "windrunner_focusfire"
-        },
-        {
-          "type": "talent",
-          "level": 23,
           "name": "+{s:bonus_stun_duration}s Shackleshot Duration",
           "name_en": "+{s:bonus_stun_duration}s Shackleshot Duration",
           "ability_id": 7062,
@@ -15204,23 +15164,23 @@
           {
             "group": "backpack",
             "slot": 0,
-            "item_id": 220,
-            "item_key": "travel_boots_2",
-            "item_name_en": "Boots of Travel 2",
-            "item_name_cn": "Boots of Travel 2",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/travel_boots_2.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
             "group": "backpack",
             "slot": 1,
-            "item_id": 160,
-            "item_key": "skadi",
-            "item_name_en": "Eye of Skadi",
-            "item_name_cn": "斯嘉蒂之眼",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/skadi.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
@@ -15347,16 +15307,8 @@
           "ability_key": "special_bonus_unique_terrorblade_4"
         },
         {
-          "type": "talent",
-          "level": 12,
-          "name": "special_bonus_attributes",
-          "name_en": "special_bonus_attributes",
-          "ability_id": 730,
-          "ability_key": "special_bonus_attributes"
-        },
-        {
           "type": "ability",
-          "level": 13,
+          "level": 12,
           "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/terrorblade_sunder.png",
           "name_en": "Sunder",
           "name_cn": "Sunder",
@@ -15365,55 +15317,15 @@
         },
         {
           "type": "talent",
-          "level": 14,
-          "name": "special_bonus_attributes",
-          "name_en": "special_bonus_attributes",
-          "ability_id": 730,
-          "ability_key": "special_bonus_attributes"
-        },
-        {
-          "type": "talent",
-          "level": 15,
-          "name": "special_bonus_attributes",
-          "name_en": "special_bonus_attributes",
-          "ability_id": 730,
-          "ability_key": "special_bonus_attributes"
-        },
-        {
-          "type": "talent",
-          "level": 16,
+          "level": 13,
           "name": "-{s:bonus_AbilityCooldown}s Metamorphosis Cooldown",
           "name_en": "-{s:bonus_AbilityCooldown}s Metamorphosis Cooldown",
           "ability_id": 1186,
           "ability_key": "special_bonus_unique_terrorblade_metamorphosis_cooldown"
         },
         {
-          "type": "talent",
-          "level": 17,
-          "name": "special_bonus_attributes",
-          "name_en": "special_bonus_attributes",
-          "ability_id": 730,
-          "ability_key": "special_bonus_attributes"
-        },
-        {
-          "type": "talent",
-          "level": 18,
-          "name": "special_bonus_attributes",
-          "name_en": "special_bonus_attributes",
-          "ability_id": 730,
-          "ability_key": "special_bonus_attributes"
-        },
-        {
-          "type": "talent",
-          "level": 19,
-          "name": "special_bonus_attributes",
-          "name_en": "special_bonus_attributes",
-          "ability_id": 730,
-          "ability_key": "special_bonus_attributes"
-        },
-        {
           "type": "ability",
-          "level": 20,
+          "level": 14,
           "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/terrorblade_sunder.png",
           "name_en": "Sunder",
           "name_cn": "Sunder",
@@ -15422,15 +15334,7 @@
         },
         {
           "type": "talent",
-          "level": 21,
-          "name": "special_bonus_attributes",
-          "name_en": "special_bonus_attributes",
-          "ability_id": 730,
-          "ability_key": "special_bonus_attributes"
-        },
-        {
-          "type": "talent",
-          "level": 22,
+          "level": 15,
           "name": "+{s:bonus_illusion_duration}s Conjure Image Duration",
           "name_en": "+{s:bonus_illusion_duration}s Conjure Image Duration",
           "ability_id": 479,
@@ -15438,7 +15342,7 @@
         },
         {
           "type": "ability",
-          "level": 23,
+          "level": 16,
           "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/terrorblade_reflection.png",
           "name_en": "Reflection",
           "name_cn": "Reflection",
@@ -15447,7 +15351,7 @@
         },
         {
           "type": "ability",
-          "level": 24,
+          "level": 17,
           "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/terrorblade_reflection.png",
           "name_en": "Reflection",
           "name_cn": "Reflection",
@@ -15456,7 +15360,7 @@
         },
         {
           "type": "ability",
-          "level": 25,
+          "level": 18,
           "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/terrorblade_reflection.png",
           "name_en": "Reflection",
           "name_cn": "Reflection",
@@ -17574,12 +17478,12 @@
           {
             "group": "backpack",
             "slot": 2,
-            "item_id": 41,
-            "item_key": "bottle",
-            "item_name_en": "Bottle",
-            "item_name_cn": "魔瓶",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/bottle.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           }
         ],
@@ -20009,21 +19913,22 @@
           "ability_key": "mars_bulwark"
         },
         {
-          "type": "talent",
-          "level": 12,
-          "name": "special_bonus_attributes",
-          "name_en": "special_bonus_attributes",
-          "ability_id": 730,
-          "ability_key": "special_bonus_attributes"
-        },
-        {
           "type": "ability",
-          "level": 13,
+          "level": 12,
           "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/mars_arena_of_blood.png",
           "name_en": "Arena Of Blood",
           "name_cn": "Arena Of Blood",
           "ability_id": 1416,
           "ability_key": "mars_arena_of_blood"
+        },
+        {
+          "type": "ability",
+          "level": 13,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/mars_bulwark.png",
+          "name_en": "Bulwark",
+          "name_cn": "Bulwark",
+          "ability_id": 6582,
+          "ability_key": "mars_bulwark"
         },
         {
           "type": "ability",
@@ -20035,17 +19940,8 @@
           "ability_key": "mars_bulwark"
         },
         {
-          "type": "ability",
-          "level": 15,
-          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/mars_bulwark.png",
-          "name_en": "Bulwark",
-          "name_cn": "Bulwark",
-          "ability_id": 6582,
-          "ability_key": "mars_bulwark"
-        },
-        {
           "type": "talent",
-          "level": 16,
+          "level": 15,
           "name": "-{s:bonus_AbilityCooldown}s God's Rebuke Cooldown",
           "name_en": "-{s:bonus_AbilityCooldown}s God's Rebuke Cooldown",
           "ability_id": 545,
@@ -20053,7 +19949,7 @@
         },
         {
           "type": "ability",
-          "level": 17,
+          "level": 16,
           "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/mars_bulwark.png",
           "name_en": "Bulwark",
           "name_cn": "Bulwark",
@@ -20062,7 +19958,7 @@
         },
         {
           "type": "ability",
-          "level": 18,
+          "level": 17,
           "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/mars_arena_of_blood.png",
           "name_en": "Arena Of Blood",
           "name_cn": "Arena Of Blood",
@@ -20071,7 +19967,7 @@
         },
         {
           "type": "talent",
-          "level": 19,
+          "level": 18,
           "name": "+{s:bonus_stun_duration}s Spear of Mars Stun",
           "name_en": "+{s:bonus_stun_duration}s Spear of Mars Stun",
           "ability_id": 6584,
@@ -20079,7 +19975,7 @@
         },
         {
           "type": "talent",
-          "level": 20,
+          "level": 19,
           "name": "Arena Of Blood Grants Team +{s:bonus_health_regen} HP Regen",
           "name_en": "Arena Of Blood Grants Team +{s:bonus_health_regen} HP Regen",
           "ability_id": 1417,
@@ -20087,7 +19983,7 @@
         },
         {
           "type": "talent",
-          "level": 21,
+          "level": 20,
           "name": "+1.5 Mana Regen",
           "name_en": "+1.5 Mana Regen",
           "ability_id": 7132,
@@ -20095,7 +19991,7 @@
         },
         {
           "type": "talent",
-          "level": 22,
+          "level": 21,
           "name": "+{s:bonus_damage} Spear Of Mars Damage",
           "name_en": "+{s:bonus_damage} Spear Of Mars Damage",
           "ability_id": 6759,
@@ -22451,12 +22347,12 @@
           {
             "group": "backpack",
             "slot": 0,
-            "item_id": 4205,
-            "item_key": "great_famango",
-            "item_name_en": "Great Healing Lotus",
-            "item_name_cn": "Great Healing Lotus",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/great_famango.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
@@ -22473,12 +22369,12 @@
           {
             "group": "backpack",
             "slot": 2,
-            "item_id": 33,
-            "item_key": "cheese",
-            "item_name_en": "Cheese",
-            "item_name_cn": "Cheese",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/cheese.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           }
         ],
@@ -25307,12 +25203,12 @@
           {
             "group": "backpack",
             "slot": 0,
-            "item_id": 218,
-            "item_key": "ward_dispenser",
-            "item_name_en": "Observer and Sentry Wards",
-            "item_name_cn": "眼粉合一",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/ward_dispenser.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
@@ -25329,12 +25225,12 @@
           {
             "group": "backpack",
             "slot": 2,
-            "item_id": 4206,
-            "item_key": "greater_famango",
-            "item_name_en": "Greater Healing Lotus",
-            "item_name_cn": "Greater Healing Lotus",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/greater_famango.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           }
         ],
@@ -26552,7 +26448,9 @@
   "stomp": 31645,
   "_meta": {
     "source": "opendota_pro",
-    "category": "pro"
+    "category": "pro",
+    "match_id": 8772062569,
+    "uploaded_at": "2026-04-16T02:29:40Z"
   },
   "source": "pro",
   "category": "pro"

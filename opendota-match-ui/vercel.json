@@ -2,7 +2,7 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "rewrites": [
     {
-      "source": "/((?!data/|assets/|favicon\\.ico|favicon\\.png|robots\\.txt|sitemap\\.xml|dota-a-mark\\.png|planb-logo-transparent\\.png).*)",
+      "source": "/((?!data/|assets/|images/|favicon\\.ico|favicon\\.png|robots\\.txt|sitemap\\.xml|dota-a-mark\\.png|planb-logo-transparent\\.png).*)",
       "destination": "/index.html"
     }
   ]

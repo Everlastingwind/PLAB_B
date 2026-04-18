@@ -3202,12 +3202,12 @@
           {
             "group": "backpack",
             "slot": 0,
-            "item_id": 42,
-            "item_key": "ward_observer",
-            "item_name_en": "Observer Ward",
-            "item_name_cn": "侦查守卫",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/ward_observer.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
@@ -10137,12 +10137,12 @@
           {
             "group": "backpack",
             "slot": 0,
-            "item_id": 73,
-            "item_key": "bracer",
-            "item_name_en": "Bracer",
-            "item_name_cn": "Bracer",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/bracer.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
@@ -11858,12 +11858,12 @@
           {
             "group": "backpack",
             "slot": 1,
-            "item_id": 244,
-            "item_key": "wind_lace",
-            "item_name_en": "Wind Lace",
-            "item_name_cn": "Wind Lace",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/wind_lace.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
@@ -17076,12 +17076,12 @@
           {
             "group": "backpack",
             "slot": 0,
-            "item_id": 188,
-            "item_key": "smoke_of_deceit",
-            "item_name_en": "Smoke of Deceit",
-            "item_name_cn": "诡计之雾",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/smoke_of_deceit.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
@@ -18746,12 +18746,12 @@
           {
             "group": "backpack",
             "slot": 0,
-            "item_id": 188,
-            "item_key": "smoke_of_deceit",
-            "item_name_en": "Smoke of Deceit",
-            "item_name_cn": "诡计之雾",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/smoke_of_deceit.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
@@ -19777,5 +19777,10 @@
   },
   "my_word_counts": {},
   "throw": 665,
-  "loss": 10057
+  "loss": 10057,
+  "_meta": {
+    "source": "api_upload",
+    "match_id": 8770678222,
+    "uploaded_at": "2026-04-16T02:28:12Z"
+  }
 }

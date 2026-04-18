@@ -3747,20 +3747,21 @@
           "ability_key": "special_bonus_unique_nevermore_7"
         },
         {
-          "type": "talent",
+          "type": "ability",
           "level": 11,
-          "name": "special_bonus_attributes",
-          "name_en": "special_bonus_attributes",
-          "ability_id": 730,
-          "ability_key": "special_bonus_attributes"
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/nevermore_requiem.png",
+          "name_en": "Requiem of Souls",
+          "name_cn": "Requiem of Souls",
+          "ability_id": 5064,
+          "ability_key": "nevermore_requiem"
         },
         {
           "type": "talent",
           "level": 12,
-          "name": "special_bonus_attributes",
-          "name_en": "special_bonus_attributes",
-          "ability_id": 730,
-          "ability_key": "special_bonus_attributes"
+          "name": "+{s:bonus_presence_armor_reduction} Presence Armor Reduction",
+          "name_en": "+{s:bonus_presence_armor_reduction} Presence Armor Reduction",
+          "ability_id": 6875,
+          "ability_key": "special_bonus_unique_nevermore_3"
         },
         {
           "type": "ability",
@@ -3772,83 +3773,26 @@
           "ability_key": "nevermore_requiem"
         },
         {
-          "type": "talent",
+          "type": "ability",
           "level": 14,
-          "name": "special_bonus_attributes",
-          "name_en": "special_bonus_attributes",
-          "ability_id": 730,
-          "ability_key": "special_bonus_attributes"
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/nevermore_frenzy.png",
+          "name_en": "Feast of Souls",
+          "name_cn": "Feast of Souls",
+          "ability_id": 1216,
+          "ability_key": "nevermore_frenzy"
         },
         {
-          "type": "talent",
+          "type": "ability",
           "level": 15,
-          "name": "special_bonus_attributes",
-          "name_en": "special_bonus_attributes",
-          "ability_id": 730,
-          "ability_key": "special_bonus_attributes"
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/nevermore_frenzy.png",
+          "name_en": "Feast of Souls",
+          "name_cn": "Feast of Souls",
+          "ability_id": 1216,
+          "ability_key": "nevermore_frenzy"
         },
         {
           "type": "talent",
           "level": 16,
-          "name": "+{s:bonus_presence_armor_reduction} Presence Armor Reduction",
-          "name_en": "+{s:bonus_presence_armor_reduction} Presence Armor Reduction",
-          "ability_id": 6875,
-          "ability_key": "special_bonus_unique_nevermore_3"
-        },
-        {
-          "type": "talent",
-          "level": 17,
-          "name": "special_bonus_attributes",
-          "name_en": "special_bonus_attributes",
-          "ability_id": 730,
-          "ability_key": "special_bonus_attributes"
-        },
-        {
-          "type": "talent",
-          "level": 18,
-          "name": "special_bonus_attributes",
-          "name_en": "special_bonus_attributes",
-          "ability_id": 730,
-          "ability_key": "special_bonus_attributes"
-        },
-        {
-          "type": "talent",
-          "level": 19,
-          "name": "special_bonus_attributes",
-          "name_en": "special_bonus_attributes",
-          "ability_id": 730,
-          "ability_key": "special_bonus_attributes"
-        },
-        {
-          "type": "ability",
-          "level": 20,
-          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/nevermore_requiem.png",
-          "name_en": "Requiem of Souls",
-          "name_cn": "Requiem of Souls",
-          "ability_id": 5064,
-          "ability_key": "nevermore_requiem"
-        },
-        {
-          "type": "ability",
-          "level": 21,
-          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/nevermore_frenzy.png",
-          "name_en": "Feast of Souls",
-          "name_cn": "Feast of Souls",
-          "ability_id": 1216,
-          "ability_key": "nevermore_frenzy"
-        },
-        {
-          "type": "ability",
-          "level": 22,
-          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/nevermore_frenzy.png",
-          "name_en": "Feast of Souls",
-          "name_cn": "Feast of Souls",
-          "ability_id": 1216,
-          "ability_key": "nevermore_frenzy"
-        },
-        {
-          "type": "talent",
-          "level": 23,
           "name": "+{s:bonus_necromastery_max_souls} Necromastery Max Souls",
           "name_en": "+{s:bonus_necromastery_max_souls} Necromastery Max Souls",
           "ability_id": 6670,
@@ -3856,7 +3800,7 @@
         },
         {
           "type": "ability",
-          "level": 24,
+          "level": 17,
           "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/nevermore_frenzy.png",
           "name_en": "Feast of Souls",
           "name_cn": "Feast of Souls",
@@ -3865,7 +3809,7 @@
         },
         {
           "type": "ability",
-          "level": 25,
+          "level": 18,
           "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/nevermore_frenzy.png",
           "name_en": "Feast of Souls",
           "name_cn": "Feast of Souls",
@@ -9629,12 +9573,12 @@
           {
             "group": "backpack",
             "slot": 1,
-            "item_id": 41,
-            "item_key": "bottle",
-            "item_name_en": "Bottle",
-            "item_name_cn": "魔瓶",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/bottle.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
@@ -11913,12 +11857,12 @@
           {
             "group": "backpack",
             "slot": 0,
-            "item_id": 36,
-            "item_key": "magic_wand",
-            "item_name_en": "Magic Wand",
-            "item_name_cn": "魔棒",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/magic_wand.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
@@ -11935,12 +11879,12 @@
           {
             "group": "backpack",
             "slot": 2,
-            "item_id": 4204,
-            "item_key": "famango",
-            "item_name_en": "Healing Lotus",
-            "item_name_cn": "Healing Lotus",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/famango.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           }
         ],
@@ -14276,12 +14220,12 @@
           {
             "group": "backpack",
             "slot": 0,
-            "item_id": 188,
-            "item_key": "smoke_of_deceit",
-            "item_name_en": "Smoke of Deceit",
-            "item_name_cn": "诡计之雾",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/smoke_of_deceit.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
@@ -14298,12 +14242,12 @@
           {
             "group": "backpack",
             "slot": 2,
-            "item_id": 38,
-            "item_key": "clarity",
-            "item_name_en": "Clarity",
-            "item_name_cn": "净化药水",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/clarity.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           }
         ],
@@ -16420,34 +16364,34 @@
           {
             "group": "backpack",
             "slot": 0,
-            "item_id": 43,
-            "item_key": "ward_sentry",
-            "item_name_en": "Sentry Ward",
-            "item_name_cn": "岗哨守卫",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/ward_sentry.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
             "group": "backpack",
             "slot": 1,
-            "item_id": 40,
-            "item_key": "dust",
-            "item_name_en": "Dust of Appearance",
-            "item_name_cn": "显影之尘",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/dust.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
             "group": "backpack",
             "slot": 2,
-            "item_id": 188,
-            "item_key": "smoke_of_deceit",
-            "item_name_en": "Smoke of Deceit",
-            "item_name_cn": "诡计之雾",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/smoke_of_deceit.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           }
         ],
@@ -17015,7 +16959,7 @@
       ],
       "ability_timeline": [
         {
-          "time": 383,
+          "time": null,
           "ability_id": 352,
           "ability_key": "ringmaster_tame_the_beasts",
           "ability_name_en": "Tame the Beasts",
@@ -17024,7 +16968,7 @@
           "is_talent": false
         },
         {
-          "time": 383,
+          "time": null,
           "ability_id": 385,
           "ability_key": "ringmaster_wheel",
           "ability_name_en": "Wheel of Wonder",
@@ -17033,7 +16977,7 @@
           "is_talent": false
         },
         {
-          "time": 385,
+          "time": null,
           "ability_id": 352,
           "ability_key": "ringmaster_tame_the_beasts",
           "ability_name_en": "Tame the Beasts",
@@ -17042,7 +16986,7 @@
           "is_talent": false
         },
         {
-          "time": 386,
+          "time": null,
           "ability_id": 352,
           "ability_key": "ringmaster_tame_the_beasts",
           "ability_name_en": "Tame the Beasts",
@@ -17051,7 +16995,7 @@
           "is_talent": false
         },
         {
-          "time": 386,
+          "time": null,
           "ability_id": 352,
           "ability_key": "ringmaster_tame_the_beasts",
           "ability_name_en": "Tame the Beasts",
@@ -17060,7 +17004,7 @@
           "is_talent": false
         },
         {
-          "time": 386,
+          "time": null,
           "ability_id": 383,
           "ability_key": "ringmaster_the_box",
           "ability_name_en": "Escape Act",
@@ -17069,7 +17013,7 @@
           "is_talent": false
         },
         {
-          "time": 396,
+          "time": null,
           "ability_id": 386,
           "ability_key": "ringmaster_impalement",
           "ability_name_en": "Impalement Arts",
@@ -17078,7 +17022,7 @@
           "is_talent": false
         },
         {
-          "time": 399,
+          "time": null,
           "ability_id": 385,
           "ability_key": "ringmaster_wheel",
           "ability_name_en": "Wheel of Wonder",
@@ -17087,7 +17031,7 @@
           "is_talent": false
         },
         {
-          "time": 1492,
+          "time": null,
           "ability_id": 383,
           "ability_key": "ringmaster_the_box",
           "ability_name_en": "Escape Act",
@@ -18168,12 +18112,12 @@
           {
             "group": "backpack",
             "slot": 0,
-            "item_id": 41,
-            "item_key": "bottle",
-            "item_name_en": "Bottle",
-            "item_name_cn": "魔瓶",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/bottle.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
@@ -20176,12 +20120,12 @@
           {
             "group": "backpack",
             "slot": 1,
-            "item_id": 4204,
-            "item_key": "famango",
-            "item_name_en": "Healing Lotus",
-            "item_name_cn": "Healing Lotus",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/famango.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
@@ -22202,12 +22146,12 @@
           {
             "group": "backpack",
             "slot": 2,
-            "item_id": 1869,
-            "item_key": "foragers_health",
-            "item_name_en": "Vital Toadstool",
-            "item_name_cn": "Vital Toadstool",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/foragers_health.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           }
         ],
@@ -23377,5 +23321,10 @@
   },
   "my_word_counts": {},
   "comeback": 2849,
-  "stomp": 10536
+  "stomp": 10536,
+  "_meta": {
+    "source": "api_upload",
+    "match_id": 8770589525,
+    "uploaded_at": "2026-04-16T02:28:09Z"
+  }
 }

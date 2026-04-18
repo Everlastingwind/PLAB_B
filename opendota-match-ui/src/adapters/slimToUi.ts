@@ -225,10 +225,11 @@ function mapSkillBuild(raw: unknown): SkillBuildStepUi[] | undefined {
 function abilityImgUrlFromMapEntry(entry: AbilityMapEntry | undefined): string {
   if (!entry) return "";
   const p = (entry.img || "").trim();
+  if (p.startsWith("http://") || p.startsWith("https://") || p.startsWith("//")) {
+    return normalizeDotaAssetUrl(p);
+  }
   let out = "";
-  if (p.startsWith("http://") || p.startsWith("https://")) out = p.split("?")[0];
-  else if (p.startsWith("//")) out = `https:${p}`.split("?")[0];
-  else if (p.startsWith("/")) out = `${STEAM_CDN}${p}`;
+  if (p.startsWith("/")) out = `${STEAM_CDN}${p}`;
   else if (p.startsWith("apps/")) out = `${STEAM_CDN}/${p}`;
   else if (entry.key) out = abilityIconUrl(entry.key);
   return normalizeDotaAssetUrl(out);
@@ -1294,6 +1295,14 @@ function slimPlayerToRow(p: SlimPlayer, maps: EntityMapsPayload): PlayerRowMock 
   const scepterActive = scepterShardBuff.scepter;
   const shardActive = scepterShardBuff.shard;
   const startingItems = mapStartingItems((p as { starting_items?: unknown }).starting_items);
+  const spiritBearItemsRaw = (p as { spirit_bear_items_slot?: unknown }).spirit_bear_items_slot;
+  const spiritBearItems = (() => {
+    if (!Array.isArray(spiritBearItemsRaw) || spiritBearItemsRaw.length === 0) return undefined;
+    const six = buildSixPlusOneFinal({}, spiritBearItemsRaw as SlimPlayer["items_slot"], maps).main;
+    const normalized = normalizeMainSixForDisplay(six);
+    const hasAny = normalized.some((it) => it != null);
+    return hasAny ? normalized : undefined;
+  })();
   skillBuild = filterRubickSkillBuildForDisplay(heroId, key, skillBuild);
   return {
     slot: numOrZero(p.player_slot),
@@ -1324,6 +1333,7 @@ function slimPlayerToRow(p: SlimPlayer, maps: EntityMapsPayload): PlayerRowMock 
     towerDamage: numOrZero(p.tower_damage),
     heroHeal: pick(p.hero_healing),
     items,
+    spiritBearItems,
     scepterActive,
     shardActive,
     buffs: {

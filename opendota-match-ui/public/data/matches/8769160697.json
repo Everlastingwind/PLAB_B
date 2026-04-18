@@ -3929,12 +3929,12 @@
           {
             "group": "backpack",
             "slot": 0,
-            "item_id": 16,
-            "item_key": "branches",
-            "item_name_en": "Iron Branch",
-            "item_name_cn": "树枝",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/branches.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
@@ -4513,7 +4513,7 @@
       ],
       "ability_timeline": [
         {
-          "time": 352,
+          "time": null,
           "ability_id": 386,
           "ability_key": "ringmaster_impalement",
           "ability_name_en": "Impalement Arts",
@@ -4522,7 +4522,7 @@
           "is_talent": false
         },
         {
-          "time": 383,
+          "time": null,
           "ability_id": 352,
           "ability_key": "ringmaster_tame_the_beasts",
           "ability_name_en": "Tame the Beasts",
@@ -4531,7 +4531,7 @@
           "is_talent": false
         },
         {
-          "time": 383,
+          "time": null,
           "ability_id": 396,
           "ability_key": "special_bonus_unique_ringmaster_whip_radius",
           "ability_name_en": "+75 Tame the Beasts Radius",
@@ -4540,7 +4540,7 @@
           "is_talent": true
         },
         {
-          "time": 383,
+          "time": null,
           "ability_id": 385,
           "ability_key": "ringmaster_wheel",
           "ability_name_en": "Wheel of Wonder",
@@ -4549,7 +4549,7 @@
           "is_talent": false
         },
         {
-          "time": 385,
+          "time": null,
           "ability_id": 352,
           "ability_key": "ringmaster_tame_the_beasts",
           "ability_name_en": "Tame the Beasts",
@@ -4558,7 +4558,7 @@
           "is_talent": false
         },
         {
-          "time": 386,
+          "time": null,
           "ability_id": 352,
           "ability_key": "ringmaster_tame_the_beasts",
           "ability_name_en": "Tame the Beasts",
@@ -4567,7 +4567,7 @@
           "is_talent": false
         },
         {
-          "time": 386,
+          "time": null,
           "ability_id": 386,
           "ability_key": "ringmaster_impalement",
           "ability_name_en": "Impalement Arts",
@@ -4576,7 +4576,7 @@
           "is_talent": false
         },
         {
-          "time": 707,
+          "time": null,
           "ability_id": 383,
           "ability_key": "ringmaster_the_box",
           "ability_name_en": "Escape Act",
@@ -4587,7 +4587,7 @@
       ],
       "talents_taken": [
         {
-          "time": 383,
+          "time": null,
           "ability_id": 396,
           "ability_key": "special_bonus_unique_ringmaster_whip_radius",
           "ability_name_en": "+75 Tame the Beasts Radius",
@@ -11030,12 +11030,12 @@
           {
             "group": "backpack",
             "slot": 0,
-            "item_id": 8,
-            "item_key": "mithril_hammer",
-            "item_name_en": "Mithril Hammer",
-            "item_name_cn": "Mithril Hammer",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/mithril_hammer.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
@@ -14884,12 +14884,12 @@
           {
             "group": "backpack",
             "slot": 0,
-            "item_id": 41,
-            "item_key": "bottle",
-            "item_name_en": "Bottle",
-            "item_name_cn": "魔瓶",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/bottle.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
@@ -21900,5 +21900,10 @@
   },
   "my_word_counts": {},
   "comeback": 1733,
-  "stomp": 15726
+  "stomp": 15726,
+  "_meta": {
+    "source": "api_upload",
+    "match_id": 8769160697,
+    "uploaded_at": "2026-04-16T02:27:04Z"
+  }
 }

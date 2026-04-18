@@ -7,7 +7,8 @@
       "raw_ability_upgrade_like_events": 235,
       "talent_tree_selected_layers_total": 39
     },
-    "uploaded_at": "2026-04-15T11:00:11Z"
+    "uploaded_at": "2026-04-16T02:29:19Z",
+    "batch_reimport": true
   },
   "match_id": 8771854870,
   "radiant_win": true,

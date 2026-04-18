@@ -4901,23 +4901,23 @@
           {
             "group": "backpack",
             "slot": 0,
-            "item_id": 4204,
-            "item_key": "famango",
-            "item_name_en": "Healing Lotus",
-            "item_name_cn": "Healing Lotus",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/famango.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
             "group": "backpack",
             "slot": 1,
-            "item_id": 41,
-            "item_key": "bottle",
-            "item_name_en": "Bottle",
-            "item_name_cn": "魔瓶",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/bottle.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
@@ -7330,23 +7330,23 @@
           {
             "group": "backpack",
             "slot": 0,
-            "item_id": 188,
-            "item_key": "smoke_of_deceit",
-            "item_name_en": "Smoke of Deceit",
-            "item_name_cn": "诡计之雾",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/smoke_of_deceit.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
             "group": "backpack",
             "slot": 1,
-            "item_id": 20,
-            "item_key": "circlet",
-            "item_name_en": "Circlet",
-            "item_name_cn": "圆环",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/circlet.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
@@ -9929,7 +9929,7 @@
       ],
       "ability_timeline": [
         {
-          "time": 352,
+          "time": null,
           "ability_id": 386,
           "ability_key": "ringmaster_impalement",
           "ability_name_en": "Impalement Arts",
@@ -9938,7 +9938,7 @@
           "is_talent": false
         },
         {
-          "time": 383,
+          "time": null,
           "ability_id": 352,
           "ability_key": "ringmaster_tame_the_beasts",
           "ability_name_en": "Tame the Beasts",
@@ -9947,7 +9947,7 @@
           "is_talent": false
         },
         {
-          "time": 383,
+          "time": null,
           "ability_id": 386,
           "ability_key": "ringmaster_impalement",
           "ability_name_en": "Impalement Arts",
@@ -9956,7 +9956,7 @@
           "is_talent": false
         },
         {
-          "time": 383,
+          "time": null,
           "ability_id": 385,
           "ability_key": "ringmaster_wheel",
           "ability_name_en": "Wheel of Wonder",
@@ -9965,7 +9965,7 @@
           "is_talent": false
         },
         {
-          "time": 385,
+          "time": null,
           "ability_id": 352,
           "ability_key": "ringmaster_tame_the_beasts",
           "ability_name_en": "Tame the Beasts",
@@ -9974,7 +9974,7 @@
           "is_talent": false
         },
         {
-          "time": 386,
+          "time": null,
           "ability_id": 352,
           "ability_key": "ringmaster_tame_the_beasts",
           "ability_name_en": "Tame the Beasts",
@@ -9983,7 +9983,7 @@
           "is_talent": false
         },
         {
-          "time": 1492,
+          "time": null,
           "ability_id": 383,
           "ability_key": "ringmaster_the_box",
           "ability_name_en": "Escape Act",
@@ -9992,7 +9992,7 @@
           "is_talent": false
         },
         {
-          "time": 1846,
+          "time": null,
           "ability_id": 386,
           "ability_key": "ringmaster_impalement",
           "ability_name_en": "Impalement Arts",
@@ -13155,12 +13155,12 @@
           {
             "group": "backpack",
             "slot": 0,
-            "item_id": 41,
-            "item_key": "bottle",
-            "item_name_en": "Bottle",
-            "item_name_cn": "魔瓶",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/bottle.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
@@ -15193,12 +15193,12 @@
           {
             "group": "backpack",
             "slot": 2,
-            "item_id": 188,
-            "item_key": "smoke_of_deceit",
-            "item_name_en": "Smoke of Deceit",
-            "item_name_cn": "诡计之雾",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/smoke_of_deceit.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           }
         ],
@@ -17177,34 +17177,34 @@
           {
             "group": "backpack",
             "slot": 0,
-            "item_id": 38,
-            "item_key": "clarity",
-            "item_name_en": "Clarity",
-            "item_name_cn": "净化药水",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/clarity.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
             "group": "backpack",
             "slot": 1,
-            "item_id": 1854,
-            "item_key": "consecrated_wraps",
-            "item_name_en": "Consecrated Wraps",
-            "item_name_cn": "Consecrated Wraps",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/consecrated_wraps.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
             "group": "backpack",
             "slot": 2,
-            "item_id": 216,
-            "item_key": "enchanted_mango",
-            "item_name_en": "Enchanted Mango",
-            "item_name_cn": "魔法芒果",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/enchanted_mango.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           }
         ],
@@ -22991,5 +22991,10 @@
   },
   "my_word_counts": {},
   "comeback": 340,
-  "stomp": 19104
+  "stomp": 19104,
+  "_meta": {
+    "source": "api_upload",
+    "match_id": 8770470368,
+    "uploaded_at": "2026-04-16T02:28:03Z"
+  }
 }

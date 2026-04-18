@@ -1876,12 +1876,12 @@
           {
             "group": "backpack",
             "slot": 2,
-            "item_id": 73,
-            "item_key": "bracer",
-            "item_name_en": "Bracer",
-            "item_name_cn": "Bracer",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/bracer.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           }
         ],
@@ -1997,16 +1997,8 @@
           "ability_key": "mars_bulwark"
         },
         {
-          "type": "talent",
-          "level": 12,
-          "name": "special_bonus_attributes",
-          "name_en": "special_bonus_attributes",
-          "ability_id": 730,
-          "ability_key": "special_bonus_attributes"
-        },
-        {
           "type": "ability",
-          "level": 13,
+          "level": 12,
           "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/mars_arena_of_blood.png",
           "name_en": "Arena Of Blood",
           "name_cn": "Arena Of Blood",
@@ -2015,47 +2007,15 @@
         },
         {
           "type": "talent",
-          "level": 14,
-          "name": "special_bonus_attributes",
-          "name_en": "special_bonus_attributes",
-          "ability_id": 730,
-          "ability_key": "special_bonus_attributes"
-        },
-        {
-          "type": "talent",
-          "level": 15,
-          "name": "special_bonus_attributes",
-          "name_en": "special_bonus_attributes",
-          "ability_id": 730,
-          "ability_key": "special_bonus_attributes"
-        },
-        {
-          "type": "talent",
-          "level": 16,
+          "level": 13,
           "name": "-{s:bonus_AbilityCooldown}s God's Rebuke Cooldown",
           "name_en": "-{s:bonus_AbilityCooldown}s God's Rebuke Cooldown",
           "ability_id": 545,
           "ability_key": "special_bonus_unique_mars_rebuke_cooldown"
         },
         {
-          "type": "talent",
-          "level": 17,
-          "name": "special_bonus_attributes",
-          "name_en": "special_bonus_attributes",
-          "ability_id": 730,
-          "ability_key": "special_bonus_attributes"
-        },
-        {
-          "type": "talent",
-          "level": 18,
-          "name": "special_bonus_attributes",
-          "name_en": "special_bonus_attributes",
-          "ability_id": 730,
-          "ability_key": "special_bonus_attributes"
-        },
-        {
           "type": "ability",
-          "level": 19,
+          "level": 14,
           "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/mars_bulwark.png",
           "name_en": "Bulwark",
           "name_cn": "Bulwark",
@@ -2064,7 +2024,7 @@
         },
         {
           "type": "ability",
-          "level": 20,
+          "level": 15,
           "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/mars_arena_of_blood.png",
           "name_en": "Arena Of Blood",
           "name_cn": "Arena Of Blood",
@@ -3633,12 +3593,12 @@
           {
             "group": "backpack",
             "slot": 0,
-            "item_id": 13,
-            "item_key": "gauntlets",
-            "item_name_en": "Gauntlets of Strength",
-            "item_name_cn": "力量手套",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/gauntlets.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
@@ -5450,23 +5410,23 @@
           {
             "group": "backpack",
             "slot": 0,
-            "item_id": 188,
-            "item_key": "smoke_of_deceit",
-            "item_name_en": "Smoke of Deceit",
-            "item_name_cn": "诡计之雾",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/smoke_of_deceit.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
             "group": "backpack",
             "slot": 1,
-            "item_id": 16,
-            "item_key": "branches",
-            "item_name_en": "Iron Branch",
-            "item_name_cn": "树枝",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/branches.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
@@ -7269,12 +7229,12 @@
           {
             "group": "backpack",
             "slot": 1,
-            "item_id": 188,
-            "item_key": "smoke_of_deceit",
-            "item_name_en": "Smoke of Deceit",
-            "item_name_cn": "诡计之雾",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/smoke_of_deceit.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
@@ -9005,12 +8965,12 @@
           {
             "group": "backpack",
             "slot": 0,
-            "item_id": 36,
-            "item_key": "magic_wand",
-            "item_name_en": "Magic Wand",
-            "item_name_cn": "魔棒",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/magic_wand.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
@@ -15787,23 +15747,23 @@
           {
             "group": "backpack",
             "slot": 0,
-            "item_id": 188,
-            "item_key": "smoke_of_deceit",
-            "item_name_en": "Smoke of Deceit",
-            "item_name_cn": "诡计之雾",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/smoke_of_deceit.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
             "group": "backpack",
             "slot": 1,
-            "item_id": 28,
-            "item_key": "sobi_mask",
-            "item_name_en": "Sage's Mask",
-            "item_name_cn": "Sage's Mask",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/sobi_mask.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
@@ -17521,23 +17481,23 @@
           {
             "group": "backpack",
             "slot": 1,
-            "item_id": 1123,
-            "item_key": "blood_grenade",
-            "item_name_en": "Blood Grenade",
-            "item_name_cn": "Blood Grenade",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/blood_grenade.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
             "group": "backpack",
             "slot": 2,
-            "item_id": 265,
-            "item_key": "infused_raindrop",
-            "item_name_en": "Infused Raindrops",
-            "item_name_cn": "Infused Raindrops",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/infused_raindrop.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           }
         ],
@@ -18566,5 +18526,10 @@
   },
   "my_word_counts": {},
   "throw": 305,
-  "loss": 16684
+  "loss": 16684,
+  "_meta": {
+    "source": "api_upload",
+    "match_id": 8769156333,
+    "uploaded_at": "2026-04-16T02:27:03Z"
+  }
 }

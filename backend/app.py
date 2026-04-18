@@ -7,14 +7,18 @@ FastAPI 示例：拉取或提交比赛时返回 translate_match_data 结果。
 
 from __future__ import annotations
 
+import json as json_stdlib
 import os
 import sys
+import urllib.error
+import urllib.request
 from pathlib import Path
 from typing import Any
 
-import urllib.error
 from fastapi import Body, Depends, FastAPI, HTTPException
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
+from pydantic import BaseModel, Field
+from starlette.middleware.cors import CORSMiddleware
 
 _ROOT = Path(__file__).resolve().parents[1]
 if str(_ROOT) not in sys.path:
@@ -29,6 +33,32 @@ from utils.dota_mapping import translate_match_data
 from utils.raw_odota_purify import normalize_match_input_for_translate
 
 app = FastAPI(title="PLAB Dota Match API", version="0.1.0")
+
+# 浏览器直连钉钉 Webhook 会 CORS；前端只打本域 /api/feedback，由这里转发。
+_CORS_ORIGINS = [
+    x.strip()
+    for x in os.environ.get(
+        "CORS_ALLOW_ORIGINS",
+        "http://localhost:5173,http://127.0.0.1:5173,"
+        "https://www.dota2planb.com,https://dota2planb.com",
+    ).split(",")
+    if x.strip()
+]
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=_CORS_ORIGINS
+    or ["http://localhost:5173", "http://127.0.0.1:5173"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+
+class FeedbackIn(BaseModel):
+    message: str = Field(..., min_length=1, max_length=4000)
+    page_url: str | None = None
+    user_agent: str | None = None
+
 
 # -----------------------------------------------------------------------------
 # 批量脚本上传：POST /api/matches/upload
@@ -66,6 +96,47 @@ def post_save_match(match_id: int):
     path = save_match_payload(raw, match_id=match_id)
     slim = translate_match_data(raw)
     return {"saved_to": str(path), "match": slim}
+
+
+@app.post("/api/feedback")
+def post_feedback(body: FeedbackIn) -> dict[str, Any]:
+    """
+    接收前端反馈 JSON，转发到钉钉自定义机器人（Webhook）。
+    环境变量 ``DINGTALK_WEBHOOK_URL`` 必填（完整 https://oapi.dingtalk.com/... 地址）。
+    """
+    webhook = os.environ.get("DINGTALK_WEBHOOK_URL", "").strip()
+    if not webhook:
+        raise HTTPException(
+            status_code=503,
+            detail="服务器未配置 DINGTALK_WEBHOOK_URL",
+        )
+    lines = [
+        "【网站反馈】",
+        body.message.strip(),
+        f"页面: {body.page_url or '-'}",
+        f"UA: {(body.user_agent or '-')[:500]}",
+    ]
+    ding_payload = {
+        "msgtype": "text",
+        "text": {"content": "\n".join(lines)},
+    }
+    req = urllib.request.Request(
+        webhook,
+        data=json_stdlib.dumps(ding_payload, ensure_ascii=False).encode("utf-8"),
+        headers={"Content-Type": "application/json; charset=utf-8"},
+        method="POST",
+    )
+    try:
+        with urllib.request.urlopen(req, timeout=15) as resp:
+            raw = resp.read().decode("utf-8", errors="replace")
+    except urllib.error.HTTPError as e:
+        raise HTTPException(
+            status_code=502,
+            detail=f"钉钉返回 HTTP {e.code}",
+        ) from e
+    except urllib.error.URLError as e:
+        raise HTTPException(status_code=502, detail=f"无法连接钉钉: {e.reason!s}") from e
+    return {"ok": True, "dingtalk_response": raw[:500]}
 
 
 @app.post("/api/matches/upload")

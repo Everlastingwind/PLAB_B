@@ -4533,16 +4533,8 @@
           "ability_key": "luna_lunar_orbit"
         },
         {
-          "type": "talent",
-          "level": 13,
-          "name": "special_bonus_attributes",
-          "name_en": "special_bonus_attributes",
-          "ability_id": 730,
-          "ability_key": "special_bonus_attributes"
-        },
-        {
           "type": "ability",
-          "level": 14,
+          "level": 13,
           "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/luna_eclipse.png",
           "name_en": "Eclipse",
           "name_cn": "Eclipse",
@@ -4551,7 +4543,7 @@
         },
         {
           "type": "ability",
-          "level": 15,
+          "level": 14,
           "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/luna_lunar_orbit.png",
           "name_en": "Lunar Orbit",
           "name_cn": "Lunar Orbit",
@@ -4560,7 +4552,7 @@
         },
         {
           "type": "talent",
-          "level": 16,
+          "level": 15,
           "name": "+{s:bonus_rotating_glaives} Lunar Orbit Glaive",
           "name_en": "+{s:bonus_rotating_glaives} Lunar Orbit Glaive",
           "ability_id": 323,
@@ -4568,7 +4560,7 @@
         },
         {
           "type": "ability",
-          "level": 17,
+          "level": 16,
           "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/luna_lunar_orbit.png",
           "name_en": "Lunar Orbit",
           "name_cn": "Lunar Orbit",
@@ -4577,7 +4569,7 @@
         },
         {
           "type": "ability",
-          "level": 18,
+          "level": 17,
           "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/luna_eclipse.png",
           "name_en": "Eclipse",
           "name_cn": "Eclipse",
@@ -4586,7 +4578,7 @@
         },
         {
           "type": "talent",
-          "level": 19,
+          "level": 18,
           "name": "{s:bonus_rotating_glaive_collision_speed_damage_tooltip}x Lunar Orbit Damage / Speed",
           "name_en": "{s:bonus_rotating_glaive_collision_speed_damage_tooltip}x Lunar Orbit Damage / Speed",
           "ability_id": 1812,
@@ -8140,34 +8132,34 @@
           {
             "group": "backpack",
             "slot": 0,
-            "item_id": 1575,
-            "item_key": "orb_of_frost",
-            "item_name_en": "Orb of Frost",
-            "item_name_cn": "Orb of Frost",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/orb_of_frost.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
             "group": "backpack",
             "slot": 1,
-            "item_id": 75,
-            "item_key": "wraith_band",
-            "item_name_en": "Wraith Band",
-            "item_name_cn": "Wraith Band",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/wraith_band.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
             "group": "backpack",
             "slot": 2,
-            "item_id": 4204,
-            "item_key": "famango",
-            "item_name_en": "Healing Lotus",
-            "item_name_cn": "Healing Lotus",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/famango.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           }
         ],
@@ -10138,23 +10130,23 @@
           {
             "group": "backpack",
             "slot": 0,
-            "item_id": 188,
-            "item_key": "smoke_of_deceit",
-            "item_name_en": "Smoke of Deceit",
-            "item_name_cn": "诡计之雾",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/smoke_of_deceit.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
             "group": "backpack",
             "slot": 1,
-            "item_id": 244,
-            "item_key": "wind_lace",
-            "item_name_en": "Wind Lace",
-            "item_name_cn": "Wind Lace",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/wind_lace.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
@@ -13833,12 +13825,12 @@
           {
             "group": "backpack",
             "slot": 1,
-            "item_id": 38,
-            "item_key": "clarity",
-            "item_name_en": "Clarity",
-            "item_name_cn": "净化药水",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/clarity.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
@@ -15669,12 +15661,12 @@
           {
             "group": "backpack",
             "slot": 0,
-            "item_id": 228,
-            "item_key": "recipe_octarine_core",
-            "item_name_en": "Octarine Core Recipe",
-            "item_name_cn": "Octarine Core Recipe",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/recipe.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
@@ -17691,23 +17683,23 @@
           {
             "group": "backpack",
             "slot": 0,
-            "item_id": 11,
-            "item_key": "quelling_blade",
-            "item_name_en": "Quelling Blade",
-            "item_name_cn": "补刀斧",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/quelling_blade.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
             "group": "backpack",
             "slot": 1,
-            "item_id": 188,
-            "item_key": "smoke_of_deceit",
-            "item_name_en": "Smoke of Deceit",
-            "item_name_cn": "诡计之雾",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/smoke_of_deceit.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
@@ -19659,12 +19651,12 @@
           {
             "group": "backpack",
             "slot": 0,
-            "item_id": 188,
-            "item_key": "smoke_of_deceit",
-            "item_name_en": "Smoke of Deceit",
-            "item_name_cn": "诡计之雾",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/smoke_of_deceit.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
@@ -19802,37 +19794,13 @@
           "ability_key": "special_bonus_unique_silencer_brain_drain_damage"
         },
         {
-          "type": "talent",
-          "level": 12,
-          "name": "special_bonus_attributes",
-          "name_en": "special_bonus_attributes",
-          "ability_id": 730,
-          "ability_key": "special_bonus_attributes"
-        },
-        {
           "type": "ability",
-          "level": 13,
+          "level": 12,
           "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/silencer_global_silence.png",
           "name_en": "Global Silence",
           "name_cn": "Global Silence",
           "ability_id": 5380,
           "ability_key": "silencer_global_silence"
-        },
-        {
-          "type": "talent",
-          "level": 14,
-          "name": "special_bonus_attributes",
-          "name_en": "special_bonus_attributes",
-          "ability_id": 730,
-          "ability_key": "special_bonus_attributes"
-        },
-        {
-          "type": "talent",
-          "level": 15,
-          "name": "special_bonus_attributes",
-          "name_en": "special_bonus_attributes",
-          "ability_id": 730,
-          "ability_key": "special_bonus_attributes"
         }
       ],
       "items_slot": [
@@ -20760,5 +20728,10 @@
   },
   "my_word_counts": {},
   "throw": 10388,
-  "loss": 9080
+  "loss": 9080,
+  "_meta": {
+    "source": "api_upload",
+    "match_id": 8769132285,
+    "uploaded_at": "2026-04-16T02:27:00Z"
+  }
 }

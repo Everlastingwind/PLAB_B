@@ -3962,12 +3962,12 @@
           {
             "group": "backpack",
             "slot": 0,
-            "item_id": 16,
-            "item_key": "branches",
-            "item_name_en": "Iron Branch",
-            "item_name_cn": "树枝",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/branches.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
@@ -5793,12 +5793,12 @@
           {
             "group": "backpack",
             "slot": 0,
-            "item_id": 36,
-            "item_key": "magic_wand",
-            "item_name_en": "Magic Wand",
-            "item_name_cn": "魔棒",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/magic_wand.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
@@ -7716,12 +7716,12 @@
           {
             "group": "backpack",
             "slot": 0,
-            "item_id": 1123,
-            "item_key": "blood_grenade",
-            "item_name_en": "Blood Grenade",
-            "item_name_cn": "Blood Grenade",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/blood_grenade.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
@@ -7738,12 +7738,12 @@
           {
             "group": "backpack",
             "slot": 2,
-            "item_id": 16,
-            "item_key": "branches",
-            "item_name_en": "Iron Branch",
-            "item_name_cn": "树枝",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/branches.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           }
         ],
@@ -16575,23 +16575,23 @@
           {
             "group": "backpack",
             "slot": 0,
-            "item_id": 188,
-            "item_key": "smoke_of_deceit",
-            "item_name_en": "Smoke of Deceit",
-            "item_name_cn": "诡计之雾",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/smoke_of_deceit.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
             "group": "backpack",
             "slot": 1,
-            "item_id": 38,
-            "item_key": "clarity",
-            "item_name_en": "Clarity",
-            "item_name_cn": "净化药水",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/clarity.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
@@ -18397,21 +18397,22 @@
           "ability_key": "special_bonus_unique_windranger_4"
         },
         {
-          "type": "talent",
-          "level": 12,
-          "name": "special_bonus_attributes",
-          "name_en": "special_bonus_attributes",
-          "ability_id": 730,
-          "ability_key": "special_bonus_attributes"
-        },
-        {
           "type": "ability",
-          "level": 13,
+          "level": 12,
           "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/windrunner_focusfire.png",
           "name_en": "Focus Fire",
           "name_cn": "Focus Fire",
           "ability_id": 5133,
           "ability_key": "windrunner_focusfire"
+        },
+        {
+          "type": "ability",
+          "level": 13,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/windrunner_shackleshot.png",
+          "name_en": "Shackleshot",
+          "name_cn": "Shackleshot",
+          "ability_id": 5130,
+          "ability_key": "windrunner_shackleshot"
         },
         {
           "type": "ability",
@@ -18423,17 +18424,8 @@
           "ability_key": "windrunner_shackleshot"
         },
         {
-          "type": "ability",
-          "level": 15,
-          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/windrunner_shackleshot.png",
-          "name_en": "Shackleshot",
-          "name_cn": "Shackleshot",
-          "ability_id": 5130,
-          "ability_key": "windrunner_shackleshot"
-        },
-        {
           "type": "talent",
-          "level": 16,
+          "level": 15,
           "name": "+{s:bonus_max_movespeed} Tailwind Max Movespeed",
           "name_en": "+{s:bonus_max_movespeed} Tailwind Max Movespeed",
           "ability_id": 6993,
@@ -18441,7 +18433,7 @@
         },
         {
           "type": "ability",
-          "level": 17,
+          "level": 16,
           "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/windrunner_shackleshot.png",
           "name_en": "Shackleshot",
           "name_cn": "Shackleshot",
@@ -19418,5 +19410,10 @@
   },
   "my_word_counts": {},
   "throw": 0,
-  "loss": 21034
+  "loss": 21034,
+  "_meta": {
+    "source": "api_upload",
+    "match_id": 8769321570,
+    "uploaded_at": "2026-04-16T02:27:10Z"
+  }
 }

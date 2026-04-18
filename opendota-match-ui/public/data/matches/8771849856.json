@@ -2621,29 +2621,30 @@
           "ability_key": "gyrocopter_rocket_barrage"
         },
         {
-          "type": "talent",
-          "level": 12,
-          "name": "special_bonus_attributes",
-          "name_en": "special_bonus_attributes",
-          "ability_id": 730,
-          "ability_key": "special_bonus_attributes"
-        },
-        {
-          "type": "talent",
-          "level": 13,
-          "name": "special_bonus_attributes",
-          "name_en": "special_bonus_attributes",
-          "ability_id": 730,
-          "ability_key": "special_bonus_attributes"
-        },
-        {
           "type": "ability",
-          "level": 14,
+          "level": 12,
           "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/gyrocopter_homing_missile.png",
           "name_en": "Homing Missile",
           "name_cn": "Homing Missile",
           "ability_id": 5362,
           "ability_key": "gyrocopter_homing_missile"
+        },
+        {
+          "type": "ability",
+          "level": 13,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/gyrocopter_homing_missile.png",
+          "name_en": "Homing Missile",
+          "name_cn": "Homing Missile",
+          "ability_id": 5362,
+          "ability_key": "gyrocopter_homing_missile"
+        },
+        {
+          "type": "talent",
+          "level": 14,
+          "name": "+{s:bonus_bonus_damage} Flak Cannon Damage",
+          "name_en": "+{s:bonus_bonus_damage} Flak Cannon Damage",
+          "ability_id": 1012,
+          "ability_key": "special_bonus_unique_gyrocopter_flak_cannon_bonus_damage"
         },
         {
           "type": "ability",
@@ -2655,25 +2656,8 @@
           "ability_key": "gyrocopter_homing_missile"
         },
         {
-          "type": "talent",
+          "type": "ability",
           "level": 16,
-          "name": "+{s:bonus_bonus_damage} Flak Cannon Damage",
-          "name_en": "+{s:bonus_bonus_damage} Flak Cannon Damage",
-          "ability_id": 1012,
-          "ability_key": "special_bonus_unique_gyrocopter_flak_cannon_bonus_damage"
-        },
-        {
-          "type": "ability",
-          "level": 17,
-          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/gyrocopter_homing_missile.png",
-          "name_en": "Homing Missile",
-          "name_cn": "Homing Missile",
-          "ability_id": 5362,
-          "ability_key": "gyrocopter_homing_missile"
-        },
-        {
-          "type": "ability",
-          "level": 18,
           "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/gyrocopter_call_down.png",
           "name_en": "Call Down",
           "name_cn": "Call Down",
@@ -4220,12 +4204,12 @@
           {
             "group": "backpack",
             "slot": 0,
-            "item_id": 228,
-            "item_key": "recipe_octarine_core",
-            "item_name_en": "Octarine Core Recipe",
-            "item_name_cn": "Octarine Core Recipe",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/recipe.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
@@ -5951,12 +5935,12 @@
           {
             "group": "backpack",
             "slot": 0,
-            "item_id": 188,
-            "item_key": "smoke_of_deceit",
-            "item_name_en": "Smoke of Deceit",
-            "item_name_cn": "诡计之雾",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/smoke_of_deceit.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
@@ -7736,12 +7720,12 @@
           {
             "group": "backpack",
             "slot": 1,
-            "item_id": 38,
-            "item_key": "clarity",
-            "item_name_en": "Clarity",
-            "item_name_cn": "净化药水",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/clarity.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
@@ -9779,12 +9763,12 @@
           {
             "group": "backpack",
             "slot": 0,
-            "item_id": 188,
-            "item_key": "smoke_of_deceit",
-            "item_name_en": "Smoke of Deceit",
-            "item_name_cn": "诡计之雾",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/smoke_of_deceit.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
@@ -13479,23 +13463,23 @@
           {
             "group": "backpack",
             "slot": 1,
-            "item_id": 41,
-            "item_key": "bottle",
-            "item_name_en": "Bottle",
-            "item_name_cn": "魔瓶",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/bottle.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
             "group": "backpack",
             "slot": 2,
-            "item_id": 38,
-            "item_key": "clarity",
-            "item_name_en": "Clarity",
-            "item_name_cn": "净化药水",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/clarity.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           }
         ],
@@ -13602,20 +13586,21 @@
           "ability_key": "special_bonus_unique_beastmaster_9"
         },
         {
-          "type": "talent",
+          "type": "ability",
           "level": 11,
-          "name": "special_bonus_attributes",
-          "name_en": "special_bonus_attributes",
-          "ability_id": 730,
-          "ability_key": "special_bonus_attributes"
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/beastmaster_primal_roar.png",
+          "name_en": "Primal Roar",
+          "name_cn": "Primal Roar",
+          "ability_id": 5177,
+          "ability_key": "beastmaster_primal_roar"
         },
         {
           "type": "talent",
           "level": 12,
-          "name": "special_bonus_attributes",
-          "name_en": "special_bonus_attributes",
-          "ability_id": 730,
-          "ability_key": "special_bonus_attributes"
+          "name": "+{s:bonus_AbilityCastRange} Primal Roar Cast Range",
+          "name_en": "+{s:bonus_AbilityCastRange} Primal Roar Cast Range",
+          "ability_id": 6612,
+          "ability_key": "special_bonus_unique_beastmaster_4"
         },
         {
           "type": "ability",
@@ -13627,65 +13612,8 @@
           "ability_key": "beastmaster_primal_roar"
         },
         {
-          "type": "talent",
+          "type": "ability",
           "level": 14,
-          "name": "special_bonus_attributes",
-          "name_en": "special_bonus_attributes",
-          "ability_id": 730,
-          "ability_key": "special_bonus_attributes"
-        },
-        {
-          "type": "talent",
-          "level": 15,
-          "name": "special_bonus_attributes",
-          "name_en": "special_bonus_attributes",
-          "ability_id": 730,
-          "ability_key": "special_bonus_attributes"
-        },
-        {
-          "type": "talent",
-          "level": 16,
-          "name": "+{s:bonus_AbilityCastRange} Primal Roar Cast Range",
-          "name_en": "+{s:bonus_AbilityCastRange} Primal Roar Cast Range",
-          "ability_id": 6612,
-          "ability_key": "special_bonus_unique_beastmaster_4"
-        },
-        {
-          "type": "talent",
-          "level": 17,
-          "name": "special_bonus_attributes",
-          "name_en": "special_bonus_attributes",
-          "ability_id": 730,
-          "ability_key": "special_bonus_attributes"
-        },
-        {
-          "type": "talent",
-          "level": 18,
-          "name": "special_bonus_attributes",
-          "name_en": "special_bonus_attributes",
-          "ability_id": 730,
-          "ability_key": "special_bonus_attributes"
-        },
-        {
-          "type": "talent",
-          "level": 19,
-          "name": "special_bonus_attributes",
-          "name_en": "special_bonus_attributes",
-          "ability_id": 730,
-          "ability_key": "special_bonus_attributes"
-        },
-        {
-          "type": "ability",
-          "level": 20,
-          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/beastmaster_primal_roar.png",
-          "name_en": "Primal Roar",
-          "name_cn": "Primal Roar",
-          "ability_id": 5177,
-          "ability_key": "beastmaster_primal_roar"
-        },
-        {
-          "type": "ability",
-          "level": 21,
           "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/beastmaster_summon_raptor.png",
           "name_en": "Summon Raptors",
           "name_cn": "Summon Raptors",
@@ -13694,7 +13622,7 @@
         },
         {
           "type": "talent",
-          "level": 22,
+          "level": 15,
           "name": "+250 Health to Beastmaster and his summons",
           "name_en": "+250 Health to Beastmaster and his summons",
           "ability_id": 613,
@@ -13702,7 +13630,7 @@
         },
         {
           "type": "ability",
-          "level": 23,
+          "level": 16,
           "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/beastmaster_summon_raptor.png",
           "name_en": "Summon Raptors",
           "name_cn": "Summon Raptors",
@@ -13711,7 +13639,7 @@
         },
         {
           "type": "ability",
-          "level": 24,
+          "level": 17,
           "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/beastmaster_summon_raptor.png",
           "name_en": "Summon Raptors",
           "name_cn": "Summon Raptors",
@@ -13720,7 +13648,7 @@
         },
         {
           "type": "ability",
-          "level": 25,
+          "level": 18,
           "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/beastmaster_summon_raptor.png",
           "name_en": "Summon Raptors",
           "name_cn": "Summon Raptors",
@@ -15589,23 +15517,23 @@
           {
             "group": "backpack",
             "slot": 1,
-            "item_id": 188,
-            "item_key": "smoke_of_deceit",
-            "item_name_en": "Smoke of Deceit",
-            "item_name_cn": "诡计之雾",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/smoke_of_deceit.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
             "group": "backpack",
             "slot": 2,
-            "item_id": 38,
-            "item_key": "clarity",
-            "item_name_en": "Clarity",
-            "item_name_cn": "净化药水",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/clarity.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           }
         ],
@@ -17518,12 +17446,12 @@
           {
             "group": "backpack",
             "slot": 0,
-            "item_id": 8,
-            "item_key": "mithril_hammer",
-            "item_name_en": "Mithril Hammer",
-            "item_name_cn": "Mithril Hammer",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/mithril_hammer.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
@@ -19342,23 +19270,23 @@
           {
             "group": "backpack",
             "slot": 0,
-            "item_id": 221,
-            "item_key": "recipe_lotus_orb",
-            "item_name_en": "Lotus Orb Recipe",
-            "item_name_cn": "Lotus Orb Recipe",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/recipe.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
             "group": "backpack",
             "slot": 1,
-            "item_id": 69,
-            "item_key": "pers",
-            "item_name_en": "Perseverance",
-            "item_name_cn": "Perseverance",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/pers.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
@@ -20553,7 +20481,9 @@
   "stomp": 26629,
   "_meta": {
     "source": "opendota_pro",
-    "category": "pro"
+    "category": "pro",
+    "match_id": 8771849856,
+    "uploaded_at": "2026-04-16T02:29:17Z"
   },
   "source": "pro",
   "category": "pro"

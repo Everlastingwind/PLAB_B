@@ -11159,12 +11159,12 @@
           {
             "group": "backpack",
             "slot": 0,
-            "item_id": 40,
-            "item_key": "dust",
-            "item_name_en": "Dust of Appearance",
-            "item_name_cn": "显影之尘",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/dust.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
@@ -11181,12 +11181,12 @@
           {
             "group": "backpack",
             "slot": 2,
-            "item_id": 218,
-            "item_key": "ward_dispenser",
-            "item_name_en": "Observer and Sentry Wards",
-            "item_name_cn": "眼粉合一",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/ward_dispenser.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           }
         ],
@@ -13639,23 +13639,23 @@
           {
             "group": "backpack",
             "slot": 0,
-            "item_id": 218,
-            "item_key": "ward_dispenser",
-            "item_name_en": "Observer and Sentry Wards",
-            "item_name_cn": "眼粉合一",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/ward_dispenser.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
             "group": "backpack",
             "slot": 1,
-            "item_id": 40,
-            "item_key": "dust",
-            "item_name_en": "Dust of Appearance",
-            "item_name_cn": "显影之尘",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/dust.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
@@ -16209,12 +16209,12 @@
           {
             "group": "backpack",
             "slot": 0,
-            "item_id": 42,
-            "item_key": "ward_observer",
-            "item_name_en": "Observer Ward",
-            "item_name_cn": "侦查守卫",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/ward_observer.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
@@ -18326,12 +18326,12 @@
           {
             "group": "backpack",
             "slot": 2,
-            "item_id": 1804,
-            "item_key": "roshans_banner",
-            "item_name_en": "Roshan's Banner",
-            "item_name_cn": "Roshan's Banner",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/roshans_banner.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           }
         ],
@@ -20475,12 +20475,12 @@
           {
             "group": "backpack",
             "slot": 2,
-            "item_id": 1804,
-            "item_key": "roshans_banner",
-            "item_name_en": "Roshan's Banner",
-            "item_name_cn": "Roshan's Banner",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/roshans_banner.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           }
         ],
@@ -26292,5 +26292,10 @@
   },
   "my_word_counts": {},
   "throw": 7357,
-  "loss": 13061
+  "loss": 13061,
+  "_meta": {
+    "source": "api_upload",
+    "match_id": 8770616434,
+    "uploaded_at": "2026-04-16T02:28:11Z"
+  }
 }

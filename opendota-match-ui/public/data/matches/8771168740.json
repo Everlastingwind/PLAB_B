@@ -6915,12 +6915,12 @@
           {
             "group": "backpack",
             "slot": 1,
-            "item_id": 178,
-            "item_key": "soul_ring",
-            "item_name_en": "Soul Ring",
-            "item_name_cn": "Soul Ring",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/soul_ring.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
@@ -8844,23 +8844,23 @@
           {
             "group": "backpack",
             "slot": 0,
-            "item_id": 16,
-            "item_key": "branches",
-            "item_name_en": "Iron Branch",
-            "item_name_cn": "树枝",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/branches.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
             "group": "backpack",
             "slot": 1,
-            "item_id": 50,
-            "item_key": "phase_boots",
-            "item_name_en": "Phase Boots",
-            "item_name_cn": "相位鞋",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/phase_boots.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
@@ -11004,23 +11004,23 @@
           {
             "group": "backpack",
             "slot": 0,
-            "item_id": 1848,
-            "item_key": "shawl",
-            "item_name_en": "Shawl",
-            "item_name_cn": "Shawl",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/shawl.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
             "group": "backpack",
             "slot": 1,
-            "item_id": 188,
-            "item_key": "smoke_of_deceit",
-            "item_name_en": "Smoke of Deceit",
-            "item_name_cn": "诡计之雾",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/smoke_of_deceit.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
@@ -13085,12 +13085,12 @@
           {
             "group": "backpack",
             "slot": 2,
-            "item_id": 41,
-            "item_key": "bottle",
-            "item_name_en": "Bottle",
-            "item_name_cn": "魔瓶",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/bottle.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           }
         ],
@@ -15161,16 +15161,8 @@
           "ability_key": "special_bonus_unique_terrorblade_4"
         },
         {
-          "type": "talent",
-          "level": 12,
-          "name": "special_bonus_attributes",
-          "name_en": "special_bonus_attributes",
-          "ability_id": 730,
-          "ability_key": "special_bonus_attributes"
-        },
-        {
           "type": "ability",
-          "level": 13,
+          "level": 12,
           "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/terrorblade_sunder.png",
           "name_en": "Sunder",
           "name_cn": "Sunder",
@@ -15179,55 +15171,15 @@
         },
         {
           "type": "talent",
-          "level": 14,
-          "name": "special_bonus_attributes",
-          "name_en": "special_bonus_attributes",
-          "ability_id": 730,
-          "ability_key": "special_bonus_attributes"
-        },
-        {
-          "type": "talent",
-          "level": 15,
-          "name": "special_bonus_attributes",
-          "name_en": "special_bonus_attributes",
-          "ability_id": 730,
-          "ability_key": "special_bonus_attributes"
-        },
-        {
-          "type": "talent",
-          "level": 16,
+          "level": 13,
           "name": "-{s:bonus_AbilityCooldown}s Metamorphosis Cooldown",
           "name_en": "-{s:bonus_AbilityCooldown}s Metamorphosis Cooldown",
           "ability_id": 1186,
           "ability_key": "special_bonus_unique_terrorblade_metamorphosis_cooldown"
         },
         {
-          "type": "talent",
-          "level": 17,
-          "name": "special_bonus_attributes",
-          "name_en": "special_bonus_attributes",
-          "ability_id": 730,
-          "ability_key": "special_bonus_attributes"
-        },
-        {
-          "type": "talent",
-          "level": 18,
-          "name": "special_bonus_attributes",
-          "name_en": "special_bonus_attributes",
-          "ability_id": 730,
-          "ability_key": "special_bonus_attributes"
-        },
-        {
-          "type": "talent",
-          "level": 19,
-          "name": "special_bonus_attributes",
-          "name_en": "special_bonus_attributes",
-          "ability_id": 730,
-          "ability_key": "special_bonus_attributes"
-        },
-        {
           "type": "ability",
-          "level": 20,
+          "level": 14,
           "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/terrorblade_sunder.png",
           "name_en": "Sunder",
           "name_cn": "Sunder",
@@ -15236,15 +15188,7 @@
         },
         {
           "type": "talent",
-          "level": 21,
-          "name": "special_bonus_attributes",
-          "name_en": "special_bonus_attributes",
-          "ability_id": 730,
-          "ability_key": "special_bonus_attributes"
-        },
-        {
-          "type": "talent",
-          "level": 22,
+          "level": 15,
           "name": "+{s:bonus_illusion_duration}s Conjure Image Duration",
           "name_en": "+{s:bonus_illusion_duration}s Conjure Image Duration",
           "ability_id": 479,
@@ -15252,7 +15196,7 @@
         },
         {
           "type": "ability",
-          "level": 23,
+          "level": 16,
           "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/terrorblade_reflection.png",
           "name_en": "Reflection",
           "name_cn": "Reflection",
@@ -15261,7 +15205,7 @@
         },
         {
           "type": "ability",
-          "level": 24,
+          "level": 17,
           "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/terrorblade_reflection.png",
           "name_en": "Reflection",
           "name_cn": "Reflection",
@@ -24300,7 +24244,9 @@
   "loss": 29023,
   "_meta": {
     "source": "opendota_pro",
-    "category": "pro"
+    "category": "pro",
+    "match_id": 8771168740,
+    "uploaded_at": "2026-04-16T02:28:46Z"
   },
   "source": "pro",
   "category": "pro"

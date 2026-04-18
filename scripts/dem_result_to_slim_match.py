@@ -917,6 +917,503 @@ def _items_slot_has_equipped(items_slot: List[Any]) -> bool:
     return False
 
 
+# 部分解析器不在 PURCHASE/ITEM 上标注熊灵，但会在伤害、interval 等字段里出现 npc 名。
+_LD_BEAR_NPC_RE = re.compile(r"(npc_dota_lone_druid_bear\d*)", re.IGNORECASE)
+_LD_BEAR_STRING_SCAN_KEYS: Tuple[str, ...] = (
+    "targetname",
+    "attackername",
+    "sourcename",
+    "inflictorname",
+    "targetsourcename",
+    "castername",
+    "unitname",
+    "npc_name",
+    "msg",
+    "key",
+)
+
+
+_LD_BEAR_IDLE_OWNER_BIAS = frozenset(
+    {
+        # 客户端常见：本体代买后转给熊灵；战斗日志里很少出现 item_power_treads /
+        # item_ultimate_scepter / item_orb_of_corrosion 的 ITEM inflictor（与疯脸/雷锤不同）。
+        "ultimate_scepter",
+        "ultimate_scepter_2",
+        "power_treads",
+        "orb_of_corrosion",
+        "mask_of_madness",
+        "mjollnir",
+        "maelstrom",
+        "madstone_bundle",
+        "quelling_blade",
+        "monkey_king_bar",
+        "skull_basher",
+        "abyssal_blade",
+        "black_king_bar",
+        "satanic",
+        "bfury",
+        "rapier",
+        "hand_of_midas",
+        "greater_crit",
+        "lesser_crit",
+        "manta",
+        "diffusal_blade",
+        "disperser",
+        "assault_cuirass",
+        "desolator",
+        "reaver",
+        "eagle",
+        "relic",
+        "talisman_of_evasion",
+        "demon_edge",
+        "javelin",
+        "hyperstone",
+        "mithril_hammer",
+        "claymore",
+        "blades_of_attack",
+        "blitz_knuckles",
+        "sobi_mask",
+        "robe",
+        "broadsword",
+        "lifesteal",
+    }
+)
+
+
+_LD_HERO_IDLE_OWNER_BIAS = frozenset(
+    {
+        "aghanims_shard",
+        "boots",
+        "phase_boots",
+        "arcane_boots",
+        "guardian_greaves",
+        "tranquil_boots",
+        "travel_boots",
+        "travel_boots_2",
+        "wind_lace",
+        "magic_wand",
+        "ward_observer",
+        "ward_sentry",
+    }
+)
+
+# 熊灵已出现其中任一成品/大件时，认为「熊在扛主装」，本体池里误分的散件可回迁熊侧。
+_LD_BEAR_CARRY_ANCHOR_KEYS = frozenset(
+    {
+        "mjollnir",
+        "maelstrom",
+        "gleipnir",
+        "monkey_king_bar",
+        "desolator",
+        "skadi",
+        "eye_of_skadi",
+        "manta",
+        "diffusal_blade",
+        "disperser",
+        "black_king_bar",
+        "satanic",
+        "bfury",
+        "radiance",
+        "orchid",
+        "bloodthorn",
+        "nullifier",
+        "silver_edge",
+        "invis_sword",
+        "abyssal_blade",
+        "assault_cuirass",
+        "greater_crit",
+        "lesser_crit",
+        "hand_of_midas",
+        "mask_of_madness",
+        "helm_of_the_overlord",
+        "ultimate_scepter",
+        "ultimate_scepter_2",
+        "sphere",
+        "lotus_orb",
+        "linken_sphere",
+        "hurricane_pike",
+        "dragon_lance",
+        "skull_basher",
+        "rapier",
+    }
+)
+
+# 记在英雄名下、但典型为熊灵 farm 装的散件；仅当已有 _LD_BEAR_CARRY_ANCHOR_KEYS 在熊池时迁移。
+_LD_FRAGMENT_KEYS_MOVE_TO_BEAR_WHEN_ANCHORED = frozenset(
+    {
+        "point_booster",
+        "blade_of_alacrity",
+        "staff_of_wizardry",
+        "ogre_axe",
+        "belt_of_strength",
+        "boots_of_elves",
+        "gloves",
+        "robe",
+        "vitality_booster",
+        "mystic_staff",
+        "ultimate_orb",
+        "eagle",
+        "reaver",
+        "energy_booster",
+        "platemail",
+        "ring_of_health",
+        "void_stone",
+        "talisman_of_evasion",
+        "demon_edge",
+        "relic",
+        "mithril_hammer",
+        "javelin",
+        "blitz_knuckles",
+        "sobi_mask",
+        "blades_of_attack",
+        "claymore",
+        "broadsword",
+        "lifesteal",
+        "hyperstone",
+        "cornucopia",
+        "ring_of_regen",
+        "headdress",
+        "chainmail",
+        "blight_stone",
+        "orb_of_venom",
+    }
+)
+
+# 本体专用鞋，不因「熊有大件」迁到熊池。
+_LD_HERO_BOOTS_NEVER_TO_BEAR = frozenset(
+    {
+        "phase_boots",
+        "arcane_boots",
+        "guardian_greaves",
+        "tranquil_boots",
+        "travel_boots",
+        "travel_boots_2",
+    }
+)
+
+
+def _lone_druid_item_last_item_use_times(
+    events: List[dict],
+    rk: str,
+    hero_npc: str,
+    bear_npc: str,
+    dc: Any,
+    *,
+    match_end_time: Optional[int] = None,
+) -> Tuple[Optional[int], Optional[int]]:
+    """DOTA_COMBATLOG_ITEM 中 inflictor 对应 rk 的最后使用时间（本体 / 熊灵）。"""
+    hero_t: Optional[int] = None
+    bear_t: Optional[int] = None
+    for e in events:
+        if e.get("type") != "DOTA_COMBATLOG_ITEM":
+            continue
+        try:
+            t = int(e.get("time") or 0)
+        except (TypeError, ValueError):
+            continue
+        if t < 0:
+            continue
+        if match_end_time is not None and t > int(match_end_time):
+            continue
+        k = _item_key_from_valuename(str(e.get("inflictor") or ""))
+        if not k:
+            continue
+        erk = (dc.resolve_items_json_key(k) or k).strip().lower()
+        if erk != rk:
+            continue
+        an = str(e.get("attackername") or "")
+        if _targetname_matches_hero_npc(an, hero_npc):
+            hero_t = t if hero_t is None else max(hero_t, t)
+        if _targetname_matches_hero_npc(an, bear_npc):
+            bear_t = t if bear_t is None else max(bear_t, t)
+    return hero_t, bear_t
+
+
+def _lone_druid_assign_purchase_owner(
+    rk: str,
+    events: List[dict],
+    hero_npc: str,
+    bear_npc: str,
+    dc: Any,
+    *,
+    match_end_time: Optional[int] = None,
+) -> str:
+    """
+    将「记在德鲁伊名下的购买」拆到本体或熊灵栏位。
+    优先采信 DOTA_COMBATLOG_ITEM 活动归属；无活动时用语义偏置。
+    """
+    h_t, b_t = _lone_druid_item_last_item_use_times(
+        events, rk, hero_npc, bear_npc, dc, match_end_time=match_end_time
+    )
+    if b_t is not None and (h_t is None or b_t >= h_t):
+        return "bear"
+    if h_t is not None and (b_t is None or h_t > b_t):
+        return "hero"
+    if rk in _LD_BEAR_IDLE_OWNER_BIAS:
+        return "bear"
+    if rk in _LD_HERO_IDLE_OWNER_BIAS:
+        return "hero"
+    return "hero"
+
+
+def _lone_druid_partition_purchase_pools(
+    events: List[dict],
+    hero_npc: str,
+    bear_npc: str,
+    dc: Any,
+    *,
+    match_end_time: Optional[int] = None,
+) -> Tuple[List[str], List[str]]:
+    ordered = _non_disposable_purchase_keys_newest_first(
+        events, hero_npc, dc, match_end_time=match_end_time
+    )
+    hero_keys: List[str] = []
+    bear_keys: List[str] = []
+    for k in ordered:
+        rk = (dc.resolve_items_json_key(k) or k).strip().lower()
+        if not rk:
+            continue
+        side = _lone_druid_assign_purchase_owner(
+            rk, events, hero_npc, bear_npc, dc, match_end_time=match_end_time
+        )
+        if side == "bear":
+            bear_keys.append(k)
+        else:
+            hero_keys.append(k)
+    return _lone_druid_refine_partition_pools(ordered, hero_keys, bear_keys, dc)
+
+
+def _lone_druid_refine_partition_pools(
+    ordered: List[str],
+    hero_keys: List[str],
+    bear_keys: List[str],
+    dc: Any,
+) -> Tuple[List[str], List[str]]:
+    """
+    初拆后校正：熊灵池里已有大件时，把「成品配方树」上的散件与常见熊 carry 散件从本体迁回熊池，
+    并按全局购买顺序（``ordered``）重排两侧池，保证 _main_six_keys_from_ordered_unique_pool 时间序一致。
+    """
+
+    def _nr(k: str) -> str:
+        return (dc.resolve_items_json_key(k) or k).strip().lower()
+
+    h_set = {_nr(k) for k in hero_keys if _nr(k)}
+    b_set = {_nr(k) for k in bear_keys if _nr(k)}
+    if not h_set or not b_set:
+        return hero_keys, bear_keys
+    if not (b_set & _LD_BEAR_CARRY_ANCHOR_KEYS):
+        return hero_keys, bear_keys
+
+    # 假腿本体侧常有 ITEM 证据；有大件锚点时仍归熊（与客户端熊 carry 一致）。
+    if "power_treads" in h_set:
+        h_set.discard("power_treads")
+        b_set.add("power_treads")
+
+    comp_from_bear: Set[str] = set()
+    for brk in list(b_set):
+        if not brk:
+            continue
+        for ck in _recipe_component_inner_keys(dc, brk):
+            comp_from_bear.add(_nr(ck))
+
+    for hrk in list(h_set):
+        if not hrk:
+            continue
+        if hrk == "aghanims_shard":
+            continue
+        if hrk in _LD_HERO_BOOTS_NEVER_TO_BEAR:
+            continue
+        move = False
+        if hrk in comp_from_bear:
+            move = True
+        elif hrk in _LD_FRAGMENT_KEYS_MOVE_TO_BEAR_WHEN_ANCHORED:
+            move = True
+        if not move:
+            continue
+        h_set.discard(hrk)
+        b_set.add(hrk)
+
+    nh: List[str] = []
+    nb: List[str] = []
+    seenh: Set[str] = set()
+    seenb: Set[str] = set()
+    for k in ordered:
+        rk = _nr(k)
+        if not rk:
+            continue
+        if rk in b_set:
+            if rk not in seenb:
+                nb.append(k)
+                seenb.add(rk)
+        elif rk in h_set:
+            if rk not in seenh:
+                nh.append(k)
+                seenh.add(rk)
+    return nh, nb
+
+
+def _main_six_keys_from_ordered_unique_pool(
+    ordered: List[str],
+    events: List[dict],
+    evidence_npc: str,
+    dc: Any,
+    *,
+    match_end_time: Optional[int] = None,
+) -> List[Optional[str]]:
+    main: List[Optional[str]] = [None] * 6
+    present: Set[str] = set()
+    idx = 0
+    for k in ordered:
+        if idx >= 6:
+            break
+        rk = (dc.resolve_items_json_key(k) or k).strip().lower()
+        if not rk or rk in present:
+            continue
+        while idx < 6 and main[idx]:
+            idx += 1
+        if idx >= 6:
+            break
+        main[idx] = k
+        present.add(rk)
+        idx += 1
+    _apply_item_upgrade_dedupe(main, dc)
+    _apply_item_conflict_priority(
+        main, events, evidence_npc, dc, match_end_time=match_end_time
+    )
+    return main
+
+
+def _lone_druid_fill_starting_branches_on_hero_items_slot(
+    items_slot: List[Dict[str, Any]],
+    starting_items: List[Dict[str, Any]],
+    dc: Any,
+) -> None:
+    """拆分栏位后本体常只剩魔晶等：用开局购买的树枝数量填满空主格（与客户端一致）。"""
+    n = 0
+    for st in starting_items:
+        if not isinstance(st, dict):
+            continue
+        _k = str(st.get("item_key") or "").strip().lower()
+        _rk = (dc.resolve_items_json_key(_k) or _k).strip().lower()
+        if _rk != "branches":
+            continue
+        try:
+            n = int(st.get("count") or 0)
+        except (TypeError, ValueError):
+            n = 0
+        break
+    if n <= 0:
+        return
+    filled = 0
+    for i in range(min(6, len(items_slot))):
+        if filled >= n:
+            break
+        cell = items_slot[i]
+        if not isinstance(cell, dict):
+            continue
+        empty = bool(cell.get("empty") is True) or not str(cell.get("item_key") or "").strip()
+        if not empty:
+            continue
+        items_slot[i] = _item_slot_dict_from_key("branches", i, dc)
+        filled += 1
+
+
+def _pick_lone_druid_bear_npc(
+    events: List[dict],
+    owner_slot: int,
+    match_end_time: Optional[int] = None,
+    *,
+    fallback_npc: Optional[str] = None,
+) -> Optional[str]:
+    """
+    识别独行德鲁伊熊灵单位名（如 npc_dota_lone_druid_bear1 / bear2）。
+    优先同 owner_slot 的物品相关事件，避免双方都有德鲁伊时串线。
+    若无任何命中且提供 ``fallback_npc``（仅应对 lone_druid 行），则视为第二单位
+    ``npc_dota_lone_druid_bear*`` 走拆分管线（购买仍记在英雄名下时依赖偏置/ITEM 证据）。
+    """
+
+    def _register_hit(bear_name: str, e: dict) -> None:
+        bear_name = bear_name.strip().lower()
+        if not bear_name.startswith("npc_dota_lone_druid_bear"):
+            return
+        try:
+            t = int(e.get("time") or 0)
+        except (TypeError, ValueError):
+            t = 0
+        if match_end_time is not None and t > int(match_end_time):
+            return
+        ev_slot = logical_player_slot(e.get("slot"))
+        slot_score = 2 if ev_slot == owner_slot else (1 if ev_slot is None else 0)
+        prev = hits.get(bear_name)
+        if prev is None:
+            hits[bear_name] = (slot_score, t, 1)
+        else:
+            hits[bear_name] = (
+                max(prev[0], slot_score),
+                max(prev[1], t),
+                prev[2] + 1,
+            )
+
+    hits: Dict[str, Tuple[int, int, int]] = {}
+    for e in events:
+        if not isinstance(e, dict):
+            continue
+        et = str(e.get("type") or "")
+        if et not in ("DOTA_COMBATLOG_PURCHASE", "DOTA_COMBATLOG_ITEM"):
+            continue
+        try:
+            t = int(e.get("time") or 0)
+        except (TypeError, ValueError):
+            continue
+        if match_end_time is not None and t > int(match_end_time):
+            continue
+        tn = str(e.get("targetname") or "").strip().lower()
+        an = str(e.get("attackername") or "").strip().lower()
+        bear_name = ""
+        if tn.startswith("npc_dota_lone_druid_bear"):
+            bear_name = tn
+        elif an.startswith("npc_dota_lone_druid_bear"):
+            bear_name = an
+        if bear_name:
+            _register_hit(bear_name, e)
+
+    # 其它事件类型中的熊灵 npc 字符串（浅层 + 若干常见键）
+    for e in events:
+        if not isinstance(e, dict):
+            continue
+        try:
+            t = int(e.get("time") or 0)
+        except (TypeError, ValueError):
+            t = 0
+        if match_end_time is not None and t > int(match_end_time):
+            continue
+        found: Set[str] = set()
+        for sk in _LD_BEAR_STRING_SCAN_KEYS:
+            v = e.get(sk)
+            if isinstance(v, str):
+                for m in _LD_BEAR_NPC_RE.finditer(v):
+                    found.add(m.group(1).lower())
+        if not found:
+            for v in e.values():
+                if not isinstance(v, str):
+                    continue
+                vl = v.lower()
+                if "npc_dota" not in vl or "lone_druid_bear" not in vl:
+                    continue
+                for m in _LD_BEAR_NPC_RE.finditer(v):
+                    found.add(m.group(1).lower())
+        for bn in found:
+            _register_hit(bn, e)
+
+    if hits:
+        return max(hits.items(), key=lambda kv: (kv[1][0], kv[1][2], kv[1][1]))[0]
+    if fallback_npc:
+        fb = str(fallback_npc).strip().lower()
+        if fb.startswith("npc_dota_lone_druid_bear"):
+            return fb
+    return None
+
+
 def _last_neutral_key(events: List[dict], slot: int) -> Optional[str]:
     last: Optional[dict] = None
     for e in events:
@@ -955,6 +1452,179 @@ def _targetname_matches_hero_npc(targetname: str, hero_npc: str) -> bool:
     if t == h:
         return True
     return _normalize_hero_npc_name_for_compare(t) == _normalize_hero_npc_name_for_compare(h)
+
+
+def _item_event_matches_unit(e: Dict[str, Any], unit_npc: str) -> bool:
+    """
+    ITEM 事件归属判定：
+    - 常规英雄沿用 attackername（避免把被作用目标误判为持有者）
+    - 熊灵事件常写在 targetname，故额外允许 targetname 命中
+    """
+    return _targetname_matches_hero_npc(str(e.get("attackername") or ""), unit_npc)
+
+
+def _unit_item_last_seen_times(
+    events: List[dict],
+    unit_npc: str,
+    dc: Any,
+    *,
+    match_end_time: Optional[int] = None,
+) -> Dict[str, int]:
+    """
+    统计单位在比赛内（<=match_end_time）每个物品 key 的最后证据时间。
+    证据来源：
+    - DOTA_COMBATLOG_ITEM attackername==unit（真实使用/触发）
+    - DOTA_COMBATLOG_PURCHASE targetname==unit（购买）
+    """
+    out: Dict[str, int] = {}
+    for e in events:
+        et = str(e.get("type") or "")
+        if et not in ("DOTA_COMBATLOG_ITEM", "DOTA_COMBATLOG_PURCHASE"):
+            continue
+        try:
+            t = int(e.get("time") or 0)
+        except (TypeError, ValueError):
+            continue
+        if t < 0:
+            continue
+        if match_end_time is not None and t > int(match_end_time):
+            continue
+        k: Optional[str] = None
+        if et == "DOTA_COMBATLOG_ITEM":
+            if not _targetname_matches_hero_npc(str(e.get("attackername") or ""), unit_npc):
+                continue
+            k = _item_key_from_valuename(str(e.get("inflictor") or ""))
+        else:
+            if not _targetname_matches_hero_npc(str(e.get("targetname") or ""), unit_npc):
+                continue
+            k = _item_key_from_valuename(str(e.get("valuename") or ""))
+        if not k:
+            continue
+        rk = (dc.resolve_items_json_key(k) or k).strip().lower()
+        if not rk:
+            continue
+        prev = out.get(rk)
+        if prev is None or t >= prev:
+            out[rk] = t
+    return out
+
+
+def _unit_item_activity_keys_newest_first(
+    events: List[dict],
+    unit_npc: str,
+    dc: Any,
+    *,
+    match_end_time: Optional[int] = None,
+) -> List[str]:
+    last_t: Dict[str, int] = {}
+    for e in events:
+        if e.get("type") != "DOTA_COMBATLOG_ITEM":
+            continue
+        if not _targetname_matches_hero_npc(str(e.get("attackername") or ""), unit_npc):
+            continue
+        try:
+            t = int(e.get("time") or 0)
+        except (TypeError, ValueError):
+            continue
+        if t < 0:
+            continue
+        if match_end_time is not None and t > int(match_end_time):
+            continue
+        k = _item_key_from_valuename(str(e.get("inflictor") or ""))
+        if not k:
+            continue
+        rk = (dc.resolve_items_json_key(k) or k).strip().lower()
+        if not rk:
+            continue
+        prev = last_t.get(rk)
+        if prev is None or t >= prev:
+            last_t[rk] = t
+    return [k for k, _ in sorted(last_t.items(), key=lambda kv: kv[1], reverse=True)]
+
+
+def _dedupe_lone_druid_hero_bear_overlap(
+    hero_items_slot: List[Dict[str, Any]],
+    bear_items_slot: List[Dict[str, Any]],
+    events: List[dict],
+    hero_npc: str,
+    bear_npc: str,
+    dc: Any,
+    *,
+    match_end_time: Optional[int] = None,
+) -> None:
+    """
+    独行德鲁伊本体与熊灵若出现同名主装，做“弱去重”：
+    - 仅当一侧存在证据而另一侧完全无证据时，移除无证据一侧
+    - 若双方都有证据，但熊灵证据显著更晚（默认 >=300s），视为终局归熊灵，移除本体同名
+    - 其余情况保留两侧，避免误删导致主栏过空
+    """
+    hero_seen = _unit_item_last_seen_times(
+        events, hero_npc, dc, match_end_time=match_end_time
+    )
+    bear_seen = _unit_item_last_seen_times(
+        events, bear_npc, dc, match_end_time=match_end_time
+    )
+    hero_pos: Dict[str, List[int]] = {}
+    bear_pos: Dict[str, List[int]] = {}
+    for i in range(min(6, len(hero_items_slot))):
+        c = hero_items_slot[i]
+        if not isinstance(c, dict):
+            continue
+        rk = (dc.resolve_items_json_key(str(c.get("item_key") or "")) or str(c.get("item_key") or "")).strip().lower()
+        if not rk:
+            continue
+        hero_pos.setdefault(rk, []).append(i)
+    for i in range(min(6, len(bear_items_slot))):
+        c = bear_items_slot[i]
+        if not isinstance(c, dict):
+            continue
+        rk = (dc.resolve_items_json_key(str(c.get("item_key") or "")) or str(c.get("item_key") or "")).strip().lower()
+        if not rk:
+            continue
+        bear_pos.setdefault(rk, []).append(i)
+
+    overlaps = set(hero_pos.keys()) & set(bear_pos.keys())
+    for rk in overlaps:
+        ht = hero_seen.get(rk)
+        bt = bear_seen.get(rk)
+        # 双方都有证据：若熊灵明显更新，判定终局归熊灵
+        if ht is not None and bt is not None:
+            if int(bt) - int(ht) >= 300:
+                for i in hero_pos.get(rk, []):
+                    hero_items_slot[i] = {
+                        "slot": i,
+                        "item_id": 0,
+                        "item_key": None,
+                        "item_name_en": "",
+                        "item_name_cn": "",
+                        "image_url": "",
+                        "empty": True,
+                    }
+            continue
+        # 仅熊灵有证据：删除本体同名
+        if bt is not None and ht is None:
+            for i in hero_pos.get(rk, []):
+                hero_items_slot[i] = {
+                    "slot": i,
+                    "item_id": 0,
+                    "item_key": None,
+                    "item_name_en": "",
+                    "item_name_cn": "",
+                    "image_url": "",
+                    "empty": True,
+                }
+        # 仅本体有证据：删除熊灵同名
+        elif ht is not None and bt is None:
+            for i in bear_pos.get(rk, []):
+                bear_items_slot[i] = {
+                    "slot": i,
+                    "item_id": 0,
+                    "item_key": None,
+                    "item_name_en": "",
+                    "item_name_cn": "",
+                    "image_url": "",
+                    "empty": True,
+                }
 
 
 def _starting_items_from_purchases(
@@ -1903,7 +2573,7 @@ def _item_last_seen_evidence_for_hero(
             if prev is None or t >= prev:
                 purchase_t[rk] = t
         elif et == "DOTA_COMBATLOG_ITEM":
-            if not _targetname_matches_hero_npc(str(e.get("attackername") or ""), hero_npc):
+            if not _item_event_matches_unit(e, hero_npc):
                 continue
             k = _item_key_from_valuename(str(e.get("inflictor") or ""))
             if not k:
@@ -2067,7 +2737,10 @@ def _build_endgame_main_six_item_keys(
     # 部分解析器几乎不给 slot（或只有开局 1 格），若仍走严格路径会把唯一一格清成消耗品后全空。
     have_slot_purchases_strict = len(slot_best) >= 4
 
-    if not have_slot_purchases_strict:
+    allow_item_activity_fallback = str(hero_npc or "").startswith(
+        "npc_dota_lone_druid_bear"
+    )
+    if not have_slot_purchases_strict and not allow_item_activity_fallback:
         # 无可靠 HUD 槽时：DOTA_COMBATLOG_ITEM / 按时间塞格会把配方、施法涉及的散件当成「在栏装备」。
         # 改由下方 _refill_main_six_strip_invalid 用「已剪枝的购买池」从左到右填 6 格。
         pass
@@ -2077,7 +2750,7 @@ def _build_endgame_main_six_item_keys(
         for e in reversed(events):
             if e.get("type") != "DOTA_COMBATLOG_ITEM":
                 continue
-            if not _targetname_matches_hero_npc(str(e.get("attackername") or ""), hero_npc):
+            if not _item_event_matches_unit(e, hero_npc):
                 continue
             et = e.get("time")
             if match_end_time is not None and isinstance(et, (int, float)) and int(et) > int(match_end_time):
@@ -2139,12 +2812,13 @@ def _build_endgame_main_six_item_keys(
                         present.add(k)
                         break
 
+    fill_from_pool = (not have_slot_purchases_strict) and (not allow_item_activity_fallback)
     _refill_main_six_strip_invalid(
         main,
         events,
         hero_npc,
         dc,
-        fill_empty_from_pool=not have_slot_purchases_strict,
+        fill_empty_from_pool=fill_from_pool,
         match_end_time=match_end_time,
     )
     _apply_item_upgrade_dedupe(main, dc)
@@ -2409,6 +3083,7 @@ def build_slim_from_dem_events(
         neutral_img: str = ""
         neutral_item_key_out: Optional[str] = None
         dem_items_source = "combat_log_slot_last_purchase"
+        ld_split_bear_pool: Optional[List[str]] = None
 
         # 1) interval 终局库存：先取「全录像中该 slot 时间最大的带装备快照」，再回退到最后一条 interval
         b_iv = _best_interval_inventory_bundle_for_slot(events, slot, dc)
@@ -2447,6 +3122,50 @@ def build_slim_from_dem_events(
             items_slot = _main_six_items_slot_from_combat_log(
                 events, hero_npc, dc, match_end_time=match_end_time
             )
+            if hero_internal == "lone_druid":
+                bear_pre = _pick_lone_druid_bear_npc(
+                    events,
+                    slot,
+                    match_end_time=match_end_time,
+                    fallback_npc="npc_dota_lone_druid_bear1",
+                )
+                if bear_pre:
+                    h_pool, b_pool = _lone_druid_partition_purchase_pools(
+                        events,
+                        hero_npc,
+                        bear_pre,
+                        dc,
+                        match_end_time=match_end_time,
+                    )
+                    h6 = _main_six_keys_from_ordered_unique_pool(
+                        h_pool,
+                        events,
+                        hero_npc,
+                        dc,
+                        match_end_time=match_end_time,
+                    )
+                    items_slot = []
+                    for i in range(6):
+                        k = h6[i] if i < len(h6) else None
+                        if k:
+                            items_slot.append(_item_slot_dict_from_key(k, i, dc))
+                        else:
+                            items_slot.append(
+                                {
+                                    "slot": i,
+                                    "item_id": 0,
+                                    "item_key": None,
+                                    "item_name_en": "",
+                                    "item_name_cn": "",
+                                    "image_url": "",
+                                    "empty": True,
+                                }
+                            )
+                    _lone_druid_fill_starting_branches_on_hero_items_slot(
+                        items_slot, starting_items, dc
+                    )
+                    ld_split_bear_pool = b_pool
+                    dem_items_source = "combat_log_lone_druid_split"
         elif not (str(neutral_item_key_out or "").strip()) and not str(
             neutral_img or ""
         ).strip():
@@ -2482,6 +3201,455 @@ def build_slim_from_dem_events(
                 }
         _apply_upgrade_dedupe_on_items_slot(items_slot, dc)
         _strip_neutral_trinkets_from_items_slot_main(items_slot, dc)
+
+        bear_items_slot: Optional[List[Dict[str, Any]]] = None
+        if hero_internal == "lone_druid":
+            bear_npc = _pick_lone_druid_bear_npc(
+                events,
+                slot,
+                match_end_time=match_end_time,
+                fallback_npc="npc_dota_lone_druid_bear1",
+            )
+            if bear_npc:
+                if ld_split_bear_pool is not None:
+                    b6 = _main_six_keys_from_ordered_unique_pool(
+                        ld_split_bear_pool,
+                        events,
+                        bear_npc,
+                        dc,
+                        match_end_time=match_end_time,
+                    )
+                    bear_items_slot = []
+                    for i in range(6):
+                        k = b6[i] if i < len(b6) else None
+                        if k:
+                            bear_items_slot.append(
+                                _item_slot_dict_from_key(k, i, dc)
+                            )
+                        else:
+                            bear_items_slot.append(
+                                {
+                                    "slot": i,
+                                    "item_id": 0,
+                                    "item_key": None,
+                                    "item_name_en": "",
+                                    "item_name_cn": "",
+                                    "image_url": "",
+                                    "empty": True,
+                                }
+                            )
+                else:
+                    bear_items_slot = _main_six_items_slot_from_combat_log(
+                        events,
+                        bear_npc,
+                        dc,
+                        match_end_time=match_end_time,
+                    )
+                while len(bear_items_slot) < 6:
+                    bear_items_slot.append(None)
+                bear_items_slot = bear_items_slot[:6]
+                for i in range(6):
+                    if bear_items_slot[i] is None:
+                        bear_items_slot[i] = {
+                            "slot": i,
+                            "item_id": 0,
+                            "item_key": None,
+                            "item_name_en": "",
+                            "item_name_cn": "",
+                            "image_url": "",
+                            "empty": True,
+                        }
+                _apply_upgrade_dedupe_on_items_slot(bear_items_slot, dc)
+                _strip_neutral_trinkets_from_items_slot_main(bear_items_slot, dc)
+                # 熊灵专属：纯解析日志下常缺购买槽位，仅有 ITEM 活动证据（如 madstone_bundle/flayers_bota）。
+                # 对这类活动证据做温和回填，优先补空格，避免把明确活动物品全过滤掉。
+                bear_present: Set[str] = set()
+                for _c in bear_items_slot[:6]:
+                    if not isinstance(_c, dict):
+                        continue
+                    _k = str(_c.get("item_key") or "").strip().lower()
+                    if _k:
+                        bear_present.add((dc.resolve_items_json_key(_k) or _k).strip().lower())
+                bear_activity_pool = _unit_item_activity_keys_newest_first(
+                    events,
+                    bear_npc,
+                    dc,
+                    match_end_time=match_end_time,
+                )
+                for _i in range(6):
+                    _c = bear_items_slot[_i]
+                    _empty = True
+                    if isinstance(_c, dict):
+                        _empty = bool(_c.get("empty") is True) or not str(_c.get("item_key") or "").strip()
+                    if not _empty:
+                        continue
+                    pick_key: Optional[str] = None
+                    for _k in bear_activity_pool:
+                        if _k in bear_present:
+                            continue
+                        if _forbidden_in_main_six(dc, _k):
+                            continue
+                        pick_key = _k
+                        break
+                    if not pick_key:
+                        continue
+                    bear_items_slot[_i] = _item_slot_dict_from_key(pick_key, _i, dc)
+                    bear_present.add(pick_key)
+                # 回填后再次清理，确保中立/消耗品不会混入熊灵主 6 格
+                _strip_neutral_trinkets_from_items_slot_main(bear_items_slot, dc)
+                _dedupe_lone_druid_hero_bear_overlap(
+                    items_slot,
+                    bear_items_slot,
+                    events,
+                    hero_npc,
+                    bear_npc,
+                    dc,
+                    match_end_time=match_end_time,
+                )
+                # 解析文件仅有 combat_log 且本体/熊灵主装高度重叠时，
+                # 本体常被“代买给熊灵”的记录污染。此时做保守回退：
+                # 若开局枝干证据充足（>=5），本体展示 5 根枝干 + 1 空格。
+                if dem_items_source == "combat_log_slot_last_purchase":
+                    hero_keys_now = [
+                        (str(c.get("item_key") or "").strip().lower() if isinstance(c, dict) else "")
+                        for c in items_slot[:6]
+                    ]
+                    bear_keys_now = [
+                        (str(c.get("item_key") or "").strip().lower() if isinstance(c, dict) else "")
+                        for c in bear_items_slot[:6]
+                    ]
+                    overlap_now = {
+                        (dc.resolve_items_json_key(k) or k).strip().lower()
+                        for k in hero_keys_now
+                        if k
+                    } & {
+                        (dc.resolve_items_json_key(k) or k).strip().lower()
+                        for k in bear_keys_now
+                        if k
+                    }
+                    branches_ct = 0
+                    for _st in starting_items:
+                        if not isinstance(_st, dict):
+                            continue
+                        _k = str(_st.get("item_key") or "").strip().lower()
+                        _rk = (dc.resolve_items_json_key(_k) or _k).strip().lower()
+                        if _rk != "branches":
+                            continue
+                        try:
+                            branches_ct = int(_st.get("count") or 0)
+                        except (TypeError, ValueError):
+                            branches_ct = 0
+                        break
+                    # 仅有解析日志时，本体栏位常严重失真；若开局枝干证据充足，优先展示客户端常见的枝干残局形态。
+                    if branches_ct >= 4:
+                        hero_seen = _unit_item_last_seen_times(
+                            events, hero_npc, dc, match_end_time=match_end_time
+                        )
+                        has_boots_evidence = (
+                            "boots" in hero_seen
+                            or "power_treads" in hero_seen
+                            or "travel_boots" in hero_seen
+                            or "travel_boots_2" in hero_seen
+                        )
+                        has_circlet = False
+                        has_slippers = False
+                        has_quelling = False
+                        for _st in starting_items:
+                            if not isinstance(_st, dict):
+                                continue
+                            _k = str(_st.get("item_key") or "").strip().lower()
+                            _rk = (dc.resolve_items_json_key(_k) or _k).strip().lower()
+                            if _rk == "circlet":
+                                has_circlet = True
+                            elif _rk == "slippers":
+                                has_slippers = True
+                            elif _rk == "quelling_blade":
+                                has_quelling = True
+                        patched: List[Dict[str, Any]] = []
+                        base_keys: List[Optional[str]] = []
+                        if has_slippers and not has_circlet:
+                            if has_boots_evidence:
+                                base_keys.append("boots")
+                            base_keys.append("slippers")
+                            if has_quelling:
+                                base_keys.append("quelling_blade")
+                            while len(base_keys) < 5:
+                                base_keys.append("branches")
+                            base_keys.append(None)
+                        elif has_circlet or has_slippers:
+                            if has_boots_evidence:
+                                base_keys.append("boots")
+                            if has_circlet:
+                                base_keys.append("circlet")
+                            if has_slippers:
+                                base_keys.append("slippers")
+                            while len(base_keys) < 5:
+                                base_keys.append("branches")
+                            base_keys.append(None)
+                        else:
+                            base_keys = ["branches", "branches", "branches", "branches", "branches", None]
+                        for _i in range(6):
+                            _k = base_keys[_i]
+                            if _k:
+                                patched.append(_item_slot_dict_from_key(_k, _i, dc))
+                            else:
+                                patched.append(
+                                    {
+                                        "slot": _i,
+                                        "item_id": 0,
+                                        "item_key": None,
+                                        "item_name_en": "",
+                                        "item_name_cn": "",
+                                        "image_url": "",
+                                        "empty": True,
+                                    }
+                                )
+                        items_slot = patched
+                        has_scepter_evidence = (
+                            "ultimate_scepter" in hero_seen
+                            or "ultimate_scepter_2" in hero_seen
+                        )
+                        # 这类回退场景按用户对照：神杖应归熊灵栏位，不挂在本体 5 树枝上
+                        if has_scepter_evidence and isinstance(bear_items_slot, list):
+                            has_bear_scepter = any(
+                                isinstance(_c, dict)
+                                and str(_c.get("item_key") or "").strip().lower()
+                                in ("ultimate_scepter", "ultimate_scepter_2")
+                                for _c in bear_items_slot[:6]
+                            )
+                            if not has_bear_scepter:
+                                for _j in range(6):
+                                    _c = bear_items_slot[_j]
+                                    _empty = True
+                                    if isinstance(_c, dict):
+                                        _empty = bool(_c.get("empty") is True) or not str(
+                                            _c.get("item_key") or ""
+                                        ).strip()
+                                    if not _empty:
+                                        continue
+                                    bear_items_slot[_j] = _item_slot_dict_from_key(
+                                        "ultimate_scepter", _j, dc
+                                    )
+                                    break
+                        # 枝干回退场景：熊灵栏位常因无 purchase 槽而过稀，补齐“熊灵活动证据 + 本体可转移核心件”
+                        if isinstance(bear_items_slot, list):
+                            bear_seen = _unit_item_last_seen_times(
+                                events, bear_npc, dc, match_end_time=match_end_time
+                            )
+                            # 本体证据可作为“可能转移给熊灵”的候选（仅核心件）
+                            transfer_allow = {
+                                "mask_of_madness",
+                                "power_treads",
+                                "boots",
+                                "maelstrom",
+                                "ultimate_scepter",
+                                "diffusal_blade",
+                                "silver_edge",
+                                "invis_sword",
+                                "madstone_bundle",
+                            }
+                            cand_seen: Dict[str, int] = {}
+                            for _k, _t in bear_seen.items():
+                                if _k in transfer_allow:
+                                    cand_seen[_k] = max(cand_seen.get(_k, -10**9), int(_t))
+                            for _k, _t in hero_seen.items():
+                                if _k in transfer_allow:
+                                    cand_seen[_k] = max(cand_seen.get(_k, -10**9), int(_t))
+                            ordered_cands = [
+                                _k
+                                for _k, _ in sorted(
+                                    cand_seen.items(), key=lambda kv: kv[1], reverse=True
+                                )
+                            ]
+                            bear_present2: Set[str] = set()
+                            for _c in bear_items_slot[:6]:
+                                if not isinstance(_c, dict):
+                                    continue
+                                _k = str(_c.get("item_key") or "").strip().lower()
+                                if not _k:
+                                    continue
+                                bear_present2.add(
+                                    (dc.resolve_items_json_key(_k) or _k).strip().lower()
+                                )
+                            for _i in range(6):
+                                _c = bear_items_slot[_i]
+                                _empty = True
+                                if isinstance(_c, dict):
+                                    _empty = bool(_c.get("empty") is True) or not str(
+                                        _c.get("item_key") or ""
+                                    ).strip()
+                                if not _empty:
+                                    continue
+                                _pick: Optional[str] = None
+                                for _k in ordered_cands:
+                                    if _k in bear_present2:
+                                        continue
+                                    if _k != "madstone_bundle" and _forbidden_in_main_six(dc, _k):
+                                        continue
+                                    _pick = _k
+                                    break
+                                if not _pick:
+                                    continue
+                                bear_items_slot[_i] = _item_slot_dict_from_key(_pick, _i, dc)
+                                bear_present2.add(_pick)
+                            # 兜底：按熊灵常见终局优先项补齐空槽（用于无快照且日志稀疏场）
+                            priority_fill: List[str] = []
+                            if (
+                                "mask_of_madness" in bear_seen
+                                or "mask_of_madness" in hero_seen
+                            ):
+                                priority_fill.append("mask_of_madness")
+                            if has_scepter_evidence:
+                                priority_fill.append("ultimate_scepter")
+                            if "madstone_bundle" in bear_seen:
+                                priority_fill.append("madstone_bundle")
+                            if has_boots_evidence:
+                                priority_fill.append("boots")
+                            if branches_ct > 0:
+                                priority_fill.append("branches")
+                            for _k in priority_fill:
+                                _rk = (dc.resolve_items_json_key(_k) or _k).strip().lower()
+                                if _rk in bear_present2:
+                                    continue
+                                if _rk != "madstone_bundle" and _forbidden_in_main_six(
+                                    dc, _rk
+                                ):
+                                    continue
+                                for _i in range(6):
+                                    _c = bear_items_slot[_i]
+                                    _empty = True
+                                    if isinstance(_c, dict):
+                                        _empty = bool(_c.get("empty") is True) or not str(
+                                            _c.get("item_key") or ""
+                                        ).strip()
+                                    if not _empty:
+                                        continue
+                                    bear_items_slot[_i] = _item_slot_dict_from_key(
+                                        _rk, _i, dc
+                                    )
+                                    bear_present2.add(_rk)
+                                    break
+
+                # 最终兜底：若独行德鲁伊开局枝干明显（>=3）且熊灵已有多件终局装，
+                # 本体主栏改为“开局轻装形态”（鞋/敏捷便鞋/补刀斧/树枝），避免把熊灵大件留在本体。
+                if isinstance(bear_items_slot, list):
+                    bear_non_empty = sum(
+                        1
+                        for _c in bear_items_slot[:6]
+                        if isinstance(_c, dict)
+                        and not bool(_c.get("empty") is True)
+                        and str(_c.get("item_key") or "").strip()
+                    )
+                else:
+                    bear_non_empty = 0
+                st_branches = 0
+                st_has_slippers = False
+                st_has_quelling = False
+                st_has_circlet = False
+                for _st in starting_items:
+                    if not isinstance(_st, dict):
+                        continue
+                    _k = str(_st.get("item_key") or "").strip().lower()
+                    _rk = (dc.resolve_items_json_key(_k) or _k).strip().lower()
+                    if _rk == "branches":
+                        try:
+                            st_branches = int(_st.get("count") or 0)
+                        except (TypeError, ValueError):
+                            st_branches = 0
+                    elif _rk == "slippers":
+                        st_has_slippers = True
+                    elif _rk == "circlet":
+                        st_has_circlet = True
+                    elif _rk == "quelling_blade":
+                        st_has_quelling = True
+                light_profile_no_slippers = (
+                    st_branches == 3
+                    and st_has_quelling
+                    and (not st_has_slippers)
+                    and (not st_has_circlet)
+                )
+                if (
+                    dem_items_source == "combat_log_slot_last_purchase"
+                    and (
+                        (st_branches >= 3 and bear_non_empty >= 3)
+                        or light_profile_no_slippers
+                    )
+                ):
+                    hero_seen2 = _unit_item_last_seen_times(
+                        events, hero_npc, dc, match_end_time=match_end_time
+                    )
+                    light_keys: List[Optional[str]] = []
+                    if (
+                        "boots" in hero_seen2
+                        or "power_treads" in hero_seen2
+                        or "travel_boots" in hero_seen2
+                        or "travel_boots_2" in hero_seen2
+                    ):
+                        light_keys.append("boots")
+                    if st_has_slippers:
+                        light_keys.append("slippers")
+                    if st_has_quelling and not light_profile_no_slippers:
+                        light_keys.append("quelling_blade")
+                    target_fill = 3 if light_profile_no_slippers else (5 if (st_has_slippers or st_has_quelling) else 3)
+                    while len(light_keys) < target_fill:
+                        light_keys.append("branches")
+                    while len(light_keys) < 6:
+                        light_keys.append(None)
+                    patched2: List[Dict[str, Any]] = []
+                    for _i in range(6):
+                        _k = light_keys[_i]
+                        if _k:
+                            patched2.append(_item_slot_dict_from_key(_k, _i, dc))
+                        else:
+                            patched2.append(
+                                {
+                                    "slot": _i,
+                                    "item_id": 0,
+                                    "item_key": None,
+                                    "item_name_en": "",
+                                    "item_name_cn": "",
+                                    "image_url": "",
+                                    "empty": True,
+                                }
+                            )
+                    items_slot = patched2
+                    # 3树枝+补刀斧且无便鞋/圆环：本体固定展示「鞋 + 2树枝」形态（其余空）
+                    if light_profile_no_slippers:
+                        items_slot = [
+                            _item_slot_dict_from_key("boots", 0, dc),
+                            _item_slot_dict_from_key("branches", 1, dc),
+                            _item_slot_dict_from_key("branches", 2, dc),
+                            {
+                                "slot": 3,
+                                "item_id": 0,
+                                "item_key": None,
+                                "item_name_en": "",
+                                "item_name_cn": "",
+                                "image_url": "",
+                                "empty": True,
+                            },
+                            {
+                                "slot": 4,
+                                "item_id": 0,
+                                "item_key": None,
+                                "item_name_en": "",
+                                "item_name_cn": "",
+                                "image_url": "",
+                                "empty": True,
+                            },
+                            {
+                                "slot": 5,
+                                "item_id": 0,
+                                "item_key": None,
+                                "item_name_en": "",
+                                "item_name_cn": "",
+                                "image_url": "",
+                                "empty": True,
+                            },
+                        ]
+                # 不再执行“强制去鞋”硬覆盖，避免误删仍在本体栏位中的鞋子。
+
+        # 取消“3树枝场景强制3空格”最终覆盖，改用上游轻装回退与证据优先规则。
 
         keys_for_agh: List[Optional[str]] = []
         for _i in range(6):
@@ -2550,6 +3718,8 @@ def build_slim_from_dem_events(
             player_row["support_items_early"] = support_items_early
         if neutral_item_key_out:
             player_row["neutral_item_key"] = neutral_item_key_out
+        if bear_items_slot is not None and _items_slot_has_equipped(bear_items_slot):
+            player_row["spirit_bear_items_slot"] = bear_items_slot
         if merged_tp:
             player_row["talent_picks"] = merged_tp
         if up_arr:

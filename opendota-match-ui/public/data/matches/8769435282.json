@@ -3584,12 +3584,12 @@
           {
             "group": "backpack",
             "slot": 0,
-            "item_id": 188,
-            "item_key": "smoke_of_deceit",
-            "item_name_en": "Smoke of Deceit",
-            "item_name_cn": "诡计之雾",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/smoke_of_deceit.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
@@ -5017,12 +5017,12 @@
           {
             "group": "backpack",
             "slot": 0,
-            "item_id": 11,
-            "item_key": "quelling_blade",
-            "item_name_en": "Quelling Blade",
-            "item_name_cn": "补刀斧",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/quelling_blade.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
@@ -11119,12 +11119,12 @@
           {
             "group": "backpack",
             "slot": 0,
-            "item_id": 21,
-            "item_key": "ogre_axe",
-            "item_name_en": "Ogre Axe",
-            "item_name_cn": "食人魔之斧",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/ogre_axe.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
@@ -12828,12 +12828,12 @@
           {
             "group": "backpack",
             "slot": 0,
-            "item_id": 188,
-            "item_key": "smoke_of_deceit",
-            "item_name_en": "Smoke of Deceit",
-            "item_name_cn": "诡计之雾",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/smoke_of_deceit.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
@@ -14427,23 +14427,23 @@
           {
             "group": "backpack",
             "slot": 0,
-            "item_id": 21,
-            "item_key": "ogre_axe",
-            "item_name_en": "Ogre Axe",
-            "item_name_cn": "食人魔之斧",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/ogre_axe.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
             "group": "backpack",
             "slot": 1,
-            "item_id": 11,
-            "item_key": "quelling_blade",
-            "item_name_en": "Quelling Blade",
-            "item_name_cn": "补刀斧",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/quelling_blade.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
@@ -16087,15 +16087,6 @@
         {
           "type": "ability",
           "level": 4,
-          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/wisp_tether_break.png",
-          "name_en": "Break Tether",
-          "name_cn": "Break Tether",
-          "ability_id": 5489,
-          "ability_key": "wisp_tether_break"
-        },
-        {
-          "type": "ability",
-          "level": 5,
           "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/wisp_overcharge.png",
           "name_en": "Overcharge",
           "name_cn": "Overcharge",
@@ -16104,7 +16095,7 @@
         },
         {
           "type": "ability",
-          "level": 6,
+          "level": 5,
           "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/wisp_relocate.png",
           "name_en": "Relocate",
           "name_cn": "Relocate",
@@ -16113,12 +16104,21 @@
         },
         {
           "type": "ability",
-          "level": 7,
+          "level": 6,
           "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/wisp_overcharge.png",
           "name_en": "Overcharge",
           "name_cn": "Overcharge",
           "ability_id": 5487,
           "ability_key": "wisp_overcharge"
+        },
+        {
+          "type": "ability",
+          "level": 7,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/wisp_tether.png",
+          "name_en": "Tether",
+          "name_cn": "Tether",
+          "ability_id": 5485,
+          "ability_key": "wisp_tether"
         },
         {
           "type": "ability",
@@ -16130,41 +16130,16 @@
           "ability_key": "wisp_tether"
         },
         {
-          "type": "ability",
-          "level": 9,
-          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/wisp_tether.png",
-          "name_en": "Tether",
-          "name_cn": "Tether",
-          "ability_id": 5485,
-          "ability_key": "wisp_tether"
-        },
-        {
           "type": "talent",
-          "level": 10,
+          "level": 9,
           "name": "+8 Strength",
           "name_en": "+8 Strength",
           "ability_id": 5982,
           "ability_key": "special_bonus_strength_8"
         },
         {
-          "type": "talent",
-          "level": 11,
-          "name": "special_bonus_attributes",
-          "name_en": "special_bonus_attributes",
-          "ability_id": 730,
-          "ability_key": "special_bonus_attributes"
-        },
-        {
-          "type": "talent",
-          "level": 12,
-          "name": "special_bonus_attributes",
-          "name_en": "special_bonus_attributes",
-          "ability_id": 730,
-          "ability_key": "special_bonus_attributes"
-        },
-        {
           "type": "ability",
-          "level": 13,
+          "level": 10,
           "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/wisp_relocate.png",
           "name_en": "Relocate",
           "name_cn": "Relocate",
@@ -17590,12 +17565,12 @@
           {
             "group": "backpack",
             "slot": 0,
-            "item_id": 1869,
-            "item_key": "foragers_health",
-            "item_name_en": "Vital Toadstool",
-            "item_name_cn": "Vital Toadstool",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/foragers_health.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
@@ -18725,5 +18700,10 @@
   },
   "my_word_counts": {},
   "comeback": 100,
-  "stomp": 18128
+  "stomp": 18128,
+  "_meta": {
+    "source": "api_upload",
+    "match_id": 8769435282,
+    "uploaded_at": "2026-04-16T02:27:15Z"
+  }
 }

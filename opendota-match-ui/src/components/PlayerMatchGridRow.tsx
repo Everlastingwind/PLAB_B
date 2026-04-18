@@ -6,6 +6,7 @@ import {
   heroIconUrl,
   itemIconUrl,
   normalizeDotaAssetUrl,
+  onDotaSteamAssetImgError,
   steamCdnImgDefer,
   steamCdnImgHero,
 } from "../data/mockMatchPlayers";
@@ -98,6 +99,7 @@ function GridInventorySlots({
   const shardOn = p.shardActive ?? (legacy === "shard" || legacy === "both");
 
   const main = p.items.main;
+  const bearMain = p.spiritBearItems;
 
   const sideBorderMain =
     side === "radiant"
@@ -116,6 +118,57 @@ function GridInventorySlots({
   );
 
   const aghBox = compact ? "h-5 w-5 p-px" : "h-6 w-6 p-0.5";
+  const bearLabelClass = cn(
+    "inline-flex items-center justify-center rounded border px-1 text-[10px] leading-4",
+    side === "radiant"
+      ? "border-emerald-700/35 bg-emerald-900/10 text-emerald-900 dark:border-emerald-500/30 dark:bg-emerald-600/10 dark:text-emerald-300"
+      : "border-rose-700/35 bg-rose-900/10 text-rose-900 dark:border-rose-500/30 dark:bg-rose-600/10 dark:text-rose-300"
+  );
+
+  function renderMainSixRow(
+    slots: readonly (typeof main[number])[],
+    ariaLabel: string
+  ) {
+    return (
+      <div
+        className={cn(
+          "grid shrink-0 grid-cols-6",
+          compact ? "gap-1" : "gap-2"
+        )}
+        role="list"
+        aria-label={ariaLabel}
+      >
+        {([0, 1, 2, 3, 4, 5] as const).map((idx) => {
+          const slot = slots[idx] ?? null;
+          if (!slot) {
+            return (
+              <div
+                key={idx}
+                className={emptyMain}
+                aria-hidden
+                role="listitem"
+              />
+            );
+          }
+          const rawImg = slot.imageUrl?.trim() ?? "";
+          const src =
+            normalizeDotaAssetUrl(rawImg) ||
+            itemIconUrl(itemKeyClean(slot.itemKey));
+          return (
+            <div key={idx} className={filledMain} role="listitem">
+              <img
+                src={src}
+                alt=""
+                className="h-full w-full object-cover"
+                {...steamCdnImgDefer}
+                onError={onDotaSteamAssetImgError}
+              />
+            </div>
+          );
+        })}
+      </div>
+    );
+  }
 
   return (
     <div
@@ -125,7 +178,10 @@ function GridInventorySlots({
       )}
     >
       <div
-        className={cn("flex shrink-0 flex-col", compact ? "gap-0.5" : "gap-1")}
+        className={cn(
+          "flex shrink-0 flex-col self-start",
+          compact ? "-mt-0.5 gap-0.5" : "-mt-1 gap-1"
+        )}
         aria-label="阿哈利姆神杖与魔晶"
       >
         <div
@@ -143,6 +199,7 @@ function GridInventorySlots({
             alt=""
             className="h-full w-full object-cover"
             {...steamCdnImgDefer}
+            onError={onDotaSteamAssetImgError}
           />
         </div>
         <div
@@ -160,50 +217,33 @@ function GridInventorySlots({
             alt=""
             className="h-full w-full object-cover"
             {...steamCdnImgDefer}
+            onError={onDotaSteamAssetImgError}
           />
         </div>
+        {bearMain ? (
+          <div className={cn("flex items-center justify-center", aghBox)}>
+            <span
+              className={cn(
+                bearLabelClass,
+                "w-full",
+                compact ? "text-[9px]" : "text-[10px]"
+              )}
+            >
+              熊
+            </span>
+          </div>
+        ) : null}
       </div>
 
-      <div
-        className={cn(
-          "flex shrink-0 flex-nowrap items-center overflow-hidden",
-          compact ? "gap-1" : "gap-2"
-        )}
-      >
-        <div
-          className={cn(
-            "grid shrink-0 grid-cols-6",
-            compact ? "gap-1" : "gap-2"
-          )}
-          role="list"
-          aria-label="主物品栏（6 格）"
-        >
-          {([0, 1, 2, 3, 4, 5] as const).map((idx) => {
-            const slot = main[idx] ?? null;
-            if (!slot) {
-              return (
-                <div
-                  key={idx}
-                  className={emptyMain}
-                  aria-hidden
-                  role="listitem"
-                />
-              );
-            }
-            const rawImg = slot.imageUrl?.trim() ?? "";
-            const src = normalizeDotaAssetUrl(rawImg) || itemIconUrl(itemKeyClean(slot.itemKey));
-            return (
-              <div key={idx} className={filledMain} role="listitem">
-                <img
-                  src={src}
-                  alt=""
-                  className="h-full w-full object-cover"
-                  {...steamCdnImgDefer}
-                />
-              </div>
-            );
-          })}
+      <div className={cn("flex shrink-0 flex-col", compact ? "gap-1" : "gap-1.5")}>
+        <div className={cn("flex items-center", compact ? "gap-1" : "gap-2")}>
+          {renderMainSixRow(main, "主物品栏（6 格）")}
         </div>
+        {bearMain ? (
+          <div className={cn("flex items-center", compact ? "gap-1" : "gap-2")}>
+            {renderMainSixRow(bearMain, "熊灵物品栏（6 格）")}
+          </div>
+        ) : null}
       </div>
     </div>
   );
@@ -332,6 +372,7 @@ export function PlayerMatchGridRow({
                 "rounded-[4px]"
               )}
               {...steamCdnImgHero}
+              onError={onDotaSteamAssetImgError}
             />
             <div className="min-w-0 flex-1">
               {canLinkPlayer ? (
@@ -507,6 +548,7 @@ export function PlayerMatchGridRow({
                           alt=""
                           className="h-full w-full object-cover"
                           {...steamCdnImgDefer}
+                          onError={onDotaSteamAssetImgError}
                         />
                       </div>
                     );
@@ -556,6 +598,7 @@ export function PlayerMatchGridRow({
             "rounded-[4px]"
           )}
           {...steamCdnImgHero}
+          onError={onDotaSteamAssetImgError}
         />
         {hasTalentOrSkillUi(p) ? (
           <div className="pointer-events-auto shrink-0">
@@ -665,6 +708,7 @@ export function PlayerMatchGridRow({
                   alt=""
                   className="h-full w-full object-cover"
                   {...steamCdnImgDefer}
+                  onError={onDotaSteamAssetImgError}
                 />
               </div>
             );

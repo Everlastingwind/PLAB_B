@@ -144,6 +144,7 @@ export function MatchTeamTable({
       <div className="min-w-0 overflow-x-auto">
         <div className={headerGridClass(team.side)}>
           <div className="min-w-0 text-left">玩家</div>
+          <div className="text-center">出门装</div>
           <div className="text-center">Lv / KDA</div>
           <div className="text-center">正/反</div>
           <div className="text-center">经济</div>

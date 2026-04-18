@@ -1,7 +1,9 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
+import { HelmetProvider } from "react-helmet-async";
 import App from "./App";
+import { FeedbackWidget } from "./components/FeedbackWidget";
 import { RootErrorBoundary } from "./components/RootErrorBoundary";
 import "./index.css";
 
@@ -14,9 +16,12 @@ if (!rootEl) {
   createRoot(rootEl).render(
     <StrictMode>
       <RootErrorBoundary>
-        <BrowserRouter>
-          <App />
-        </BrowserRouter>
+        <HelmetProvider>
+          <BrowserRouter>
+            <App />
+            <FeedbackWidget />
+          </BrowserRouter>
+        </HelmetProvider>
       </RootErrorBoundary>
     </StrictMode>
   );

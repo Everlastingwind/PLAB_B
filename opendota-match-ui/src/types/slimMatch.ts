@@ -148,6 +148,8 @@ export interface SlimPlayer {
   item_5?: number | null;
   item_neutral?: number | null;
   items_slot?: SlimItemSlot[];
+  /** 独行德鲁伊熊灵终局主 6 格（与英雄本体分开） */
+  spirit_bear_items_slot?: SlimItemSlot[];
   hero_name_cn?: string;
   hero_name_en?: string;
   /** 中立物品槽完整 CDN（已由后端 dotaconstants 解析） */

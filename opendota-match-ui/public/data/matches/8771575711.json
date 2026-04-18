@@ -8436,12 +8436,12 @@
           {
             "group": "backpack",
             "slot": 0,
-            "item_id": 1123,
-            "item_key": "blood_grenade",
-            "item_name_en": "Blood Grenade",
-            "item_name_cn": "Blood Grenade",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/blood_grenade.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
@@ -10579,12 +10579,12 @@
           {
             "group": "backpack",
             "slot": 0,
-            "item_id": 188,
-            "item_key": "smoke_of_deceit",
-            "item_name_en": "Smoke of Deceit",
-            "item_name_cn": "诡计之雾",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/smoke_of_deceit.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
@@ -12597,16 +12597,8 @@
           "ability_key": "special_bonus_attack_speed_20"
         },
         {
-          "type": "talent",
-          "level": 12,
-          "name": "special_bonus_attributes",
-          "name_en": "special_bonus_attributes",
-          "ability_id": 730,
-          "ability_key": "special_bonus_attributes"
-        },
-        {
           "type": "ability",
-          "level": 13,
+          "level": 12,
           "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/muerta_pierce_the_veil.png",
           "name_en": "Pierce the Veil",
           "name_cn": "Pierce the Veil",
@@ -12614,12 +12606,21 @@
           "ability_key": "muerta_pierce_the_veil"
         },
         {
+          "type": "ability",
+          "level": 13,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/muerta_the_calling.png",
+          "name_en": "The Calling",
+          "name_cn": "The Calling",
+          "ability_id": 5752,
+          "ability_key": "muerta_the_calling"
+        },
+        {
           "type": "talent",
           "level": 14,
-          "name": "special_bonus_attributes",
-          "name_en": "special_bonus_attributes",
-          "ability_id": 730,
-          "ability_key": "special_bonus_attributes"
+          "name": "+15 Intelligence",
+          "name_en": "+15 Intelligence",
+          "ability_id": 5991,
+          "ability_key": "special_bonus_intelligence_15"
         },
         {
           "type": "ability",
@@ -12631,34 +12632,17 @@
           "ability_key": "muerta_the_calling"
         },
         {
-          "type": "talent",
+          "type": "ability",
           "level": 16,
-          "name": "+15 Intelligence",
-          "name_en": "+15 Intelligence",
-          "ability_id": 5991,
-          "ability_key": "special_bonus_intelligence_15"
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/muerta_the_calling.png",
+          "name_en": "The Calling",
+          "name_cn": "The Calling",
+          "ability_id": 5752,
+          "ability_key": "muerta_the_calling"
         },
         {
           "type": "ability",
           "level": 17,
-          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/muerta_the_calling.png",
-          "name_en": "The Calling",
-          "name_cn": "The Calling",
-          "ability_id": 5752,
-          "ability_key": "muerta_the_calling"
-        },
-        {
-          "type": "ability",
-          "level": 18,
-          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/muerta_the_calling.png",
-          "name_en": "The Calling",
-          "name_cn": "The Calling",
-          "ability_id": 5752,
-          "ability_key": "muerta_the_calling"
-        },
-        {
-          "type": "ability",
-          "level": 19,
           "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/muerta_pierce_the_veil.png",
           "name_en": "Pierce the Veil",
           "name_cn": "Pierce the Veil",
@@ -12667,7 +12651,7 @@
         },
         {
           "type": "unknown",
-          "level": 20,
+          "level": 18,
           "ability_id": 1629,
           "ability_key": "special_bonus_unique_muerta_pierce_the_veil_duration",
           "reason": "ability_key_not_in_abilities_json",
@@ -16422,12 +16406,12 @@
           {
             "group": "backpack",
             "slot": 1,
-            "item_id": 188,
-            "item_key": "smoke_of_deceit",
-            "item_name_en": "Smoke of Deceit",
-            "item_name_cn": "诡计之雾",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/smoke_of_deceit.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
@@ -20411,12 +20395,12 @@
           {
             "group": "backpack",
             "slot": 0,
-            "item_id": 188,
-            "item_key": "smoke_of_deceit",
-            "item_name_en": "Smoke of Deceit",
-            "item_name_cn": "诡计之雾",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/smoke_of_deceit.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
@@ -21575,7 +21559,9 @@
   "stomp": 7125,
   "_meta": {
     "source": "opendota_pro",
-    "category": "pro"
+    "category": "pro",
+    "match_id": 8771575711,
+    "uploaded_at": "2026-04-16T02:29:02Z"
   },
   "source": "pro",
   "category": "pro"

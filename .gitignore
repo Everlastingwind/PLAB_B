@@ -10,9 +10,11 @@ opendota-match-ui/tsconfig.tsbuildinfo
 .env
 .env.local
 .env.*.local
+site_upload.json
 
 # Python
 __pycache__/
 *.py[cod]
 *$py.class
 .Python
+.vercel

@@ -10,10 +10,15 @@ import { useNavigate } from "react-router-dom";
 import { Search } from "lucide-react";
 import type { EntityMapsPayload, HeroMapEntry } from "../types/entityMaps";
 import { cn } from "../lib/cn";
-import { heroIconUrl, steamCdnImgDefer } from "../data/mockMatchPlayers";
+import {
+  heroIconUrl,
+  onDotaSteamAssetImgError,
+  steamCdnImgDefer,
+} from "../data/mockMatchPlayers";
 import heroPrimaryAttr from "../data/hero_primary_attr.json";
 import { FeedModeToggle, type FeedSelection } from "./FeedModeToggle";
 import { SEEDED_PRO_PLAYERS } from "../data/proPlayers";
+import { fetchDeployedDataJson } from "../lib/fetchStaticJson";
 
 type HeroRow = HeroMapEntry & { id: string };
 type AttrFilter = "str" | "agi" | "int" | "all";
@@ -223,19 +228,19 @@ export function HeroSearch({
     let cancelled = false;
     (async () => {
       try {
-        const urls = [
-          `/data/replays_index.json?t=${Date.now()}`,
-          `/data/pro_replays_index.json?t=${Date.now()}`,
-        ];
+        const paths = ["/data/replays_index.json", "/data/pro_replays_index.json"] as const;
+        const payloads = await Promise.all(
+          paths.map((p) =>
+            fetchDeployedDataJson<{
+              replays?: Array<{
+                players?: Array<{ account_id?: number; pro_name?: string | null }>;
+              }>;
+            }>(p).catch(() => null)
+          )
+        );
         const uniq = new Map<number, string>();
-        for (const url of urls) {
-          const res = await fetch(url, { cache: "no-store" });
-          if (!res.ok) continue;
-          const j = (await res.json()) as {
-            replays?: Array<{
-              players?: Array<{ account_id?: number; pro_name?: string | null }>;
-            }>;
-          };
+        for (const j of payloads) {
+          if (!j) continue;
           for (const r of j.replays ?? []) {
             for (const p of r.players ?? []) {
               const aid = Number(p.account_id ?? 0);
@@ -451,6 +456,7 @@ export function HeroSearch({
                     alt={h.nameCn || h.nameEn}
                     className="h-full w-full object-cover object-center"
                     {...steamCdnImgDefer}
+                    onError={onDotaSteamAssetImgError}
                   />
                 </div>
               </button>

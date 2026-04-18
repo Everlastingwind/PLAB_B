@@ -4258,23 +4258,23 @@
           {
             "group": "backpack",
             "slot": 0,
-            "item_id": 16,
-            "item_key": "branches",
-            "item_name_en": "Iron Branch",
-            "item_name_cn": "树枝",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/branches.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
             "group": "backpack",
             "slot": 1,
-            "item_id": 16,
-            "item_key": "branches",
-            "item_name_en": "Iron Branch",
-            "item_name_cn": "树枝",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/branches.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
@@ -6130,12 +6130,12 @@
           {
             "group": "backpack",
             "slot": 0,
-            "item_id": 16,
-            "item_key": "branches",
-            "item_name_en": "Iron Branch",
-            "item_name_cn": "树枝",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/branches.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
@@ -6273,16 +6273,8 @@
           "ability_key": "special_bonus_unique_nevermore_4"
         },
         {
-          "type": "talent",
-          "level": 12,
-          "name": "special_bonus_attributes",
-          "name_en": "special_bonus_attributes",
-          "ability_id": 730,
-          "ability_key": "special_bonus_attributes"
-        },
-        {
           "type": "ability",
-          "level": 13,
+          "level": 12,
           "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/nevermore_requiem.png",
           "name_en": "Requiem of Souls",
           "name_cn": "Requiem of Souls",
@@ -6291,55 +6283,15 @@
         },
         {
           "type": "talent",
-          "level": 14,
-          "name": "special_bonus_attributes",
-          "name_en": "special_bonus_attributes",
-          "ability_id": 730,
-          "ability_key": "special_bonus_attributes"
-        },
-        {
-          "type": "talent",
-          "level": 15,
-          "name": "special_bonus_attributes",
-          "name_en": "special_bonus_attributes",
-          "ability_id": 730,
-          "ability_key": "special_bonus_attributes"
-        },
-        {
-          "type": "talent",
-          "level": 16,
+          "level": 13,
           "name": "+{s:bonus_soul_collection_per_hero} Feast of Souls Souls Collected Per Hero",
           "name_en": "+{s:bonus_soul_collection_per_hero} Feast of Souls Souls Collected Per Hero",
           "ability_id": 1789,
           "ability_key": "special_bonus_unique_nevermore_frenzy_max_collection_count"
         },
         {
-          "type": "talent",
-          "level": 17,
-          "name": "special_bonus_attributes",
-          "name_en": "special_bonus_attributes",
-          "ability_id": 730,
-          "ability_key": "special_bonus_attributes"
-        },
-        {
-          "type": "talent",
-          "level": 18,
-          "name": "special_bonus_attributes",
-          "name_en": "special_bonus_attributes",
-          "ability_id": 730,
-          "ability_key": "special_bonus_attributes"
-        },
-        {
-          "type": "talent",
-          "level": 19,
-          "name": "special_bonus_attributes",
-          "name_en": "special_bonus_attributes",
-          "ability_id": 730,
-          "ability_key": "special_bonus_attributes"
-        },
-        {
           "type": "ability",
-          "level": 20,
+          "level": 14,
           "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/nevermore_requiem.png",
           "name_en": "Requiem of Souls",
           "name_cn": "Requiem of Souls",
@@ -6348,15 +6300,7 @@
         },
         {
           "type": "talent",
-          "level": 21,
-          "name": "special_bonus_attributes",
-          "name_en": "special_bonus_attributes",
-          "ability_id": 730,
-          "ability_key": "special_bonus_attributes"
-        },
-        {
-          "type": "talent",
-          "level": 22,
+          "level": 15,
           "name": "+{s:bonus_necromastery_max_souls} Necromastery Max Souls",
           "name_en": "+{s:bonus_necromastery_max_souls} Necromastery Max Souls",
           "ability_id": 6670,
@@ -6364,7 +6308,7 @@
         },
         {
           "type": "ability",
-          "level": 23,
+          "level": 16,
           "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/nevermore_shadowraze3.png",
           "name_en": "Shadowraze",
           "name_cn": "Shadowraze",
@@ -9975,12 +9919,12 @@
           {
             "group": "backpack",
             "slot": 0,
-            "item_id": 188,
-            "item_key": "smoke_of_deceit",
-            "item_name_en": "Smoke of Deceit",
-            "item_name_cn": "诡计之雾",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/smoke_of_deceit.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
@@ -10559,7 +10503,7 @@
       ],
       "ability_timeline": [
         {
-          "time": 352,
+          "time": null,
           "ability_id": 386,
           "ability_key": "ringmaster_impalement",
           "ability_name_en": "Impalement Arts",
@@ -10568,7 +10512,7 @@
           "is_talent": false
         },
         {
-          "time": 383,
+          "time": null,
           "ability_id": 352,
           "ability_key": "ringmaster_tame_the_beasts",
           "ability_name_en": "Tame the Beasts",
@@ -10577,7 +10521,7 @@
           "is_talent": false
         },
         {
-          "time": 383,
+          "time": null,
           "ability_id": 396,
           "ability_key": "special_bonus_unique_ringmaster_whip_radius",
           "ability_name_en": "+75 Tame the Beasts Radius",
@@ -10586,7 +10530,7 @@
           "is_talent": true
         },
         {
-          "time": 383,
+          "time": null,
           "ability_id": 385,
           "ability_key": "ringmaster_wheel",
           "ability_name_en": "Wheel of Wonder",
@@ -10595,7 +10539,7 @@
           "is_talent": false
         },
         {
-          "time": 385,
+          "time": null,
           "ability_id": 352,
           "ability_key": "ringmaster_tame_the_beasts",
           "ability_name_en": "Tame the Beasts",
@@ -10604,7 +10548,7 @@
           "is_talent": false
         },
         {
-          "time": 386,
+          "time": null,
           "ability_id": 352,
           "ability_key": "ringmaster_tame_the_beasts",
           "ability_name_en": "Tame the Beasts",
@@ -10613,7 +10557,7 @@
           "is_talent": false
         },
         {
-          "time": 386,
+          "time": null,
           "ability_id": 386,
           "ability_key": "ringmaster_impalement",
           "ability_name_en": "Impalement Arts",
@@ -10622,7 +10566,7 @@
           "is_talent": false
         },
         {
-          "time": 707,
+          "time": null,
           "ability_id": 383,
           "ability_key": "ringmaster_the_box",
           "ability_name_en": "Escape Act",
@@ -10633,7 +10577,7 @@
       ],
       "talents_taken": [
         {
-          "time": 383,
+          "time": null,
           "ability_id": 396,
           "ability_key": "special_bonus_unique_ringmaster_whip_radius",
           "ability_name_en": "+75 Tame the Beasts Radius",
@@ -11566,23 +11510,23 @@
           {
             "group": "backpack",
             "slot": 0,
-            "item_id": 23,
-            "item_key": "staff_of_wizardry",
-            "item_name_en": "Staff of Wizardry",
-            "item_name_cn": "魔力法杖",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/staff_of_wizardry.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
             "group": "backpack",
             "slot": 1,
-            "item_id": 21,
-            "item_key": "ogre_axe",
-            "item_name_en": "Ogre Axe",
-            "item_name_cn": "食人魔之斧",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/ogre_axe.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
@@ -17644,12 +17588,12 @@
           {
             "group": "backpack",
             "slot": 0,
-            "item_id": 188,
-            "item_key": "smoke_of_deceit",
-            "item_name_en": "Smoke of Deceit",
-            "item_name_cn": "诡计之雾",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/smoke_of_deceit.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
@@ -19574,23 +19518,23 @@
           {
             "group": "backpack",
             "slot": 0,
-            "item_id": 218,
-            "item_key": "ward_dispenser",
-            "item_name_en": "Observer and Sentry Wards",
-            "item_name_cn": "眼粉合一",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/ward_dispenser.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
             "group": "backpack",
             "slot": 1,
-            "item_id": 188,
-            "item_key": "smoke_of_deceit",
-            "item_name_en": "Smoke of Deceit",
-            "item_name_cn": "诡计之雾",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/smoke_of_deceit.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
@@ -21388,23 +21332,23 @@
           {
             "group": "backpack",
             "slot": 0,
-            "item_id": 188,
-            "item_key": "smoke_of_deceit",
-            "item_name_en": "Smoke of Deceit",
-            "item_name_cn": "诡计之雾",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/smoke_of_deceit.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
             "group": "backpack",
             "slot": 1,
-            "item_id": 21,
-            "item_key": "ogre_axe",
-            "item_name_en": "Ogre Axe",
-            "item_name_cn": "食人魔之斧",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/ogre_axe.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
@@ -22556,7 +22500,9 @@
   "stomp": 24999,
   "_meta": {
     "source": "opendota_pro",
-    "category": "pro"
+    "category": "pro",
+    "match_id": 8773027499,
+    "uploaded_at": "2026-04-16T02:30:22Z"
   },
   "source": "pro",
   "category": "pro"

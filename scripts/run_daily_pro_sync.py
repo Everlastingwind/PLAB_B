@@ -7,9 +7,9 @@
 
 用法（项目根 PLAB_B）::
 
-  python scripts/run_daily_pro_sync.py
-  python scripts/run_daily_pro_sync.py --push
-  python scripts/run_daily_pro_sync.py --push --remote origin --branch main
+  python scripts/run_daily_pro_sync.py --manual
+  python scripts/run_daily_pro_sync.py --manual --push
+  python scripts/run_daily_pro_sync.py --manual --push --remote origin --branch main
 
 可用环境变量：
 - ``PRO_FETCH_LIMIT``：单次抓取场次上限（默认 12，建议定时任务设为 20~40）。
@@ -68,10 +68,19 @@ def _has_staged_changes(cwd: Path) -> bool:
 
 def main() -> None:
     ap = argparse.ArgumentParser(description="抓取职业赛并可选自动推送到网站仓库")
+    ap.add_argument(
+        "--manual",
+        action="store_true",
+        help="确认这是手动触发；未传时脚本将直接退出，不执行每日自动同步",
+    )
     ap.add_argument("--push", action="store_true", help="抓取后自动 git add/commit/push")
     ap.add_argument("--remote", default="origin", help="git 远端名（默认 origin）")
     ap.add_argument("--branch", default="main", help="git 分支名（默认 main）")
     args = ap.parse_args()
+
+    if not args.manual:
+        print("已暂停每日自动职业赛同步；如需手动执行，请显式传入 --manual。")
+        return
 
     if not FETCH_SCRIPT.is_file():
         raise SystemExit(f"找不到脚本: {FETCH_SCRIPT}")

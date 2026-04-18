@@ -1,6 +1,10 @@
 import { Link } from "react-router-dom";
 import type { MouseEvent } from "react";
-import { heroIconUrl, steamCdnImgDefer } from "../data/mockMatchPlayers";
+import {
+  heroIconUrl,
+  onDotaSteamAssetImgError,
+  steamCdnImgDefer,
+} from "../data/mockMatchPlayers";
 import type { EntityMapsPayload } from "../types/entityMaps";
 import type { ReplayPlayerSummary, ReplaySummary } from "../types/replaysIndex";
 import { displayPlayerLabel } from "../lib/playerDisplay";
@@ -55,6 +59,7 @@ function HeroCells({
                 alt=""
                 className="h-6 w-6 rounded-sm object-cover sm:h-9 sm:w-9 lg:h-10 lg:w-10"
                 {...steamCdnImgDefer}
+                onError={onDotaSteamAssetImgError}
               />
             </Link>
             <Link
@@ -81,13 +86,7 @@ function HeroCells({
   );
 }
 
-export function ReplayCard({
-  replay,
-  maps,
-}: {
-  replay: ReplaySummary;
-  maps: EntityMapsPayload;
-}) {
+export function ReplayCard({ replay, maps }: { replay: ReplaySummary; maps: EntityMapsPayload }) {
   const { radiantPlayers: rad, direPlayers: dire } = partitionReplayRowPlayers(
     replay.players
   );

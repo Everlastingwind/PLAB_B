@@ -4935,16 +4935,8 @@
           "ability_key": "special_bonus_unique_medusa_8"
         },
         {
-          "type": "talent",
-          "level": 12,
-          "name": "special_bonus_attributes",
-          "name_en": "special_bonus_attributes",
-          "ability_id": 730,
-          "ability_key": "special_bonus_attributes"
-        },
-        {
           "type": "ability",
-          "level": 13,
+          "level": 12,
           "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/medusa_stone_gaze.png",
           "name_en": "Stone Gaze",
           "name_cn": "Stone Gaze",
@@ -4953,63 +4945,15 @@
         },
         {
           "type": "talent",
-          "level": 14,
-          "name": "special_bonus_attributes",
-          "name_en": "special_bonus_attributes",
-          "ability_id": 730,
-          "ability_key": "special_bonus_attributes"
-        },
-        {
-          "type": "talent",
-          "level": 15,
-          "name": "special_bonus_attributes",
-          "name_en": "special_bonus_attributes",
-          "ability_id": 730,
-          "ability_key": "special_bonus_attributes"
-        },
-        {
-          "type": "talent",
-          "level": 16,
+          "level": 13,
           "name": "-{s:bonus_AbilityCooldown}s Mystic Snake Cooldown",
           "name_en": "-{s:bonus_AbilityCooldown}s Mystic Snake Cooldown",
           "ability_id": 7389,
           "ability_key": "special_bonus_unique_medusa_5"
         },
         {
-          "type": "talent",
-          "level": 17,
-          "name": "special_bonus_attributes",
-          "name_en": "special_bonus_attributes",
-          "ability_id": 730,
-          "ability_key": "special_bonus_attributes"
-        },
-        {
-          "type": "talent",
-          "level": 18,
-          "name": "special_bonus_attributes",
-          "name_en": "special_bonus_attributes",
-          "ability_id": 730,
-          "ability_key": "special_bonus_attributes"
-        },
-        {
-          "type": "talent",
-          "level": 19,
-          "name": "special_bonus_attributes",
-          "name_en": "special_bonus_attributes",
-          "ability_id": 730,
-          "ability_key": "special_bonus_attributes"
-        },
-        {
-          "type": "talent",
-          "level": 20,
-          "name": "special_bonus_attributes",
-          "name_en": "special_bonus_attributes",
-          "ability_id": 730,
-          "ability_key": "special_bonus_attributes"
-        },
-        {
           "type": "ability",
-          "level": 21,
+          "level": 14,
           "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/medusa_stone_gaze.png",
           "name_en": "Stone Gaze",
           "name_cn": "Stone Gaze",
@@ -5018,7 +4962,7 @@
         },
         {
           "type": "talent",
-          "level": 22,
+          "level": 15,
           "name": "+{s:bonus_damage_modifier}% Split Shot Outgoing Damage",
           "name_en": "+{s:bonus_damage_modifier}% Split Shot Outgoing Damage",
           "ability_id": 6392,
@@ -5026,7 +4970,7 @@
         },
         {
           "type": "ability",
-          "level": 23,
+          "level": 16,
           "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/medusa_gorgon_grasp.png",
           "name_en": "Gorgon's Grasp",
           "name_cn": "Gorgon's Grasp",
@@ -5035,7 +4979,7 @@
         },
         {
           "type": "ability",
-          "level": 24,
+          "level": 17,
           "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/medusa_gorgon_grasp.png",
           "name_en": "Gorgon's Grasp",
           "name_cn": "Gorgon's Grasp",
@@ -5044,7 +4988,7 @@
         },
         {
           "type": "ability",
-          "level": 25,
+          "level": 18,
           "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/medusa_gorgon_grasp.png",
           "name_en": "Gorgon's Grasp",
           "name_cn": "Gorgon's Grasp",
@@ -13794,23 +13738,23 @@
           {
             "group": "backpack",
             "slot": 0,
-            "item_id": 244,
-            "item_key": "wind_lace",
-            "item_name_en": "Wind Lace",
-            "item_name_cn": "Wind Lace",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/wind_lace.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
             "group": "backpack",
             "slot": 1,
-            "item_id": 36,
-            "item_key": "magic_wand",
-            "item_name_en": "Magic Wand",
-            "item_name_cn": "魔棒",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/magic_wand.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
@@ -15953,12 +15897,12 @@
           {
             "group": "backpack",
             "slot": 1,
-            "item_id": 1804,
-            "item_key": "roshans_banner",
-            "item_name_en": "Roshan's Banner",
-            "item_name_cn": "Roshan's Banner",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/roshans_banner.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
@@ -18089,12 +18033,12 @@
           {
             "group": "backpack",
             "slot": 0,
-            "item_id": 41,
-            "item_key": "bottle",
-            "item_name_en": "Bottle",
-            "item_name_cn": "魔瓶",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/bottle.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
@@ -20231,12 +20175,12 @@
           {
             "group": "backpack",
             "slot": 0,
-            "item_id": 188,
-            "item_key": "smoke_of_deceit",
-            "item_name_en": "Smoke of Deceit",
-            "item_name_cn": "诡计之雾",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/smoke_of_deceit.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
@@ -20825,7 +20769,7 @@
       ],
       "ability_timeline": [
         {
-          "time": 352,
+          "time": null,
           "ability_id": 386,
           "ability_key": "ringmaster_impalement",
           "ability_name_en": "Impalement Arts",
@@ -20834,7 +20778,7 @@
           "is_talent": false
         },
         {
-          "time": 352,
+          "time": null,
           "ability_id": 352,
           "ability_key": "ringmaster_tame_the_beasts",
           "ability_name_en": "Tame the Beasts",
@@ -20843,7 +20787,7 @@
           "is_talent": false
         },
         {
-          "time": 352,
+          "time": null,
           "ability_id": 383,
           "ability_key": "ringmaster_the_box",
           "ability_name_en": "Escape Act",
@@ -20852,7 +20796,7 @@
           "is_talent": false
         },
         {
-          "time": 383,
+          "time": null,
           "ability_id": 386,
           "ability_key": "ringmaster_impalement",
           "ability_name_en": "Impalement Arts",
@@ -20861,7 +20805,7 @@
           "is_talent": false
         },
         {
-          "time": 383,
+          "time": null,
           "ability_id": 396,
           "ability_key": "special_bonus_unique_ringmaster_whip_radius",
           "ability_name_en": "+75 Tame the Beasts Radius",
@@ -20870,7 +20814,7 @@
           "is_talent": true
         },
         {
-          "time": 383,
+          "time": null,
           "ability_id": 385,
           "ability_key": "ringmaster_wheel",
           "ability_name_en": "Wheel of Wonder",
@@ -20879,7 +20823,7 @@
           "is_talent": false
         },
         {
-          "time": 385,
+          "time": null,
           "ability_id": 386,
           "ability_key": "ringmaster_impalement",
           "ability_name_en": "Impalement Arts",
@@ -20888,7 +20832,7 @@
           "is_talent": false
         },
         {
-          "time": 399,
+          "time": null,
           "ability_id": 385,
           "ability_key": "ringmaster_wheel",
           "ability_name_en": "Wheel of Wonder",
@@ -20897,7 +20841,7 @@
           "is_talent": false
         },
         {
-          "time": 707,
+          "time": null,
           "ability_id": 386,
           "ability_key": "ringmaster_impalement",
           "ability_name_en": "Impalement Arts",
@@ -20908,7 +20852,7 @@
       ],
       "talents_taken": [
         {
-          "time": 383,
+          "time": null,
           "ability_id": 396,
           "ability_key": "special_bonus_unique_ringmaster_whip_radius",
           "ability_name_en": "+75 Tame the Beasts Radius",
@@ -24698,12 +24642,12 @@
           {
             "group": "backpack",
             "slot": 0,
-            "item_id": 4204,
-            "item_key": "famango",
-            "item_name_en": "Healing Lotus",
-            "item_name_cn": "Healing Lotus",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/famango.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
@@ -24720,12 +24664,12 @@
           {
             "group": "backpack",
             "slot": 2,
-            "item_id": 188,
-            "item_key": "smoke_of_deceit",
-            "item_name_en": "Smoke of Deceit",
-            "item_name_cn": "诡计之雾",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/smoke_of_deceit.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           }
         ],
@@ -25920,7 +25864,9 @@
   "loss": 12907,
   "_meta": {
     "source": "opendota_pro",
-    "category": "pro"
+    "category": "pro",
+    "match_id": 8771742393,
+    "uploaded_at": "2026-04-16T02:29:13Z"
   },
   "source": "pro",
   "category": "pro"

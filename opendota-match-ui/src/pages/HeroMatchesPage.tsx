@@ -14,9 +14,10 @@ import { useEntityMaps } from "../hooks/useEntityMaps";
 import { displayPlayerLabel } from "../lib/playerDisplay";
 import {
   abilityIconUrl,
-  abilityIconFallbackUrl,
   heroIconUrl,
   itemIconUrl,
+  normalizeDotaAssetUrl,
+  onDotaSteamAssetImgError,
 } from "../data/mockMatchPlayers";
 import type { SkillBuildStepUi } from "../data/mockMatchPlayers";
 import { SkillBuildTimeline } from "../components/SkillBuildTimeline";
@@ -28,7 +29,11 @@ import { cn } from "../lib/cn";
 import type { SlimMatchJson, SlimPlayer } from "../types/slimMatch";
 import { TalentTreeBadge } from "../components/TalentTreeBadge";
 import type { TalentPickUi, TalentTreeUi } from "../data/mockMatchPlayers";
-import { buildUiFromSlim, DEFAULT_TEAM_NAMES } from "../adapters/slimToUi";
+import { SEOMeta } from "../components/SEOMeta";
+import { forEachConcurrent } from "../lib/fetchConcurrent";
+import { staticDataSearchParam } from "../lib/staticDataVersion";
+
+const MATCH_JSON_CONCURRENCY = 6;
 
 function toTalentTreeUi(raw: SlimPlayer["talent_tree"]): TalentTreeUi | null {
   if (!raw || !Array.isArray(raw.tiers)) return null;
@@ -241,6 +246,9 @@ export function HeroMatchesPage() {
       .filter((mid) => !detailByMatch[mid]);
     if (!need.length) return;
     (async () => {
+      const { buildUiFromSlim, DEFAULT_TEAM_NAMES } = await import(
+        "../adapters/slimToUi"
+      );
       const updates: Record<number, SlimMatchJson> = {};
       const playerUiUpdates: Record<
         number,
@@ -250,12 +258,13 @@ export function HeroMatchesPage() {
           skillBuild?: SkillBuildStepUi[];
         }
       > = {};
-      for (const mid of need) {
+      const q = staticDataSearchParam();
+      await forEachConcurrent(need, MATCH_JSON_CONCURRENCY, async (mid) => {
         try {
-          const res = await fetch(`/data/matches/${mid}.json?t=${Date.now()}`, {
-            cache: "no-store",
+          const res = await fetch(`/data/matches/${mid}.json${q}`, {
+            cache: "default",
           });
-          if (!res.ok) continue;
+          if (!res.ok) return;
           const j = (await res.json()) as SlimMatchJson;
           updates[mid] = j;
           try {
@@ -284,7 +293,7 @@ export function HeroMatchesPage() {
         } catch {
           // ignore detail fetch errors
         }
-      }
+      });
       if (!cancelled && Object.keys(updates).length) {
         setDetailByMatch((prev) => ({ ...prev, ...updates }));
         if (Object.keys(playerUiUpdates).length) {
@@ -317,9 +326,15 @@ export function HeroMatchesPage() {
   const heroLabel =
     maps?.heroes &&
     Object.values(maps.heroes).find((h) => h.key === decoded);
-
+  const heroNameEn = heroLabel?.nameEn || decoded;
   return (
-    <PageShell centerSearch feedMode={feed} onFeedModeChange={setFeed}>
+    <>
+      <SEOMeta
+        title={`${heroNameEn} 胜率异动 | 顶分局出装加点解析`}
+        description={`查看 ${heroNameEn} 的最新高分局出装路线、技能加点与关键团战表现。`}
+        keywords={`${heroNameEn},DOTA2英雄数据,高分局,出装,技能加点`}
+      />
+      <PageShell centerSearch feedMode={feed} onFeedModeChange={setFeed}>
         <main className="mx-auto w-full max-w-[1400px] px-4 py-8 sm:px-6 lg:px-8">
           <div className="mb-6 flex flex-wrap items-center gap-3">
             <h1 className="text-lg font-bold text-skin-ink">
@@ -447,6 +462,10 @@ export function HeroMatchesPage() {
                             alt=""
                             className="h-10 w-10 rounded object-cover"
                             loading="lazy"
+                            decoding="async"
+                            referrerPolicy="no-referrer"
+                            fetchPriority="low"
+                            onError={onDotaSteamAssetImgError}
                           />
                           <div className="min-w-0">
                             <div className="truncate font-semibold text-skin-ink">
@@ -491,7 +510,9 @@ export function HeroMatchesPage() {
                                   <img
                                     key={`${r.match_id}-it-${idx}`}
                                     src={
-                                      (it.image_url || "").trim() ||
+                                      normalizeDotaAssetUrl(
+                                        String(it.image_url || "").trim()
+                                      ) ||
                                       itemIconUrl(
                                         String(it.item_key || "").replace(/^item_/, "")
                                       )
@@ -499,9 +520,10 @@ export function HeroMatchesPage() {
                                     alt=""
                                     className="h-8 w-8 rounded object-cover"
                                     loading="lazy"
-                                    onError={(e) => {
-                                      e.currentTarget.style.display = "none";
-                                    }}
+                                    decoding="async"
+                                    referrerPolicy="no-referrer"
+                                    fetchPriority="low"
+                                    onError={onDotaSteamAssetImgError}
                                   />
                                 ) : null
                               )
@@ -526,12 +548,14 @@ export function HeroMatchesPage() {
                                   alt=""
                                   className="h-6 w-6 rounded object-cover"
                                   loading="lazy"
-                                  onError={(e) => {
-                                    const el = e.currentTarget;
-                                    if (!el.src.includes("filler_ability")) {
-                                      el.src = abilityIconFallbackUrl;
-                                    }
-                                  }}
+                                  decoding="async"
+                                  referrerPolicy="no-referrer"
+                                  fetchPriority="low"
+                                  onError={(e) =>
+                                    onDotaSteamAssetImgError(e, {
+                                      tryAbilityFiller: true,
+                                    })
+                                  }
                                 />
                               ) : null;
                             })
@@ -561,7 +585,8 @@ export function HeroMatchesPage() {
           ) : (
             <p className="text-sm text-skin-sub">加载中…</p>
           )}
-      </main>
-    </PageShell>
+        </main>
+      </PageShell>
+    </>
   );
 }

@@ -2475,70 +2475,14 @@
         {
           "type": "talent",
           "level": 8,
-          "name": "special_bonus_attributes",
-          "name_en": "special_bonus_attributes",
-          "ability_id": 730,
-          "ability_key": "special_bonus_attributes"
-        },
-        {
-          "type": "talent",
-          "level": 9,
-          "name": "special_bonus_attributes",
-          "name_en": "special_bonus_attributes",
-          "ability_id": 730,
-          "ability_key": "special_bonus_attributes"
-        },
-        {
-          "type": "talent",
-          "level": 10,
           "name": "+15% Magic Resistance",
           "name_en": "+15% Magic Resistance",
           "ability_id": 6138,
           "ability_key": "special_bonus_magic_resistance_15"
         },
         {
-          "type": "talent",
-          "level": 11,
-          "name": "special_bonus_attributes",
-          "name_en": "special_bonus_attributes",
-          "ability_id": 730,
-          "ability_key": "special_bonus_attributes"
-        },
-        {
-          "type": "talent",
-          "level": 12,
-          "name": "special_bonus_attributes",
-          "name_en": "special_bonus_attributes",
-          "ability_id": 730,
-          "ability_key": "special_bonus_attributes"
-        },
-        {
-          "type": "talent",
-          "level": 13,
-          "name": "special_bonus_attributes",
-          "name_en": "special_bonus_attributes",
-          "ability_id": 730,
-          "ability_key": "special_bonus_attributes"
-        },
-        {
-          "type": "talent",
-          "level": 14,
-          "name": "special_bonus_attributes",
-          "name_en": "special_bonus_attributes",
-          "ability_id": 730,
-          "ability_key": "special_bonus_attributes"
-        },
-        {
-          "type": "talent",
-          "level": 15,
-          "name": "special_bonus_attributes",
-          "name_en": "special_bonus_attributes",
-          "ability_id": 730,
-          "ability_key": "special_bonus_attributes"
-        },
-        {
           "type": "ability",
-          "level": 16,
+          "level": 9,
           "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/morphling_morph_replicate.png",
           "name_en": "Morph Replicate",
           "name_cn": "Morph Replicate",
@@ -2547,7 +2491,7 @@
         },
         {
           "type": "talent",
-          "level": 17,
+          "level": 10,
           "name": "+{s:bonus_AbilityCastRange} Waveform Range",
           "name_en": "+{s:bonus_AbilityCastRange} Waveform Range",
           "ability_id": 6062,
@@ -2555,7 +2499,7 @@
         },
         {
           "type": "ability",
-          "level": 18,
+          "level": 11,
           "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/morphling_morph_agi.png",
           "name_en": "Attribute Shift (Agility Gain)",
           "name_cn": "Attribute Shift (Agility Gain)",
@@ -2564,7 +2508,7 @@
         },
         {
           "type": "ability",
-          "level": 19,
+          "level": 12,
           "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/morphling_adaptive_strike_agi.png",
           "name_en": "Adaptive Strike",
           "name_cn": "Adaptive Strike",
@@ -2573,7 +2517,7 @@
         },
         {
           "type": "ability",
-          "level": 20,
+          "level": 13,
           "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/morphling_replicate.png",
           "name_en": "Morph",
           "name_cn": "Morph",
@@ -2582,7 +2526,7 @@
         },
         {
           "type": "ability",
-          "level": 21,
+          "level": 14,
           "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/morphling_adaptive_strike_agi.png",
           "name_en": "Adaptive Strike",
           "name_cn": "Adaptive Strike",
@@ -2591,7 +2535,7 @@
         },
         {
           "type": "talent",
-          "level": 22,
+          "level": 15,
           "name": "-{s:bonus_AbilityCooldown}s Adaptive Strike Cooldown",
           "name_en": "-{s:bonus_AbilityCooldown}s Adaptive Strike Cooldown",
           "ability_id": 7056,
@@ -2599,7 +2543,7 @@
         },
         {
           "type": "ability",
-          "level": 23,
+          "level": 16,
           "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/morphling_adaptive_strike_agi.png",
           "name_en": "Adaptive Strike",
           "name_cn": "Adaptive Strike",
@@ -2608,7 +2552,7 @@
         },
         {
           "type": "ability",
-          "level": 24,
+          "level": 17,
           "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/morphling_adaptive_strike_agi.png",
           "name_en": "Adaptive Strike",
           "name_cn": "Adaptive Strike",
@@ -2617,7 +2561,7 @@
         },
         {
           "type": "ability",
-          "level": 25,
+          "level": 18,
           "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/morphling_morph_agi.png",
           "name_en": "Attribute Shift (Agility Gain)",
           "name_cn": "Attribute Shift (Agility Gain)",
@@ -4790,12 +4734,12 @@
           {
             "group": "backpack",
             "slot": 0,
-            "item_id": 37,
-            "item_key": "ghost",
-            "item_name_en": "Ghost Scepter",
-            "item_name_cn": "Ghost Scepter",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/ghost.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
@@ -7281,34 +7225,34 @@
           {
             "group": "backpack",
             "slot": 0,
-            "item_id": 188,
-            "item_key": "smoke_of_deceit",
-            "item_name_en": "Smoke of Deceit",
-            "item_name_cn": "诡计之雾",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/smoke_of_deceit.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
             "group": "backpack",
             "slot": 1,
-            "item_id": 40,
-            "item_key": "dust",
-            "item_name_en": "Dust of Appearance",
-            "item_name_cn": "显影之尘",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/dust.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
             "group": "backpack",
             "slot": 2,
-            "item_id": 260,
-            "item_key": "refresher_shard",
-            "item_name_en": "Refresher Shard",
-            "item_name_cn": "Refresher Shard",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/refresher_shard.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           }
         ],
@@ -9577,12 +9521,12 @@
           {
             "group": "backpack",
             "slot": 1,
-            "item_id": 40,
-            "item_key": "dust",
-            "item_name_en": "Dust of Appearance",
-            "item_name_cn": "显影之尘",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/dust.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
@@ -11928,12 +11872,12 @@
           {
             "group": "backpack",
             "slot": 0,
-            "item_id": 41,
-            "item_key": "bottle",
-            "item_name_en": "Bottle",
-            "item_name_cn": "魔瓶",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/bottle.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
@@ -11950,12 +11894,12 @@
           {
             "group": "backpack",
             "slot": 2,
-            "item_id": 38,
-            "item_key": "clarity",
-            "item_name_en": "Clarity",
-            "item_name_cn": "净化药水",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/clarity.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           }
         ],
@@ -14215,12 +14159,12 @@
           {
             "group": "backpack",
             "slot": 1,
-            "item_id": 1,
-            "item_key": "blink",
-            "item_name_en": "Blink Dagger",
-            "item_name_cn": "闪烁匕首",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/blink.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
@@ -14374,16 +14318,8 @@
           "ability_key": "luna_lunar_orbit"
         },
         {
-          "type": "talent",
-          "level": 15,
-          "name": "special_bonus_attributes",
-          "name_en": "special_bonus_attributes",
-          "ability_id": 730,
-          "ability_key": "special_bonus_attributes"
-        },
-        {
           "type": "ability",
-          "level": 16,
+          "level": 15,
           "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/luna_lunar_orbit.png",
           "name_en": "Lunar Orbit",
           "name_cn": "Lunar Orbit",
@@ -14392,7 +14328,7 @@
         },
         {
           "type": "talent",
-          "level": 17,
+          "level": 16,
           "name": "+{s:bonus_rotating_glaives} Lunar Orbit Glaive",
           "name_en": "+{s:bonus_rotating_glaives} Lunar Orbit Glaive",
           "ability_id": 323,
@@ -14400,7 +14336,7 @@
         },
         {
           "type": "ability",
-          "level": 18,
+          "level": 17,
           "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/luna_eclipse.png",
           "name_en": "Eclipse",
           "name_cn": "Eclipse",
@@ -14409,7 +14345,7 @@
         },
         {
           "type": "talent",
-          "level": 19,
+          "level": 18,
           "name": "-{s:bonus_AbilityCooldown}s Eclipse Cooldown",
           "name_en": "-{s:bonus_AbilityCooldown}s Eclipse Cooldown",
           "ability_id": 770,
@@ -14417,7 +14353,7 @@
         },
         {
           "type": "talent",
-          "level": 20,
+          "level": 19,
           "name": "+{s:bonus_bonus_damage}/{s:bonus_self_bonus_damage} Lunar Blessing Allied/Self Damage",
           "name_en": "+{s:bonus_bonus_damage}/{s:bonus_self_bonus_damage} Lunar Blessing Allied/Self Damage",
           "ability_id": 6682,
@@ -14425,7 +14361,7 @@
         },
         {
           "type": "talent",
-          "level": 21,
+          "level": 20,
           "name": "+{s:bonus_stun_duration}s Lucent Beam Ministun",
           "name_en": "+{s:bonus_stun_duration}s Lucent Beam Ministun",
           "ability_id": 7047,
@@ -14433,7 +14369,7 @@
         },
         {
           "type": "talent",
-          "level": 22,
+          "level": 21,
           "name": "+{s:bonus_beam_damage} Lucent Beam Damage",
           "name_en": "+{s:bonus_beam_damage} Lucent Beam Damage",
           "ability_id": 6180,
@@ -16412,12 +16348,12 @@
           {
             "group": "backpack",
             "slot": 0,
-            "item_id": 41,
-            "item_key": "bottle",
-            "item_name_en": "Bottle",
-            "item_name_cn": "魔瓶",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/bottle.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
@@ -18456,34 +18392,34 @@
           {
             "group": "backpack",
             "slot": 0,
-            "item_id": 40,
-            "item_key": "dust",
-            "item_name_en": "Dust of Appearance",
-            "item_name_cn": "显影之尘",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/dust.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
             "group": "backpack",
             "slot": 1,
-            "item_id": 4204,
-            "item_key": "famango",
-            "item_name_en": "Healing Lotus",
-            "item_name_cn": "Healing Lotus",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/famango.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
             "group": "backpack",
             "slot": 2,
-            "item_id": 95,
-            "item_key": "recipe_sheepstick",
-            "item_name_en": "Scythe of Vyse Recipe",
-            "item_name_cn": "Scythe of Vyse Recipe",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/recipe.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           }
         ],
@@ -21223,12 +21159,12 @@
           {
             "group": "backpack",
             "slot": 0,
-            "item_id": 4204,
-            "item_key": "famango",
-            "item_name_en": "Healing Lotus",
-            "item_name_cn": "Healing Lotus",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/famango.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
@@ -24542,7 +24478,9 @@
   "loss": 60439,
   "_meta": {
     "source": "opendota_pro",
-    "category": "pro"
+    "category": "pro",
+    "match_id": 8771950914,
+    "uploaded_at": "2026-04-16T02:29:35Z"
   },
   "source": "pro",
   "category": "pro"

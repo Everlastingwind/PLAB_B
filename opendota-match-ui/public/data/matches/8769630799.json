@@ -4493,23 +4493,23 @@
           {
             "group": "backpack",
             "slot": 0,
-            "item_id": 21,
-            "item_key": "ogre_axe",
-            "item_name_en": "Ogre Axe",
-            "item_name_cn": "食人魔之斧",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/ogre_axe.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
             "group": "backpack",
             "slot": 1,
-            "item_id": 22,
-            "item_key": "blade_of_alacrity",
-            "item_name_en": "Blade of Alacrity",
-            "item_name_cn": "欢欣之刃",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/blade_of_alacrity.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
@@ -6680,15 +6680,6 @@
         {
           "type": "ability",
           "level": 3,
-          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/wisp_tether_break.png",
-          "name_en": "Break Tether",
-          "name_cn": "Break Tether",
-          "ability_id": 5489,
-          "ability_key": "wisp_tether_break"
-        },
-        {
-          "type": "ability",
-          "level": 4,
           "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/wisp_overcharge.png",
           "name_en": "Overcharge",
           "name_cn": "Overcharge",
@@ -6697,16 +6688,7 @@
         },
         {
           "type": "ability",
-          "level": 5,
-          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/wisp_tether_break.png",
-          "name_en": "Break Tether",
-          "name_cn": "Break Tether",
-          "ability_id": 5489,
-          "ability_key": "wisp_tether_break"
-        },
-        {
-          "type": "ability",
-          "level": 6,
+          "level": 4,
           "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/wisp_relocate.png",
           "name_en": "Relocate",
           "name_cn": "Relocate",
@@ -6715,16 +6697,7 @@
         },
         {
           "type": "ability",
-          "level": 7,
-          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/wisp_tether_break.png",
-          "name_en": "Break Tether",
-          "name_cn": "Break Tether",
-          "ability_id": 5489,
-          "ability_key": "wisp_tether_break"
-        },
-        {
-          "type": "ability",
-          "level": 8,
+          "level": 5,
           "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/wisp_overcharge.png",
           "name_en": "Overcharge",
           "name_cn": "Overcharge",
@@ -6733,7 +6706,7 @@
         },
         {
           "type": "ability",
-          "level": 9,
+          "level": 6,
           "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/wisp_overcharge.png",
           "name_en": "Overcharge",
           "name_cn": "Overcharge",
@@ -6742,7 +6715,7 @@
         },
         {
           "type": "talent",
-          "level": 10,
+          "level": 7,
           "name": "+{s:bonus_duration}s Overcharge Duration",
           "name_en": "+{s:bonus_duration}s Overcharge Duration",
           "ability_id": 1559,
@@ -6750,7 +6723,7 @@
         },
         {
           "type": "ability",
-          "level": 11,
+          "level": 8,
           "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/wisp_spirits.png",
           "name_en": "Spirits",
           "name_cn": "Spirits",
@@ -6758,16 +6731,8 @@
           "ability_key": "wisp_spirits"
         },
         {
-          "type": "talent",
-          "level": 12,
-          "name": "special_bonus_attributes",
-          "name_en": "special_bonus_attributes",
-          "ability_id": 730,
-          "ability_key": "special_bonus_attributes"
-        },
-        {
           "type": "ability",
-          "level": 13,
+          "level": 9,
           "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/wisp_relocate.png",
           "name_en": "Relocate",
           "name_cn": "Relocate",
@@ -6775,16 +6740,8 @@
           "ability_key": "wisp_relocate"
         },
         {
-          "type": "talent",
-          "level": 14,
-          "name": "special_bonus_attributes",
-          "name_en": "special_bonus_attributes",
-          "ability_id": 730,
-          "ability_key": "special_bonus_attributes"
-        },
-        {
           "type": "ability",
-          "level": 15,
+          "level": 10,
           "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/wisp_spirits.png",
           "name_en": "Spirits",
           "name_cn": "Spirits",
@@ -6793,7 +6750,7 @@
         },
         {
           "type": "talent",
-          "level": 16,
+          "level": 11,
           "name": "+{s:bonus_movespeed}% Tether Movement Speed",
           "name_en": "+{s:bonus_movespeed}% Tether Movement Speed",
           "ability_id": 6659,
@@ -6801,7 +6758,7 @@
         },
         {
           "type": "ability",
-          "level": 17,
+          "level": 12,
           "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/wisp_spirits.png",
           "name_en": "Spirits",
           "name_cn": "Spirits",
@@ -6810,7 +6767,7 @@
         },
         {
           "type": "ability",
-          "level": 18,
+          "level": 13,
           "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/wisp_spirits.png",
           "name_en": "Spirits",
           "name_cn": "Spirits",
@@ -6819,7 +6776,7 @@
         },
         {
           "type": "ability",
-          "level": 19,
+          "level": 14,
           "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/wisp_relocate.png",
           "name_en": "Relocate",
           "name_cn": "Relocate",
@@ -6828,7 +6785,7 @@
         },
         {
           "type": "talent",
-          "level": 20,
+          "level": 15,
           "name": "-{s:bonus_AbilityCooldown}s Relocate Cooldown",
           "name_en": "-{s:bonus_AbilityCooldown}s Relocate Cooldown",
           "ability_id": 7070,
@@ -8615,23 +8572,23 @@
           {
             "group": "backpack",
             "slot": 0,
-            "item_id": 4204,
-            "item_key": "famango",
-            "item_name_en": "Healing Lotus",
-            "item_name_cn": "Healing Lotus",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/famango.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
             "group": "backpack",
             "slot": 1,
-            "item_id": 265,
-            "item_key": "infused_raindrop",
-            "item_name_en": "Infused Raindrops",
-            "item_name_cn": "Infused Raindrops",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/infused_raindrop.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
@@ -8749,16 +8706,8 @@
           "ability_key": "special_bonus_attack_speed_20"
         },
         {
-          "type": "talent",
-          "level": 11,
-          "name": "special_bonus_attributes",
-          "name_en": "special_bonus_attributes",
-          "ability_id": 730,
-          "ability_key": "special_bonus_attributes"
-        },
-        {
           "type": "ability",
-          "level": 12,
+          "level": 11,
           "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/muerta_dead_shot.png",
           "name_en": "Dead Shot",
           "name_cn": "Dead Shot",
@@ -8767,7 +8716,7 @@
         },
         {
           "type": "ability",
-          "level": 13,
+          "level": 12,
           "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/muerta_pierce_the_veil.png",
           "name_en": "Pierce the Veil",
           "name_cn": "Pierce the Veil",
@@ -8776,7 +8725,7 @@
         },
         {
           "type": "ability",
-          "level": 14,
+          "level": 13,
           "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/muerta_the_calling.png",
           "name_en": "The Calling",
           "name_cn": "The Calling",
@@ -8785,11 +8734,20 @@
         },
         {
           "type": "talent",
-          "level": 15,
+          "level": 14,
           "name": "+15 Intelligence",
           "name_en": "+15 Intelligence",
           "ability_id": 5991,
           "ability_key": "special_bonus_intelligence_15"
+        },
+        {
+          "type": "ability",
+          "level": 15,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/muerta_the_calling.png",
+          "name_en": "The Calling",
+          "name_cn": "The Calling",
+          "ability_id": 5752,
+          "ability_key": "muerta_the_calling"
         },
         {
           "type": "ability",
@@ -8803,15 +8761,6 @@
         {
           "type": "ability",
           "level": 17,
-          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/muerta_the_calling.png",
-          "name_en": "The Calling",
-          "name_cn": "The Calling",
-          "ability_id": 5752,
-          "ability_key": "muerta_the_calling"
-        },
-        {
-          "type": "ability",
-          "level": 18,
           "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/muerta_pierce_the_veil.png",
           "name_en": "Pierce the Veil",
           "name_cn": "Pierce the Veil",
@@ -8820,7 +8769,7 @@
         },
         {
           "type": "unknown",
-          "level": 19,
+          "level": 18,
           "ability_id": 1629,
           "ability_key": "special_bonus_unique_muerta_pierce_the_veil_duration",
           "reason": "ability_key_not_in_abilities_json",
@@ -10756,14 +10705,6 @@
         {
           "type": "talent",
           "level": 15,
-          "name": "special_bonus_attributes",
-          "name_en": "special_bonus_attributes",
-          "ability_id": 730,
-          "ability_key": "special_bonus_attributes"
-        },
-        {
-          "type": "talent",
-          "level": 16,
           "name": "+{s:bonus_gush_damage} Gush Damage",
           "name_en": "+{s:bonus_gush_damage} Gush Damage",
           "ability_id": 6945,
@@ -10771,59 +10712,11 @@
         },
         {
           "type": "talent",
-          "level": 17,
-          "name": "special_bonus_attributes",
-          "name_en": "special_bonus_attributes",
-          "ability_id": 730,
-          "ability_key": "special_bonus_attributes"
-        },
-        {
-          "type": "talent",
-          "level": 18,
-          "name": "special_bonus_attributes",
-          "name_en": "special_bonus_attributes",
-          "ability_id": 730,
-          "ability_key": "special_bonus_attributes"
-        },
-        {
-          "type": "talent",
-          "level": 19,
-          "name": "special_bonus_attributes",
-          "name_en": "special_bonus_attributes",
-          "ability_id": 730,
-          "ability_key": "special_bonus_attributes"
-        },
-        {
-          "type": "talent",
-          "level": 20,
-          "name": "special_bonus_attributes",
-          "name_en": "special_bonus_attributes",
-          "ability_id": 730,
-          "ability_key": "special_bonus_attributes"
-        },
-        {
-          "type": "talent",
-          "level": 21,
-          "name": "special_bonus_attributes",
-          "name_en": "special_bonus_attributes",
-          "ability_id": 730,
-          "ability_key": "special_bonus_attributes"
-        },
-        {
-          "type": "talent",
-          "level": 22,
+          "level": 16,
           "name": "-{s:bonus_negative_armor} Gush Armor",
           "name_en": "-{s:bonus_negative_armor} Gush Armor",
           "ability_id": 6151,
           "ability_key": "special_bonus_unique_tidehunter"
-        },
-        {
-          "type": "talent",
-          "level": 23,
-          "name": "special_bonus_attributes",
-          "name_en": "special_bonus_attributes",
-          "ability_id": 730,
-          "ability_key": "special_bonus_attributes"
         }
       ],
       "items_slot": [
@@ -12556,12 +12449,12 @@
           {
             "group": "backpack",
             "slot": 0,
-            "item_id": 41,
-            "item_key": "bottle",
-            "item_name_en": "Bottle",
-            "item_name_cn": "魔瓶",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/bottle.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
@@ -18363,12 +18256,12 @@
           {
             "group": "backpack",
             "slot": 0,
-            "item_id": 4204,
-            "item_key": "famango",
-            "item_name_en": "Healing Lotus",
-            "item_name_cn": "Healing Lotus",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/famango.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
@@ -20421,34 +20314,34 @@
           {
             "group": "backpack",
             "slot": 0,
-            "item_id": 22,
-            "item_key": "blade_of_alacrity",
-            "item_name_en": "Blade of Alacrity",
-            "item_name_cn": "欢欣之刃",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/blade_of_alacrity.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
             "group": "backpack",
             "slot": 1,
-            "item_id": 21,
-            "item_key": "ogre_axe",
-            "item_name_en": "Ogre Axe",
-            "item_name_cn": "食人魔之斧",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/ogre_axe.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
             "group": "backpack",
             "slot": 2,
-            "item_id": 151,
-            "item_key": "armlet",
-            "item_name_en": "Armlet of Mordiggian",
-            "item_name_cn": "臂章",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/armlet.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           }
         ],
@@ -22759,12 +22652,12 @@
           {
             "group": "backpack",
             "slot": 0,
-            "item_id": 42,
-            "item_key": "ward_observer",
-            "item_name_en": "Observer Ward",
-            "item_name_cn": "侦查守卫",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/ward_observer.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
@@ -23943,5 +23836,10 @@
   },
   "my_word_counts": {},
   "comeback": 1559,
-  "stomp": 11608
+  "stomp": 11608,
+  "_meta": {
+    "source": "api_upload",
+    "match_id": 8769630799,
+    "uploaded_at": "2026-04-16T02:27:17Z"
+  }
 }

@@ -6518,12 +6518,12 @@
           {
             "group": "backpack",
             "slot": 0,
-            "item_id": 48,
-            "item_key": "travel_boots",
-            "item_name_en": "Boots of Travel",
-            "item_name_cn": "远行鞋",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/travel_boots.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
@@ -6540,12 +6540,12 @@
           {
             "group": "backpack",
             "slot": 2,
-            "item_id": 1804,
-            "item_key": "roshans_banner",
-            "item_name_en": "Roshan's Banner",
-            "item_name_cn": "Roshan's Banner",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/roshans_banner.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           }
         ],
@@ -6610,20 +6610,20 @@
         {
           "type": "ability",
           "level": 6,
-          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/kez_ravens_veil.png",
-          "name_en": "Raven's Veil",
-          "name_cn": "Raven's Veil",
-          "ability_id": 1506,
-          "ability_key": "kez_ravens_veil"
-        },
-        {
-          "type": "ability",
-          "level": 7,
           "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/kez_kazurai_katana.png",
           "name_en": "Kazurai Katana",
           "name_cn": "Kazurai Katana",
           "ability_id": 1500,
           "ability_key": "kez_kazurai_katana"
+        },
+        {
+          "type": "ability",
+          "level": 7,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/kez_echo_slash.png",
+          "name_en": "Echo Slash",
+          "name_cn": "Echo Slash",
+          "ability_id": 1498,
+          "ability_key": "kez_echo_slash"
         },
         {
           "type": "ability",
@@ -6644,17 +6644,8 @@
           "ability_key": "kez_echo_slash"
         },
         {
-          "type": "ability",
-          "level": 10,
-          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/kez_echo_slash.png",
-          "name_en": "Echo Slash",
-          "name_cn": "Echo Slash",
-          "ability_id": 1498,
-          "ability_key": "kez_echo_slash"
-        },
-        {
           "type": "talent",
-          "level": 11,
+          "level": 10,
           "name": "+12% Magic Resistance",
           "name_en": "+12% Magic Resistance",
           "ability_id": 6299,
@@ -6662,7 +6653,7 @@
         },
         {
           "type": "ability",
-          "level": 12,
+          "level": 11,
           "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/kez_talon_toss.png",
           "name_en": "Talon Toss",
           "name_cn": "Talon Toss",
@@ -6671,16 +6662,7 @@
         },
         {
           "type": "ability",
-          "level": 13,
-          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/kez_ravens_veil.png",
-          "name_en": "Raven's Veil",
-          "name_cn": "Raven's Veil",
-          "ability_id": 1506,
-          "ability_key": "kez_ravens_veil"
-        },
-        {
-          "type": "ability",
-          "level": 14,
+          "level": 12,
           "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/kez_grappling_claw.png",
           "name_en": "Grappling Claw",
           "name_cn": "Grappling Claw",
@@ -6689,7 +6671,7 @@
         },
         {
           "type": "ability",
-          "level": 15,
+          "level": 13,
           "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/kez_grappling_claw.png",
           "name_en": "Grappling Claw",
           "name_cn": "Grappling Claw",
@@ -6698,7 +6680,7 @@
         },
         {
           "type": "talent",
-          "level": 16,
+          "level": 14,
           "name": "+{s:bonus_duration}s Falcon Rush Duration",
           "name_en": "+{s:bonus_duration}s Falcon Rush Duration",
           "ability_id": 1511,
@@ -6706,7 +6688,7 @@
         },
         {
           "type": "ability",
-          "level": 17,
+          "level": 15,
           "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/kez_raptor_dance.png",
           "name_en": "Raptor Dance",
           "name_cn": "Raptor Dance",
@@ -6715,7 +6697,7 @@
         },
         {
           "type": "talent",
-          "level": 18,
+          "level": 16,
           "name": "+{s:bonus_katana_bleed_attack_damage_pct}% Kazurai Katana Damage Per Second",
           "name_en": "+{s:bonus_katana_bleed_attack_damage_pct}% Kazurai Katana Damage Per Second",
           "ability_id": 1510,
@@ -6723,7 +6705,7 @@
         },
         {
           "type": "talent",
-          "level": 19,
+          "level": 17,
           "name": "+{s:bonus_katana_strikes} Echo Slash Attack",
           "name_en": "+{s:bonus_katana_strikes} Echo Slash Attack",
           "ability_id": 1513,
@@ -6731,7 +6713,7 @@
         },
         {
           "type": "talent",
-          "level": 20,
+          "level": 18,
           "name": "+{s:bonus_radius} Raptor Dance Radius",
           "name_en": "+{s:bonus_radius} Raptor Dance Radius",
           "ability_id": 1509,
@@ -6739,7 +6721,7 @@
         },
         {
           "type": "talent",
-          "level": 21,
+          "level": 19,
           "name": "+{s:bonus_strikes} Raptor Dance Strike",
           "name_en": "+{s:bonus_strikes} Raptor Dance Strike",
           "ability_id": 1655,
@@ -6747,7 +6729,7 @@
         },
         {
           "type": "talent",
-          "level": 22,
+          "level": 20,
           "name": "{s:bonus_bonus_attack_speed} Bonus Attack Speed During Falcon Rush",
           "name_en": "{s:bonus_bonus_attack_speed} Bonus Attack Speed During Falcon Rush",
           "ability_id": 1714,
@@ -6755,7 +6737,7 @@
         },
         {
           "type": "talent",
-          "level": 23,
+          "level": 21,
           "name": "+{s:bonus_base_crit_pct}% Shodo Sai Critical Strike",
           "name_en": "+{s:bonus_base_crit_pct}% Shodo Sai Critical Strike",
           "ability_id": 1514,
@@ -9024,12 +9006,12 @@
           {
             "group": "backpack",
             "slot": 2,
-            "item_id": 41,
-            "item_key": "bottle",
-            "item_name_en": "Bottle",
-            "item_name_cn": "魔瓶",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/bottle.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           }
         ],
@@ -11586,34 +11568,34 @@
           {
             "group": "backpack",
             "slot": 0,
-            "item_id": 220,
-            "item_key": "travel_boots_2",
-            "item_name_en": "Boots of Travel 2",
-            "item_name_cn": "Boots of Travel 2",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/travel_boots_2.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
             "group": "backpack",
             "slot": 1,
-            "item_id": 242,
-            "item_key": "crimson_guard",
-            "item_name_en": "Crimson Guard",
-            "item_name_cn": "Crimson Guard",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/crimson_guard.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
             "group": "backpack",
             "slot": 2,
-            "item_id": 4206,
-            "item_key": "greater_famango",
-            "item_name_en": "Greater Healing Lotus",
-            "item_name_cn": "Greater Healing Lotus",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/greater_famango.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           }
         ],
@@ -20281,12 +20263,12 @@
           {
             "group": "backpack",
             "slot": 0,
-            "item_id": 116,
-            "item_key": "black_king_bar",
-            "item_name_en": "Black King Bar",
-            "item_name_cn": "黑皇杖",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/black_king_bar.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
@@ -20424,16 +20406,8 @@
           "ability_key": "terrorblade_metamorphosis"
         },
         {
-          "type": "talent",
-          "level": 12,
-          "name": "special_bonus_attributes",
-          "name_en": "special_bonus_attributes",
-          "ability_id": 730,
-          "ability_key": "special_bonus_attributes"
-        },
-        {
           "type": "ability",
-          "level": 13,
+          "level": 12,
           "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/terrorblade_sunder.png",
           "name_en": "Sunder",
           "name_cn": "Sunder",
@@ -20442,55 +20416,15 @@
         },
         {
           "type": "talent",
-          "level": 14,
-          "name": "special_bonus_attributes",
-          "name_en": "special_bonus_attributes",
-          "ability_id": 730,
-          "ability_key": "special_bonus_attributes"
-        },
-        {
-          "type": "talent",
-          "level": 15,
-          "name": "special_bonus_attributes",
-          "name_en": "special_bonus_attributes",
-          "ability_id": 730,
-          "ability_key": "special_bonus_attributes"
-        },
-        {
-          "type": "talent",
-          "level": 16,
+          "level": 13,
           "name": "-{s:bonus_AbilityCooldown}s Metamorphosis Cooldown",
           "name_en": "-{s:bonus_AbilityCooldown}s Metamorphosis Cooldown",
           "ability_id": 1186,
           "ability_key": "special_bonus_unique_terrorblade_metamorphosis_cooldown"
         },
         {
-          "type": "talent",
-          "level": 17,
-          "name": "special_bonus_attributes",
-          "name_en": "special_bonus_attributes",
-          "ability_id": 730,
-          "ability_key": "special_bonus_attributes"
-        },
-        {
-          "type": "talent",
-          "level": 18,
-          "name": "special_bonus_attributes",
-          "name_en": "special_bonus_attributes",
-          "ability_id": 730,
-          "ability_key": "special_bonus_attributes"
-        },
-        {
-          "type": "talent",
-          "level": 19,
-          "name": "special_bonus_attributes",
-          "name_en": "special_bonus_attributes",
-          "ability_id": 730,
-          "ability_key": "special_bonus_attributes"
-        },
-        {
           "type": "ability",
-          "level": 20,
+          "level": 14,
           "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/terrorblade_sunder.png",
           "name_en": "Sunder",
           "name_cn": "Sunder",
@@ -20499,15 +20433,7 @@
         },
         {
           "type": "talent",
-          "level": 21,
-          "name": "special_bonus_attributes",
-          "name_en": "special_bonus_attributes",
-          "ability_id": 730,
-          "ability_key": "special_bonus_attributes"
-        },
-        {
-          "type": "talent",
-          "level": 22,
+          "level": 15,
           "name": "+{s:bonus_illusion_duration}s Conjure Image Duration",
           "name_en": "+{s:bonus_illusion_duration}s Conjure Image Duration",
           "ability_id": 479,
@@ -20515,7 +20441,7 @@
         },
         {
           "type": "ability",
-          "level": 23,
+          "level": 16,
           "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/terrorblade_reflection.png",
           "name_en": "Reflection",
           "name_cn": "Reflection",
@@ -20524,7 +20450,7 @@
         },
         {
           "type": "ability",
-          "level": 24,
+          "level": 17,
           "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/terrorblade_reflection.png",
           "name_en": "Reflection",
           "name_cn": "Reflection",
@@ -20533,7 +20459,7 @@
         },
         {
           "type": "ability",
-          "level": 25,
+          "level": 18,
           "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/terrorblade_reflection.png",
           "name_en": "Reflection",
           "name_cn": "Reflection",
@@ -22722,12 +22648,12 @@
           {
             "group": "backpack",
             "slot": 0,
-            "item_id": 48,
-            "item_key": "travel_boots",
-            "item_name_en": "Boots of Travel",
-            "item_name_cn": "远行鞋",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/travel_boots.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
@@ -27990,12 +27916,12 @@
           {
             "group": "backpack",
             "slot": 1,
-            "item_id": 40,
-            "item_key": "dust",
-            "item_name_en": "Dust of Appearance",
-            "item_name_cn": "显影之尘",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/dust.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
@@ -31263,12 +31189,12 @@
           {
             "group": "backpack",
             "slot": 0,
-            "item_id": 188,
-            "item_key": "smoke_of_deceit",
-            "item_name_en": "Smoke of Deceit",
-            "item_name_cn": "诡计之雾",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/smoke_of_deceit.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
@@ -32528,7 +32454,9 @@
   "stomp": 7472,
   "_meta": {
     "source": "opendota_pro",
-    "category": "pro"
+    "category": "pro",
+    "match_id": 8771033118,
+    "uploaded_at": "2026-04-16T02:28:26Z"
   },
   "source": "pro",
   "category": "pro"

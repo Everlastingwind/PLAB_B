@@ -1,14 +1,11 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import type { MatchHeaderData } from "../data/mockMatch";
 import { mockMatchHeader } from "../data/mockMatch";
 import { mockTeamDire, mockTeamRadiant } from "../data/mockMatchPlayers";
 import type { TeamTableMock } from "../data/mockMatchPlayers";
-import { buildUiFromSlim, DEFAULT_TEAM_NAMES } from "../adapters/slimToUi";
-import { enrichSlimWithOpenDotaAbilityUpgrades } from "../lib/enrichSlimFromOpenDota";
-import { mergeOpenDotaEndgameItemsIntoSlim } from "../lib/mergeOpenDotaEndgameItems";
 import { loadEntityMapsPayload } from "../lib/entityMapsLoader";
 import { purifyMatchJsonForSlim } from "../lib/purifyRawMatchJson";
-import { fetchStaticJson } from "../lib/fetchStaticJson";
+import { fetchDeployedDataJson } from "../lib/fetchStaticJson";
 import {
   fetchOpenDotaMatchById,
   fetchNaviLatestOpenDotaMatch,
@@ -32,13 +29,35 @@ async function fetchLatestTalentsMap(): Promise<
   Record<string, VpkrTalentLabelEntry> | undefined
 > {
   try {
-    const raw = await fetchStaticJson<{
+    const raw = await fetchDeployedDataJson<{
       byAbilityKey?: Record<string, VpkrTalentLabelEntry>;
     }>("/data/latest_talents_map.json");
     const tbl = raw?.byAbilityKey;
     return tbl && typeof tbl === "object" ? tbl : undefined;
   } catch {
     return undefined;
+  }
+}
+
+async function applyOpenDotaEnrich(next: SlimMatchJson) {
+  const { enrichSlimWithOpenDotaAbilityUpgrades } = await import(
+    "../lib/enrichSlimFromOpenDota"
+  );
+  try {
+    return await enrichSlimWithOpenDotaAbilityUpgrades(next);
+  } catch {
+    return next;
+  }
+}
+
+async function applyOpenDotaEndgameItems(next: SlimMatchJson, m: EntityMapsPayload) {
+  const { mergeOpenDotaEndgameItemsIntoSlim } = await import(
+    "../lib/mergeOpenDotaEndgameItems"
+  );
+  try {
+    await mergeOpenDotaEndgameItemsIntoSlim(next, m);
+  } catch {
+    /* 404 / 网络失败 */
   }
 }
 
@@ -53,7 +72,11 @@ export function useMatchData(matchId?: string): MatchDataState & { reload: () =>
     fromLiveJson: false,
   });
 
+  /** 防止快速切换路由时，旧请求晚到覆盖新场次状态 */
+  const loadGeneration = useRef(0);
+
   const load = useCallback(async () => {
+    const gen = ++loadGeneration.current;
     setState((s) => ({ ...s, loading: true, error: null }));
     try {
       let idForFiles = "";
@@ -75,7 +98,7 @@ export function useMatchData(matchId?: string): MatchDataState & { reload: () =>
       const mapsPromise = loadEntityMapsPayload();
       const talentLabelsPromise = fetchLatestTalentsMap();
 
-      if (isNaviOpenDotaLiveRoute(matchId)) {
+      if (isNaviOpenDotaLiveRoute(idForFiles || matchId)) {
         try {
           const [m, talentLabelsByKey, raw] = await Promise.all([
             mapsPromise,
@@ -89,16 +112,8 @@ export function useMatchData(matchId?: string): MatchDataState & { reload: () =>
               : {}),
           };
           let next = purifyMatchJsonForSlim(raw);
-          try {
-            next = await enrichSlimWithOpenDotaAbilityUpgrades(next);
-          } catch {
-            /* 同上 */
-          }
-          try {
-            await mergeOpenDotaEndgameItemsIntoSlim(next, maps);
-          } catch {
-            /* 同上 */
-          }
+          next = await applyOpenDotaEnrich(next);
+          await applyOpenDotaEndgameItems(next, maps);
           slim = next;
         } catch (e) {
           lastErr = e instanceof Error ? e : new Error(String(e));
@@ -109,7 +124,7 @@ export function useMatchData(matchId?: string): MatchDataState & { reload: () =>
             const [m, talentLabelsByKey, raw] = await Promise.all([
               mapsPromise,
               talentLabelsPromise,
-              fetchStaticJson<unknown>(path, { cache: "no-cache" }),
+              fetchDeployedDataJson<unknown>(path),
             ]);
             maps = {
               ...m,
@@ -118,16 +133,8 @@ export function useMatchData(matchId?: string): MatchDataState & { reload: () =>
                 : {}),
             };
             let next = purifyMatchJsonForSlim(raw);
-            try {
-              next = await enrichSlimWithOpenDotaAbilityUpgrades(next);
-            } catch {
-              /* OpenDota 合并失败不应整页回退 mock */
-            }
-            try {
-              await mergeOpenDotaEndgameItemsIntoSlim(next, maps!);
-            } catch {
-              /* 404 / 网络失败：沿用 slim 内 DEM 装备 */
-            }
+            next = await applyOpenDotaEnrich(next);
+            await applyOpenDotaEndgameItems(next, maps!);
             slim = next;
             break;
           } catch (e) {
@@ -148,16 +155,8 @@ export function useMatchData(matchId?: string): MatchDataState & { reload: () =>
                 : {}),
             };
             let next = purifyMatchJsonForSlim(raw);
-            try {
-              next = await enrichSlimWithOpenDotaAbilityUpgrades(next);
-            } catch {
-              /* OpenDota ability 合并失败不阻断页面 */
-            }
-            try {
-              await mergeOpenDotaEndgameItemsIntoSlim(next, maps);
-            } catch {
-              /* OpenDota 装备合并失败不阻断页面 */
-            }
+            next = await applyOpenDotaEnrich(next);
+            await applyOpenDotaEndgameItems(next, maps);
             slim = next;
           } catch {
             // 本地与 OpenDota 都无法命中时，统一给出明确提示
@@ -172,6 +171,7 @@ export function useMatchData(matchId?: string): MatchDataState & { reload: () =>
 
       const players = slim.players;
       if (!players?.length) {
+        if (loadGeneration.current !== gen) return;
         setState({
           loading: false,
           error:
@@ -183,6 +183,9 @@ export function useMatchData(matchId?: string): MatchDataState & { reload: () =>
         });
         return;
       }
+      const { buildUiFromSlim, DEFAULT_TEAM_NAMES } = await import(
+        "../adapters/slimToUi"
+      );
       const ui = buildUiFromSlim(slim, maps, DEFAULT_TEAM_NAMES);
       const rawRadiantScore = Number(ui.header.scoreRadiant ?? 0);
       const rawDireScore = Number(ui.header.scoreDire ?? 0);
@@ -193,6 +196,7 @@ export function useMatchData(matchId?: string): MatchDataState & { reload: () =>
       const fallbackDireKills = players
         .filter((p) => Number(p.player_slot ?? 0) >= 128)
         .reduce((sum, p) => sum + Number(p.kills ?? 0), 0);
+      if (loadGeneration.current !== gen) return;
       setState({
         loading: false,
         error: null,
@@ -214,6 +218,7 @@ export function useMatchData(matchId?: string): MatchDataState & { reload: () =>
         fromLiveJson: true,
       });
     } catch (e) {
+      if (loadGeneration.current !== gen) return;
       setState({
         loading: false,
         error: e instanceof Error ? e.message : "加载失败",

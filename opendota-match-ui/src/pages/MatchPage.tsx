@@ -1,11 +1,17 @@
-import { useCallback } from "react";
+import { lazy, Suspense, useCallback } from "react";
 import { useParams } from "react-router-dom";
 import { Copy } from "lucide-react";
-import { MatchVerticalBoard } from "../components/MatchVerticalBoard";
 import { useMatchData } from "../hooks/useMatchData";
 import { isNaviOpenDotaLiveRoute } from "../lib/fetchNaviLatestOpenDotaMatch";
 import { PageShell } from "../components/PageShell";
 import { cn } from "../lib/cn";
+import { SEOMeta } from "../components/SEOMeta";
+
+const MatchVerticalBoard = lazy(() =>
+  import("../components/MatchVerticalBoard").then((m) => ({
+    default: m.MatchVerticalBoard,
+  }))
+);
 
 export function MatchPage() {
   const { matchId = "" } = useParams<{ matchId: string }>();
@@ -40,50 +46,75 @@ export function MatchPage() {
   );
 
   return (
-    <PageShell centerSearch trailing={trailing}>
-      {loading && (
-        <div
-          className={cn(
-            "border-b border-skin-line py-2 text-center text-xs text-skin-sub",
-            "bg-skin-muted/80 dark:bg-slate-800/80"
-          )}
-        >
-          {isNaviOpenDotaLiveRoute(matchId)
-            ? "正在从 OpenDota 加载 Na'Vi 最近一场…"
-            : `正在加载比赛 ${matchId} …`}
-        </div>
-      )}
-      <main className="min-w-0 overflow-x-hidden px-3 py-2 sm:px-4 lg:px-6">
-        <div className="mx-auto w-full max-w-[1600px] flex flex-col">
-          {loading ? (
-            <div
-              className={cn(
-                "flex min-h-[320px] flex-col items-center justify-center gap-3 rounded-xl border border-skin-line bg-skin-card/40 px-4 py-12 text-sm text-skin-sub",
-                "dark:bg-slate-900/30"
-              )}
-              aria-busy
-            >
-              <div className="h-8 w-8 animate-spin rounded-full border-2 border-skin-line border-t-amber-500/80" />
-              <p>正在加载本场对局数据…</p>
-            </div>
-          ) : error ? (
-            <div
-              className={cn(
-                "flex min-h-[220px] items-center justify-center rounded-xl border border-skin-line bg-skin-card/40 px-4 py-10 text-sm text-skin-sub",
-                "dark:bg-slate-900/30"
-              )}
-            >
-              没有比赛数据
-            </div>
-          ) : (
-            <MatchVerticalBoard
-              radiant={radiant}
-              dire={dire}
-              matchMeta={header}
-            />
-          )}
-        </div>
-      </main>
-    </PageShell>
+    <>
+      <SEOMeta
+        title={`比赛 ${matchId || "详情"} 数据深度解析`}
+        description={`查看比赛 ${matchId || ""} 的阵容对位、经济曲线与关键团战细节，快速定位高分局胜负手。`}
+        keywords={`DOTA2比赛详情,${matchId || "比赛编号"},高分局复盘`}
+      />
+      <PageShell centerSearch trailing={trailing}>
+        {loading && (
+          <div
+            className={cn(
+              "border-b border-skin-line py-2 text-center text-xs text-skin-sub",
+              "bg-skin-muted/80 dark:bg-slate-800/80"
+            )}
+          >
+            {isNaviOpenDotaLiveRoute(matchId)
+              ? "正在从 OpenDota 加载 Na'Vi 最近一场…"
+              : `正在加载比赛 ${matchId} …`}
+          </div>
+        )}
+        <main className="min-w-0 overflow-x-hidden px-3 py-2 sm:px-4 lg:px-6">
+          <div className="mx-auto w-full max-w-[1600px] flex flex-col">
+            {loading ? (
+              <div
+                className={cn(
+                  "flex min-h-[320px] flex-col items-center justify-center gap-3 rounded-xl border border-skin-line bg-skin-card/40 px-4 py-12 text-sm text-skin-sub",
+                  "dark:bg-slate-900/30"
+                )}
+                aria-busy
+              >
+                <div className="h-8 w-8 animate-spin rounded-full border-2 border-skin-line border-t-amber-500/80" />
+                <p>正在加载本场对局数据…</p>
+              </div>
+            ) : error ? (
+              <div
+                className={cn(
+                  "flex min-h-[220px] flex-col items-center justify-center gap-2 rounded-xl border border-skin-line bg-skin-card/40 px-4 py-10 text-sm text-skin-sub",
+                  "dark:bg-slate-900/30"
+                )}
+              >
+                <p className="text-center font-medium text-skin-ink">无法加载本场数据</p>
+                <p className="max-w-md text-center text-xs leading-relaxed text-skin-sub">
+                  {error}
+                </p>
+              </div>
+            ) : (
+              <Suspense
+                fallback={
+                  <div
+                    className={cn(
+                      "flex min-h-[240px] flex-col items-center justify-center gap-3 rounded-xl border border-skin-line bg-skin-card/40 px-4 py-10",
+                      "dark:bg-slate-900/30"
+                    )}
+                    aria-busy
+                  >
+                    <div className="h-7 w-7 animate-spin rounded-full border-2 border-skin-line border-t-amber-500/80" />
+                    <p className="text-xs text-skin-sub">加载对阵板…</p>
+                  </div>
+                }
+              >
+                <MatchVerticalBoard
+                  radiant={radiant}
+                  dire={dire}
+                  matchMeta={header}
+                />
+              </Suspense>
+            )}
+          </div>
+        </main>
+      </PageShell>
+    </>
   );
 }

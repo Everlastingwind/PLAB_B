@@ -15,15 +15,21 @@ import { seededProNameForAccount } from "../data/proPlayers";
 import { heroKeyFromId } from "../lib/replaysApi";
 import {
   abilityIconUrl,
-  abilityIconFallbackUrl,
   heroIconUrl,
   itemIconUrl,
+  normalizeDotaAssetUrl,
+  onDotaSteamAssetImgError,
 } from "../data/mockMatchPlayers";
 import { cn } from "../lib/cn";
 import { MECHA_INSET, MECHA_RAISED } from "../lib/mechaStyles";
 import type { SlimMatchJson, SlimPlayer } from "../types/slimMatch";
 import { TalentTreeBadge } from "../components/TalentTreeBadge";
 import type { TalentPickUi, TalentTreeUi } from "../data/mockMatchPlayers";
+import { SEOMeta } from "../components/SEOMeta";
+import { forEachConcurrent } from "../lib/fetchConcurrent";
+import { staticDataSearchParam } from "../lib/staticDataVersion";
+
+const MATCH_JSON_CONCURRENCY = 6;
 
 function toTalentTreeUi(raw: SlimPlayer["talent_tree"]): TalentTreeUi | null {
   if (!raw || !Array.isArray(raw.tiers)) return null;
@@ -161,12 +167,13 @@ export function PlayerMatchesPage() {
     if (!need.length || aid <= 0) return;
     (async () => {
       const updates: Record<number, SlimPlayer> = {};
-      for (const mid of need) {
+      const q = staticDataSearchParam();
+      await forEachConcurrent(need, MATCH_JSON_CONCURRENCY, async (mid) => {
         try {
-          const res = await fetch(`/data/matches/${mid}.json?t=${Date.now()}`, {
-            cache: "no-store",
+          const res = await fetch(`/data/matches/${mid}.json${q}`, {
+            cache: "default",
           });
-          if (!res.ok) continue;
+          if (!res.ok) return;
           const j = (await res.json()) as SlimMatchJson;
           const p = (j.players || []).find(
             (x) => Number(x.account_id || 0) === aid
@@ -175,7 +182,7 @@ export function PlayerMatchesPage() {
         } catch {
           // ignore detail fetch failures
         }
-      }
+      });
       if (!cancelled && Object.keys(updates).length) {
         setDetailByMatch((prev) => ({ ...prev, ...updates }));
       }
@@ -234,8 +241,31 @@ export function PlayerMatchesPage() {
     return [...m.values()].sort((a, b) => b.count - a.count);
   }, [replays, aid, maps]);
 
+  const playerName = titleName && titleName !== "匿名玩家" ? titleName : `玩家 #${accountId}`;
+  const coreHeroNameEn = useMemo(() => {
+    const topHero = heroSummaries[0];
+    if (!topHero) return "未知英雄";
+    return (
+      maps?.heroes[String(topHero.hero_id)]?.nameEn ||
+      maps?.heroes[String(topHero.hero_id)]?.nameCn ||
+      topHero.key
+    );
+  }, [heroSummaries, maps]);
+
+  // 职业选手对标模块标题公式：[选手ID] [英雄名称] 深度数据对标 | DOTA2 Plan B
+  // 选手ID优先用职业名/展示名，缺失时回退 accountId；英雄名称优先英文名。
+  const playerIdentifier = titleName && titleName !== "匿名玩家" ? titleName : accountId;
+  const seoTitle = `${playerIdentifier} 深度数据对标`;
+  const seoDescription = `查看 ${playerName} 的最新高分局出装路线与正反补细节对比，重点追踪 ${coreHeroNameEn} 等核心英雄的近期打法变化。`;
+
   return (
-    <PageShell centerSearch feedMode={feed} onFeedModeChange={setFeed}>
+    <>
+      <SEOMeta
+        title={seoTitle}
+        description={seoDescription}
+        keywords={`${playerName},DOTA2高分局,${coreHeroNameEn},出装路线,对线正反补`}
+      />
+      <PageShell centerSearch feedMode={feed} onFeedModeChange={setFeed}>
         <main className="mx-auto w-full max-w-[1400px] px-4 py-8 sm:px-6 lg:px-8">
           <div className="mb-6 flex flex-wrap items-center gap-3">
             <h1 className="text-lg font-bold text-skin-ink">
@@ -297,6 +327,10 @@ export function PlayerMatchesPage() {
                         alt=""
                         className="h-8 w-8 rounded-[2px] object-cover"
                         loading="lazy"
+                        decoding="async"
+                        referrerPolicy="no-referrer"
+                        fetchPriority="low"
+                        onError={onDotaSteamAssetImgError}
                       />
                     </span>
                     <span>
@@ -361,6 +395,10 @@ export function PlayerMatchesPage() {
                             alt=""
                             className="h-10 w-10 rounded object-cover"
                             loading="lazy"
+                            decoding="async"
+                            referrerPolicy="no-referrer"
+                            fetchPriority="low"
+                            onError={onDotaSteamAssetImgError}
                           />
                           <div className="min-w-0">
                             <div className="truncate font-semibold text-skin-ink">
@@ -386,16 +424,20 @@ export function PlayerMatchesPage() {
                                   <img
                                     key={`${r.match_id}-it-${idx}`}
                                     src={
-                                      (it.image_url || "").trim() ||
-                                      itemIconUrl(String(it.item_key || "").replace(/^item_/, ""))
+                                      normalizeDotaAssetUrl(
+                                        String(it.image_url || "").trim()
+                                      ) ||
+                                      itemIconUrl(
+                                        String(it.item_key || "").replace(/^item_/, "")
+                                      )
                                     }
                                     alt=""
                                     className="h-8 w-8 rounded object-cover"
                                     loading="lazy"
-                                    onError={(e) => {
-                                      const el = e.currentTarget;
-                                      el.style.display = "none";
-                                    }}
+                                    decoding="async"
+                                    referrerPolicy="no-referrer"
+                                    fetchPriority="low"
+                                    onError={onDotaSteamAssetImgError}
                                   />
                                 ) : null
                               ))
@@ -416,12 +458,14 @@ export function PlayerMatchesPage() {
                                     alt=""
                                     className="h-6 w-6 rounded object-cover"
                                     loading="lazy"
-                                    onError={(e) => {
-                                      const el = e.currentTarget;
-                                      if (!el.src.includes("filler_ability")) {
-                                        el.src = abilityIconFallbackUrl;
-                                      }
-                                    }}
+                                    decoding="async"
+                                    referrerPolicy="no-referrer"
+                                    fetchPriority="low"
+                                    onError={(e) =>
+                                      onDotaSteamAssetImgError(e, {
+                                        tryAbilityFiller: true,
+                                      })
+                                    }
                                   />
                                 ) : null;
                               })
@@ -455,7 +499,8 @@ export function PlayerMatchesPage() {
           ) : (
             <p className="text-sm text-skin-sub">加载中…</p>
           )}
-      </main>
-    </PageShell>
+        </main>
+      </PageShell>
+    </>
   );
 }

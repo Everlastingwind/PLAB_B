@@ -4,6 +4,7 @@ import {
   abilityIconUrl,
   dotaTalentsIconUrl,
   normalizeDotaAssetUrl,
+  onDotaSteamAssetImgError,
   steamCdnImgDefer,
 } from "../data/mockMatchPlayers";
 import { cn } from "../lib/cn";
@@ -95,12 +96,9 @@ export function SkillBuildTimeline({ steps }: { steps: SkillBuildStepUi[] }) {
                     className="h-full w-full object-cover"
                     {...steamCdnImgDefer}
                     title={tip}
-                    onError={(e) => {
-                      const el = e.currentTarget;
-                      if (!el.src.includes("filler_ability")) {
-                        el.src = abilityIconFallbackUrl;
-                      }
-                    }}
+                    onError={(e) =>
+                      onDotaSteamAssetImgError(e, { tryAbilityFiller: true })
+                    }
                   />
                 </div>
               )}

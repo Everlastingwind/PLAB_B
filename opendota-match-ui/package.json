@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "fetch-heroes-webp": "node scripts/fetch-hero-webp.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.103.0",
@@ -14,6 +15,7 @@
     "lucide-react": "^0.468.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
+    "react-helmet-async": "^3.0.0",
     "react-router-dom": "^7.14.0"
   },
   "devDependencies": {
@@ -22,6 +24,7 @@
     "@vitejs/plugin-react": "^4.3.4",
     "autoprefixer": "^10.4.20",
     "postcss": "^8.4.49",
+    "sharp": "^0.33.5",
     "tailwindcss": "^3.4.15",
     "typescript": "~5.6.2",
     "vite": "^6.0.3"

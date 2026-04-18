@@ -3772,16 +3772,8 @@
           "ability_key": "special_bonus_attack_speed_20"
         },
         {
-          "type": "talent",
-          "level": 12,
-          "name": "special_bonus_attributes",
-          "name_en": "special_bonus_attributes",
-          "ability_id": 730,
-          "ability_key": "special_bonus_attributes"
-        },
-        {
           "type": "ability",
-          "level": 13,
+          "level": 12,
           "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/muerta_pierce_the_veil.png",
           "name_en": "Pierce the Veil",
           "name_cn": "Pierce the Veil",
@@ -3790,55 +3782,15 @@
         },
         {
           "type": "talent",
-          "level": 14,
-          "name": "special_bonus_attributes",
-          "name_en": "special_bonus_attributes",
-          "ability_id": 730,
-          "ability_key": "special_bonus_attributes"
-        },
-        {
-          "type": "talent",
-          "level": 15,
-          "name": "special_bonus_attributes",
-          "name_en": "special_bonus_attributes",
-          "ability_id": 730,
-          "ability_key": "special_bonus_attributes"
-        },
-        {
-          "type": "talent",
-          "level": 16,
+          "level": 13,
           "name": "+15 Intelligence",
           "name_en": "+15 Intelligence",
           "ability_id": 5991,
           "ability_key": "special_bonus_intelligence_15"
         },
         {
-          "type": "talent",
-          "level": 17,
-          "name": "special_bonus_attributes",
-          "name_en": "special_bonus_attributes",
-          "ability_id": 730,
-          "ability_key": "special_bonus_attributes"
-        },
-        {
-          "type": "talent",
-          "level": 18,
-          "name": "special_bonus_attributes",
-          "name_en": "special_bonus_attributes",
-          "ability_id": 730,
-          "ability_key": "special_bonus_attributes"
-        },
-        {
-          "type": "talent",
-          "level": 19,
-          "name": "special_bonus_attributes",
-          "name_en": "special_bonus_attributes",
-          "ability_id": 730,
-          "ability_key": "special_bonus_attributes"
-        },
-        {
           "type": "ability",
-          "level": 20,
+          "level": 14,
           "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/muerta_pierce_the_veil.png",
           "name_en": "Pierce the Veil",
           "name_cn": "Pierce the Veil",
@@ -3847,7 +3799,7 @@
         },
         {
           "type": "ability",
-          "level": 21,
+          "level": 15,
           "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/muerta_the_calling.png",
           "name_en": "The Calling",
           "name_cn": "The Calling",
@@ -3856,7 +3808,7 @@
         },
         {
           "type": "ability",
-          "level": 22,
+          "level": 16,
           "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/muerta_the_calling.png",
           "name_en": "The Calling",
           "name_cn": "The Calling",
@@ -3865,7 +3817,7 @@
         },
         {
           "type": "unknown",
-          "level": 23,
+          "level": 17,
           "ability_id": 1629,
           "ability_key": "special_bonus_unique_muerta_pierce_the_veil_duration",
           "reason": "ability_key_not_in_abilities_json",
@@ -3873,7 +3825,7 @@
         },
         {
           "type": "ability",
-          "level": 24,
+          "level": 18,
           "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/muerta_the_calling.png",
           "name_en": "The Calling",
           "name_cn": "The Calling",
@@ -3882,7 +3834,7 @@
         },
         {
           "type": "unknown",
-          "level": 25,
+          "level": 19,
           "ability_id": 5759,
           "ability_key": "special_bonus_unique_muerta_gunslinger_double_shot_chance",
           "reason": "ability_key_not_in_abilities_json",
@@ -5716,12 +5668,12 @@
           {
             "group": "backpack",
             "slot": 0,
-            "item_id": 41,
-            "item_key": "bottle",
-            "item_name_en": "Bottle",
-            "item_name_cn": "魔瓶",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/bottle.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
@@ -8035,12 +7987,12 @@
           {
             "group": "backpack",
             "slot": 1,
-            "item_id": 43,
-            "item_key": "ward_sentry",
-            "item_name_en": "Sentry Ward",
-            "item_name_cn": "岗哨守卫",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/ward_sentry.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
@@ -12203,23 +12155,23 @@
           {
             "group": "backpack",
             "slot": 0,
-            "item_id": 188,
-            "item_key": "smoke_of_deceit",
-            "item_name_en": "Smoke of Deceit",
-            "item_name_cn": "诡计之雾",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/smoke_of_deceit.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
             "group": "backpack",
             "slot": 1,
-            "item_id": 4204,
-            "item_key": "famango",
-            "item_name_en": "Healing Lotus",
-            "item_name_cn": "Healing Lotus",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/famango.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
@@ -16547,12 +16499,12 @@
           {
             "group": "backpack",
             "slot": 2,
-            "item_id": 34,
-            "item_key": "magic_stick",
-            "item_name_en": "Magic Stick",
-            "item_name_cn": "Magic Stick",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/magic_stick.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           }
         ],
@@ -18574,30 +18526,14 @@
         {
           "type": "talent",
           "level": 10,
-          "name": "special_bonus_attributes",
-          "name_en": "special_bonus_attributes",
-          "ability_id": 730,
-          "ability_key": "special_bonus_attributes"
-        },
-        {
-          "type": "talent",
-          "level": 11,
           "name": "+{s:bonus_hit_damage}% Homing Missile Damage",
           "name_en": "+{s:bonus_hit_damage}% Homing Missile Damage",
           "ability_id": 1332,
           "ability_key": "special_bonus_unique_gyrocopter_homing_missile_damage"
         },
         {
-          "type": "talent",
-          "level": 12,
-          "name": "special_bonus_attributes",
-          "name_en": "special_bonus_attributes",
-          "ability_id": 730,
-          "ability_key": "special_bonus_attributes"
-        },
-        {
           "type": "ability",
-          "level": 13,
+          "level": 11,
           "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/gyrocopter_call_down.png",
           "name_en": "Call Down",
           "name_cn": "Call Down",
@@ -18605,24 +18541,8 @@
           "ability_key": "gyrocopter_call_down"
         },
         {
-          "type": "talent",
-          "level": 14,
-          "name": "special_bonus_attributes",
-          "name_en": "special_bonus_attributes",
-          "ability_id": 730,
-          "ability_key": "special_bonus_attributes"
-        },
-        {
-          "type": "talent",
-          "level": 15,
-          "name": "special_bonus_attributes",
-          "name_en": "special_bonus_attributes",
-          "ability_id": 730,
-          "ability_key": "special_bonus_attributes"
-        },
-        {
           "type": "ability",
-          "level": 16,
+          "level": 12,
           "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/gyrocopter_homing_missile.png",
           "name_en": "Homing Missile",
           "name_cn": "Homing Missile",
@@ -18631,31 +18551,15 @@
         },
         {
           "type": "talent",
-          "level": 17,
+          "level": 13,
           "name": "+{s:bonus_bonus_damage} Flak Cannon Damage",
           "name_en": "+{s:bonus_bonus_damage} Flak Cannon Damage",
           "ability_id": 1012,
           "ability_key": "special_bonus_unique_gyrocopter_flak_cannon_bonus_damage"
         },
         {
-          "type": "talent",
-          "level": 18,
-          "name": "special_bonus_attributes",
-          "name_en": "special_bonus_attributes",
-          "ability_id": 730,
-          "ability_key": "special_bonus_attributes"
-        },
-        {
-          "type": "talent",
-          "level": 19,
-          "name": "special_bonus_attributes",
-          "name_en": "special_bonus_attributes",
-          "ability_id": 730,
-          "ability_key": "special_bonus_attributes"
-        },
-        {
           "type": "ability",
-          "level": 20,
+          "level": 14,
           "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/gyrocopter_call_down.png",
           "name_en": "Call Down",
           "name_cn": "Call Down",
@@ -18664,7 +18568,7 @@
         },
         {
           "type": "ability",
-          "level": 21,
+          "level": 15,
           "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/gyrocopter_homing_missile.png",
           "name_en": "Homing Missile",
           "name_cn": "Homing Missile",
@@ -18673,23 +18577,15 @@
         },
         {
           "type": "talent",
-          "level": 22,
+          "level": 16,
           "name": "+{s:bonus_max_attacks} Flak Cannon Attacks",
           "name_en": "+{s:bonus_max_attacks} Flak Cannon Attacks",
           "ability_id": 6312,
           "ability_key": "special_bonus_unique_gyrocopter_2"
         },
         {
-          "type": "talent",
-          "level": 23,
-          "name": "special_bonus_attributes",
-          "name_en": "special_bonus_attributes",
-          "ability_id": 730,
-          "ability_key": "special_bonus_attributes"
-        },
-        {
           "type": "ability",
-          "level": 24,
+          "level": 17,
           "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/gyrocopter_homing_missile.png",
           "name_en": "Homing Missile",
           "name_cn": "Homing Missile",
@@ -18698,7 +18594,7 @@
         },
         {
           "type": "ability",
-          "level": 25,
+          "level": 18,
           "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/gyrocopter_homing_missile.png",
           "name_en": "Homing Missile",
           "name_cn": "Homing Missile",
@@ -23525,5 +23421,10 @@
   },
   "my_word_counts": {},
   "throw": 2615,
-  "loss": 21031
+  "loss": 21031,
+  "_meta": {
+    "source": "api_upload",
+    "match_id": 8770708794,
+    "uploaded_at": "2026-04-16T02:28:14Z"
+  }
 }

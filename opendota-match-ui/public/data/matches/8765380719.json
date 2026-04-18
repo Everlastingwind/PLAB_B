@@ -6,7 +6,9 @@
     "talent_inference": {
       "raw_ability_upgrade_like_events": 207,
       "talent_tree_selected_layers_total": 25
-    }
+    },
+    "uploaded_at": "2026-04-16T02:26:04Z",
+    "batch_reimport": true
   },
   "match_id": 8765380719,
   "radiant_win": false,
@@ -620,7 +622,7 @@
         "dots_learned": 2
       },
       "hero_name_en": "Tidehunter",
-      "hero_name_cn": "",
+      "hero_name_cn": "潮汐猎人",
       "_dem_items_source": "combat_log_slot_last_purchase",
       "lane_early": "top",
       "role_early": "offlane",
@@ -661,7 +663,451 @@
         5121
       ],
       "player_slot": 0,
-      "isRadiant": true
+      "isRadiant": true,
+      "hero_portrait_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/tidehunter.png",
+      "hero_icon_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/icons/tidehunter.png",
+      "hero_internal_name": "npc_dota_hero_tidehunter",
+      "items_resolved": {
+        "main": [
+          {
+            "group": "main",
+            "slot": 0,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
+            "resolve_note": null
+          },
+          {
+            "group": "main",
+            "slot": 1,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
+            "resolve_note": null
+          },
+          {
+            "group": "main",
+            "slot": 2,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
+            "resolve_note": null
+          },
+          {
+            "group": "main",
+            "slot": 3,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
+            "resolve_note": null
+          },
+          {
+            "group": "main",
+            "slot": 4,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
+            "resolve_note": null
+          },
+          {
+            "group": "main",
+            "slot": 5,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
+            "resolve_note": null
+          }
+        ],
+        "backpack": [
+          {
+            "group": "backpack",
+            "slot": 0,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
+            "resolve_note": null
+          },
+          {
+            "group": "backpack",
+            "slot": 1,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
+            "resolve_note": null
+          },
+          {
+            "group": "backpack",
+            "slot": 2,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
+            "resolve_note": null
+          }
+        ],
+        "neutral": null
+      },
+      "skill_build_two_step": [
+        {
+          "type": "ability",
+          "level": 1,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/tidehunter_gush.png",
+          "name_en": "Gush",
+          "name_cn": "Gush",
+          "ability_id": 5118,
+          "ability_key": "tidehunter_gush"
+        },
+        {
+          "type": "ability",
+          "level": 2,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/tidehunter_anchor_smash.png",
+          "name_en": "Anchor Smash",
+          "name_cn": "Anchor Smash",
+          "ability_id": 5120,
+          "ability_key": "tidehunter_anchor_smash"
+        },
+        {
+          "type": "ability",
+          "level": 3,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/tidehunter_anchor_smash.png",
+          "name_en": "Anchor Smash",
+          "name_cn": "Anchor Smash",
+          "ability_id": 5120,
+          "ability_key": "tidehunter_anchor_smash"
+        },
+        {
+          "type": "ability",
+          "level": 4,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/tidehunter_kraken_shell.png",
+          "name_en": "Kraken Shell",
+          "name_cn": "Kraken Shell",
+          "ability_id": 5119,
+          "ability_key": "tidehunter_kraken_shell"
+        },
+        {
+          "type": "ability",
+          "level": 5,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/tidehunter_anchor_smash.png",
+          "name_en": "Anchor Smash",
+          "name_cn": "Anchor Smash",
+          "ability_id": 5120,
+          "ability_key": "tidehunter_anchor_smash"
+        },
+        {
+          "type": "ability",
+          "level": 6,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/tidehunter_ravage.png",
+          "name_en": "Ravage",
+          "name_cn": "Ravage",
+          "ability_id": 5121,
+          "ability_key": "tidehunter_ravage"
+        },
+        {
+          "type": "ability",
+          "level": 7,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/tidehunter_anchor_smash.png",
+          "name_en": "Anchor Smash",
+          "name_cn": "Anchor Smash",
+          "ability_id": 5120,
+          "ability_key": "tidehunter_anchor_smash"
+        },
+        {
+          "type": "ability",
+          "level": 8,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/tidehunter_kraken_shell.png",
+          "name_en": "Kraken Shell",
+          "name_cn": "Kraken Shell",
+          "ability_id": 5119,
+          "ability_key": "tidehunter_kraken_shell"
+        },
+        {
+          "type": "ability",
+          "level": 9,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/tidehunter_kraken_shell.png",
+          "name_en": "Kraken Shell",
+          "name_cn": "Kraken Shell",
+          "ability_id": 5119,
+          "ability_key": "tidehunter_kraken_shell"
+        },
+        {
+          "type": "ability",
+          "level": 10,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/tidehunter_kraken_shell.png",
+          "name_en": "Kraken Shell",
+          "name_cn": "Kraken Shell",
+          "ability_id": 5119,
+          "ability_key": "tidehunter_kraken_shell"
+        },
+        {
+          "type": "talent",
+          "level": 11,
+          "name": "+{s:bonus_damage_reduction}% Anchor Smash Damage Reduction",
+          "name_en": "+{s:bonus_damage_reduction}% Anchor Smash Damage Reduction",
+          "ability_id": 6946,
+          "ability_key": "special_bonus_unique_tidehunter_3"
+        },
+        {
+          "type": "ability",
+          "level": 12,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/tidehunter_gush.png",
+          "name_en": "Gush",
+          "name_cn": "Gush",
+          "ability_id": 5118,
+          "ability_key": "tidehunter_gush"
+        },
+        {
+          "type": "ability",
+          "level": 13,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/tidehunter_gush.png",
+          "name_en": "Gush",
+          "name_cn": "Gush",
+          "ability_id": 5118,
+          "ability_key": "tidehunter_gush"
+        },
+        {
+          "type": "ability",
+          "level": 14,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/tidehunter_gush.png",
+          "name_en": "Gush",
+          "name_cn": "Gush",
+          "ability_id": 5118,
+          "ability_key": "tidehunter_gush"
+        },
+        {
+          "type": "talent",
+          "level": 15,
+          "name": "-{s:bonus_AbilityCooldown}s Ravage Cooldown",
+          "name_en": "-{s:bonus_AbilityCooldown}s Ravage Cooldown",
+          "ability_id": 1700,
+          "ability_key": "special_bonus_unique_tidehunter_ravage_cooldown"
+        },
+        {
+          "type": "ability",
+          "level": 16,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/tidehunter_dead_in_the_water.png",
+          "name_en": "Dead in the Water",
+          "name_cn": "Dead in the Water",
+          "ability_id": 5407,
+          "ability_key": "tidehunter_dead_in_the_water"
+        },
+        {
+          "type": "ability",
+          "level": 17,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/tidehunter_ravage.png",
+          "name_en": "Ravage",
+          "name_cn": "Ravage",
+          "ability_id": 5121,
+          "ability_key": "tidehunter_ravage"
+        }
+      ],
+      "ability_timeline": [
+        {
+          "time": null,
+          "ability_id": 5118,
+          "ability_key": "tidehunter_gush",
+          "ability_name_en": "Gush",
+          "ability_name_cn": "Gush",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/tidehunter_gush.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 5120,
+          "ability_key": "tidehunter_anchor_smash",
+          "ability_name_en": "Anchor Smash",
+          "ability_name_cn": "Anchor Smash",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/tidehunter_anchor_smash.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 5120,
+          "ability_key": "tidehunter_anchor_smash",
+          "ability_name_en": "Anchor Smash",
+          "ability_name_cn": "Anchor Smash",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/tidehunter_anchor_smash.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 5119,
+          "ability_key": "tidehunter_kraken_shell",
+          "ability_name_en": "Kraken Shell",
+          "ability_name_cn": "Kraken Shell",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/tidehunter_kraken_shell.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 5120,
+          "ability_key": "tidehunter_anchor_smash",
+          "ability_name_en": "Anchor Smash",
+          "ability_name_cn": "Anchor Smash",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/tidehunter_anchor_smash.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 5121,
+          "ability_key": "tidehunter_ravage",
+          "ability_name_en": "Ravage",
+          "ability_name_cn": "Ravage",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/tidehunter_ravage.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 5120,
+          "ability_key": "tidehunter_anchor_smash",
+          "ability_name_en": "Anchor Smash",
+          "ability_name_cn": "Anchor Smash",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/tidehunter_anchor_smash.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 5119,
+          "ability_key": "tidehunter_kraken_shell",
+          "ability_name_en": "Kraken Shell",
+          "ability_name_cn": "Kraken Shell",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/tidehunter_kraken_shell.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 5119,
+          "ability_key": "tidehunter_kraken_shell",
+          "ability_name_en": "Kraken Shell",
+          "ability_name_cn": "Kraken Shell",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/tidehunter_kraken_shell.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 5119,
+          "ability_key": "tidehunter_kraken_shell",
+          "ability_name_en": "Kraken Shell",
+          "ability_name_cn": "Kraken Shell",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/tidehunter_kraken_shell.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 6946,
+          "ability_key": "special_bonus_unique_tidehunter_3",
+          "ability_name_en": "+{s:bonus_damage_reduction}% Anchor Smash Damage Reduction",
+          "ability_name_cn": "+{s:bonus_damage_reduction}% Anchor Smash Damage Reduction",
+          "image_url": "",
+          "is_talent": true
+        },
+        {
+          "time": null,
+          "ability_id": 5118,
+          "ability_key": "tidehunter_gush",
+          "ability_name_en": "Gush",
+          "ability_name_cn": "Gush",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/tidehunter_gush.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 5118,
+          "ability_key": "tidehunter_gush",
+          "ability_name_en": "Gush",
+          "ability_name_cn": "Gush",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/tidehunter_gush.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 5118,
+          "ability_key": "tidehunter_gush",
+          "ability_name_en": "Gush",
+          "ability_name_cn": "Gush",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/tidehunter_gush.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 1700,
+          "ability_key": "special_bonus_unique_tidehunter_ravage_cooldown",
+          "ability_name_en": "-{s:bonus_AbilityCooldown}s Ravage Cooldown",
+          "ability_name_cn": "-{s:bonus_AbilityCooldown}s Ravage Cooldown",
+          "image_url": "",
+          "is_talent": true
+        },
+        {
+          "time": null,
+          "ability_id": 5407,
+          "ability_key": "tidehunter_dead_in_the_water",
+          "ability_name_en": "Dead in the Water",
+          "ability_name_cn": "Dead in the Water",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/tidehunter_dead_in_the_water.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 5121,
+          "ability_key": "tidehunter_ravage",
+          "ability_name_en": "Ravage",
+          "ability_name_cn": "Ravage",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/tidehunter_ravage.png",
+          "is_talent": false
+        }
+      ],
+      "talents_taken": [
+        {
+          "time": null,
+          "ability_id": 6946,
+          "ability_key": "special_bonus_unique_tidehunter_3",
+          "ability_name_en": "+{s:bonus_damage_reduction}% Anchor Smash Damage Reduction",
+          "ability_name_cn": "+{s:bonus_damage_reduction}% Anchor Smash Damage Reduction",
+          "image_url": "",
+          "is_talent": true
+        },
+        {
+          "time": null,
+          "ability_id": 1700,
+          "ability_key": "special_bonus_unique_tidehunter_ravage_cooldown",
+          "ability_name_en": "-{s:bonus_AbilityCooldown}s Ravage Cooldown",
+          "ability_name_cn": "-{s:bonus_AbilityCooldown}s Ravage Cooldown",
+          "image_url": "",
+          "is_talent": true
+        }
+      ],
+      "item_0": 178,
+      "item_1": 50,
+      "item_2": 119,
+      "item_3": 1,
+      "item_4": 36,
+      "item_5": 81,
+      "item_neutral": 0
     },
     {
       "account_id": 111464090,
@@ -1269,7 +1715,7 @@
         "dots_learned": 3
       },
       "hero_name_en": "Ursa",
-      "hero_name_cn": "",
+      "hero_name_cn": "熊战士",
       "_dem_items_source": "combat_log_slot_last_purchase",
       "lane_early": "bot",
       "role_early": "carry",
@@ -1325,7 +1771,477 @@
         6132
       ],
       "player_slot": 1,
-      "isRadiant": true
+      "isRadiant": true,
+      "hero_portrait_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/ursa.png",
+      "hero_icon_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/icons/ursa.png",
+      "hero_internal_name": "npc_dota_hero_ursa",
+      "items_resolved": {
+        "main": [
+          {
+            "group": "main",
+            "slot": 0,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
+            "resolve_note": null
+          },
+          {
+            "group": "main",
+            "slot": 1,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
+            "resolve_note": null
+          },
+          {
+            "group": "main",
+            "slot": 2,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
+            "resolve_note": null
+          },
+          {
+            "group": "main",
+            "slot": 3,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
+            "resolve_note": null
+          },
+          {
+            "group": "main",
+            "slot": 4,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
+            "resolve_note": null
+          },
+          {
+            "group": "main",
+            "slot": 5,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
+            "resolve_note": null
+          }
+        ],
+        "backpack": [
+          {
+            "group": "backpack",
+            "slot": 0,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
+            "resolve_note": null
+          },
+          {
+            "group": "backpack",
+            "slot": 1,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
+            "resolve_note": null
+          },
+          {
+            "group": "backpack",
+            "slot": 2,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
+            "resolve_note": null
+          }
+        ],
+        "neutral": null
+      },
+      "skill_build_two_step": [
+        {
+          "type": "ability",
+          "level": 1,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/ursa_fury_swipes.png",
+          "name_en": "Fury Swipes",
+          "name_cn": "Fury Swipes",
+          "ability_id": 5359,
+          "ability_key": "ursa_fury_swipes"
+        },
+        {
+          "type": "ability",
+          "level": 2,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/ursa_earthshock.png",
+          "name_en": "Earthshock",
+          "name_cn": "Earthshock",
+          "ability_id": 5357,
+          "ability_key": "ursa_earthshock"
+        },
+        {
+          "type": "ability",
+          "level": 3,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/ursa_fury_swipes.png",
+          "name_en": "Fury Swipes",
+          "name_cn": "Fury Swipes",
+          "ability_id": 5359,
+          "ability_key": "ursa_fury_swipes"
+        },
+        {
+          "type": "ability",
+          "level": 4,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/ursa_overpower.png",
+          "name_en": "Overpower",
+          "name_cn": "Overpower",
+          "ability_id": 5358,
+          "ability_key": "ursa_overpower"
+        },
+        {
+          "type": "ability",
+          "level": 5,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/ursa_fury_swipes.png",
+          "name_en": "Fury Swipes",
+          "name_cn": "Fury Swipes",
+          "ability_id": 5359,
+          "ability_key": "ursa_fury_swipes"
+        },
+        {
+          "type": "ability",
+          "level": 6,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/ursa_enrage.png",
+          "name_en": "Enrage",
+          "name_cn": "Enrage",
+          "ability_id": 5360,
+          "ability_key": "ursa_enrage"
+        },
+        {
+          "type": "ability",
+          "level": 7,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/ursa_fury_swipes.png",
+          "name_en": "Fury Swipes",
+          "name_cn": "Fury Swipes",
+          "ability_id": 5359,
+          "ability_key": "ursa_fury_swipes"
+        },
+        {
+          "type": "ability",
+          "level": 8,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/ursa_overpower.png",
+          "name_en": "Overpower",
+          "name_cn": "Overpower",
+          "ability_id": 5358,
+          "ability_key": "ursa_overpower"
+        },
+        {
+          "type": "ability",
+          "level": 9,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/ursa_overpower.png",
+          "name_en": "Overpower",
+          "name_cn": "Overpower",
+          "ability_id": 5358,
+          "ability_key": "ursa_overpower"
+        },
+        {
+          "type": "ability",
+          "level": 10,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/ursa_overpower.png",
+          "name_en": "Overpower",
+          "name_cn": "Overpower",
+          "ability_id": 5358,
+          "ability_key": "ursa_overpower"
+        },
+        {
+          "type": "talent",
+          "level": 11,
+          "name": "+{s:bonus_bonus_reset_time}s Fury Swipes Reset Time",
+          "name_en": "+{s:bonus_bonus_reset_time}s Fury Swipes Reset Time",
+          "ability_id": 6975,
+          "ability_key": "special_bonus_unique_ursa_4"
+        },
+        {
+          "type": "ability",
+          "level": 12,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/ursa_earthshock.png",
+          "name_en": "Earthshock",
+          "name_cn": "Earthshock",
+          "ability_id": 5357,
+          "ability_key": "ursa_earthshock"
+        },
+        {
+          "type": "ability",
+          "level": 13,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/ursa_enrage.png",
+          "name_en": "Enrage",
+          "name_cn": "Enrage",
+          "ability_id": 5360,
+          "ability_key": "ursa_enrage"
+        },
+        {
+          "type": "ability",
+          "level": 14,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/ursa_earthshock.png",
+          "name_en": "Earthshock",
+          "name_cn": "Earthshock",
+          "ability_id": 5357,
+          "ability_key": "ursa_earthshock"
+        },
+        {
+          "type": "ability",
+          "level": 15,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/ursa_earthshock.png",
+          "name_en": "Earthshock",
+          "name_cn": "Earthshock",
+          "ability_id": 5357,
+          "ability_key": "ursa_earthshock"
+        },
+        {
+          "type": "talent",
+          "level": 16,
+          "name": "+{s:bonus_status_resistance}% Enrage Status Resistance",
+          "name_en": "+{s:bonus_status_resistance}% Enrage Status Resistance",
+          "ability_id": 758,
+          "ability_key": "special_bonus_unique_ursa_8"
+        },
+        {
+          "type": "ability",
+          "level": 17,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/ursa_enrage.png",
+          "name_en": "Enrage",
+          "name_cn": "Enrage",
+          "ability_id": 5360,
+          "ability_key": "ursa_enrage"
+        },
+        {
+          "type": "talent",
+          "level": 18,
+          "name": "+{s:bonus_damage_per_stack} Fury Swipes Damage",
+          "name_en": "+{s:bonus_damage_per_stack} Fury Swipes Damage",
+          "ability_id": 6132,
+          "ability_key": "special_bonus_unique_ursa"
+        }
+      ],
+      "ability_timeline": [
+        {
+          "time": null,
+          "ability_id": 5359,
+          "ability_key": "ursa_fury_swipes",
+          "ability_name_en": "Fury Swipes",
+          "ability_name_cn": "Fury Swipes",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/ursa_fury_swipes.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 5357,
+          "ability_key": "ursa_earthshock",
+          "ability_name_en": "Earthshock",
+          "ability_name_cn": "Earthshock",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/ursa_earthshock.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 5359,
+          "ability_key": "ursa_fury_swipes",
+          "ability_name_en": "Fury Swipes",
+          "ability_name_cn": "Fury Swipes",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/ursa_fury_swipes.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 5358,
+          "ability_key": "ursa_overpower",
+          "ability_name_en": "Overpower",
+          "ability_name_cn": "Overpower",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/ursa_overpower.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 5359,
+          "ability_key": "ursa_fury_swipes",
+          "ability_name_en": "Fury Swipes",
+          "ability_name_cn": "Fury Swipes",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/ursa_fury_swipes.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 5360,
+          "ability_key": "ursa_enrage",
+          "ability_name_en": "Enrage",
+          "ability_name_cn": "Enrage",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/ursa_enrage.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 5359,
+          "ability_key": "ursa_fury_swipes",
+          "ability_name_en": "Fury Swipes",
+          "ability_name_cn": "Fury Swipes",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/ursa_fury_swipes.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 5358,
+          "ability_key": "ursa_overpower",
+          "ability_name_en": "Overpower",
+          "ability_name_cn": "Overpower",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/ursa_overpower.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 5358,
+          "ability_key": "ursa_overpower",
+          "ability_name_en": "Overpower",
+          "ability_name_cn": "Overpower",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/ursa_overpower.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 5358,
+          "ability_key": "ursa_overpower",
+          "ability_name_en": "Overpower",
+          "ability_name_cn": "Overpower",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/ursa_overpower.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 6975,
+          "ability_key": "special_bonus_unique_ursa_4",
+          "ability_name_en": "+{s:bonus_bonus_reset_time}s Fury Swipes Reset Time",
+          "ability_name_cn": "+{s:bonus_bonus_reset_time}s Fury Swipes Reset Time",
+          "image_url": "",
+          "is_talent": true
+        },
+        {
+          "time": null,
+          "ability_id": 5357,
+          "ability_key": "ursa_earthshock",
+          "ability_name_en": "Earthshock",
+          "ability_name_cn": "Earthshock",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/ursa_earthshock.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 5360,
+          "ability_key": "ursa_enrage",
+          "ability_name_en": "Enrage",
+          "ability_name_cn": "Enrage",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/ursa_enrage.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 5357,
+          "ability_key": "ursa_earthshock",
+          "ability_name_en": "Earthshock",
+          "ability_name_cn": "Earthshock",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/ursa_earthshock.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 5357,
+          "ability_key": "ursa_earthshock",
+          "ability_name_en": "Earthshock",
+          "ability_name_cn": "Earthshock",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/ursa_earthshock.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 758,
+          "ability_key": "special_bonus_unique_ursa_8",
+          "ability_name_en": "+{s:bonus_status_resistance}% Enrage Status Resistance",
+          "ability_name_cn": "+{s:bonus_status_resistance}% Enrage Status Resistance",
+          "image_url": "",
+          "is_talent": true
+        },
+        {
+          "time": null,
+          "ability_id": 5360,
+          "ability_key": "ursa_enrage",
+          "ability_name_en": "Enrage",
+          "ability_name_cn": "Enrage",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/ursa_enrage.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 6132,
+          "ability_key": "special_bonus_unique_ursa",
+          "ability_name_en": "+{s:bonus_damage_per_stack} Fury Swipes Damage",
+          "ability_name_cn": "+{s:bonus_damage_per_stack} Fury Swipes Damage",
+          "image_url": "",
+          "is_talent": true
+        }
+      ],
+      "talents_taken": [
+        {
+          "time": null,
+          "ability_id": 6975,
+          "ability_key": "special_bonus_unique_ursa_4",
+          "ability_name_en": "+{s:bonus_bonus_reset_time}s Fury Swipes Reset Time",
+          "ability_name_cn": "+{s:bonus_bonus_reset_time}s Fury Swipes Reset Time",
+          "image_url": "",
+          "is_talent": true
+        },
+        {
+          "time": null,
+          "ability_id": 758,
+          "ability_key": "special_bonus_unique_ursa_8",
+          "ability_name_en": "+{s:bonus_status_resistance}% Enrage Status Resistance",
+          "ability_name_cn": "+{s:bonus_status_resistance}% Enrage Status Resistance",
+          "image_url": "",
+          "is_talent": true
+        },
+        {
+          "time": null,
+          "ability_id": 6132,
+          "ability_key": "special_bonus_unique_ursa",
+          "ability_name_en": "+{s:bonus_damage_per_stack} Fury Swipes Damage",
+          "ability_name_cn": "+{s:bonus_damage_per_stack} Fury Swipes Damage",
+          "image_url": "",
+          "is_talent": true
+        }
+      ],
+      "item_0": 50,
+      "item_1": 1,
+      "item_2": 116,
+      "item_3": 145,
+      "item_4": 143,
+      "item_5": 0,
+      "item_neutral": 0
     },
     {
       "account_id": 1289398969,
@@ -1932,7 +2848,7 @@
         "dots_learned": 2
       },
       "hero_name_en": "Lycan",
-      "hero_name_cn": "",
+      "hero_name_cn": "狼人",
       "_dem_items_source": "combat_log_slot_last_purchase",
       "lane_early": "mid",
       "role_early": "mid",
@@ -1966,7 +2882,6 @@
         5395,
         5397,
         5395,
-        333,
         5398,
         5395,
         5396,
@@ -1974,16 +2889,485 @@
         5397,
         1152,
         5396,
-        333,
         5398,
         5396,
         5396,
         846,
-        333,
         5398
       ],
       "player_slot": 2,
-      "isRadiant": true
+      "isRadiant": true,
+      "hero_portrait_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/lycan.png",
+      "hero_icon_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/icons/lycan.png",
+      "hero_internal_name": "npc_dota_hero_lycan",
+      "items_resolved": {
+        "main": [
+          {
+            "group": "main",
+            "slot": 0,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
+            "resolve_note": null
+          },
+          {
+            "group": "main",
+            "slot": 1,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
+            "resolve_note": null
+          },
+          {
+            "group": "main",
+            "slot": 2,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
+            "resolve_note": null
+          },
+          {
+            "group": "main",
+            "slot": 3,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
+            "resolve_note": null
+          },
+          {
+            "group": "main",
+            "slot": 4,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
+            "resolve_note": null
+          },
+          {
+            "group": "main",
+            "slot": 5,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
+            "resolve_note": null
+          }
+        ],
+        "backpack": [
+          {
+            "group": "backpack",
+            "slot": 0,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
+            "resolve_note": null
+          },
+          {
+            "group": "backpack",
+            "slot": 1,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
+            "resolve_note": null
+          },
+          {
+            "group": "backpack",
+            "slot": 2,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
+            "resolve_note": null
+          }
+        ],
+        "neutral": null
+      },
+      "skill_build_two_step": [
+        {
+          "type": "ability",
+          "level": 1,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/lycan_summon_wolves.png",
+          "name_en": "Summon Wolves",
+          "name_cn": "Summon Wolves",
+          "ability_id": 5395,
+          "ability_key": "lycan_summon_wolves"
+        },
+        {
+          "type": "ability",
+          "level": 2,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/lycan_feral_impulse.png",
+          "name_en": "Feral Impulse",
+          "name_cn": "Feral Impulse",
+          "ability_id": 5397,
+          "ability_key": "lycan_feral_impulse"
+        },
+        {
+          "type": "ability",
+          "level": 3,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/lycan_summon_wolves.png",
+          "name_en": "Summon Wolves",
+          "name_cn": "Summon Wolves",
+          "ability_id": 5395,
+          "ability_key": "lycan_summon_wolves"
+        },
+        {
+          "type": "ability",
+          "level": 4,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/lycan_feral_impulse.png",
+          "name_en": "Feral Impulse",
+          "name_cn": "Feral Impulse",
+          "ability_id": 5397,
+          "ability_key": "lycan_feral_impulse"
+        },
+        {
+          "type": "ability",
+          "level": 5,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/lycan_summon_wolves.png",
+          "name_en": "Summon Wolves",
+          "name_cn": "Summon Wolves",
+          "ability_id": 5395,
+          "ability_key": "lycan_summon_wolves"
+        },
+        {
+          "type": "ability",
+          "level": 6,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/lycan_wolf_bite.png",
+          "name_en": "Wolf Bite",
+          "name_cn": "Wolf Bite",
+          "ability_id": 333,
+          "ability_key": "lycan_wolf_bite"
+        },
+        {
+          "type": "ability",
+          "level": 7,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/lycan_shapeshift.png",
+          "name_en": "Shapeshift",
+          "name_cn": "Shapeshift",
+          "ability_id": 5398,
+          "ability_key": "lycan_shapeshift"
+        },
+        {
+          "type": "ability",
+          "level": 8,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/lycan_summon_wolves.png",
+          "name_en": "Summon Wolves",
+          "name_cn": "Summon Wolves",
+          "ability_id": 5395,
+          "ability_key": "lycan_summon_wolves"
+        },
+        {
+          "type": "ability",
+          "level": 9,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/lycan_howl.png",
+          "name_en": "Howl",
+          "name_cn": "Howl",
+          "ability_id": 5396,
+          "ability_key": "lycan_howl"
+        },
+        {
+          "type": "ability",
+          "level": 10,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/lycan_feral_impulse.png",
+          "name_en": "Feral Impulse",
+          "name_cn": "Feral Impulse",
+          "ability_id": 5397,
+          "ability_key": "lycan_feral_impulse"
+        },
+        {
+          "type": "ability",
+          "level": 11,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/lycan_feral_impulse.png",
+          "name_en": "Feral Impulse",
+          "name_cn": "Feral Impulse",
+          "ability_id": 5397,
+          "ability_key": "lycan_feral_impulse"
+        },
+        {
+          "type": "talent",
+          "level": 12,
+          "name": "+{s:bonus_armor} Howl Armor Reduction",
+          "name_en": "+{s:bonus_armor} Howl Armor Reduction",
+          "ability_id": 1152,
+          "ability_key": "special_bonus_unique_lycan_howl_armor"
+        },
+        {
+          "type": "ability",
+          "level": 13,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/lycan_howl.png",
+          "name_en": "Howl",
+          "name_cn": "Howl",
+          "ability_id": 5396,
+          "ability_key": "lycan_howl"
+        },
+        {
+          "type": "ability",
+          "level": 14,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/lycan_wolf_bite.png",
+          "name_en": "Wolf Bite",
+          "name_cn": "Wolf Bite",
+          "ability_id": 333,
+          "ability_key": "lycan_wolf_bite"
+        },
+        {
+          "type": "ability",
+          "level": 15,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/lycan_shapeshift.png",
+          "name_en": "Shapeshift",
+          "name_cn": "Shapeshift",
+          "ability_id": 5398,
+          "ability_key": "lycan_shapeshift"
+        },
+        {
+          "type": "ability",
+          "level": 16,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/lycan_howl.png",
+          "name_en": "Howl",
+          "name_cn": "Howl",
+          "ability_id": 5396,
+          "ability_key": "lycan_howl"
+        },
+        {
+          "type": "ability",
+          "level": 17,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/lycan_howl.png",
+          "name_en": "Howl",
+          "name_cn": "Howl",
+          "ability_id": 5396,
+          "ability_key": "lycan_howl"
+        },
+        {
+          "type": "talent",
+          "level": 18,
+          "name": "-{s:bonus_AbilityCooldown}s Shapeshift Cooldown",
+          "name_en": "-{s:bonus_AbilityCooldown}s Shapeshift Cooldown",
+          "ability_id": 846,
+          "ability_key": "special_bonus_unique_lycan_8"
+        },
+        {
+          "type": "ability",
+          "level": 19,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/lycan_wolf_bite.png",
+          "name_en": "Wolf Bite",
+          "name_cn": "Wolf Bite",
+          "ability_id": 333,
+          "ability_key": "lycan_wolf_bite"
+        },
+        {
+          "type": "ability",
+          "level": 20,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/lycan_shapeshift.png",
+          "name_en": "Shapeshift",
+          "name_cn": "Shapeshift",
+          "ability_id": 5398,
+          "ability_key": "lycan_shapeshift"
+        }
+      ],
+      "ability_timeline": [
+        {
+          "time": null,
+          "ability_id": 5395,
+          "ability_key": "lycan_summon_wolves",
+          "ability_name_en": "Summon Wolves",
+          "ability_name_cn": "Summon Wolves",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/lycan_summon_wolves.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 5397,
+          "ability_key": "lycan_feral_impulse",
+          "ability_name_en": "Feral Impulse",
+          "ability_name_cn": "Feral Impulse",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/lycan_feral_impulse.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 5395,
+          "ability_key": "lycan_summon_wolves",
+          "ability_name_en": "Summon Wolves",
+          "ability_name_cn": "Summon Wolves",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/lycan_summon_wolves.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 5397,
+          "ability_key": "lycan_feral_impulse",
+          "ability_name_en": "Feral Impulse",
+          "ability_name_cn": "Feral Impulse",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/lycan_feral_impulse.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 5395,
+          "ability_key": "lycan_summon_wolves",
+          "ability_name_en": "Summon Wolves",
+          "ability_name_cn": "Summon Wolves",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/lycan_summon_wolves.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 5398,
+          "ability_key": "lycan_shapeshift",
+          "ability_name_en": "Shapeshift",
+          "ability_name_cn": "Shapeshift",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/lycan_shapeshift.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 5395,
+          "ability_key": "lycan_summon_wolves",
+          "ability_name_en": "Summon Wolves",
+          "ability_name_cn": "Summon Wolves",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/lycan_summon_wolves.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 5396,
+          "ability_key": "lycan_howl",
+          "ability_name_en": "Howl",
+          "ability_name_cn": "Howl",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/lycan_howl.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 5397,
+          "ability_key": "lycan_feral_impulse",
+          "ability_name_en": "Feral Impulse",
+          "ability_name_cn": "Feral Impulse",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/lycan_feral_impulse.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 5397,
+          "ability_key": "lycan_feral_impulse",
+          "ability_name_en": "Feral Impulse",
+          "ability_name_cn": "Feral Impulse",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/lycan_feral_impulse.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 1152,
+          "ability_key": "special_bonus_unique_lycan_howl_armor",
+          "ability_name_en": "+{s:bonus_armor} Howl Armor Reduction",
+          "ability_name_cn": "+{s:bonus_armor} Howl Armor Reduction",
+          "image_url": "",
+          "is_talent": true
+        },
+        {
+          "time": null,
+          "ability_id": 5396,
+          "ability_key": "lycan_howl",
+          "ability_name_en": "Howl",
+          "ability_name_cn": "Howl",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/lycan_howl.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 5398,
+          "ability_key": "lycan_shapeshift",
+          "ability_name_en": "Shapeshift",
+          "ability_name_cn": "Shapeshift",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/lycan_shapeshift.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 5396,
+          "ability_key": "lycan_howl",
+          "ability_name_en": "Howl",
+          "ability_name_cn": "Howl",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/lycan_howl.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 5396,
+          "ability_key": "lycan_howl",
+          "ability_name_en": "Howl",
+          "ability_name_cn": "Howl",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/lycan_howl.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 846,
+          "ability_key": "special_bonus_unique_lycan_8",
+          "ability_name_en": "-{s:bonus_AbilityCooldown}s Shapeshift Cooldown",
+          "ability_name_cn": "-{s:bonus_AbilityCooldown}s Shapeshift Cooldown",
+          "image_url": "",
+          "is_talent": true
+        },
+        {
+          "time": null,
+          "ability_id": 5398,
+          "ability_key": "lycan_shapeshift",
+          "ability_name_en": "Shapeshift",
+          "ability_name_cn": "Shapeshift",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/lycan_shapeshift.png",
+          "is_talent": false
+        }
+      ],
+      "talents_taken": [
+        {
+          "time": null,
+          "ability_id": 1152,
+          "ability_key": "special_bonus_unique_lycan_howl_armor",
+          "ability_name_en": "+{s:bonus_armor} Howl Armor Reduction",
+          "ability_name_cn": "+{s:bonus_armor} Howl Armor Reduction",
+          "image_url": "",
+          "is_talent": true
+        },
+        {
+          "time": null,
+          "ability_id": 846,
+          "ability_key": "special_bonus_unique_lycan_8",
+          "ability_name_en": "-{s:bonus_AbilityCooldown}s Shapeshift Cooldown",
+          "ability_name_cn": "-{s:bonus_AbilityCooldown}s Shapeshift Cooldown",
+          "image_url": "",
+          "is_talent": true
+        }
+      ],
+      "item_0": 225,
+      "item_1": 250,
+      "item_2": 635,
+      "item_3": 609,
+      "item_4": 0,
+      "item_5": 0,
+      "item_neutral": 0
     },
     {
       "account_id": 138543123,
@@ -2581,7 +3965,7 @@
         "dots_learned": 2
       },
       "hero_name_en": "Spirit Breaker",
-      "hero_name_cn": "",
+      "hero_name_cn": "裂魂人",
       "_dem_items_source": "combat_log_slot_last_purchase",
       "lane_early": "top",
       "role_early": "support(4)",
@@ -2633,7 +4017,451 @@
         987
       ],
       "player_slot": 3,
-      "isRadiant": true
+      "isRadiant": true,
+      "hero_portrait_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/spirit_breaker.png",
+      "hero_icon_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/icons/spirit_breaker.png",
+      "hero_internal_name": "npc_dota_hero_spirit_breaker",
+      "items_resolved": {
+        "main": [
+          {
+            "group": "main",
+            "slot": 0,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
+            "resolve_note": null
+          },
+          {
+            "group": "main",
+            "slot": 1,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
+            "resolve_note": null
+          },
+          {
+            "group": "main",
+            "slot": 2,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
+            "resolve_note": null
+          },
+          {
+            "group": "main",
+            "slot": 3,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
+            "resolve_note": null
+          },
+          {
+            "group": "main",
+            "slot": 4,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
+            "resolve_note": null
+          },
+          {
+            "group": "main",
+            "slot": 5,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
+            "resolve_note": null
+          }
+        ],
+        "backpack": [
+          {
+            "group": "backpack",
+            "slot": 0,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
+            "resolve_note": null
+          },
+          {
+            "group": "backpack",
+            "slot": 1,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
+            "resolve_note": null
+          },
+          {
+            "group": "backpack",
+            "slot": 2,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
+            "resolve_note": null
+          }
+        ],
+        "neutral": null
+      },
+      "skill_build_two_step": [
+        {
+          "type": "ability",
+          "level": 1,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/spirit_breaker_greater_bash.png",
+          "name_en": "Greater Bash",
+          "name_cn": "Greater Bash",
+          "ability_id": 5355,
+          "ability_key": "spirit_breaker_greater_bash"
+        },
+        {
+          "type": "ability",
+          "level": 2,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/spirit_breaker_charge_of_darkness.png",
+          "name_en": "Charge of Darkness",
+          "name_cn": "Charge of Darkness",
+          "ability_id": 5353,
+          "ability_key": "spirit_breaker_charge_of_darkness"
+        },
+        {
+          "type": "ability",
+          "level": 3,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/spirit_breaker_greater_bash.png",
+          "name_en": "Greater Bash",
+          "name_cn": "Greater Bash",
+          "ability_id": 5355,
+          "ability_key": "spirit_breaker_greater_bash"
+        },
+        {
+          "type": "ability",
+          "level": 4,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/spirit_breaker_charge_of_darkness.png",
+          "name_en": "Charge of Darkness",
+          "name_cn": "Charge of Darkness",
+          "ability_id": 5353,
+          "ability_key": "spirit_breaker_charge_of_darkness"
+        },
+        {
+          "type": "ability",
+          "level": 5,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/spirit_breaker_greater_bash.png",
+          "name_en": "Greater Bash",
+          "name_cn": "Greater Bash",
+          "ability_id": 5355,
+          "ability_key": "spirit_breaker_greater_bash"
+        },
+        {
+          "type": "ability",
+          "level": 6,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/spirit_breaker_nether_strike.png",
+          "name_en": "Nether Strike",
+          "name_cn": "Nether Strike",
+          "ability_id": 5356,
+          "ability_key": "spirit_breaker_nether_strike"
+        },
+        {
+          "type": "ability",
+          "level": 7,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/spirit_breaker_greater_bash.png",
+          "name_en": "Greater Bash",
+          "name_cn": "Greater Bash",
+          "ability_id": 5355,
+          "ability_key": "spirit_breaker_greater_bash"
+        },
+        {
+          "type": "ability",
+          "level": 8,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/spirit_breaker_bulldoze.png",
+          "name_en": "Bulldoze",
+          "name_cn": "Bulldoze",
+          "ability_id": 7301,
+          "ability_key": "spirit_breaker_bulldoze"
+        },
+        {
+          "type": "ability",
+          "level": 9,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/spirit_breaker_charge_of_darkness.png",
+          "name_en": "Charge of Darkness",
+          "name_cn": "Charge of Darkness",
+          "ability_id": 5353,
+          "ability_key": "spirit_breaker_charge_of_darkness"
+        },
+        {
+          "type": "ability",
+          "level": 10,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/spirit_breaker_charge_of_darkness.png",
+          "name_en": "Charge of Darkness",
+          "name_cn": "Charge of Darkness",
+          "ability_id": 5353,
+          "ability_key": "spirit_breaker_charge_of_darkness"
+        },
+        {
+          "type": "talent",
+          "level": 11,
+          "name": "+500 Night Vision",
+          "name_en": "+500 Night Vision",
+          "ability_id": 7022,
+          "ability_key": "special_bonus_night_vision_500"
+        },
+        {
+          "type": "ability",
+          "level": 12,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/spirit_breaker_bulldoze.png",
+          "name_en": "Bulldoze",
+          "name_cn": "Bulldoze",
+          "ability_id": 7301,
+          "ability_key": "spirit_breaker_bulldoze"
+        },
+        {
+          "type": "ability",
+          "level": 13,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/spirit_breaker_bulldoze.png",
+          "name_en": "Bulldoze",
+          "name_cn": "Bulldoze",
+          "ability_id": 7301,
+          "ability_key": "spirit_breaker_bulldoze"
+        },
+        {
+          "type": "ability",
+          "level": 14,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/spirit_breaker_bulldoze.png",
+          "name_en": "Bulldoze",
+          "name_cn": "Bulldoze",
+          "ability_id": 7301,
+          "ability_key": "spirit_breaker_bulldoze"
+        },
+        {
+          "type": "ability",
+          "level": 15,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/spirit_breaker_nether_strike.png",
+          "name_en": "Nether Strike",
+          "name_cn": "Nether Strike",
+          "ability_id": 5356,
+          "ability_key": "spirit_breaker_nether_strike"
+        },
+        {
+          "type": "talent",
+          "level": 16,
+          "name": "+{s:bonus_movement_speed} Charge of Darkness Bonus Speed",
+          "name_en": "+{s:bonus_movement_speed} Charge of Darkness Bonus Speed",
+          "ability_id": 1821,
+          "ability_key": "special_bonus_unique_spirit_breaker_increased_charge_speed"
+        },
+        {
+          "type": "ability",
+          "level": 17,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/spirit_breaker_planar_pocket.png",
+          "name_en": "Planar Pocket",
+          "name_cn": "Planar Pocket",
+          "ability_id": 987,
+          "ability_key": "spirit_breaker_planar_pocket"
+        }
+      ],
+      "ability_timeline": [
+        {
+          "time": null,
+          "ability_id": 5355,
+          "ability_key": "spirit_breaker_greater_bash",
+          "ability_name_en": "Greater Bash",
+          "ability_name_cn": "Greater Bash",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/spirit_breaker_greater_bash.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 5353,
+          "ability_key": "spirit_breaker_charge_of_darkness",
+          "ability_name_en": "Charge of Darkness",
+          "ability_name_cn": "Charge of Darkness",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/spirit_breaker_charge_of_darkness.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 5355,
+          "ability_key": "spirit_breaker_greater_bash",
+          "ability_name_en": "Greater Bash",
+          "ability_name_cn": "Greater Bash",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/spirit_breaker_greater_bash.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 5353,
+          "ability_key": "spirit_breaker_charge_of_darkness",
+          "ability_name_en": "Charge of Darkness",
+          "ability_name_cn": "Charge of Darkness",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/spirit_breaker_charge_of_darkness.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 5355,
+          "ability_key": "spirit_breaker_greater_bash",
+          "ability_name_en": "Greater Bash",
+          "ability_name_cn": "Greater Bash",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/spirit_breaker_greater_bash.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 5356,
+          "ability_key": "spirit_breaker_nether_strike",
+          "ability_name_en": "Nether Strike",
+          "ability_name_cn": "Nether Strike",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/spirit_breaker_nether_strike.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 5355,
+          "ability_key": "spirit_breaker_greater_bash",
+          "ability_name_en": "Greater Bash",
+          "ability_name_cn": "Greater Bash",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/spirit_breaker_greater_bash.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 7301,
+          "ability_key": "spirit_breaker_bulldoze",
+          "ability_name_en": "Bulldoze",
+          "ability_name_cn": "Bulldoze",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/spirit_breaker_bulldoze.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 5353,
+          "ability_key": "spirit_breaker_charge_of_darkness",
+          "ability_name_en": "Charge of Darkness",
+          "ability_name_cn": "Charge of Darkness",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/spirit_breaker_charge_of_darkness.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 5353,
+          "ability_key": "spirit_breaker_charge_of_darkness",
+          "ability_name_en": "Charge of Darkness",
+          "ability_name_cn": "Charge of Darkness",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/spirit_breaker_charge_of_darkness.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 7022,
+          "ability_key": "special_bonus_night_vision_500",
+          "ability_name_en": "+500 Night Vision",
+          "ability_name_cn": "+500 Night Vision",
+          "image_url": "",
+          "is_talent": true
+        },
+        {
+          "time": null,
+          "ability_id": 7301,
+          "ability_key": "spirit_breaker_bulldoze",
+          "ability_name_en": "Bulldoze",
+          "ability_name_cn": "Bulldoze",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/spirit_breaker_bulldoze.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 7301,
+          "ability_key": "spirit_breaker_bulldoze",
+          "ability_name_en": "Bulldoze",
+          "ability_name_cn": "Bulldoze",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/spirit_breaker_bulldoze.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 7301,
+          "ability_key": "spirit_breaker_bulldoze",
+          "ability_name_en": "Bulldoze",
+          "ability_name_cn": "Bulldoze",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/spirit_breaker_bulldoze.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 5356,
+          "ability_key": "spirit_breaker_nether_strike",
+          "ability_name_en": "Nether Strike",
+          "ability_name_cn": "Nether Strike",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/spirit_breaker_nether_strike.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 1821,
+          "ability_key": "special_bonus_unique_spirit_breaker_increased_charge_speed",
+          "ability_name_en": "+{s:bonus_movement_speed} Charge of Darkness Bonus Speed",
+          "ability_name_cn": "+{s:bonus_movement_speed} Charge of Darkness Bonus Speed",
+          "image_url": "",
+          "is_talent": true
+        },
+        {
+          "time": null,
+          "ability_id": 987,
+          "ability_key": "spirit_breaker_planar_pocket",
+          "ability_name_en": "Planar Pocket",
+          "ability_name_cn": "Planar Pocket",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/spirit_breaker_planar_pocket.png",
+          "is_talent": false
+        }
+      ],
+      "talents_taken": [
+        {
+          "time": null,
+          "ability_id": 7022,
+          "ability_key": "special_bonus_night_vision_500",
+          "ability_name_en": "+500 Night Vision",
+          "ability_name_cn": "+500 Night Vision",
+          "image_url": "",
+          "is_talent": true
+        },
+        {
+          "time": null,
+          "ability_id": 1821,
+          "ability_key": "special_bonus_unique_spirit_breaker_increased_charge_speed",
+          "ability_name_en": "+{s:bonus_movement_speed} Charge of Darkness Bonus Speed",
+          "ability_name_cn": "+{s:bonus_movement_speed} Charge of Darkness Bonus Speed",
+          "image_url": "",
+          "is_talent": true
+        }
+      ],
+      "item_0": 185,
+      "item_1": 50,
+      "item_2": 36,
+      "item_3": 116,
+      "item_4": 0,
+      "item_5": 0,
+      "item_neutral": 0
     },
     {
       "account_id": 340421206,
@@ -3257,7 +5085,7 @@
         "dots_learned": 2
       },
       "hero_name_en": "Batrider",
-      "hero_name_cn": "",
+      "hero_name_cn": "蝙蝠骑士",
       "_dem_items_source": "combat_log_slot_last_purchase",
       "lane_early": "bot",
       "role_early": "support(5)",
@@ -3312,7 +5140,433 @@
         512
       ],
       "player_slot": 4,
-      "isRadiant": true
+      "isRadiant": true,
+      "hero_portrait_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/batrider.png",
+      "hero_icon_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/icons/batrider.png",
+      "hero_internal_name": "npc_dota_hero_batrider",
+      "items_resolved": {
+        "main": [
+          {
+            "group": "main",
+            "slot": 0,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
+            "resolve_note": null
+          },
+          {
+            "group": "main",
+            "slot": 1,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
+            "resolve_note": null
+          },
+          {
+            "group": "main",
+            "slot": 2,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
+            "resolve_note": null
+          },
+          {
+            "group": "main",
+            "slot": 3,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
+            "resolve_note": null
+          },
+          {
+            "group": "main",
+            "slot": 4,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
+            "resolve_note": null
+          },
+          {
+            "group": "main",
+            "slot": 5,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
+            "resolve_note": null
+          }
+        ],
+        "backpack": [
+          {
+            "group": "backpack",
+            "slot": 0,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
+            "resolve_note": null
+          },
+          {
+            "group": "backpack",
+            "slot": 1,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
+            "resolve_note": null
+          },
+          {
+            "group": "backpack",
+            "slot": 2,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
+            "resolve_note": null
+          }
+        ],
+        "neutral": null
+      },
+      "skill_build_two_step": [
+        {
+          "type": "ability",
+          "level": 1,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/batrider_sticky_napalm.png",
+          "name_en": "Sticky Napalm",
+          "name_cn": "Sticky Napalm",
+          "ability_id": 5320,
+          "ability_key": "batrider_sticky_napalm"
+        },
+        {
+          "type": "ability",
+          "level": 2,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/batrider_flamebreak.png",
+          "name_en": "Flamebreak",
+          "name_cn": "Flamebreak",
+          "ability_id": 5321,
+          "ability_key": "batrider_flamebreak"
+        },
+        {
+          "type": "ability",
+          "level": 3,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/batrider_sticky_napalm.png",
+          "name_en": "Sticky Napalm",
+          "name_cn": "Sticky Napalm",
+          "ability_id": 5320,
+          "ability_key": "batrider_sticky_napalm"
+        },
+        {
+          "type": "ability",
+          "level": 4,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/batrider_firefly.png",
+          "name_en": "Firefly",
+          "name_cn": "Firefly",
+          "ability_id": 5322,
+          "ability_key": "batrider_firefly"
+        },
+        {
+          "type": "ability",
+          "level": 5,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/batrider_firefly.png",
+          "name_en": "Firefly",
+          "name_cn": "Firefly",
+          "ability_id": 5322,
+          "ability_key": "batrider_firefly"
+        },
+        {
+          "type": "ability",
+          "level": 6,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/batrider_flaming_lasso.png",
+          "name_en": "Flaming Lasso",
+          "name_cn": "Flaming Lasso",
+          "ability_id": 5323,
+          "ability_key": "batrider_flaming_lasso"
+        },
+        {
+          "type": "ability",
+          "level": 7,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/batrider_firefly.png",
+          "name_en": "Firefly",
+          "name_cn": "Firefly",
+          "ability_id": 5322,
+          "ability_key": "batrider_firefly"
+        },
+        {
+          "type": "ability",
+          "level": 8,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/batrider_firefly.png",
+          "name_en": "Firefly",
+          "name_cn": "Firefly",
+          "ability_id": 5322,
+          "ability_key": "batrider_firefly"
+        },
+        {
+          "type": "ability",
+          "level": 9,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/batrider_sticky_napalm.png",
+          "name_en": "Sticky Napalm",
+          "name_cn": "Sticky Napalm",
+          "ability_id": 5320,
+          "ability_key": "batrider_sticky_napalm"
+        },
+        {
+          "type": "ability",
+          "level": 10,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/batrider_sticky_napalm.png",
+          "name_en": "Sticky Napalm",
+          "name_cn": "Sticky Napalm",
+          "ability_id": 5320,
+          "ability_key": "batrider_sticky_napalm"
+        },
+        {
+          "type": "talent",
+          "level": 11,
+          "name": "+5% Firefly Max Movement Speed Bonus",
+          "name_en": "+5% Firefly Max Movement Speed Bonus",
+          "ability_id": 6610,
+          "ability_key": "special_bonus_unique_batrider_3"
+        },
+        {
+          "type": "ability",
+          "level": 12,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/batrider_flamebreak.png",
+          "name_en": "Flamebreak",
+          "name_cn": "Flamebreak",
+          "ability_id": 5321,
+          "ability_key": "batrider_flamebreak"
+        },
+        {
+          "type": "ability",
+          "level": 13,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/batrider_flaming_lasso.png",
+          "name_en": "Flaming Lasso",
+          "name_cn": "Flaming Lasso",
+          "ability_id": 5323,
+          "ability_key": "batrider_flaming_lasso"
+        },
+        {
+          "type": "ability",
+          "level": 14,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/batrider_flamebreak.png",
+          "name_en": "Flamebreak",
+          "name_cn": "Flamebreak",
+          "ability_id": 5321,
+          "ability_key": "batrider_flamebreak"
+        },
+        {
+          "type": "ability",
+          "level": 15,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/batrider_flamebreak.png",
+          "name_en": "Flamebreak",
+          "name_cn": "Flamebreak",
+          "ability_id": 5321,
+          "ability_key": "batrider_flamebreak"
+        },
+        {
+          "type": "talent",
+          "level": 16,
+          "name": "+30 Firefly Damage Per Second",
+          "name_en": "+30 Firefly Damage Per Second",
+          "ability_id": 512,
+          "ability_key": "special_bonus_unique_batrider_4"
+        }
+      ],
+      "ability_timeline": [
+        {
+          "time": null,
+          "ability_id": 5320,
+          "ability_key": "batrider_sticky_napalm",
+          "ability_name_en": "Sticky Napalm",
+          "ability_name_cn": "Sticky Napalm",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/batrider_sticky_napalm.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 5321,
+          "ability_key": "batrider_flamebreak",
+          "ability_name_en": "Flamebreak",
+          "ability_name_cn": "Flamebreak",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/batrider_flamebreak.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 5320,
+          "ability_key": "batrider_sticky_napalm",
+          "ability_name_en": "Sticky Napalm",
+          "ability_name_cn": "Sticky Napalm",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/batrider_sticky_napalm.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 5322,
+          "ability_key": "batrider_firefly",
+          "ability_name_en": "Firefly",
+          "ability_name_cn": "Firefly",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/batrider_firefly.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 5322,
+          "ability_key": "batrider_firefly",
+          "ability_name_en": "Firefly",
+          "ability_name_cn": "Firefly",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/batrider_firefly.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 5323,
+          "ability_key": "batrider_flaming_lasso",
+          "ability_name_en": "Flaming Lasso",
+          "ability_name_cn": "Flaming Lasso",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/batrider_flaming_lasso.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 5322,
+          "ability_key": "batrider_firefly",
+          "ability_name_en": "Firefly",
+          "ability_name_cn": "Firefly",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/batrider_firefly.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 5322,
+          "ability_key": "batrider_firefly",
+          "ability_name_en": "Firefly",
+          "ability_name_cn": "Firefly",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/batrider_firefly.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 5320,
+          "ability_key": "batrider_sticky_napalm",
+          "ability_name_en": "Sticky Napalm",
+          "ability_name_cn": "Sticky Napalm",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/batrider_sticky_napalm.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 5320,
+          "ability_key": "batrider_sticky_napalm",
+          "ability_name_en": "Sticky Napalm",
+          "ability_name_cn": "Sticky Napalm",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/batrider_sticky_napalm.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 6610,
+          "ability_key": "special_bonus_unique_batrider_3",
+          "ability_name_en": "+5% Firefly Max Movement Speed Bonus",
+          "ability_name_cn": "+5% Firefly Max Movement Speed Bonus",
+          "image_url": "",
+          "is_talent": true
+        },
+        {
+          "time": null,
+          "ability_id": 5321,
+          "ability_key": "batrider_flamebreak",
+          "ability_name_en": "Flamebreak",
+          "ability_name_cn": "Flamebreak",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/batrider_flamebreak.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 5323,
+          "ability_key": "batrider_flaming_lasso",
+          "ability_name_en": "Flaming Lasso",
+          "ability_name_cn": "Flaming Lasso",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/batrider_flaming_lasso.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 5321,
+          "ability_key": "batrider_flamebreak",
+          "ability_name_en": "Flamebreak",
+          "ability_name_cn": "Flamebreak",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/batrider_flamebreak.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 5321,
+          "ability_key": "batrider_flamebreak",
+          "ability_name_en": "Flamebreak",
+          "ability_name_cn": "Flamebreak",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/batrider_flamebreak.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 512,
+          "ability_key": "special_bonus_unique_batrider_4",
+          "ability_name_en": "+30 Firefly Damage Per Second",
+          "ability_name_cn": "+30 Firefly Damage Per Second",
+          "image_url": "",
+          "is_talent": true
+        }
+      ],
+      "talents_taken": [
+        {
+          "time": null,
+          "ability_id": 6610,
+          "ability_key": "special_bonus_unique_batrider_3",
+          "ability_name_en": "+5% Firefly Max Movement Speed Bonus",
+          "ability_name_cn": "+5% Firefly Max Movement Speed Bonus",
+          "image_url": "",
+          "is_talent": true
+        },
+        {
+          "time": null,
+          "ability_id": 512,
+          "ability_key": "special_bonus_unique_batrider_4",
+          "ability_name_en": "+30 Firefly Damage Per Second",
+          "ability_name_cn": "+30 Firefly Damage Per Second",
+          "image_url": "",
+          "is_talent": true
+        }
+      ],
+      "item_0": 116,
+      "item_1": 102,
+      "item_2": 36,
+      "item_3": 29,
+      "item_4": 0,
+      "item_5": 0,
+      "item_neutral": 0
     },
     {
       "account_id": 185590374,
@@ -3374,20 +5628,20 @@
       "items_slot": [
         {
           "slot": 0,
-          "item_id": 29,
-          "item_key": "boots",
-          "item_name_en": "Boots of Speed",
-          "item_name_cn": "速度之靴",
-          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/boots.png",
+          "item_id": 139,
+          "item_key": "butterfly",
+          "item_name_en": "Butterfly",
+          "item_name_cn": "蝴蝶",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/butterfly.png",
           "empty": false
         },
         {
           "slot": 1,
-          "item_id": 16,
-          "item_key": "branches",
-          "item_name_en": "Iron Branch",
-          "item_name_cn": "树枝",
-          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/branches.png",
+          "item_id": 609,
+          "item_key": "aghanims_shard",
+          "item_name_en": "Aghanim's Shard",
+          "item_name_cn": "阿哈利姆魔晶",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/aghanims_shard.png",
           "empty": false
         },
         {
@@ -3401,21 +5655,21 @@
         },
         {
           "slot": 3,
-          "item_id": 0,
-          "item_key": null,
-          "item_name_en": "",
-          "item_name_cn": "",
-          "image_url": "",
-          "empty": true
+          "item_id": 16,
+          "item_key": "branches",
+          "item_name_en": "Iron Branch",
+          "item_name_cn": "树枝",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/branches.png",
+          "empty": false
         },
         {
           "slot": 4,
-          "item_id": 0,
-          "item_key": null,
-          "item_name_en": "",
-          "item_name_cn": "",
-          "image_url": "",
-          "empty": true
+          "item_id": 16,
+          "item_key": "branches",
+          "item_name_en": "Iron Branch",
+          "item_name_cn": "树枝",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/branches.png",
+          "empty": false
         },
         {
           "slot": 5,
@@ -3429,7 +5683,7 @@
       ],
       "neutral_img": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/enhancement_nimble.png",
       "aghanims_scepter": 0,
-      "aghanims_shard": 0,
+      "aghanims_shard": 1,
       "skill_build": [
         {
           "step": 1,
@@ -3920,8 +6174,8 @@
         "dots_learned": 3
       },
       "hero_name_en": "Lone Druid",
-      "hero_name_cn": "",
-      "_dem_items_source": "combat_log_slot_last_purchase",
+      "hero_name_cn": "德鲁伊",
+      "_dem_items_source": "combat_log_lone_druid_split",
       "lane_early": "mid",
       "role_early": "mid",
       "support_item_points_early": 3,
@@ -3953,39 +6207,39 @@
         },
         {
           "slot": 2,
+          "item_id": 63,
+          "item_key": "power_treads",
+          "item_name_en": "Power Treads",
+          "item_name_cn": "动力鞋",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/power_treads.png",
+          "empty": false
+        },
+        {
+          "slot": 3,
+          "item_id": 108,
+          "item_key": "ultimate_scepter",
+          "item_name_en": "Aghanim's Scepter",
+          "item_name_cn": "阿哈利姆神杖",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/ultimate_scepter.png",
+          "empty": false
+        },
+        {
+          "slot": 4,
+          "item_id": 569,
+          "item_key": "orb_of_corrosion",
+          "item_name_en": "Orb of Corrosion",
+          "item_name_cn": "Orb of Corrosion",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/orb_of_corrosion.png",
+          "empty": false
+        },
+        {
+          "slot": 5,
           "item_id": 174,
           "item_key": "diffusal_blade",
           "item_name_en": "Diffusal Blade",
           "item_name_cn": "净魂之刃",
           "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/diffusal_blade.png",
           "empty": false
-        },
-        {
-          "slot": 3,
-          "item_id": 11,
-          "item_key": "quelling_blade",
-          "item_name_en": "Quelling Blade",
-          "item_name_cn": "补刀斧",
-          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/quelling_blade.png",
-          "empty": false
-        },
-        {
-          "slot": 4,
-          "item_id": 0,
-          "item_key": null,
-          "item_name_en": "",
-          "item_name_cn": "",
-          "image_url": "",
-          "empty": true
-        },
-        {
-          "slot": 5,
-          "item_id": 0,
-          "item_key": null,
-          "item_name_en": "",
-          "item_name_cn": "",
-          "image_url": "",
-          "empty": true
         }
       ],
       "talent_picks": [
@@ -4032,7 +6286,477 @@
         1351
       ],
       "player_slot": 128,
-      "isRadiant": false
+      "isRadiant": false,
+      "hero_portrait_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/lone_druid.png",
+      "hero_icon_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/icons/lone_druid.png",
+      "hero_internal_name": "npc_dota_hero_lone_druid",
+      "items_resolved": {
+        "main": [
+          {
+            "group": "main",
+            "slot": 0,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
+            "resolve_note": null
+          },
+          {
+            "group": "main",
+            "slot": 1,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
+            "resolve_note": null
+          },
+          {
+            "group": "main",
+            "slot": 2,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
+            "resolve_note": null
+          },
+          {
+            "group": "main",
+            "slot": 3,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
+            "resolve_note": null
+          },
+          {
+            "group": "main",
+            "slot": 4,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
+            "resolve_note": null
+          },
+          {
+            "group": "main",
+            "slot": 5,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
+            "resolve_note": null
+          }
+        ],
+        "backpack": [
+          {
+            "group": "backpack",
+            "slot": 0,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
+            "resolve_note": null
+          },
+          {
+            "group": "backpack",
+            "slot": 1,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
+            "resolve_note": null
+          },
+          {
+            "group": "backpack",
+            "slot": 2,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
+            "resolve_note": null
+          }
+        ],
+        "neutral": null
+      },
+      "skill_build_two_step": [
+        {
+          "type": "ability",
+          "level": 1,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/lone_druid_entangle.png",
+          "name_en": "Entangle",
+          "name_cn": "Entangle",
+          "ability_id": 1684,
+          "ability_key": "lone_druid_entangle"
+        },
+        {
+          "type": "ability",
+          "level": 2,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/lone_druid_spirit_link.png",
+          "name_en": "Spirit Link",
+          "name_cn": "Spirit Link",
+          "ability_id": 7309,
+          "ability_key": "lone_druid_spirit_link"
+        },
+        {
+          "type": "ability",
+          "level": 3,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/lone_druid_entangle.png",
+          "name_en": "Entangle",
+          "name_cn": "Entangle",
+          "ability_id": 1684,
+          "ability_key": "lone_druid_entangle"
+        },
+        {
+          "type": "ability",
+          "level": 4,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/lone_druid_spirit_link.png",
+          "name_en": "Spirit Link",
+          "name_cn": "Spirit Link",
+          "ability_id": 7309,
+          "ability_key": "lone_druid_spirit_link"
+        },
+        {
+          "type": "ability",
+          "level": 5,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/lone_druid_entangle.png",
+          "name_en": "Entangle",
+          "name_cn": "Entangle",
+          "ability_id": 1684,
+          "ability_key": "lone_druid_entangle"
+        },
+        {
+          "type": "ability",
+          "level": 6,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/lone_druid_true_form.png",
+          "name_en": "True Form",
+          "name_cn": "True Form",
+          "ability_id": 5415,
+          "ability_key": "lone_druid_true_form"
+        },
+        {
+          "type": "ability",
+          "level": 7,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/lone_druid_spirit_link.png",
+          "name_en": "Spirit Link",
+          "name_cn": "Spirit Link",
+          "ability_id": 7309,
+          "ability_key": "lone_druid_spirit_link"
+        },
+        {
+          "type": "ability",
+          "level": 8,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/lone_druid_entangle.png",
+          "name_en": "Entangle",
+          "name_cn": "Entangle",
+          "ability_id": 1684,
+          "ability_key": "lone_druid_entangle"
+        },
+        {
+          "type": "ability",
+          "level": 9,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/lone_druid_spirit_link.png",
+          "name_en": "Spirit Link",
+          "name_cn": "Spirit Link",
+          "ability_id": 7309,
+          "ability_key": "lone_druid_spirit_link"
+        },
+        {
+          "type": "ability",
+          "level": 10,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/lone_druid_savage_roar.png",
+          "name_en": "Savage Roar",
+          "name_cn": "Savage Roar",
+          "ability_id": 5414,
+          "ability_key": "lone_druid_savage_roar"
+        },
+        {
+          "type": "talent",
+          "level": 11,
+          "name": "-25s Summon Spirit Bear Cooldown",
+          "name_en": "-25s Summon Spirit Bear Cooldown",
+          "ability_id": 6262,
+          "ability_key": "special_bonus_unique_lone_druid_2"
+        },
+        {
+          "type": "ability",
+          "level": 12,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/lone_druid_savage_roar.png",
+          "name_en": "Savage Roar",
+          "name_cn": "Savage Roar",
+          "ability_id": 5414,
+          "ability_key": "lone_druid_savage_roar"
+        },
+        {
+          "type": "ability",
+          "level": 13,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/lone_druid_true_form.png",
+          "name_en": "True Form",
+          "name_cn": "True Form",
+          "ability_id": 5415,
+          "ability_key": "lone_druid_true_form"
+        },
+        {
+          "type": "ability",
+          "level": 14,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/lone_druid_savage_roar.png",
+          "name_en": "Savage Roar",
+          "name_cn": "Savage Roar",
+          "ability_id": 5414,
+          "ability_key": "lone_druid_savage_roar"
+        },
+        {
+          "type": "ability",
+          "level": 15,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/lone_druid_savage_roar.png",
+          "name_en": "Savage Roar",
+          "name_cn": "Savage Roar",
+          "ability_id": 5414,
+          "ability_key": "lone_druid_savage_roar"
+        },
+        {
+          "type": "talent",
+          "level": 16,
+          "name": "-5s Savage Roar Cooldown",
+          "name_en": "-5s Savage Roar Cooldown",
+          "ability_id": 6268,
+          "ability_key": "special_bonus_unique_lone_druid_4"
+        },
+        {
+          "type": "ability",
+          "level": 17,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/lone_druid_true_form.png",
+          "name_en": "True Form",
+          "name_cn": "True Form",
+          "ability_id": 5415,
+          "ability_key": "lone_druid_true_form"
+        },
+        {
+          "type": "talent",
+          "level": 18,
+          "name": "+150 Savage Roar Radius",
+          "name_en": "+150 Savage Roar Radius",
+          "ability_id": 1351,
+          "ability_key": "special_bonus_unique_lone_druid_savage_roar_aoe"
+        }
+      ],
+      "ability_timeline": [
+        {
+          "time": null,
+          "ability_id": 1684,
+          "ability_key": "lone_druid_entangle",
+          "ability_name_en": "Entangle",
+          "ability_name_cn": "Entangle",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/lone_druid_entangle.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 7309,
+          "ability_key": "lone_druid_spirit_link",
+          "ability_name_en": "Spirit Link",
+          "ability_name_cn": "Spirit Link",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/lone_druid_spirit_link.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 1684,
+          "ability_key": "lone_druid_entangle",
+          "ability_name_en": "Entangle",
+          "ability_name_cn": "Entangle",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/lone_druid_entangle.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 7309,
+          "ability_key": "lone_druid_spirit_link",
+          "ability_name_en": "Spirit Link",
+          "ability_name_cn": "Spirit Link",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/lone_druid_spirit_link.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 1684,
+          "ability_key": "lone_druid_entangle",
+          "ability_name_en": "Entangle",
+          "ability_name_cn": "Entangle",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/lone_druid_entangle.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 5415,
+          "ability_key": "lone_druid_true_form",
+          "ability_name_en": "True Form",
+          "ability_name_cn": "True Form",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/lone_druid_true_form.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 7309,
+          "ability_key": "lone_druid_spirit_link",
+          "ability_name_en": "Spirit Link",
+          "ability_name_cn": "Spirit Link",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/lone_druid_spirit_link.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 1684,
+          "ability_key": "lone_druid_entangle",
+          "ability_name_en": "Entangle",
+          "ability_name_cn": "Entangle",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/lone_druid_entangle.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 7309,
+          "ability_key": "lone_druid_spirit_link",
+          "ability_name_en": "Spirit Link",
+          "ability_name_cn": "Spirit Link",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/lone_druid_spirit_link.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 5414,
+          "ability_key": "lone_druid_savage_roar",
+          "ability_name_en": "Savage Roar",
+          "ability_name_cn": "Savage Roar",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/lone_druid_savage_roar.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 6262,
+          "ability_key": "special_bonus_unique_lone_druid_2",
+          "ability_name_en": "-25s Summon Spirit Bear Cooldown",
+          "ability_name_cn": "-25s Summon Spirit Bear Cooldown",
+          "image_url": "",
+          "is_talent": true
+        },
+        {
+          "time": null,
+          "ability_id": 5414,
+          "ability_key": "lone_druid_savage_roar",
+          "ability_name_en": "Savage Roar",
+          "ability_name_cn": "Savage Roar",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/lone_druid_savage_roar.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 5415,
+          "ability_key": "lone_druid_true_form",
+          "ability_name_en": "True Form",
+          "ability_name_cn": "True Form",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/lone_druid_true_form.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 5414,
+          "ability_key": "lone_druid_savage_roar",
+          "ability_name_en": "Savage Roar",
+          "ability_name_cn": "Savage Roar",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/lone_druid_savage_roar.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 5414,
+          "ability_key": "lone_druid_savage_roar",
+          "ability_name_en": "Savage Roar",
+          "ability_name_cn": "Savage Roar",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/lone_druid_savage_roar.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 6268,
+          "ability_key": "special_bonus_unique_lone_druid_4",
+          "ability_name_en": "-5s Savage Roar Cooldown",
+          "ability_name_cn": "-5s Savage Roar Cooldown",
+          "image_url": "",
+          "is_talent": true
+        },
+        {
+          "time": null,
+          "ability_id": 5415,
+          "ability_key": "lone_druid_true_form",
+          "ability_name_en": "True Form",
+          "ability_name_cn": "True Form",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/lone_druid_true_form.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 1351,
+          "ability_key": "special_bonus_unique_lone_druid_savage_roar_aoe",
+          "ability_name_en": "+150 Savage Roar Radius",
+          "ability_name_cn": "+150 Savage Roar Radius",
+          "image_url": "",
+          "is_talent": true
+        }
+      ],
+      "talents_taken": [
+        {
+          "time": null,
+          "ability_id": 6262,
+          "ability_key": "special_bonus_unique_lone_druid_2",
+          "ability_name_en": "-25s Summon Spirit Bear Cooldown",
+          "ability_name_cn": "-25s Summon Spirit Bear Cooldown",
+          "image_url": "",
+          "is_talent": true
+        },
+        {
+          "time": null,
+          "ability_id": 6268,
+          "ability_key": "special_bonus_unique_lone_druid_4",
+          "ability_name_en": "-5s Savage Roar Cooldown",
+          "ability_name_cn": "-5s Savage Roar Cooldown",
+          "image_url": "",
+          "is_talent": true
+        },
+        {
+          "time": null,
+          "ability_id": 1351,
+          "ability_key": "special_bonus_unique_lone_druid_savage_roar_aoe",
+          "ability_name_en": "+150 Savage Roar Radius",
+          "ability_name_cn": "+150 Savage Roar Radius",
+          "image_url": "",
+          "is_talent": true
+        }
+      ],
+      "item_0": 139,
+      "item_1": 609,
+      "item_2": 16,
+      "item_3": 16,
+      "item_4": 16,
+      "item_5": 0,
+      "item_neutral": 0
     },
     {
       "account_id": 49809442,
@@ -4656,7 +7380,7 @@
         "dots_learned": 4
       },
       "hero_name_en": "Monkey King",
-      "hero_name_cn": "",
+      "hero_name_cn": "齐天大圣",
       "_dem_items_source": "combat_log_slot_last_purchase",
       "lane_early": "top",
       "role_early": "carry",
@@ -4719,7 +7443,587 @@
         1627
       ],
       "player_slot": 129,
-      "isRadiant": false
+      "isRadiant": false,
+      "hero_portrait_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/monkey_king.png",
+      "hero_icon_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/icons/monkey_king.png",
+      "hero_internal_name": "npc_dota_hero_monkey_king",
+      "items_resolved": {
+        "main": [
+          {
+            "group": "main",
+            "slot": 0,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
+            "resolve_note": null
+          },
+          {
+            "group": "main",
+            "slot": 1,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
+            "resolve_note": null
+          },
+          {
+            "group": "main",
+            "slot": 2,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
+            "resolve_note": null
+          },
+          {
+            "group": "main",
+            "slot": 3,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
+            "resolve_note": null
+          },
+          {
+            "group": "main",
+            "slot": 4,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
+            "resolve_note": null
+          },
+          {
+            "group": "main",
+            "slot": 5,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
+            "resolve_note": null
+          }
+        ],
+        "backpack": [
+          {
+            "group": "backpack",
+            "slot": 0,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
+            "resolve_note": null
+          },
+          {
+            "group": "backpack",
+            "slot": 1,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
+            "resolve_note": null
+          },
+          {
+            "group": "backpack",
+            "slot": 2,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
+            "resolve_note": null
+          }
+        ],
+        "neutral": null
+      },
+      "skill_build_two_step": [
+        {
+          "type": "ability",
+          "level": 1,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/monkey_king_boundless_strike.png",
+          "name_en": "Boundless Strike",
+          "name_cn": "Boundless Strike",
+          "ability_id": 5716,
+          "ability_key": "monkey_king_boundless_strike"
+        },
+        {
+          "type": "ability",
+          "level": 2,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/monkey_king_jingu_mastery.png",
+          "name_en": "Jingu Mastery",
+          "name_cn": "Jingu Mastery",
+          "ability_id": 5723,
+          "ability_key": "monkey_king_jingu_mastery"
+        },
+        {
+          "type": "ability",
+          "level": 3,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/monkey_king_jingu_mastery.png",
+          "name_en": "Jingu Mastery",
+          "name_cn": "Jingu Mastery",
+          "ability_id": 5723,
+          "ability_key": "monkey_king_jingu_mastery"
+        },
+        {
+          "type": "ability",
+          "level": 4,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/monkey_king_tree_dance.png",
+          "name_en": "Tree Dance",
+          "name_cn": "Tree Dance",
+          "ability_id": 5721,
+          "ability_key": "monkey_king_tree_dance"
+        },
+        {
+          "type": "ability",
+          "level": 5,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/monkey_king_primal_spring.png",
+          "name_en": "Primal Spring",
+          "name_cn": "Primal Spring",
+          "ability_id": 5724,
+          "ability_key": "monkey_king_primal_spring"
+        },
+        {
+          "type": "ability",
+          "level": 6,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/monkey_king_primal_spring_early.png",
+          "name_en": "Spring Early",
+          "name_cn": "Spring Early",
+          "ability_id": 5726,
+          "ability_key": "monkey_king_primal_spring_early"
+        },
+        {
+          "type": "ability",
+          "level": 7,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/monkey_king_jingu_mastery.png",
+          "name_en": "Jingu Mastery",
+          "name_cn": "Jingu Mastery",
+          "ability_id": 5723,
+          "ability_key": "monkey_king_jingu_mastery"
+        },
+        {
+          "type": "ability",
+          "level": 8,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/monkey_king_tree_dance.png",
+          "name_en": "Tree Dance",
+          "name_cn": "Tree Dance",
+          "ability_id": 5721,
+          "ability_key": "monkey_king_tree_dance"
+        },
+        {
+          "type": "ability",
+          "level": 9,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/monkey_king_primal_spring.png",
+          "name_en": "Primal Spring",
+          "name_cn": "Primal Spring",
+          "ability_id": 5724,
+          "ability_key": "monkey_king_primal_spring"
+        },
+        {
+          "type": "ability",
+          "level": 10,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/monkey_king_primal_spring_early.png",
+          "name_en": "Spring Early",
+          "name_cn": "Spring Early",
+          "ability_id": 5726,
+          "ability_key": "monkey_king_primal_spring_early"
+        },
+        {
+          "type": "ability",
+          "level": 11,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/monkey_king_tree_dance.png",
+          "name_en": "Tree Dance",
+          "name_cn": "Tree Dance",
+          "ability_id": 5721,
+          "ability_key": "monkey_king_tree_dance"
+        },
+        {
+          "type": "ability",
+          "level": 12,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/monkey_king_primal_spring.png",
+          "name_en": "Primal Spring",
+          "name_cn": "Primal Spring",
+          "ability_id": 5724,
+          "ability_key": "monkey_king_primal_spring"
+        },
+        {
+          "type": "ability",
+          "level": 13,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/monkey_king_primal_spring_early.png",
+          "name_en": "Spring Early",
+          "name_cn": "Spring Early",
+          "ability_id": 5726,
+          "ability_key": "monkey_king_primal_spring_early"
+        },
+        {
+          "type": "ability",
+          "level": 14,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/monkey_king_tree_dance.png",
+          "name_en": "Tree Dance",
+          "name_cn": "Tree Dance",
+          "ability_id": 5721,
+          "ability_key": "monkey_king_tree_dance"
+        },
+        {
+          "type": "ability",
+          "level": 15,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/monkey_king_primal_spring.png",
+          "name_en": "Primal Spring",
+          "name_cn": "Primal Spring",
+          "ability_id": 5724,
+          "ability_key": "monkey_king_primal_spring"
+        },
+        {
+          "type": "ability",
+          "level": 16,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/monkey_king_primal_spring_early.png",
+          "name_en": "Spring Early",
+          "name_cn": "Spring Early",
+          "ability_id": 5726,
+          "ability_key": "monkey_king_primal_spring_early"
+        },
+        {
+          "type": "ability",
+          "level": 17,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/monkey_king_wukongs_command.png",
+          "name_en": "Wukong's Command",
+          "name_cn": "Wukong's Command",
+          "ability_id": 5725,
+          "ability_key": "monkey_king_wukongs_command"
+        },
+        {
+          "type": "ability",
+          "level": 18,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/monkey_king_transfiguration.png",
+          "name_en": "Changing of the Guard",
+          "name_cn": "Changing of the Guard",
+          "ability_id": 1627,
+          "ability_key": "monkey_king_transfiguration"
+        },
+        {
+          "type": "ability",
+          "level": 19,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/monkey_king_boundless_strike.png",
+          "name_en": "Boundless Strike",
+          "name_cn": "Boundless Strike",
+          "ability_id": 5716,
+          "ability_key": "monkey_king_boundless_strike"
+        },
+        {
+          "type": "talent",
+          "level": 20,
+          "name": "+{s:bonus_ground_jump_distance} Tree Dance Cast Range",
+          "name_en": "+{s:bonus_ground_jump_distance} Tree Dance Cast Range",
+          "ability_id": 7038,
+          "ability_key": "special_bonus_unique_monkey_king_7"
+        },
+        {
+          "type": "ability",
+          "level": 21,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/monkey_king_boundless_strike.png",
+          "name_en": "Boundless Strike",
+          "name_cn": "Boundless Strike",
+          "ability_id": 5716,
+          "ability_key": "monkey_king_boundless_strike"
+        },
+        {
+          "type": "ability",
+          "level": 22,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/monkey_king_boundless_strike.png",
+          "name_en": "Boundless Strike",
+          "name_cn": "Boundless Strike",
+          "ability_id": 5716,
+          "ability_key": "monkey_king_boundless_strike"
+        },
+        {
+          "type": "ability",
+          "level": 23,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/monkey_king_jingu_mastery.png",
+          "name_en": "Jingu Mastery",
+          "name_cn": "Jingu Mastery",
+          "ability_id": 5723,
+          "ability_key": "monkey_king_jingu_mastery"
+        },
+        {
+          "type": "ability",
+          "level": 24,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/monkey_king_wukongs_command.png",
+          "name_en": "Wukong's Command",
+          "name_cn": "Wukong's Command",
+          "ability_id": 5725,
+          "ability_key": "monkey_king_wukongs_command"
+        },
+        {
+          "type": "ability",
+          "level": 25,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/monkey_king_transfiguration.png",
+          "name_en": "Changing of the Guard",
+          "name_cn": "Changing of the Guard",
+          "ability_id": 1627,
+          "ability_key": "monkey_king_transfiguration"
+        }
+      ],
+      "ability_timeline": [
+        {
+          "time": null,
+          "ability_id": 5716,
+          "ability_key": "monkey_king_boundless_strike",
+          "ability_name_en": "Boundless Strike",
+          "ability_name_cn": "Boundless Strike",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/monkey_king_boundless_strike.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 5723,
+          "ability_key": "monkey_king_jingu_mastery",
+          "ability_name_en": "Jingu Mastery",
+          "ability_name_cn": "Jingu Mastery",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/monkey_king_jingu_mastery.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 5723,
+          "ability_key": "monkey_king_jingu_mastery",
+          "ability_name_en": "Jingu Mastery",
+          "ability_name_cn": "Jingu Mastery",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/monkey_king_jingu_mastery.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 5721,
+          "ability_key": "monkey_king_tree_dance",
+          "ability_name_en": "Tree Dance",
+          "ability_name_cn": "Tree Dance",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/monkey_king_tree_dance.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 5724,
+          "ability_key": "monkey_king_primal_spring",
+          "ability_name_en": "Primal Spring",
+          "ability_name_cn": "Primal Spring",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/monkey_king_primal_spring.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 5726,
+          "ability_key": "monkey_king_primal_spring_early",
+          "ability_name_en": "Spring Early",
+          "ability_name_cn": "Spring Early",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/monkey_king_primal_spring_early.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 5723,
+          "ability_key": "monkey_king_jingu_mastery",
+          "ability_name_en": "Jingu Mastery",
+          "ability_name_cn": "Jingu Mastery",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/monkey_king_jingu_mastery.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 5721,
+          "ability_key": "monkey_king_tree_dance",
+          "ability_name_en": "Tree Dance",
+          "ability_name_cn": "Tree Dance",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/monkey_king_tree_dance.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 5724,
+          "ability_key": "monkey_king_primal_spring",
+          "ability_name_en": "Primal Spring",
+          "ability_name_cn": "Primal Spring",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/monkey_king_primal_spring.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 5726,
+          "ability_key": "monkey_king_primal_spring_early",
+          "ability_name_en": "Spring Early",
+          "ability_name_cn": "Spring Early",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/monkey_king_primal_spring_early.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 5721,
+          "ability_key": "monkey_king_tree_dance",
+          "ability_name_en": "Tree Dance",
+          "ability_name_cn": "Tree Dance",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/monkey_king_tree_dance.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 5724,
+          "ability_key": "monkey_king_primal_spring",
+          "ability_name_en": "Primal Spring",
+          "ability_name_cn": "Primal Spring",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/monkey_king_primal_spring.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 5726,
+          "ability_key": "monkey_king_primal_spring_early",
+          "ability_name_en": "Spring Early",
+          "ability_name_cn": "Spring Early",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/monkey_king_primal_spring_early.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 5721,
+          "ability_key": "monkey_king_tree_dance",
+          "ability_name_en": "Tree Dance",
+          "ability_name_cn": "Tree Dance",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/monkey_king_tree_dance.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 5724,
+          "ability_key": "monkey_king_primal_spring",
+          "ability_name_en": "Primal Spring",
+          "ability_name_cn": "Primal Spring",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/monkey_king_primal_spring.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 5726,
+          "ability_key": "monkey_king_primal_spring_early",
+          "ability_name_en": "Spring Early",
+          "ability_name_cn": "Spring Early",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/monkey_king_primal_spring_early.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 5725,
+          "ability_key": "monkey_king_wukongs_command",
+          "ability_name_en": "Wukong's Command",
+          "ability_name_cn": "Wukong's Command",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/monkey_king_wukongs_command.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 1627,
+          "ability_key": "monkey_king_transfiguration",
+          "ability_name_en": "Changing of the Guard",
+          "ability_name_cn": "Changing of the Guard",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/monkey_king_transfiguration.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 5716,
+          "ability_key": "monkey_king_boundless_strike",
+          "ability_name_en": "Boundless Strike",
+          "ability_name_cn": "Boundless Strike",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/monkey_king_boundless_strike.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 7038,
+          "ability_key": "special_bonus_unique_monkey_king_7",
+          "ability_name_en": "+{s:bonus_ground_jump_distance} Tree Dance Cast Range",
+          "ability_name_cn": "+{s:bonus_ground_jump_distance} Tree Dance Cast Range",
+          "image_url": "",
+          "is_talent": true
+        },
+        {
+          "time": null,
+          "ability_id": 5716,
+          "ability_key": "monkey_king_boundless_strike",
+          "ability_name_en": "Boundless Strike",
+          "ability_name_cn": "Boundless Strike",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/monkey_king_boundless_strike.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 5716,
+          "ability_key": "monkey_king_boundless_strike",
+          "ability_name_en": "Boundless Strike",
+          "ability_name_cn": "Boundless Strike",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/monkey_king_boundless_strike.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 5723,
+          "ability_key": "monkey_king_jingu_mastery",
+          "ability_name_en": "Jingu Mastery",
+          "ability_name_cn": "Jingu Mastery",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/monkey_king_jingu_mastery.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 5725,
+          "ability_key": "monkey_king_wukongs_command",
+          "ability_name_en": "Wukong's Command",
+          "ability_name_cn": "Wukong's Command",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/monkey_king_wukongs_command.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 1627,
+          "ability_key": "monkey_king_transfiguration",
+          "ability_name_en": "Changing of the Guard",
+          "ability_name_cn": "Changing of the Guard",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/monkey_king_transfiguration.png",
+          "is_talent": false
+        }
+      ],
+      "talents_taken": [
+        {
+          "time": null,
+          "ability_id": 7038,
+          "ability_key": "special_bonus_unique_monkey_king_7",
+          "ability_name_en": "+{s:bonus_ground_jump_distance} Tree Dance Cast Range",
+          "ability_name_cn": "+{s:bonus_ground_jump_distance} Tree Dance Cast Range",
+          "image_url": "",
+          "is_talent": true
+        }
+      ],
+      "item_0": 147,
+      "item_1": 116,
+      "item_2": 36,
+      "item_3": 143,
+      "item_4": 63,
+      "item_5": 137,
+      "item_neutral": 0
     },
     {
       "account_id": 111030315,
@@ -5344,8 +8648,8 @@
         ],
         "dots_learned": 2
       },
-      "hero_name_en": "Rattletrap",
-      "hero_name_cn": "",
+      "hero_name_en": "Clockwerk",
+      "hero_name_cn": "发条技师",
       "_dem_items_source": "combat_log_slot_last_purchase",
       "lane_early": "bot",
       "role_early": "support(4)",
@@ -5388,7 +8692,6 @@
         5239,
         5239,
         5239,
-        630,
         1677,
         7132,
         5237,
@@ -5399,7 +8702,478 @@
         5240
       ],
       "player_slot": 130,
-      "isRadiant": false
+      "isRadiant": false,
+      "hero_portrait_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/rattletrap.png",
+      "hero_icon_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/icons/rattletrap.png",
+      "hero_internal_name": "npc_dota_hero_rattletrap",
+      "items_resolved": {
+        "main": [
+          {
+            "group": "main",
+            "slot": 0,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
+            "resolve_note": null
+          },
+          {
+            "group": "main",
+            "slot": 1,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
+            "resolve_note": null
+          },
+          {
+            "group": "main",
+            "slot": 2,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
+            "resolve_note": null
+          },
+          {
+            "group": "main",
+            "slot": 3,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
+            "resolve_note": null
+          },
+          {
+            "group": "main",
+            "slot": 4,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
+            "resolve_note": null
+          },
+          {
+            "group": "main",
+            "slot": 5,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
+            "resolve_note": null
+          }
+        ],
+        "backpack": [
+          {
+            "group": "backpack",
+            "slot": 0,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
+            "resolve_note": null
+          },
+          {
+            "group": "backpack",
+            "slot": 1,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
+            "resolve_note": null
+          },
+          {
+            "group": "backpack",
+            "slot": 2,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
+            "resolve_note": null
+          }
+        ],
+        "neutral": null
+      },
+      "skill_build_two_step": [
+        {
+          "type": "ability",
+          "level": 1,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/rattletrap_power_cogs.png",
+          "name_en": "Power Cogs",
+          "name_cn": "Power Cogs",
+          "ability_id": 5238,
+          "ability_key": "rattletrap_power_cogs"
+        },
+        {
+          "type": "ability",
+          "level": 2,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/rattletrap_battery_assault.png",
+          "name_en": "Battery Assault",
+          "name_cn": "Battery Assault",
+          "ability_id": 5237,
+          "ability_key": "rattletrap_battery_assault"
+        },
+        {
+          "type": "ability",
+          "level": 3,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/rattletrap_power_cogs.png",
+          "name_en": "Power Cogs",
+          "name_cn": "Power Cogs",
+          "ability_id": 5238,
+          "ability_key": "rattletrap_power_cogs"
+        },
+        {
+          "type": "ability",
+          "level": 4,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/rattletrap_rocket_flare.png",
+          "name_en": "Rocket Flare",
+          "name_cn": "Rocket Flare",
+          "ability_id": 5239,
+          "ability_key": "rattletrap_rocket_flare"
+        },
+        {
+          "type": "ability",
+          "level": 5,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/rattletrap_power_cogs.png",
+          "name_en": "Power Cogs",
+          "name_cn": "Power Cogs",
+          "ability_id": 5238,
+          "ability_key": "rattletrap_power_cogs"
+        },
+        {
+          "type": "ability",
+          "level": 6,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/rattletrap_hookshot.png",
+          "name_en": "Hookshot",
+          "name_cn": "Hookshot",
+          "ability_id": 5240,
+          "ability_key": "rattletrap_hookshot"
+        },
+        {
+          "type": "ability",
+          "level": 7,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/rattletrap_power_cogs.png",
+          "name_en": "Power Cogs",
+          "name_cn": "Power Cogs",
+          "ability_id": 5238,
+          "ability_key": "rattletrap_power_cogs"
+        },
+        {
+          "type": "ability",
+          "level": 8,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/rattletrap_rocket_flare.png",
+          "name_en": "Rocket Flare",
+          "name_cn": "Rocket Flare",
+          "ability_id": 5239,
+          "ability_key": "rattletrap_rocket_flare"
+        },
+        {
+          "type": "ability",
+          "level": 9,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/rattletrap_rocket_flare.png",
+          "name_en": "Rocket Flare",
+          "name_cn": "Rocket Flare",
+          "ability_id": 5239,
+          "ability_key": "rattletrap_rocket_flare"
+        },
+        {
+          "type": "ability",
+          "level": 10,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/rattletrap_rocket_flare.png",
+          "name_en": "Rocket Flare",
+          "name_cn": "Rocket Flare",
+          "ability_id": 5239,
+          "ability_key": "rattletrap_rocket_flare"
+        },
+        {
+          "type": "ability",
+          "level": 11,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/rattletrap_jetpack.png",
+          "name_en": "Jetpack",
+          "name_cn": "Jetpack",
+          "ability_id": 630,
+          "ability_key": "rattletrap_jetpack"
+        },
+        {
+          "type": "ability",
+          "level": 12,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/rattletrap_jetpack_toggle.png",
+          "name_en": "Jetpack Toggle",
+          "name_cn": "Jetpack Toggle",
+          "ability_id": 1677,
+          "ability_key": "rattletrap_jetpack_toggle"
+        },
+        {
+          "type": "talent",
+          "level": 13,
+          "name": "+1.5 Mana Regen",
+          "name_en": "+1.5 Mana Regen",
+          "ability_id": 7132,
+          "ability_key": "special_bonus_mp_regen_150"
+        },
+        {
+          "type": "ability",
+          "level": 14,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/rattletrap_battery_assault.png",
+          "name_en": "Battery Assault",
+          "name_cn": "Battery Assault",
+          "ability_id": 5237,
+          "ability_key": "rattletrap_battery_assault"
+        },
+        {
+          "type": "ability",
+          "level": 15,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/rattletrap_hookshot.png",
+          "name_en": "Hookshot",
+          "name_cn": "Hookshot",
+          "ability_id": 5240,
+          "ability_key": "rattletrap_hookshot"
+        },
+        {
+          "type": "ability",
+          "level": 16,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/rattletrap_battery_assault.png",
+          "name_en": "Battery Assault",
+          "name_cn": "Battery Assault",
+          "ability_id": 5237,
+          "ability_key": "rattletrap_battery_assault"
+        },
+        {
+          "type": "ability",
+          "level": 17,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/rattletrap_battery_assault.png",
+          "name_en": "Battery Assault",
+          "name_cn": "Battery Assault",
+          "ability_id": 5237,
+          "ability_key": "rattletrap_battery_assault"
+        },
+        {
+          "type": "talent",
+          "level": 18,
+          "name": "-{s:bonus_AbilityCooldown}s Hookshot Cooldown",
+          "name_en": "-{s:bonus_AbilityCooldown}s Hookshot Cooldown",
+          "ability_id": 502,
+          "ability_key": "special_bonus_unique_clockwerk_5"
+        },
+        {
+          "type": "ability",
+          "level": 19,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/rattletrap_hookshot.png",
+          "name_en": "Hookshot",
+          "name_cn": "Hookshot",
+          "ability_id": 5240,
+          "ability_key": "rattletrap_hookshot"
+        }
+      ],
+      "ability_timeline": [
+        {
+          "time": null,
+          "ability_id": 5238,
+          "ability_key": "rattletrap_power_cogs",
+          "ability_name_en": "Power Cogs",
+          "ability_name_cn": "Power Cogs",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/rattletrap_power_cogs.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 5237,
+          "ability_key": "rattletrap_battery_assault",
+          "ability_name_en": "Battery Assault",
+          "ability_name_cn": "Battery Assault",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/rattletrap_battery_assault.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 5238,
+          "ability_key": "rattletrap_power_cogs",
+          "ability_name_en": "Power Cogs",
+          "ability_name_cn": "Power Cogs",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/rattletrap_power_cogs.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 5239,
+          "ability_key": "rattletrap_rocket_flare",
+          "ability_name_en": "Rocket Flare",
+          "ability_name_cn": "Rocket Flare",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/rattletrap_rocket_flare.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 5238,
+          "ability_key": "rattletrap_power_cogs",
+          "ability_name_en": "Power Cogs",
+          "ability_name_cn": "Power Cogs",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/rattletrap_power_cogs.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 5240,
+          "ability_key": "rattletrap_hookshot",
+          "ability_name_en": "Hookshot",
+          "ability_name_cn": "Hookshot",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/rattletrap_hookshot.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 5238,
+          "ability_key": "rattletrap_power_cogs",
+          "ability_name_en": "Power Cogs",
+          "ability_name_cn": "Power Cogs",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/rattletrap_power_cogs.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 5239,
+          "ability_key": "rattletrap_rocket_flare",
+          "ability_name_en": "Rocket Flare",
+          "ability_name_cn": "Rocket Flare",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/rattletrap_rocket_flare.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 5239,
+          "ability_key": "rattletrap_rocket_flare",
+          "ability_name_en": "Rocket Flare",
+          "ability_name_cn": "Rocket Flare",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/rattletrap_rocket_flare.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 5239,
+          "ability_key": "rattletrap_rocket_flare",
+          "ability_name_en": "Rocket Flare",
+          "ability_name_cn": "Rocket Flare",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/rattletrap_rocket_flare.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 1677,
+          "ability_key": "rattletrap_jetpack_toggle",
+          "ability_name_en": "Jetpack Toggle",
+          "ability_name_cn": "Jetpack Toggle",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/rattletrap_jetpack_toggle.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 7132,
+          "ability_key": "special_bonus_mp_regen_150",
+          "ability_name_en": "+1.5 Mana Regen",
+          "ability_name_cn": "+1.5 Mana Regen",
+          "image_url": "",
+          "is_talent": true
+        },
+        {
+          "time": null,
+          "ability_id": 5237,
+          "ability_key": "rattletrap_battery_assault",
+          "ability_name_en": "Battery Assault",
+          "ability_name_cn": "Battery Assault",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/rattletrap_battery_assault.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 5240,
+          "ability_key": "rattletrap_hookshot",
+          "ability_name_en": "Hookshot",
+          "ability_name_cn": "Hookshot",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/rattletrap_hookshot.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 5237,
+          "ability_key": "rattletrap_battery_assault",
+          "ability_name_en": "Battery Assault",
+          "ability_name_cn": "Battery Assault",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/rattletrap_battery_assault.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 5237,
+          "ability_key": "rattletrap_battery_assault",
+          "ability_name_en": "Battery Assault",
+          "ability_name_cn": "Battery Assault",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/rattletrap_battery_assault.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 502,
+          "ability_key": "special_bonus_unique_clockwerk_5",
+          "ability_name_en": "-{s:bonus_AbilityCooldown}s Hookshot Cooldown",
+          "ability_name_cn": "-{s:bonus_AbilityCooldown}s Hookshot Cooldown",
+          "image_url": "",
+          "is_talent": true
+        },
+        {
+          "time": null,
+          "ability_id": 5240,
+          "ability_key": "rattletrap_hookshot",
+          "ability_name_en": "Hookshot",
+          "ability_name_cn": "Hookshot",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/rattletrap_hookshot.png",
+          "is_talent": false
+        }
+      ],
+      "talents_taken": [
+        {
+          "time": null,
+          "ability_id": 7132,
+          "ability_key": "special_bonus_mp_regen_150",
+          "ability_name_en": "+1.5 Mana Regen",
+          "ability_name_cn": "+1.5 Mana Regen",
+          "image_url": "",
+          "is_talent": true
+        },
+        {
+          "time": null,
+          "ability_id": 502,
+          "ability_key": "special_bonus_unique_clockwerk_5",
+          "ability_name_en": "-{s:bonus_AbilityCooldown}s Hookshot Cooldown",
+          "ability_name_cn": "-{s:bonus_AbilityCooldown}s Hookshot Cooldown",
+          "image_url": "",
+          "is_talent": true
+        }
+      ],
+      "item_0": 226,
+      "item_1": 229,
+      "item_2": 29,
+      "item_3": 0,
+      "item_4": 0,
+      "item_5": 0,
+      "item_neutral": 0
     },
     {
       "account_id": 1092557725,
@@ -6023,7 +9797,7 @@
         "dots_learned": 2
       },
       "hero_name_en": "Rubick",
-      "hero_name_cn": "",
+      "hero_name_cn": "拉比克",
       "_dem_items_source": "combat_log_slot_last_purchase",
       "lane_early": "top",
       "role_early": "support(5)",
@@ -6087,7 +9861,587 @@
         5119
       ],
       "player_slot": 131,
-      "isRadiant": false
+      "isRadiant": false,
+      "hero_portrait_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/rubick.png",
+      "hero_icon_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/icons/rubick.png",
+      "hero_internal_name": "npc_dota_hero_rubick",
+      "items_resolved": {
+        "main": [
+          {
+            "group": "main",
+            "slot": 0,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
+            "resolve_note": null
+          },
+          {
+            "group": "main",
+            "slot": 1,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
+            "resolve_note": null
+          },
+          {
+            "group": "main",
+            "slot": 2,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
+            "resolve_note": null
+          },
+          {
+            "group": "main",
+            "slot": 3,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
+            "resolve_note": null
+          },
+          {
+            "group": "main",
+            "slot": 4,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
+            "resolve_note": null
+          },
+          {
+            "group": "main",
+            "slot": 5,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
+            "resolve_note": null
+          }
+        ],
+        "backpack": [
+          {
+            "group": "backpack",
+            "slot": 0,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
+            "resolve_note": null
+          },
+          {
+            "group": "backpack",
+            "slot": 1,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
+            "resolve_note": null
+          },
+          {
+            "group": "backpack",
+            "slot": 2,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
+            "resolve_note": null
+          }
+        ],
+        "neutral": null
+      },
+      "skill_build_two_step": [
+        {
+          "type": "ability",
+          "level": 1,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/rubick_fade_bolt.png",
+          "name_en": "Fade Bolt",
+          "name_cn": "Fade Bolt",
+          "ability_id": 5450,
+          "ability_key": "rubick_fade_bolt"
+        },
+        {
+          "type": "ability",
+          "level": 2,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/rubick_telekinesis.png",
+          "name_en": "Telekinesis",
+          "name_cn": "Telekinesis",
+          "ability_id": 5448,
+          "ability_key": "rubick_telekinesis"
+        },
+        {
+          "type": "ability",
+          "level": 3,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/rubick_telekinesis_land.png",
+          "name_en": "Telekinesis Land",
+          "name_cn": "Telekinesis Land",
+          "ability_id": 5449,
+          "ability_key": "rubick_telekinesis_land"
+        },
+        {
+          "type": "ability",
+          "level": 4,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/rubick_telekinesis_land_self.png",
+          "name_en": "Telekinesis Land",
+          "name_cn": "Telekinesis Land",
+          "ability_id": 647,
+          "ability_key": "rubick_telekinesis_land_self"
+        },
+        {
+          "type": "ability",
+          "level": 5,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/rubick_fade_bolt.png",
+          "name_en": "Fade Bolt",
+          "name_cn": "Fade Bolt",
+          "ability_id": 5450,
+          "ability_key": "rubick_fade_bolt"
+        },
+        {
+          "type": "ability",
+          "level": 6,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/rubick_arcane_supremacy.png",
+          "name_en": "Arcane Supremacy",
+          "name_cn": "Arcane Supremacy",
+          "ability_id": 7320,
+          "ability_key": "rubick_arcane_supremacy"
+        },
+        {
+          "type": "ability",
+          "level": 7,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/rubick_fade_bolt.png",
+          "name_en": "Fade Bolt",
+          "name_cn": "Fade Bolt",
+          "ability_id": 5450,
+          "ability_key": "rubick_fade_bolt"
+        },
+        {
+          "type": "ability",
+          "level": 8,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/rubick_spell_steal.png",
+          "name_en": "Spell Steal",
+          "name_cn": "Spell Steal",
+          "ability_id": 5452,
+          "ability_key": "rubick_spell_steal"
+        },
+        {
+          "type": "ability",
+          "level": 9,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/rubick_fade_bolt.png",
+          "name_en": "Fade Bolt",
+          "name_cn": "Fade Bolt",
+          "ability_id": 5450,
+          "ability_key": "rubick_fade_bolt"
+        },
+        {
+          "type": "ability",
+          "level": 10,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/tidehunter_anchor_smash.png",
+          "name_en": "Anchor Smash",
+          "name_cn": "Anchor Smash",
+          "ability_id": 5120,
+          "ability_key": "tidehunter_anchor_smash"
+        },
+        {
+          "type": "ability",
+          "level": 11,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/spirit_breaker_nether_strike.png",
+          "name_en": "Nether Strike",
+          "name_cn": "Nether Strike",
+          "ability_id": 5356,
+          "ability_key": "spirit_breaker_nether_strike"
+        },
+        {
+          "type": "ability",
+          "level": 12,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/spirit_breaker_greater_bash.png",
+          "name_en": "Greater Bash",
+          "name_cn": "Greater Bash",
+          "ability_id": 5355,
+          "ability_key": "spirit_breaker_greater_bash"
+        },
+        {
+          "type": "ability",
+          "level": 13,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/rubick_arcane_supremacy.png",
+          "name_en": "Arcane Supremacy",
+          "name_cn": "Arcane Supremacy",
+          "ability_id": 7320,
+          "ability_key": "rubick_arcane_supremacy"
+        },
+        {
+          "type": "ability",
+          "level": 14,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/spirit_breaker_charge_of_darkness.png",
+          "name_en": "Charge of Darkness",
+          "name_cn": "Charge of Darkness",
+          "ability_id": 5353,
+          "ability_key": "spirit_breaker_charge_of_darkness"
+        },
+        {
+          "type": "ability",
+          "level": 15,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/rubick_arcane_supremacy.png",
+          "name_en": "Arcane Supremacy",
+          "name_cn": "Arcane Supremacy",
+          "ability_id": 7320,
+          "ability_key": "rubick_arcane_supremacy"
+        },
+        {
+          "type": "ability",
+          "level": 16,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/rubick_arcane_supremacy.png",
+          "name_en": "Arcane Supremacy",
+          "name_cn": "Arcane Supremacy",
+          "ability_id": 7320,
+          "ability_key": "rubick_arcane_supremacy"
+        },
+        {
+          "type": "talent",
+          "level": 17,
+          "name": "+200 Health",
+          "name_en": "+200 Health",
+          "ability_id": 5959,
+          "ability_key": "special_bonus_hp_200"
+        },
+        {
+          "type": "ability",
+          "level": 18,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/rubick_telekinesis.png",
+          "name_en": "Telekinesis",
+          "name_cn": "Telekinesis",
+          "ability_id": 5448,
+          "ability_key": "rubick_telekinesis"
+        },
+        {
+          "type": "ability",
+          "level": 19,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/tidehunter_ravage.png",
+          "name_en": "Ravage",
+          "name_cn": "Ravage",
+          "ability_id": 5121,
+          "ability_key": "tidehunter_ravage"
+        },
+        {
+          "type": "ability",
+          "level": 20,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/rubick_spell_steal.png",
+          "name_en": "Spell Steal",
+          "name_cn": "Spell Steal",
+          "ability_id": 5452,
+          "ability_key": "rubick_spell_steal"
+        },
+        {
+          "type": "ability",
+          "level": 21,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/batrider_flaming_lasso.png",
+          "name_en": "Flaming Lasso",
+          "name_cn": "Flaming Lasso",
+          "ability_id": 5323,
+          "ability_key": "batrider_flaming_lasso"
+        },
+        {
+          "type": "ability",
+          "level": 22,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/rubick_telekinesis.png",
+          "name_en": "Telekinesis",
+          "name_cn": "Telekinesis",
+          "ability_id": 5448,
+          "ability_key": "rubick_telekinesis"
+        },
+        {
+          "type": "ability",
+          "level": 23,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/rubick_telekinesis.png",
+          "name_en": "Telekinesis",
+          "name_cn": "Telekinesis",
+          "ability_id": 5448,
+          "ability_key": "rubick_telekinesis"
+        },
+        {
+          "type": "ability",
+          "level": 24,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/lycan_summon_wolves.png",
+          "name_en": "Summon Wolves",
+          "name_cn": "Summon Wolves",
+          "ability_id": 5395,
+          "ability_key": "lycan_summon_wolves"
+        },
+        {
+          "type": "ability",
+          "level": 25,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/tidehunter_kraken_shell.png",
+          "name_en": "Kraken Shell",
+          "name_cn": "Kraken Shell",
+          "ability_id": 5119,
+          "ability_key": "tidehunter_kraken_shell"
+        }
+      ],
+      "ability_timeline": [
+        {
+          "time": null,
+          "ability_id": 5450,
+          "ability_key": "rubick_fade_bolt",
+          "ability_name_en": "Fade Bolt",
+          "ability_name_cn": "Fade Bolt",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/rubick_fade_bolt.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 5448,
+          "ability_key": "rubick_telekinesis",
+          "ability_name_en": "Telekinesis",
+          "ability_name_cn": "Telekinesis",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/rubick_telekinesis.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 5449,
+          "ability_key": "rubick_telekinesis_land",
+          "ability_name_en": "Telekinesis Land",
+          "ability_name_cn": "Telekinesis Land",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/rubick_telekinesis_land.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 647,
+          "ability_key": "rubick_telekinesis_land_self",
+          "ability_name_en": "Telekinesis Land",
+          "ability_name_cn": "Telekinesis Land",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/rubick_telekinesis_land_self.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 5450,
+          "ability_key": "rubick_fade_bolt",
+          "ability_name_en": "Fade Bolt",
+          "ability_name_cn": "Fade Bolt",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/rubick_fade_bolt.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 7320,
+          "ability_key": "rubick_arcane_supremacy",
+          "ability_name_en": "Arcane Supremacy",
+          "ability_name_cn": "Arcane Supremacy",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/rubick_arcane_supremacy.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 5450,
+          "ability_key": "rubick_fade_bolt",
+          "ability_name_en": "Fade Bolt",
+          "ability_name_cn": "Fade Bolt",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/rubick_fade_bolt.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 5452,
+          "ability_key": "rubick_spell_steal",
+          "ability_name_en": "Spell Steal",
+          "ability_name_cn": "Spell Steal",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/rubick_spell_steal.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 5450,
+          "ability_key": "rubick_fade_bolt",
+          "ability_name_en": "Fade Bolt",
+          "ability_name_cn": "Fade Bolt",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/rubick_fade_bolt.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 5120,
+          "ability_key": "tidehunter_anchor_smash",
+          "ability_name_en": "Anchor Smash",
+          "ability_name_cn": "Anchor Smash",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/tidehunter_anchor_smash.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 5356,
+          "ability_key": "spirit_breaker_nether_strike",
+          "ability_name_en": "Nether Strike",
+          "ability_name_cn": "Nether Strike",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/spirit_breaker_nether_strike.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 5355,
+          "ability_key": "spirit_breaker_greater_bash",
+          "ability_name_en": "Greater Bash",
+          "ability_name_cn": "Greater Bash",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/spirit_breaker_greater_bash.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 7320,
+          "ability_key": "rubick_arcane_supremacy",
+          "ability_name_en": "Arcane Supremacy",
+          "ability_name_cn": "Arcane Supremacy",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/rubick_arcane_supremacy.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 5353,
+          "ability_key": "spirit_breaker_charge_of_darkness",
+          "ability_name_en": "Charge of Darkness",
+          "ability_name_cn": "Charge of Darkness",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/spirit_breaker_charge_of_darkness.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 7320,
+          "ability_key": "rubick_arcane_supremacy",
+          "ability_name_en": "Arcane Supremacy",
+          "ability_name_cn": "Arcane Supremacy",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/rubick_arcane_supremacy.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 7320,
+          "ability_key": "rubick_arcane_supremacy",
+          "ability_name_en": "Arcane Supremacy",
+          "ability_name_cn": "Arcane Supremacy",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/rubick_arcane_supremacy.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 5959,
+          "ability_key": "special_bonus_hp_200",
+          "ability_name_en": "+200 Health",
+          "ability_name_cn": "+200 Health",
+          "image_url": "",
+          "is_talent": true
+        },
+        {
+          "time": null,
+          "ability_id": 5448,
+          "ability_key": "rubick_telekinesis",
+          "ability_name_en": "Telekinesis",
+          "ability_name_cn": "Telekinesis",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/rubick_telekinesis.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 5121,
+          "ability_key": "tidehunter_ravage",
+          "ability_name_en": "Ravage",
+          "ability_name_cn": "Ravage",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/tidehunter_ravage.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 5452,
+          "ability_key": "rubick_spell_steal",
+          "ability_name_en": "Spell Steal",
+          "ability_name_cn": "Spell Steal",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/rubick_spell_steal.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 5323,
+          "ability_key": "batrider_flaming_lasso",
+          "ability_name_en": "Flaming Lasso",
+          "ability_name_cn": "Flaming Lasso",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/batrider_flaming_lasso.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 5448,
+          "ability_key": "rubick_telekinesis",
+          "ability_name_en": "Telekinesis",
+          "ability_name_cn": "Telekinesis",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/rubick_telekinesis.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 5448,
+          "ability_key": "rubick_telekinesis",
+          "ability_name_en": "Telekinesis",
+          "ability_name_cn": "Telekinesis",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/rubick_telekinesis.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 5395,
+          "ability_key": "lycan_summon_wolves",
+          "ability_name_en": "Summon Wolves",
+          "ability_name_cn": "Summon Wolves",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/lycan_summon_wolves.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 5119,
+          "ability_key": "tidehunter_kraken_shell",
+          "ability_name_en": "Kraken Shell",
+          "ability_name_cn": "Kraken Shell",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/tidehunter_kraken_shell.png",
+          "is_talent": false
+        }
+      ],
+      "talents_taken": [
+        {
+          "time": null,
+          "ability_id": 5959,
+          "ability_key": "special_bonus_hp_200",
+          "ability_name_en": "+200 Health",
+          "ability_name_cn": "+200 Health",
+          "image_url": "",
+          "is_talent": true
+        }
+      ],
+      "item_0": 1,
+      "item_1": 180,
+      "item_2": 100,
+      "item_3": 36,
+      "item_4": 37,
+      "item_5": 609,
+      "item_neutral": 0
     },
     {
       "account_id": 218231587,
@@ -6672,7 +11026,7 @@
         "dots_learned": 3
       },
       "hero_name_en": "Pangolier",
-      "hero_name_cn": "",
+      "hero_name_cn": "石鳞剑士",
       "_dem_items_source": "combat_log_slot_last_purchase",
       "lane_early": "bot",
       "role_early": "offlane",
@@ -6719,14 +11073,564 @@
         7307,
         7307,
         1053,
-        8027,
         8029,
         6343,
         6459,
         9135
       ],
       "player_slot": 132,
-      "isRadiant": false
+      "isRadiant": false,
+      "hero_portrait_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/pangolier.png",
+      "hero_icon_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/icons/pangolier.png",
+      "hero_internal_name": "npc_dota_hero_pangolier",
+      "items_resolved": {
+        "main": [
+          {
+            "group": "main",
+            "slot": 0,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
+            "resolve_note": null
+          },
+          {
+            "group": "main",
+            "slot": 1,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
+            "resolve_note": null
+          },
+          {
+            "group": "main",
+            "slot": 2,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
+            "resolve_note": null
+          },
+          {
+            "group": "main",
+            "slot": 3,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
+            "resolve_note": null
+          },
+          {
+            "group": "main",
+            "slot": 4,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
+            "resolve_note": null
+          },
+          {
+            "group": "main",
+            "slot": 5,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
+            "resolve_note": null
+          }
+        ],
+        "backpack": [
+          {
+            "group": "backpack",
+            "slot": 0,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
+            "resolve_note": null
+          },
+          {
+            "group": "backpack",
+            "slot": 1,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
+            "resolve_note": null
+          },
+          {
+            "group": "backpack",
+            "slot": 2,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
+            "resolve_note": null
+          }
+        ],
+        "neutral": null
+      },
+      "skill_build_two_step": [
+        {
+          "type": "ability",
+          "level": 1,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/pangolier_swashbuckle.png",
+          "name_en": "Swashbuckle",
+          "name_cn": "Swashbuckle",
+          "ability_id": 6344,
+          "ability_key": "pangolier_swashbuckle"
+        },
+        {
+          "type": "ability",
+          "level": 2,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/pangolier_lucky_shot.png",
+          "name_en": "Lucky Shot",
+          "name_cn": "Lucky Shot",
+          "ability_id": 7307,
+          "ability_key": "pangolier_lucky_shot"
+        },
+        {
+          "type": "ability",
+          "level": 3,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/pangolier_swashbuckle.png",
+          "name_en": "Swashbuckle",
+          "name_cn": "Swashbuckle",
+          "ability_id": 6344,
+          "ability_key": "pangolier_swashbuckle"
+        },
+        {
+          "type": "ability",
+          "level": 4,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/pangolier_shield_crash.png",
+          "name_en": "Shield Crash",
+          "name_cn": "Shield Crash",
+          "ability_id": 6461,
+          "ability_key": "pangolier_shield_crash"
+        },
+        {
+          "type": "ability",
+          "level": 5,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/pangolier_swashbuckle.png",
+          "name_en": "Swashbuckle",
+          "name_cn": "Swashbuckle",
+          "ability_id": 6344,
+          "ability_key": "pangolier_swashbuckle"
+        },
+        {
+          "type": "ability",
+          "level": 6,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/pangolier_gyroshell.png",
+          "name_en": "Rolling Thunder",
+          "name_cn": "Rolling Thunder",
+          "ability_id": 6343,
+          "ability_key": "pangolier_gyroshell"
+        },
+        {
+          "type": "ability",
+          "level": 7,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/pangolier_gyroshell_stop.png",
+          "name_en": "Stop Rolling",
+          "name_cn": "Stop Rolling",
+          "ability_id": 6459,
+          "ability_key": "pangolier_gyroshell_stop"
+        },
+        {
+          "type": "ability",
+          "level": 8,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/pangolier_swashbuckle.png",
+          "name_en": "Swashbuckle",
+          "name_cn": "Swashbuckle",
+          "ability_id": 6344,
+          "ability_key": "pangolier_swashbuckle"
+        },
+        {
+          "type": "ability",
+          "level": 9,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/pangolier_shield_crash.png",
+          "name_en": "Shield Crash",
+          "name_cn": "Shield Crash",
+          "ability_id": 6461,
+          "ability_key": "pangolier_shield_crash"
+        },
+        {
+          "type": "ability",
+          "level": 10,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/pangolier_shield_crash.png",
+          "name_en": "Shield Crash",
+          "name_cn": "Shield Crash",
+          "ability_id": 6461,
+          "ability_key": "pangolier_shield_crash"
+        },
+        {
+          "type": "ability",
+          "level": 11,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/pangolier_shield_crash.png",
+          "name_en": "Shield Crash",
+          "name_cn": "Shield Crash",
+          "ability_id": 6461,
+          "ability_key": "pangolier_shield_crash"
+        },
+        {
+          "type": "talent",
+          "level": 12,
+          "name": "+200 Swashbuckle Slash Range",
+          "name_en": "+200 Swashbuckle Slash Range",
+          "ability_id": 9063,
+          "ability_key": "special_bonus_unique_pangolier"
+        },
+        {
+          "type": "ability",
+          "level": 13,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/pangolier_lucky_shot.png",
+          "name_en": "Lucky Shot",
+          "name_cn": "Lucky Shot",
+          "ability_id": 7307,
+          "ability_key": "pangolier_lucky_shot"
+        },
+        {
+          "type": "ability",
+          "level": 14,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/pangolier_gyroshell.png",
+          "name_en": "Rolling Thunder",
+          "name_cn": "Rolling Thunder",
+          "ability_id": 6343,
+          "ability_key": "pangolier_gyroshell"
+        },
+        {
+          "type": "ability",
+          "level": 15,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/pangolier_gyroshell_stop.png",
+          "name_en": "Stop Rolling",
+          "name_cn": "Stop Rolling",
+          "ability_id": 6459,
+          "ability_key": "pangolier_gyroshell_stop"
+        },
+        {
+          "type": "ability",
+          "level": 16,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/pangolier_lucky_shot.png",
+          "name_en": "Lucky Shot",
+          "name_cn": "Lucky Shot",
+          "ability_id": 7307,
+          "ability_key": "pangolier_lucky_shot"
+        },
+        {
+          "type": "ability",
+          "level": 17,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/pangolier_lucky_shot.png",
+          "name_en": "Lucky Shot",
+          "name_cn": "Lucky Shot",
+          "ability_id": 7307,
+          "ability_key": "pangolier_lucky_shot"
+        },
+        {
+          "type": "talent",
+          "level": 18,
+          "name": "+125 Shield Crash Barrier",
+          "name_en": "+125 Shield Crash Barrier",
+          "ability_id": 1053,
+          "ability_key": "special_bonus_unique_pangolier_shield_crash_herostacks"
+        },
+        {
+          "type": "ability",
+          "level": 19,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/pangolier_rollup.png",
+          "name_en": "Roll Up",
+          "name_cn": "Roll Up",
+          "ability_id": 8027,
+          "ability_key": "pangolier_rollup"
+        },
+        {
+          "type": "ability",
+          "level": 20,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/pangolier_rollup_stop.png",
+          "name_en": "End Roll Up",
+          "name_cn": "End Roll Up",
+          "ability_id": 8029,
+          "ability_key": "pangolier_rollup_stop"
+        },
+        {
+          "type": "ability",
+          "level": 21,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/pangolier_gyroshell.png",
+          "name_en": "Rolling Thunder",
+          "name_cn": "Rolling Thunder",
+          "ability_id": 6343,
+          "ability_key": "pangolier_gyroshell"
+        },
+        {
+          "type": "ability",
+          "level": 22,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/pangolier_gyroshell_stop.png",
+          "name_en": "Stop Rolling",
+          "name_cn": "Stop Rolling",
+          "ability_id": 6459,
+          "ability_key": "pangolier_gyroshell_stop"
+        },
+        {
+          "type": "talent",
+          "level": 23,
+          "name": "+2s Rolling Thunder Duration",
+          "name_en": "+2s Rolling Thunder Duration",
+          "ability_id": 9135,
+          "ability_key": "special_bonus_unique_pangolier_6"
+        }
+      ],
+      "ability_timeline": [
+        {
+          "time": null,
+          "ability_id": 6344,
+          "ability_key": "pangolier_swashbuckle",
+          "ability_name_en": "Swashbuckle",
+          "ability_name_cn": "Swashbuckle",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/pangolier_swashbuckle.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 7307,
+          "ability_key": "pangolier_lucky_shot",
+          "ability_name_en": "Lucky Shot",
+          "ability_name_cn": "Lucky Shot",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/pangolier_lucky_shot.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 6344,
+          "ability_key": "pangolier_swashbuckle",
+          "ability_name_en": "Swashbuckle",
+          "ability_name_cn": "Swashbuckle",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/pangolier_swashbuckle.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 6461,
+          "ability_key": "pangolier_shield_crash",
+          "ability_name_en": "Shield Crash",
+          "ability_name_cn": "Shield Crash",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/pangolier_shield_crash.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 6344,
+          "ability_key": "pangolier_swashbuckle",
+          "ability_name_en": "Swashbuckle",
+          "ability_name_cn": "Swashbuckle",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/pangolier_swashbuckle.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 6343,
+          "ability_key": "pangolier_gyroshell",
+          "ability_name_en": "Rolling Thunder",
+          "ability_name_cn": "Rolling Thunder",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/pangolier_gyroshell.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 6459,
+          "ability_key": "pangolier_gyroshell_stop",
+          "ability_name_en": "Stop Rolling",
+          "ability_name_cn": "Stop Rolling",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/pangolier_gyroshell_stop.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 6344,
+          "ability_key": "pangolier_swashbuckle",
+          "ability_name_en": "Swashbuckle",
+          "ability_name_cn": "Swashbuckle",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/pangolier_swashbuckle.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 6461,
+          "ability_key": "pangolier_shield_crash",
+          "ability_name_en": "Shield Crash",
+          "ability_name_cn": "Shield Crash",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/pangolier_shield_crash.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 6461,
+          "ability_key": "pangolier_shield_crash",
+          "ability_name_en": "Shield Crash",
+          "ability_name_cn": "Shield Crash",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/pangolier_shield_crash.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 6461,
+          "ability_key": "pangolier_shield_crash",
+          "ability_name_en": "Shield Crash",
+          "ability_name_cn": "Shield Crash",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/pangolier_shield_crash.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 9063,
+          "ability_key": "special_bonus_unique_pangolier",
+          "ability_name_en": "+200 Swashbuckle Slash Range",
+          "ability_name_cn": "+200 Swashbuckle Slash Range",
+          "image_url": "",
+          "is_talent": true
+        },
+        {
+          "time": null,
+          "ability_id": 7307,
+          "ability_key": "pangolier_lucky_shot",
+          "ability_name_en": "Lucky Shot",
+          "ability_name_cn": "Lucky Shot",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/pangolier_lucky_shot.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 6343,
+          "ability_key": "pangolier_gyroshell",
+          "ability_name_en": "Rolling Thunder",
+          "ability_name_cn": "Rolling Thunder",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/pangolier_gyroshell.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 6459,
+          "ability_key": "pangolier_gyroshell_stop",
+          "ability_name_en": "Stop Rolling",
+          "ability_name_cn": "Stop Rolling",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/pangolier_gyroshell_stop.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 7307,
+          "ability_key": "pangolier_lucky_shot",
+          "ability_name_en": "Lucky Shot",
+          "ability_name_cn": "Lucky Shot",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/pangolier_lucky_shot.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 7307,
+          "ability_key": "pangolier_lucky_shot",
+          "ability_name_en": "Lucky Shot",
+          "ability_name_cn": "Lucky Shot",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/pangolier_lucky_shot.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 1053,
+          "ability_key": "special_bonus_unique_pangolier_shield_crash_herostacks",
+          "ability_name_en": "+125 Shield Crash Barrier",
+          "ability_name_cn": "+125 Shield Crash Barrier",
+          "image_url": "",
+          "is_talent": true
+        },
+        {
+          "time": null,
+          "ability_id": 8029,
+          "ability_key": "pangolier_rollup_stop",
+          "ability_name_en": "End Roll Up",
+          "ability_name_cn": "End Roll Up",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/pangolier_rollup_stop.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 6343,
+          "ability_key": "pangolier_gyroshell",
+          "ability_name_en": "Rolling Thunder",
+          "ability_name_cn": "Rolling Thunder",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/pangolier_gyroshell.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 6459,
+          "ability_key": "pangolier_gyroshell_stop",
+          "ability_name_en": "Stop Rolling",
+          "ability_name_cn": "Stop Rolling",
+          "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/pangolier_gyroshell_stop.png",
+          "is_talent": false
+        },
+        {
+          "time": null,
+          "ability_id": 9135,
+          "ability_key": "special_bonus_unique_pangolier_6",
+          "ability_name_en": "+2s Rolling Thunder Duration",
+          "ability_name_cn": "+2s Rolling Thunder Duration",
+          "image_url": "",
+          "is_talent": true
+        }
+      ],
+      "talents_taken": [
+        {
+          "time": null,
+          "ability_id": 9063,
+          "ability_key": "special_bonus_unique_pangolier",
+          "ability_name_en": "+200 Swashbuckle Slash Range",
+          "ability_name_cn": "+200 Swashbuckle Slash Range",
+          "image_url": "",
+          "is_talent": true
+        },
+        {
+          "time": null,
+          "ability_id": 1053,
+          "ability_key": "special_bonus_unique_pangolier_shield_crash_herostacks",
+          "ability_name_en": "+125 Shield Crash Barrier",
+          "ability_name_cn": "+125 Shield Crash Barrier",
+          "image_url": "",
+          "is_talent": true
+        },
+        {
+          "time": null,
+          "ability_id": 9135,
+          "ability_key": "special_bonus_unique_pangolier_6",
+          "ability_name_en": "+2s Rolling Thunder Duration",
+          "ability_name_cn": "+2s Rolling Thunder Duration",
+          "image_url": "",
+          "is_talent": true
+        }
+      ],
+      "item_0": 123,
+      "item_1": 1,
+      "item_2": 174,
+      "item_3": 63,
+      "item_4": 108,
+      "item_5": 609,
+      "item_neutral": 0
     }
   ]
 }

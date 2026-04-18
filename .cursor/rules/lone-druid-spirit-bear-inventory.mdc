@@ -1,0 +1,26 @@
+---
+description: 独行德鲁伊终局装备按「本体 + 熊灵」双单位读取与写入 slim 的约定（勿在别处分叉实现）
+globs: scripts/dem_result_to_slim_match.py,opendota-match-ui/src/adapters/slimToUi.ts,opendota-match-ui/src/types/slimMatch.ts,opendota-match-ui/src/components/PlayerMatchGridRow.tsx
+alwaysApply: false
+---
+
+# 独行德鲁伊：本体与熊灵装备读取
+
+## 唯一实现位置
+
+- **只**在 `scripts/dem_result_to_slim_match.py` 内完成本体 / 熊灵拆分与终局主 6 格；与全局终局装备规则一致（见 `dota-endgame-inventory.mdc`），**不要**在前端或其它脚本里再写一套「谁拿哪件」的推断。
+
+## 管线要点（读逻辑）
+
+1. **熊单位名**：`_pick_lone_druid_bear_npc` —— 从 PURCHASE/ITEM 及常见字符串字段里识别 `npc_dota_lone_druid_bear*`；若无命中，对 lone_druid 行使用 **`fallback_npc="npc_dota_lone_druid_bear1"`** 仍走双单位路径（购买常全记在英雄名下）。
+2. **初拆**：`_lone_druid_partition_purchase_pools` —— 按 `DOTA_COMBATLOG_ITEM` 归属与 `_LD_BEAR_IDLE_OWNER_BIAS` / `_LD_HERO_IDLE_OWNER_BIAS` 把购买池拆成 `hero_keys` / `bear_keys`。
+3. **校正**：`_lone_druid_refine_partition_pools` —— 熊池已有 **锚点大件**（`_LD_BEAR_CARRY_ANCHOR_KEYS`）时：将 **`power_treads`** 迁熊；用 **`_recipe_component_inner_keys`** 把仍在本体池、实为熊侧大件配方树的散件迁熊；再按 **`_LD_FRAGMENT_KEYS_MOVE_TO_BEAR_WHEN_ANCHORED`** 迁常见 carry 散件；**不**迁 `aghanims_shard` 与相位/秘法/绿鞋/飞鞋等（`_LD_HERO_BOOTS_NEVER_TO_BEAR`）。
+4. **写出**：玩家行 **`items_slot`** = 本体主 6 格；**`spirit_bear_items_slot`** = 熊灵主 6 格（仅当熊栏有装备时写入）。
+
+## 前端展示
+
+- **只读** slim 的 `items_slot` 与 `spirit_bear_items_slot`（`slimToUi` → `PlayerMatchGridRow` 第二行「熊」格）；**不要**在 TS 里根据 hero 再猜熊装。
+
+## 再生数据
+
+- `python scripts/dem_result_to_slim_match.py <解析器 events.json> -o opendota-match-ui/public/data/matches/{match_id}.json`

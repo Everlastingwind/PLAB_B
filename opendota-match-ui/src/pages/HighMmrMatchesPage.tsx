@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { supabase } from "../lib/supabaseClient.js";
 import { PageShell } from "../components/PageShell";
+import { SEOMeta } from "../components/SEOMeta";
 
 type Row = Record<string, unknown>;
 
@@ -58,7 +59,9 @@ export function HighMmrMatchesPage() {
       : ([] as string[]);
 
   return (
-    <PageShell>
+    <>
+      <SEOMeta title="高分局对局数据" />
+      <PageShell>
       <main className="mx-auto max-w-[1200px] px-4 py-8">
         <div className="mb-4 flex flex-wrap items-center gap-3">
           <h1 className="text-lg font-bold text-black">high_mmr_matches（最新 10 条）</h1>
@@ -110,6 +113,7 @@ export function HighMmrMatchesPage() {
         )}
       </main>
     </PageShell>
+    </>
   );
 }
 

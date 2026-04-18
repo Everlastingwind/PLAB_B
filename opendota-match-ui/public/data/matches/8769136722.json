@@ -2916,20 +2916,20 @@
         {
           "type": "ability",
           "level": 6,
-          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/kez_ravens_veil.png",
-          "name_en": "Raven's Veil",
-          "name_cn": "Raven's Veil",
-          "ability_id": 1506,
-          "ability_key": "kez_ravens_veil"
-        },
-        {
-          "type": "ability",
-          "level": 7,
           "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/kez_kazurai_katana.png",
           "name_en": "Kazurai Katana",
           "name_cn": "Kazurai Katana",
           "ability_id": 1500,
           "ability_key": "kez_kazurai_katana"
+        },
+        {
+          "type": "ability",
+          "level": 7,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/kez_echo_slash.png",
+          "name_en": "Echo Slash",
+          "name_cn": "Echo Slash",
+          "ability_id": 1498,
+          "ability_key": "kez_echo_slash"
         },
         {
           "type": "ability",
@@ -2950,21 +2950,21 @@
           "ability_key": "kez_echo_slash"
         },
         {
-          "type": "ability",
-          "level": 10,
-          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/kez_echo_slash.png",
-          "name_en": "Echo Slash",
-          "name_cn": "Echo Slash",
-          "ability_id": 1498,
-          "ability_key": "kez_echo_slash"
-        },
-        {
           "type": "talent",
-          "level": 11,
+          "level": 10,
           "name": "+12% Magic Resistance",
           "name_en": "+12% Magic Resistance",
           "ability_id": 6299,
           "ability_key": "special_bonus_magic_resistance_12"
+        },
+        {
+          "type": "ability",
+          "level": 11,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/kez_grappling_claw.png",
+          "name_en": "Grappling Claw",
+          "name_cn": "Grappling Claw",
+          "ability_id": 1499,
+          "ability_key": "kez_grappling_claw"
         },
         {
           "type": "ability",
@@ -2987,15 +2987,6 @@
         {
           "type": "ability",
           "level": 14,
-          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/kez_grappling_claw.png",
-          "name_en": "Grappling Claw",
-          "name_cn": "Grappling Claw",
-          "ability_id": 1499,
-          "ability_key": "kez_grappling_claw"
-        },
-        {
-          "type": "ability",
-          "level": 15,
           "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/kez_raptor_dance.png",
           "name_en": "Raptor Dance",
           "name_cn": "Raptor Dance",
@@ -3004,7 +2995,7 @@
         },
         {
           "type": "talent",
-          "level": 16,
+          "level": 15,
           "name": "+{s:bonus_duration}s Falcon Rush Duration",
           "name_en": "+{s:bonus_duration}s Falcon Rush Duration",
           "ability_id": 1511,
@@ -4502,12 +4493,12 @@
           {
             "group": "backpack",
             "slot": 0,
-            "item_id": 73,
-            "item_key": "bracer",
-            "item_name_en": "Bracer",
-            "item_name_cn": "Bracer",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/bracer.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
@@ -6249,12 +6240,12 @@
           {
             "group": "backpack",
             "slot": 0,
-            "item_id": 43,
-            "item_key": "ward_sentry",
-            "item_name_en": "Sentry Ward",
-            "item_name_cn": "岗哨守卫",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/ward_sentry.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
@@ -9803,34 +9794,34 @@
           {
             "group": "backpack",
             "slot": 0,
-            "item_id": 188,
-            "item_key": "smoke_of_deceit",
-            "item_name_en": "Smoke of Deceit",
-            "item_name_cn": "诡计之雾",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/smoke_of_deceit.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
             "group": "backpack",
             "slot": 1,
-            "item_id": 237,
-            "item_key": "faerie_fire",
-            "item_name_en": "Faerie Fire",
-            "item_name_cn": "仙灵之火",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/faerie_fire.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
             "group": "backpack",
             "slot": 2,
-            "item_id": 43,
-            "item_key": "ward_sentry",
-            "item_name_en": "Sentry Ward",
-            "item_name_cn": "岗哨守卫",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/ward_sentry.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           }
         ],
@@ -11585,12 +11576,12 @@
           {
             "group": "backpack",
             "slot": 2,
-            "item_id": 188,
-            "item_key": "smoke_of_deceit",
-            "item_name_en": "Smoke of Deceit",
-            "item_name_cn": "诡计之雾",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/smoke_of_deceit.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           }
         ],
@@ -13153,12 +13144,12 @@
           {
             "group": "backpack",
             "slot": 0,
-            "item_id": 16,
-            "item_key": "branches",
-            "item_name_en": "Iron Branch",
-            "item_name_cn": "树枝",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/branches.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
@@ -16427,12 +16418,12 @@
           {
             "group": "backpack",
             "slot": 0,
-            "item_id": 188,
-            "item_key": "smoke_of_deceit",
-            "item_name_en": "Smoke of Deceit",
-            "item_name_cn": "诡计之雾",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/smoke_of_deceit.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
@@ -19147,5 +19138,10 @@
   },
   "my_word_counts": {},
   "throw": 403,
-  "loss": 23256
+  "loss": 23256,
+  "_meta": {
+    "source": "api_upload",
+    "match_id": 8769136722,
+    "uploaded_at": "2026-04-16T02:27:01Z"
+  }
 }

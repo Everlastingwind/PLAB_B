@@ -1,7 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { PageShell } from "../components/PageShell";
+import { SEOMeta } from "../components/SEOMeta";
 import { SEEDED_PRO_PLAYERS, type SeedProPlayer } from "../data/proPlayers";
+import { normalizeDotaAssetUrl } from "../data/mockMatchPlayers";
 
 type OpenDotaPlayerMini = {
   profile?: {
@@ -70,7 +72,9 @@ export function ProPlayersPage() {
   );
 
   return (
-    <PageShell centerSearch>
+    <>
+      <SEOMeta title="职业选手" />
+      <PageShell centerSearch>
       <main className="mx-auto w-full max-w-[1200px] px-4 py-6 sm:px-6 lg:px-8">
         <h1 className="mb-4 text-base font-bold text-skin-ink">职业选手</h1>
         <div className="overflow-hidden rounded-xl border border-skin-line bg-skin-card">
@@ -91,10 +95,13 @@ export function ProPlayersPage() {
               >
                 {p.avatar ? (
                   <img
-                    src={p.avatar}
+                    src={normalizeDotaAssetUrl(p.avatar)}
                     alt={p.proName}
                     className="h-8 w-8 rounded object-cover"
                     loading="lazy"
+                    decoding="async"
+                    referrerPolicy="no-referrer"
+                    fetchPriority="low"
                   />
                 ) : (
                   <span className="h-8 w-8 rounded bg-skin-inset" />
@@ -115,6 +122,7 @@ export function ProPlayersPage() {
         </div>
       </main>
     </PageShell>
+    </>
   );
 }
 

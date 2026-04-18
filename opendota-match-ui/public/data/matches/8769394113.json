@@ -3664,16 +3664,8 @@
           "ability_key": "special_bonus_evasion_15"
         },
         {
-          "type": "talent",
-          "level": 17,
-          "name": "special_bonus_attributes",
-          "name_en": "special_bonus_attributes",
-          "ability_id": 730,
-          "ability_key": "special_bonus_attributes"
-        },
-        {
           "type": "ability",
-          "level": 18,
+          "level": 17,
           "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/meepo_divided_we_stand.png",
           "name_en": "Divided We Stand",
           "name_cn": "Divided We Stand",
@@ -5251,12 +5243,12 @@
           {
             "group": "backpack",
             "slot": 0,
-            "item_id": 41,
-            "item_key": "bottle",
-            "item_name_en": "Bottle",
-            "item_name_cn": "魔瓶",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/bottle.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
@@ -19719,5 +19711,10 @@
   },
   "my_word_counts": {},
   "throw": 0,
-  "loss": 22245
+  "loss": 22245,
+  "_meta": {
+    "source": "api_upload",
+    "match_id": 8769394113,
+    "uploaded_at": "2026-04-16T02:27:14Z"
+  }
 }

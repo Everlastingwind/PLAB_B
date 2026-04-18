@@ -56,8 +56,9 @@ function normItemKey(k: string): string {
 export type ScepterShardBuffState = { scepter: boolean; shard: boolean };
 
 /**
- * 当 permanent_buffs / API 已标记神杖或魔晶生效时，从 **展示用** 主槽去掉对应实体，
- * 避免与左侧「已消耗」图标重复（客户端消耗后通常不占格）。
+ * 当 permanent_buffs / API 已标记神杖或魔晶生效时，按展示策略处理主槽：
+ * - 神杖：保留在主槽（用户需要在装备栏直接看到）
+ * - 魔晶：若判定为已生效可继续从主槽去掉，避免重复占位
  */
 export function stripConsumedAghanimsFromMainSlots(
   main: readonly (ItemSlotMock | null)[],
@@ -83,11 +84,6 @@ export function stripConsumedAghanimsFromMainSlots(
     const id = mainItemIds[i] ?? 0;
     const slot = out[i];
     const key = normItemKey(slot?.itemKey ?? "");
-    if (buff.scepter) {
-      if (AGHANIM_SCEPTER_ITEM_IDS.has(id) || SCEPTER_KEYS.has(key)) {
-        out[i] = null;
-      }
-    }
     if (buff.shard) {
       if (AGHANIM_SHARD_ITEM_IDS.has(id) || SHARD_KEYS.has(key)) {
         out[i] = null;

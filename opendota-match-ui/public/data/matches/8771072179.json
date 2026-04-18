@@ -2551,16 +2551,8 @@
           "ability_key": "beastmaster_summon_raptor"
         },
         {
-          "type": "talent",
-          "level": 12,
-          "name": "special_bonus_attributes",
-          "name_en": "special_bonus_attributes",
-          "ability_id": 730,
-          "ability_key": "special_bonus_attributes"
-        },
-        {
           "type": "ability",
-          "level": 13,
+          "level": 12,
           "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/beastmaster_primal_roar.png",
           "name_en": "Primal Roar",
           "name_cn": "Primal Roar",
@@ -2569,55 +2561,15 @@
         },
         {
           "type": "talent",
-          "level": 14,
-          "name": "special_bonus_attributes",
-          "name_en": "special_bonus_attributes",
-          "ability_id": 730,
-          "ability_key": "special_bonus_attributes"
-        },
-        {
-          "type": "talent",
-          "level": 15,
-          "name": "special_bonus_attributes",
-          "name_en": "special_bonus_attributes",
-          "ability_id": 730,
-          "ability_key": "special_bonus_attributes"
-        },
-        {
-          "type": "talent",
-          "level": 16,
+          "level": 13,
           "name": "+15 Movespeed to Beastmaster and his summons",
           "name_en": "+15 Movespeed to Beastmaster and his summons",
           "ability_id": 506,
           "ability_key": "special_bonus_unique_beastmaster_5"
         },
         {
-          "type": "talent",
-          "level": 17,
-          "name": "special_bonus_attributes",
-          "name_en": "special_bonus_attributes",
-          "ability_id": 730,
-          "ability_key": "special_bonus_attributes"
-        },
-        {
-          "type": "talent",
-          "level": 18,
-          "name": "special_bonus_attributes",
-          "name_en": "special_bonus_attributes",
-          "ability_id": 730,
-          "ability_key": "special_bonus_attributes"
-        },
-        {
-          "type": "talent",
-          "level": 19,
-          "name": "special_bonus_attributes",
-          "name_en": "special_bonus_attributes",
-          "ability_id": 730,
-          "ability_key": "special_bonus_attributes"
-        },
-        {
           "type": "ability",
-          "level": 20,
+          "level": 14,
           "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/beastmaster_primal_roar.png",
           "name_en": "Primal Roar",
           "name_cn": "Primal Roar",
@@ -2626,15 +2578,7 @@
         },
         {
           "type": "talent",
-          "level": 21,
-          "name": "special_bonus_attributes",
-          "name_en": "special_bonus_attributes",
-          "ability_id": 730,
-          "ability_key": "special_bonus_attributes"
-        },
-        {
-          "type": "talent",
-          "level": 22,
+          "level": 15,
           "name": "+{s:bonus_boar_bonus_damage} Damage to Beastmaster and his summons",
           "name_en": "+{s:bonus_boar_bonus_damage} Damage to Beastmaster and his summons",
           "ability_id": 6517,
@@ -2642,7 +2586,7 @@
         },
         {
           "type": "ability",
-          "level": 23,
+          "level": 16,
           "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/beastmaster_summon_raptor.png",
           "name_en": "Summon Raptors",
           "name_cn": "Summon Raptors",
@@ -2651,7 +2595,7 @@
         },
         {
           "type": "ability",
-          "level": 24,
+          "level": 17,
           "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/beastmaster_summon_raptor.png",
           "name_en": "Summon Raptors",
           "name_cn": "Summon Raptors",
@@ -2660,7 +2604,7 @@
         },
         {
           "type": "ability",
-          "level": 25,
+          "level": 18,
           "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/beastmaster_summon_raptor.png",
           "name_en": "Summon Raptors",
           "name_cn": "Summon Raptors",
@@ -4524,12 +4468,12 @@
           {
             "group": "backpack",
             "slot": 0,
-            "item_id": 4204,
-            "item_key": "famango",
-            "item_name_en": "Healing Lotus",
-            "item_name_cn": "Healing Lotus",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/famango.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
@@ -10950,12 +10894,12 @@
           {
             "group": "backpack",
             "slot": 1,
-            "item_id": 1871,
-            "item_key": "foragers_mana",
-            "item_name_en": "Tomo'kan Ringcap",
-            "item_name_cn": "Tomo'kan Ringcap",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/foragers_mana.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
@@ -12921,12 +12865,12 @@
           {
             "group": "backpack",
             "slot": 1,
-            "item_id": 237,
-            "item_key": "faerie_fire",
-            "item_name_en": "Faerie Fire",
-            "item_name_cn": "仙灵之火",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/faerie_fire.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
@@ -13097,17 +13041,8 @@
           "ability_key": "special_bonus_unique_kez_falcon_rush_duration"
         },
         {
-          "type": "ability",
-          "level": 17,
-          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/kez_ravens_veil.png",
-          "name_en": "Raven's Veil",
-          "name_cn": "Raven's Veil",
-          "ability_id": 1506,
-          "ability_key": "kez_ravens_veil"
-        },
-        {
           "type": "talent",
-          "level": 18,
+          "level": 17,
           "name": "+{s:bonus_katana_bleed_attack_damage_pct}% Kazurai Katana Damage Per Second",
           "name_en": "+{s:bonus_katana_bleed_attack_damage_pct}% Kazurai Katana Damage Per Second",
           "ability_id": 1510,
@@ -13115,7 +13050,7 @@
         },
         {
           "type": "talent",
-          "level": 19,
+          "level": 18,
           "name": "+{s:bonus_katana_strikes} Echo Slash Attack",
           "name_en": "+{s:bonus_katana_strikes} Echo Slash Attack",
           "ability_id": 1513,
@@ -19298,21 +19233,22 @@
           "ability_key": "special_bonus_unique_muerta_dead_shot_range"
         },
         {
-          "type": "talent",
-          "level": 12,
-          "name": "special_bonus_attributes",
-          "name_en": "special_bonus_attributes",
-          "ability_id": 730,
-          "ability_key": "special_bonus_attributes"
-        },
-        {
           "type": "ability",
-          "level": 13,
+          "level": 12,
           "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/muerta_pierce_the_veil.png",
           "name_en": "Pierce the Veil",
           "name_cn": "Pierce the Veil",
           "ability_id": 5754,
           "ability_key": "muerta_pierce_the_veil"
+        },
+        {
+          "type": "ability",
+          "level": 13,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/muerta_gunslinger.png",
+          "name_en": "Gunslinger",
+          "name_cn": "Gunslinger",
+          "ability_id": 5753,
+          "ability_key": "muerta_gunslinger"
         },
         {
           "type": "ability",
@@ -19324,17 +19260,8 @@
           "ability_key": "muerta_gunslinger"
         },
         {
-          "type": "ability",
-          "level": 15,
-          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/muerta_gunslinger.png",
-          "name_en": "Gunslinger",
-          "name_cn": "Gunslinger",
-          "ability_id": 5753,
-          "ability_key": "muerta_gunslinger"
-        },
-        {
           "type": "talent",
-          "level": 16,
+          "level": 15,
           "name": "+15 Intelligence",
           "name_en": "+15 Intelligence",
           "ability_id": 5991,
@@ -19342,7 +19269,7 @@
         },
         {
           "type": "ability",
-          "level": 17,
+          "level": 16,
           "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/muerta_gunslinger.png",
           "name_en": "Gunslinger",
           "name_cn": "Gunslinger",
@@ -19351,7 +19278,7 @@
         },
         {
           "type": "ability",
-          "level": 18,
+          "level": 17,
           "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/muerta_pierce_the_veil.png",
           "name_en": "Pierce the Veil",
           "name_cn": "Pierce the Veil",
@@ -19360,7 +19287,7 @@
         },
         {
           "type": "talent",
-          "level": 19,
+          "level": 18,
           "name": "The Calling summons {s:bonus_num_revenants} additional revenants",
           "name_en": "The Calling summons {s:bonus_num_revenants} additional revenants",
           "ability_id": 5758,
@@ -21653,34 +21580,34 @@
           {
             "group": "backpack",
             "slot": 0,
-            "item_id": 188,
-            "item_key": "smoke_of_deceit",
-            "item_name_en": "Smoke of Deceit",
-            "item_name_cn": "诡计之雾",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/smoke_of_deceit.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
             "group": "backpack",
             "slot": 1,
-            "item_id": 244,
-            "item_key": "wind_lace",
-            "item_name_en": "Wind Lace",
-            "item_name_cn": "Wind Lace",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/wind_lace.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
             "group": "backpack",
             "slot": 2,
-            "item_id": 4206,
-            "item_key": "greater_famango",
-            "item_name_en": "Greater Healing Lotus",
-            "item_name_cn": "Greater Healing Lotus",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/greater_famango.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           }
         ],
@@ -22868,7 +22795,9 @@
   "stomp": 13119,
   "_meta": {
     "source": "opendota_pro",
-    "category": "pro"
+    "category": "pro",
+    "match_id": 8771072179,
+    "uploaded_at": "2026-04-16T02:28:34Z"
   },
   "source": "pro",
   "category": "pro"

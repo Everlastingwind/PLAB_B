@@ -5071,16 +5071,8 @@
           "ability_key": "muerta_pierce_the_veil"
         },
         {
-          "type": "talent",
-          "level": 14,
-          "name": "special_bonus_attributes",
-          "name_en": "special_bonus_attributes",
-          "ability_id": 730,
-          "ability_key": "special_bonus_attributes"
-        },
-        {
           "type": "ability",
-          "level": 15,
+          "level": 14,
           "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/muerta_the_calling.png",
           "name_en": "The Calling",
           "name_cn": "The Calling",
@@ -5089,31 +5081,15 @@
         },
         {
           "type": "talent",
-          "level": 16,
+          "level": 15,
           "name": "+15 Intelligence",
           "name_en": "+15 Intelligence",
           "ability_id": 5991,
           "ability_key": "special_bonus_intelligence_15"
         },
         {
-          "type": "talent",
-          "level": 17,
-          "name": "special_bonus_attributes",
-          "name_en": "special_bonus_attributes",
-          "ability_id": 730,
-          "ability_key": "special_bonus_attributes"
-        },
-        {
-          "type": "talent",
-          "level": 18,
-          "name": "special_bonus_attributes",
-          "name_en": "special_bonus_attributes",
-          "ability_id": 730,
-          "ability_key": "special_bonus_attributes"
-        },
-        {
           "type": "ability",
-          "level": 19,
+          "level": 16,
           "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/muerta_the_calling.png",
           "name_en": "The Calling",
           "name_cn": "The Calling",
@@ -5122,7 +5098,7 @@
         },
         {
           "type": "ability",
-          "level": 20,
+          "level": 17,
           "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/muerta_pierce_the_veil.png",
           "name_en": "Pierce the Veil",
           "name_cn": "Pierce the Veil",
@@ -5131,7 +5107,7 @@
         },
         {
           "type": "unknown",
-          "level": 21,
+          "level": 18,
           "ability_id": 1629,
           "ability_key": "special_bonus_unique_muerta_pierce_the_veil_duration",
           "reason": "ability_key_not_in_abilities_json",
@@ -5139,7 +5115,7 @@
         },
         {
           "type": "unknown",
-          "level": 22,
+          "level": 19,
           "ability_id": 5759,
           "ability_key": "special_bonus_unique_muerta_gunslinger_double_shot_chance",
           "reason": "ability_key_not_in_abilities_json",
@@ -5147,7 +5123,7 @@
         },
         {
           "type": "talent",
-          "level": 23,
+          "level": 20,
           "name": "+{s:bonus_AbilityCastRange} Dead Shot Cast Range",
           "name_en": "+{s:bonus_AbilityCastRange} Dead Shot Cast Range",
           "ability_id": 5757,
@@ -6989,12 +6965,12 @@
           {
             "group": "backpack",
             "slot": 1,
-            "item_id": 43,
-            "item_key": "ward_sentry",
-            "item_name_en": "Sentry Ward",
-            "item_name_cn": "岗哨守卫",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/ward_sentry.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
@@ -8991,34 +8967,34 @@
           {
             "group": "backpack",
             "slot": 0,
-            "item_id": 36,
-            "item_key": "magic_wand",
-            "item_name_en": "Magic Wand",
-            "item_name_cn": "魔棒",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/magic_wand.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
             "group": "backpack",
             "slot": 1,
-            "item_id": 4204,
-            "item_key": "famango",
-            "item_name_en": "Healing Lotus",
-            "item_name_cn": "Healing Lotus",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/famango.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
             "group": "backpack",
             "slot": 2,
-            "item_id": 4205,
-            "item_key": "great_famango",
-            "item_name_en": "Great Healing Lotus",
-            "item_name_cn": "Great Healing Lotus",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/great_famango.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           }
         ],
@@ -11261,23 +11237,23 @@
           {
             "group": "backpack",
             "slot": 0,
-            "item_id": 1849,
-            "item_key": "wizard_hat",
-            "item_name_en": "Wizard Hat",
-            "item_name_cn": "Wizard Hat",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/wizard_hat.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
             "group": "backpack",
             "slot": 1,
-            "item_id": 11,
-            "item_key": "quelling_blade",
-            "item_name_en": "Quelling Blade",
-            "item_name_cn": "补刀斧",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/quelling_blade.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
@@ -17778,12 +17754,12 @@
           {
             "group": "backpack",
             "slot": 0,
-            "item_id": 4204,
-            "item_key": "famango",
-            "item_name_en": "Healing Lotus",
-            "item_name_cn": "Healing Lotus",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/famango.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
@@ -17921,16 +17897,8 @@
           "ability_key": "special_bonus_unique_faceless_void_7"
         },
         {
-          "type": "talent",
-          "level": 12,
-          "name": "special_bonus_attributes",
-          "name_en": "special_bonus_attributes",
-          "ability_id": 730,
-          "ability_key": "special_bonus_attributes"
-        },
-        {
           "type": "ability",
-          "level": 13,
+          "level": 12,
           "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/faceless_void_chronosphere.png",
           "name_en": "Chronosphere",
           "name_cn": "Chronosphere",
@@ -17939,55 +17907,15 @@
         },
         {
           "type": "talent",
-          "level": 14,
-          "name": "special_bonus_attributes",
-          "name_en": "special_bonus_attributes",
-          "ability_id": 730,
-          "ability_key": "special_bonus_attributes"
-        },
-        {
-          "type": "talent",
-          "level": 15,
-          "name": "special_bonus_attributes",
-          "name_en": "special_bonus_attributes",
-          "ability_id": 730,
-          "ability_key": "special_bonus_attributes"
-        },
-        {
-          "type": "talent",
-          "level": 16,
+          "level": 13,
           "name": "+{s:bonus_bonus_damage} Time Lock Damage",
           "name_en": "+{s:bonus_bonus_damage} Time Lock Damage",
           "ability_id": 6807,
           "ability_key": "special_bonus_unique_faceless_void_3"
         },
         {
-          "type": "talent",
-          "level": 17,
-          "name": "special_bonus_attributes",
-          "name_en": "special_bonus_attributes",
-          "ability_id": 730,
-          "ability_key": "special_bonus_attributes"
-        },
-        {
-          "type": "talent",
-          "level": 18,
-          "name": "special_bonus_attributes",
-          "name_en": "special_bonus_attributes",
-          "ability_id": 730,
-          "ability_key": "special_bonus_attributes"
-        },
-        {
-          "type": "talent",
-          "level": 19,
-          "name": "special_bonus_attributes",
-          "name_en": "special_bonus_attributes",
-          "ability_id": 730,
-          "ability_key": "special_bonus_attributes"
-        },
-        {
           "type": "ability",
-          "level": 20,
+          "level": 14,
           "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/faceless_void_chronosphere.png",
           "name_en": "Chronosphere",
           "name_cn": "Chronosphere",
@@ -17996,15 +17924,7 @@
         },
         {
           "type": "talent",
-          "level": 21,
-          "name": "special_bonus_attributes",
-          "name_en": "special_bonus_attributes",
-          "ability_id": 730,
-          "ability_key": "special_bonus_attributes"
-        },
-        {
-          "type": "talent",
-          "level": 22,
+          "level": 15,
           "name": "+{s:bonus_bonus_attack_speed} Attack Speed during Chronosphere",
           "name_en": "+{s:bonus_bonus_attack_speed} Attack Speed during Chronosphere",
           "ability_id": 6128,
@@ -18012,7 +17932,7 @@
         },
         {
           "type": "ability",
-          "level": 23,
+          "level": 16,
           "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/faceless_void_time_dilation.png",
           "name_en": "Time Dilation",
           "name_cn": "Time Dilation",
@@ -18021,7 +17941,7 @@
         },
         {
           "type": "ability",
-          "level": 24,
+          "level": 17,
           "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/faceless_void_time_dilation.png",
           "name_en": "Time Dilation",
           "name_cn": "Time Dilation",
@@ -18030,7 +17950,7 @@
         },
         {
           "type": "ability",
-          "level": 25,
+          "level": 18,
           "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/faceless_void_time_dilation.png",
           "name_en": "Time Dilation",
           "name_cn": "Time Dilation",
@@ -19883,12 +19803,12 @@
           {
             "group": "backpack",
             "slot": 2,
-            "item_id": 95,
-            "item_key": "recipe_sheepstick",
-            "item_name_en": "Scythe of Vyse Recipe",
-            "item_name_cn": "Scythe of Vyse Recipe",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/recipe.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           }
         ],
@@ -20033,56 +19953,32 @@
         {
           "type": "talent",
           "level": 15,
-          "name": "special_bonus_attributes",
-          "name_en": "special_bonus_attributes",
-          "ability_id": 730,
-          "ability_key": "special_bonus_attributes"
-        },
-        {
-          "type": "talent",
-          "level": 16,
           "name": "-{s:bonus_AbilityCooldown}s Ravage Cooldown",
           "name_en": "-{s:bonus_AbilityCooldown}s Ravage Cooldown",
           "ability_id": 1700,
           "ability_key": "special_bonus_unique_tidehunter_ravage_cooldown"
         },
         {
-          "type": "talent",
+          "type": "ability",
+          "level": 16,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/tidehunter_ravage.png",
+          "name_en": "Ravage",
+          "name_cn": "Ravage",
+          "ability_id": 5121,
+          "ability_key": "tidehunter_ravage"
+        },
+        {
+          "type": "ability",
           "level": 17,
-          "name": "special_bonus_attributes",
-          "name_en": "special_bonus_attributes",
-          "ability_id": 730,
-          "ability_key": "special_bonus_attributes"
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/tidehunter_ravage.png",
+          "name_en": "Ravage",
+          "name_cn": "Ravage",
+          "ability_id": 5121,
+          "ability_key": "tidehunter_ravage"
         },
         {
-          "type": "ability",
+          "type": "talent",
           "level": 18,
-          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/tidehunter_ravage.png",
-          "name_en": "Ravage",
-          "name_cn": "Ravage",
-          "ability_id": 5121,
-          "ability_key": "tidehunter_ravage"
-        },
-        {
-          "type": "talent",
-          "level": 19,
-          "name": "special_bonus_attributes",
-          "name_en": "special_bonus_attributes",
-          "ability_id": 730,
-          "ability_key": "special_bonus_attributes"
-        },
-        {
-          "type": "ability",
-          "level": 20,
-          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/tidehunter_ravage.png",
-          "name_en": "Ravage",
-          "name_cn": "Ravage",
-          "ability_id": 5121,
-          "ability_key": "tidehunter_ravage"
-        },
-        {
-          "type": "talent",
-          "level": 21,
           "name": "-{s:bonus_negative_armor} Gush Armor",
           "name_en": "-{s:bonus_negative_armor} Gush Armor",
           "ability_id": 6151,
@@ -20090,7 +19986,7 @@
         },
         {
           "type": "talent",
-          "level": 22,
+          "level": 19,
           "name": "+{s:bonus_duration}s Ravage Stun Duration",
           "name_en": "+{s:bonus_duration}s Ravage Stun Duration",
           "ability_id": 7978,
@@ -21986,12 +21882,12 @@
           {
             "group": "backpack",
             "slot": 1,
-            "item_id": 41,
-            "item_key": "bottle",
-            "item_name_en": "Bottle",
-            "item_name_cn": "魔瓶",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/bottle.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
@@ -24238,12 +24134,12 @@
           {
             "group": "backpack",
             "slot": 0,
-            "item_id": 40,
-            "item_key": "dust",
-            "item_name_en": "Dust of Appearance",
-            "item_name_cn": "显影之尘",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/dust.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
@@ -25423,7 +25319,9 @@
   "loss": 2719,
   "_meta": {
     "source": "opendota_pro",
-    "category": "pro"
+    "category": "pro",
+    "match_id": 8772277447,
+    "uploaded_at": "2026-04-16T02:29:46Z"
   },
   "source": "pro",
   "category": "pro"

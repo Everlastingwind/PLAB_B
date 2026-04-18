@@ -5112,12 +5112,12 @@
           {
             "group": "backpack",
             "slot": 1,
-            "item_id": 63,
-            "item_key": "power_treads",
-            "item_name_en": "Power Treads",
-            "item_name_cn": "动力鞋",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/power_treads.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
@@ -5235,20 +5235,21 @@
           "ability_key": "special_bonus_unique_beastmaster_9"
         },
         {
-          "type": "talent",
+          "type": "ability",
           "level": 11,
-          "name": "special_bonus_attributes",
-          "name_en": "special_bonus_attributes",
-          "ability_id": 730,
-          "ability_key": "special_bonus_attributes"
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/beastmaster_primal_roar.png",
+          "name_en": "Primal Roar",
+          "name_cn": "Primal Roar",
+          "ability_id": 5177,
+          "ability_key": "beastmaster_primal_roar"
         },
         {
           "type": "talent",
           "level": 12,
-          "name": "special_bonus_attributes",
-          "name_en": "special_bonus_attributes",
-          "ability_id": 730,
-          "ability_key": "special_bonus_attributes"
+          "name": "+15 Movespeed to Beastmaster and his summons",
+          "name_en": "+15 Movespeed to Beastmaster and his summons",
+          "ability_id": 506,
+          "ability_key": "special_bonus_unique_beastmaster_5"
         },
         {
           "type": "ability",
@@ -5260,65 +5261,8 @@
           "ability_key": "beastmaster_primal_roar"
         },
         {
-          "type": "talent",
+          "type": "ability",
           "level": 14,
-          "name": "special_bonus_attributes",
-          "name_en": "special_bonus_attributes",
-          "ability_id": 730,
-          "ability_key": "special_bonus_attributes"
-        },
-        {
-          "type": "talent",
-          "level": 15,
-          "name": "special_bonus_attributes",
-          "name_en": "special_bonus_attributes",
-          "ability_id": 730,
-          "ability_key": "special_bonus_attributes"
-        },
-        {
-          "type": "talent",
-          "level": 16,
-          "name": "+15 Movespeed to Beastmaster and his summons",
-          "name_en": "+15 Movespeed to Beastmaster and his summons",
-          "ability_id": 506,
-          "ability_key": "special_bonus_unique_beastmaster_5"
-        },
-        {
-          "type": "talent",
-          "level": 17,
-          "name": "special_bonus_attributes",
-          "name_en": "special_bonus_attributes",
-          "ability_id": 730,
-          "ability_key": "special_bonus_attributes"
-        },
-        {
-          "type": "talent",
-          "level": 18,
-          "name": "special_bonus_attributes",
-          "name_en": "special_bonus_attributes",
-          "ability_id": 730,
-          "ability_key": "special_bonus_attributes"
-        },
-        {
-          "type": "talent",
-          "level": 19,
-          "name": "special_bonus_attributes",
-          "name_en": "special_bonus_attributes",
-          "ability_id": 730,
-          "ability_key": "special_bonus_attributes"
-        },
-        {
-          "type": "ability",
-          "level": 20,
-          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/beastmaster_primal_roar.png",
-          "name_en": "Primal Roar",
-          "name_cn": "Primal Roar",
-          "ability_id": 5177,
-          "ability_key": "beastmaster_primal_roar"
-        },
-        {
-          "type": "ability",
-          "level": 21,
           "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/beastmaster_summon_raptor.png",
           "name_en": "Summon Raptors",
           "name_cn": "Summon Raptors",
@@ -5327,7 +5271,7 @@
         },
         {
           "type": "talent",
-          "level": 22,
+          "level": 15,
           "name": "+{s:bonus_boar_bonus_damage} Damage to Beastmaster and his summons",
           "name_en": "+{s:bonus_boar_bonus_damage} Damage to Beastmaster and his summons",
           "ability_id": 6517,
@@ -5335,7 +5279,7 @@
         },
         {
           "type": "ability",
-          "level": 23,
+          "level": 16,
           "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/beastmaster_summon_raptor.png",
           "name_en": "Summon Raptors",
           "name_cn": "Summon Raptors",
@@ -5344,7 +5288,7 @@
         },
         {
           "type": "ability",
-          "level": 24,
+          "level": 17,
           "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/beastmaster_summon_raptor.png",
           "name_en": "Summon Raptors",
           "name_cn": "Summon Raptors",
@@ -5353,7 +5297,7 @@
         },
         {
           "type": "ability",
-          "level": 25,
+          "level": 18,
           "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/beastmaster_summon_raptor.png",
           "name_en": "Summon Raptors",
           "name_cn": "Summon Raptors",
@@ -9321,23 +9265,23 @@
           {
             "group": "backpack",
             "slot": 0,
-            "item_id": 1848,
-            "item_key": "shawl",
-            "item_name_en": "Shawl",
-            "item_name_cn": "Shawl",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/shawl.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
             "group": "backpack",
             "slot": 1,
-            "item_id": 261,
-            "item_key": "crown",
-            "item_name_en": "Crown",
-            "item_name_cn": "Crown",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/crown.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
@@ -9431,24 +9375,6 @@
         {
           "type": "ability",
           "level": 8,
-          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/wisp_tether_break.png",
-          "name_en": "Break Tether",
-          "name_cn": "Break Tether",
-          "ability_id": 5489,
-          "ability_key": "wisp_tether_break"
-        },
-        {
-          "type": "ability",
-          "level": 9,
-          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/wisp_tether_break.png",
-          "name_en": "Break Tether",
-          "name_cn": "Break Tether",
-          "ability_id": 5489,
-          "ability_key": "wisp_tether_break"
-        },
-        {
-          "type": "ability",
-          "level": 10,
           "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/wisp_tether.png",
           "name_en": "Tether",
           "name_cn": "Tether",
@@ -9457,11 +9383,29 @@
         },
         {
           "type": "talent",
-          "level": 11,
+          "level": 9,
           "name": "+{s:bonus_duration}s Overcharge Duration",
           "name_en": "+{s:bonus_duration}s Overcharge Duration",
           "ability_id": 1559,
           "ability_key": "special_bonus_unique_wisp_overcharge_duration"
+        },
+        {
+          "type": "ability",
+          "level": 10,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/wisp_overcharge.png",
+          "name_en": "Overcharge",
+          "name_cn": "Overcharge",
+          "ability_id": 5487,
+          "ability_key": "wisp_overcharge"
+        },
+        {
+          "type": "ability",
+          "level": 11,
+          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/wisp_relocate.png",
+          "name_en": "Relocate",
+          "name_cn": "Relocate",
+          "ability_id": 5488,
+          "ability_key": "wisp_relocate"
         },
         {
           "type": "ability",
@@ -9475,24 +9419,6 @@
         {
           "type": "ability",
           "level": 13,
-          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/wisp_relocate.png",
-          "name_en": "Relocate",
-          "name_cn": "Relocate",
-          "ability_id": 5488,
-          "ability_key": "wisp_relocate"
-        },
-        {
-          "type": "ability",
-          "level": 14,
-          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/wisp_overcharge.png",
-          "name_en": "Overcharge",
-          "name_cn": "Overcharge",
-          "ability_id": 5487,
-          "ability_key": "wisp_overcharge"
-        },
-        {
-          "type": "ability",
-          "level": 15,
           "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/wisp_overcharge.png",
           "name_en": "Overcharge",
           "name_cn": "Overcharge",
@@ -9501,7 +9427,7 @@
         },
         {
           "type": "talent",
-          "level": 16,
+          "level": 14,
           "name": "+{s:bonus_hero_damage} Spirits Hero Damage",
           "name_en": "+{s:bonus_hero_damage} Spirits Hero Damage",
           "ability_id": 6265,
@@ -11658,12 +11584,12 @@
           {
             "group": "backpack",
             "slot": 0,
-            "item_id": 188,
-            "item_key": "smoke_of_deceit",
-            "item_name_en": "Smoke of Deceit",
-            "item_name_cn": "诡计之雾",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/smoke_of_deceit.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
@@ -15719,12 +15645,12 @@
           {
             "group": "backpack",
             "slot": 1,
-            "item_id": 41,
-            "item_key": "bottle",
-            "item_name_en": "Bottle",
-            "item_name_cn": "魔瓶",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/bottle.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
@@ -23530,7 +23456,9 @@
   "stomp": 6335,
   "_meta": {
     "source": "opendota_pro",
-    "category": "pro"
+    "category": "pro",
+    "match_id": 8771842603,
+    "uploaded_at": "2026-04-16T02:29:16Z"
   },
   "source": "pro",
   "category": "pro"

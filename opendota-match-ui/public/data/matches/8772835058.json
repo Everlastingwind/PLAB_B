@@ -3785,23 +3785,23 @@
           {
             "group": "backpack",
             "slot": 0,
-            "item_id": 4204,
-            "item_key": "famango",
-            "item_name_en": "Healing Lotus",
-            "item_name_cn": "Healing Lotus",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/famango.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
             "group": "backpack",
             "slot": 1,
-            "item_id": 145,
-            "item_key": "bfury",
-            "item_name_en": "Battle Fury",
-            "item_name_cn": "狂战斧",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/bfury.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
@@ -6176,12 +6176,12 @@
           {
             "group": "backpack",
             "slot": 1,
-            "item_id": 41,
-            "item_key": "bottle",
-            "item_name_en": "Bottle",
-            "item_name_cn": "魔瓶",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/bottle.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
@@ -8445,12 +8445,12 @@
           {
             "group": "backpack",
             "slot": 0,
-            "item_id": 109,
-            "item_key": "recipe_refresher",
-            "item_name_en": "Refresher Orb Recipe",
-            "item_name_cn": "Refresher Orb Recipe",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/recipe.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
@@ -21202,12 +21202,12 @@
           {
             "group": "backpack",
             "slot": 0,
-            "item_id": 38,
-            "item_key": "clarity",
-            "item_name_en": "Clarity",
-            "item_name_cn": "净化药水",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/clarity.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
@@ -21356,15 +21356,6 @@
         {
           "type": "ability",
           "level": 13,
-          "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/kez_ravens_veil.png",
-          "name_en": "Raven's Veil",
-          "name_cn": "Raven's Veil",
-          "ability_id": 1506,
-          "ability_key": "kez_ravens_veil"
-        },
-        {
-          "type": "ability",
-          "level": 14,
           "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/kez_grappling_claw.png",
           "name_en": "Grappling Claw",
           "name_cn": "Grappling Claw",
@@ -21373,7 +21364,7 @@
         },
         {
           "type": "ability",
-          "level": 15,
+          "level": 14,
           "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/kez_talon_toss.png",
           "name_en": "Talon Toss",
           "name_cn": "Talon Toss",
@@ -21382,7 +21373,7 @@
         },
         {
           "type": "talent",
-          "level": 16,
+          "level": 15,
           "name": "+{s:bonus_duration}s Falcon Rush Duration",
           "name_en": "+{s:bonus_duration}s Falcon Rush Duration",
           "ability_id": 1511,
@@ -21390,7 +21381,7 @@
         },
         {
           "type": "ability",
-          "level": 17,
+          "level": 16,
           "img_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/kez_raptor_dance.png",
           "name_en": "Raptor Dance",
           "name_cn": "Raptor Dance",
@@ -21399,7 +21390,7 @@
         },
         {
           "type": "talent",
-          "level": 18,
+          "level": 17,
           "name": "{s:bonus_bonus_attack_speed} Bonus Attack Speed During Falcon Rush",
           "name_en": "{s:bonus_bonus_attack_speed} Bonus Attack Speed During Falcon Rush",
           "ability_id": 1714,
@@ -21407,7 +21398,7 @@
         },
         {
           "type": "talent",
-          "level": 19,
+          "level": 18,
           "name": "+{s:bonus_base_crit_pct}% Shodo Sai Critical Strike",
           "name_en": "+{s:bonus_base_crit_pct}% Shodo Sai Critical Strike",
           "ability_id": 1514,
@@ -21415,7 +21406,7 @@
         },
         {
           "type": "talent",
-          "level": 20,
+          "level": 19,
           "name": "+{s:bonus_radius} Raptor Dance Radius",
           "name_en": "+{s:bonus_radius} Raptor Dance Radius",
           "ability_id": 1509,
@@ -21423,7 +21414,7 @@
         },
         {
           "type": "talent",
-          "level": 21,
+          "level": 20,
           "name": "+{s:bonus_strikes} Raptor Dance Strike",
           "name_en": "+{s:bonus_strikes} Raptor Dance Strike",
           "ability_id": 1655,
@@ -21431,7 +21422,7 @@
         },
         {
           "type": "talent",
-          "level": 22,
+          "level": 21,
           "name": "+{s:bonus_katana_bleed_attack_damage_pct}% Kazurai Katana Damage Per Second",
           "name_en": "+{s:bonus_katana_bleed_attack_damage_pct}% Kazurai Katana Damage Per Second",
           "ability_id": 1510,
@@ -23411,12 +23402,12 @@
           {
             "group": "backpack",
             "slot": 0,
-            "item_id": 39,
-            "item_key": "flask",
-            "item_name_en": "Healing Salve",
-            "item_name_cn": "治疗药膏",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/flask.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
@@ -25643,12 +25634,12 @@
           {
             "group": "backpack",
             "slot": 0,
-            "item_id": 41,
-            "item_key": "bottle",
-            "item_name_en": "Bottle",
-            "item_name_cn": "魔瓶",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/bottle.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           },
           {
@@ -25665,12 +25656,12 @@
           {
             "group": "backpack",
             "slot": 2,
-            "item_id": 38,
-            "item_key": "clarity",
-            "item_name_en": "Clarity",
-            "item_name_cn": "净化药水",
-            "image_url": "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/clarity.png",
-            "empty": false,
+            "item_id": 0,
+            "item_key": null,
+            "item_name_en": "",
+            "item_name_cn": "",
+            "image_url": "",
+            "empty": true,
             "resolve_note": null
           }
         ],
@@ -26940,7 +26931,9 @@
   "loss": 16084,
   "_meta": {
     "source": "opendota_pro",
-    "category": "pro"
+    "category": "pro",
+    "match_id": 8772835058,
+    "uploaded_at": "2026-04-16T02:30:18Z"
   },
   "source": "pro",
   "category": "pro"
