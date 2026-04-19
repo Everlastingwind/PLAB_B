@@ -8,10 +8,8 @@
 
   python scripts/upload_pub_dem_json.py E:\\doreplays_json_results\\8767466369.json
 
-默认在能解析出 **match_id** 时，会**自动从 OpenDota 合并终局 6 格 + 中立装备**（与客户端结算栏一致），
-并合并 **对英雄/建筑伤害与治疗**（与客户端计分板同源，避免仅用战斗日志累加造成的偏差）；
-加点/天赋仍以本地 DEM 为准。可用 ``--no-opendota-items`` 关闭上述 OpenDota 合并。
-完整合并（含 OpenDota skill_build）仍用 ``--merge-opendota``。
+**Pub 数据源隔离**：默认**不**调用 OpenDota。若需合并终局装备 / 伤害治疗等，须显式加 ``--opendota-items``；
+完整合并（含 OpenDota skill_build）用 ``--merge-opendota``（隐含网络拉取）。
 
 与 ``dem_result_to_slim_match.py`` 的输入格式一致；可选 ``--players`` 合并加点辅助 JSON。
 """
@@ -88,9 +86,9 @@ def main() -> None:
         help="与 dem_result_to_slim_match 相同：合并加点等 players 元数据",
     )
     ap.add_argument(
-        "--no-opendota-items",
+        "--opendota-items",
         action="store_true",
-        help="不从 OpenDota 合并终局装备（默认会合并 items_slot / 中立 / 神杖魔晶 buff）",
+        help="允许从 OpenDota 合并终局装备 / 伤害治疗等（默认关闭，符合 Pub 隔离）",
     )
     ap.add_argument(
         "--merge-opendota",
@@ -137,7 +135,7 @@ def main() -> None:
     except (TypeError, ValueError):
         mid_int = 0
 
-    if not args.no_opendota_items and mid_int > 0:
+    if args.opendota_items and mid_int > 0:
         ok_i, omsg_i = dem_mod.merge_endgame_inventory_from_opendota(slim, mid_int)
         print(
             "OpenDota 终局装备与伤害/治疗合并:",
@@ -147,7 +145,7 @@ def main() -> None:
             mid_int,
             flush=True,
         )
-    elif not args.no_opendota_items:
+    elif args.opendota_items:
         print("跳过 OpenDota 装备：无效 match_id", flush=True)
 
     if args.merge_opendota:

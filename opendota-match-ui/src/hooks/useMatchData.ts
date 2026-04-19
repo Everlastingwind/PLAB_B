@@ -5,6 +5,7 @@ import { mockTeamDire, mockTeamRadiant } from "../data/mockMatchPlayers";
 import type { TeamTableMock } from "../data/mockMatchPlayers";
 import { loadEntityMapsPayload } from "../lib/entityMapsLoader";
 import { purifyMatchJsonForSlim } from "../lib/purifyRawMatchJson";
+import { isPubTierMatch } from "../lib/matchTier";
 import { fetchDeployedDataJson } from "../lib/fetchStaticJson";
 import {
   fetchOpenDotaMatchById,
@@ -133,8 +134,10 @@ export function useMatchData(matchId?: string): MatchDataState & { reload: () =>
                 : {}),
             };
             let next = purifyMatchJsonForSlim(raw);
-            next = await applyOpenDotaEnrich(next);
-            await applyOpenDotaEndgameItems(next, maps!);
+            if (!isPubTierMatch(next)) {
+              next = await applyOpenDotaEnrich(next);
+              await applyOpenDotaEndgameItems(next, maps!);
+            }
             slim = next;
             break;
           } catch (e) {

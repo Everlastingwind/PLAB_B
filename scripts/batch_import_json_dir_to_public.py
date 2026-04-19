@@ -19,7 +19,7 @@
   python scripts/batch_import_json_dir_to_public.py "E:\\doreplays_json_results"
 
   python scripts/batch_import_json_dir_to_public.py "E:\\doreplays_json_results" --dry-run
-  python scripts/batch_import_json_dir_to_public.py "E:\\doreplays_json_results" --no-opendota-items
+  python scripts/batch_import_json_dir_to_public.py "E:\\doreplays_json_results"
 """
 
 from __future__ import annotations
@@ -124,7 +124,7 @@ def _process_dem_file(
     dem_mod: Any,
     *,
     dry_run: bool,
-    no_opendota_items: bool,
+    opendota_items: bool,
     merge_opendota: bool,
     opendota_match_id: Optional[int],
 ) -> int:
@@ -145,7 +145,7 @@ def _process_dem_file(
     if mid_int <= 0 and path.stem.isdigit():
         mid_int = int(path.stem)
 
-    if not no_opendota_items and mid_int > 0:
+    if opendota_items and mid_int > 0:
         dem_mod.merge_endgame_inventory_from_opendota(slim, mid_int)
     if merge_opendota and mid_int > 0:
         dem_mod.merge_skill_and_talent_from_opendota(slim, mid_int)
@@ -155,8 +155,8 @@ def _process_dem_file(
     if mid_out <= 0:
         raise ValueError("match_id 无效（DEM 管线）")
     npl = len(final_slim.get("players") or [])
-    # DEM 未能还原 10 人时，用 OpenDota 同 match_id 整局兜底（避免写入空 players）
-    if npl < 2 and mid_int > 0:
+    # DEM 未能还原 10 人时，可选：用 OpenDota 同 match_id 整局兜底（需显式 --opendota-items）
+    if npl < 2 and mid_int > 0 and opendota_items:
         raw_od, od_err = dem_mod._fetch_opendota_match_json(mid_int)
         pl_od = raw_od.get("players") if isinstance(raw_od, dict) else None
         if (
@@ -228,9 +228,9 @@ def main() -> None:
         help="只校验、不写文件",
     )
     ap.add_argument(
-        "--no-opendota-items",
+        "--opendota-items",
         action="store_true",
-        help="DEM 输入：不从 OpenDota 合并终局装备（默认会合并）",
+        help="DEM 输入：允许从 OpenDota 合并终局装备等；玩家过少时允许 OpenDota 整局兜底（默认关闭）",
     )
     ap.add_argument(
         "--merge-opendota",
@@ -271,7 +271,7 @@ def main() -> None:
                     p,
                     dem_mod,
                     dry_run=args.dry_run,
-                    no_opendota_items=args.no_opendota_items,
+                    opendota_items=args.opendota_items,
                     merge_opendota=args.merge_opendota,
                     opendota_match_id=args.opendota_match_id,
                 )

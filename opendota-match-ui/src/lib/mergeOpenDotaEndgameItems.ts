@@ -5,6 +5,7 @@
 import { STEAM_CDN } from "../data/mockMatchPlayers";
 import type { EntityMapsPayload } from "../types/entityMaps";
 import type { SlimMatchJson, SlimPlayer, SlimItemSlot } from "../types/slimMatch";
+import { isPubTierMatch } from "./matchTier";
 
 type OdPlayer = Record<string, unknown>;
 
@@ -58,6 +59,7 @@ export async function mergeOpenDotaEndgameItemsIntoSlim(
 ): Promise<boolean> {
   const mid = numId(slim.match_id);
   if (mid <= 0) return false;
+  if (isPubTierMatch(slim)) return false;
 
   const meta = slim._meta;
   if (meta && typeof meta === "object") {

@@ -7,7 +7,7 @@ import {
 } from "../data/mockMatchPlayers";
 import type { EntityMapsPayload } from "../types/entityMaps";
 import type { ReplayPlayerSummary, ReplaySummary } from "../types/replaysIndex";
-import { displayPlayerLabel } from "../lib/playerDisplay";
+import { replayIndexPlayerDisplayLabel } from "../lib/playerDisplay";
 import { heroKeyFromId } from "../lib/replaysApi";
 import { cn } from "../lib/cn";
 import { compareByPlayerSlot, partitionReplayRowPlayers } from "../lib/matchGrouping";
@@ -34,8 +34,11 @@ function HeroCells({
     <div className="flex max-sm:min-w-0 max-sm:flex-1 max-sm:justify-evenly flex-nowrap items-center justify-center gap-0 sm:gap-2">
       {sorted.map((p) => {
         const key = heroKeyFromId(p.hero_id, maps);
-        const nameRaw = String(p.pro_name ?? "").trim();
-        const isAnonymous = nameRaw.length === 0;
+        const displayLabel = replayIndexPlayerDisplayLabel(
+          p.account_id,
+          p.pro_name
+        );
+        const isAnonymous = displayLabel === "匿名玩家";
         return (
           <div
             key={p.player_slot}
@@ -77,7 +80,7 @@ function HeroCells({
               )}
               title="该选手对局"
             >
-              {isAnonymous ? "匿名" : displayPlayerLabel(p.pro_name)}
+              {isAnonymous ? "匿名" : displayLabel}
             </Link>
           </div>
         );

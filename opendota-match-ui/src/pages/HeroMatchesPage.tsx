@@ -11,7 +11,11 @@ import {
 } from "../lib/replaysApi";
 import type { ReplaySummary } from "../types/replaysIndex";
 import { useEntityMaps } from "../hooks/useEntityMaps";
-import { displayPlayerLabel } from "../lib/playerDisplay";
+import {
+  replayIndexCanLinkProPlayer,
+  replayIndexEffectiveProRaw,
+  replayIndexPlayerDisplayLabel,
+} from "../lib/playerDisplay";
 import {
   abilityIconUrl,
   heroIconUrl,
@@ -275,7 +279,13 @@ export function HeroMatchesPage() {
             );
             const exact = uiPlayers.find((x) => {
               if (x.heroKey !== decoded) return false;
-              const pName = String(p0?.pro_name ?? "").trim();
+              const pName =
+                p0 && Number(p0.account_id) > 0
+                  ? replayIndexEffectiveProRaw(
+                      Number(p0.account_id),
+                      p0.pro_name
+                    )
+                  : String(p0?.pro_name ?? "").trim();
               const xName = String(x.proName ?? "").trim();
               if (pName && xName) return pName === xName;
               return true;
@@ -416,9 +426,14 @@ export function HeroMatchesPage() {
                     const d = p?.deaths ?? 0;
                     const a = p?.assists ?? 0;
                     const accountId = Number(p?.account_id ?? 0);
-                    const hasProName = String(p?.pro_name ?? "").trim().length > 0;
-                    const canLinkPlayer =
-                      Number.isFinite(accountId) && accountId > 0 && hasProName;
+                    const canLinkPlayer = replayIndexCanLinkProPlayer(
+                      accountId,
+                      p?.pro_name ?? null
+                    );
+                    const playerColLabel = replayIndexPlayerDisplayLabel(
+                      accountId,
+                      p?.pro_name ?? null
+                    );
                     const items = (row?.items_slot || []).slice(0, 6);
                     const rawSkillSteps = (row?.skill_build || []).filter(
                       (s) => s && s.type !== "empty"
@@ -484,13 +499,13 @@ export function HeroMatchesPage() {
                               onClick={(e) => e.stopPropagation()}
                               onKeyDown={(e) => e.stopPropagation()}
                             >
-                              {displayPlayerLabel(p?.pro_name ?? null)}
+                              {playerColLabel}
                             </Link>
                           ) : (
                             <span className="text-skin-sub">
-                              {hasProName
-                                ? displayPlayerLabel(p?.pro_name ?? null)
-                                : "匿名"}
+                              {playerColLabel === "匿名玩家"
+                                ? "匿名"
+                                : playerColLabel}
                             </span>
                           )}
                         </div>

@@ -175,6 +175,12 @@ def rebuild_replays_index() -> int:
             uploaded = datetime.fromtimestamp(_f.stat().st_mtime, tz=timezone.utc).strftime(
                 "%Y-%m-%dT%H:%M:%SZ"
             )
+        tier = str(data.get("match_tier") or "").strip().lower()
+        if tier not in ("pub", "pro"):
+            meta = data.get("_meta") if isinstance(data.get("_meta"), dict) else {}
+            src = str((meta or {}).get("source") or "").strip()
+            tier = "pub" if src == "dem_result_json" else "pro"
+
         replays.append(
             {
                 "match_id": mid,
@@ -186,6 +192,7 @@ def rebuild_replays_index() -> int:
                 "league_name": str(data.get("league_name") or "—"),
                 "radiant_score": int(data.get("radiant_score") or 0),
                 "dire_score": int(data.get("dire_score") or 0),
+                "match_tier": tier,
                 "players": _summarize_players_for_index(data.get("players") or []),
             }
         )
@@ -251,6 +258,7 @@ def save_match_payload(raw_match: Mapping[str, Any], *, match_id: int | None = N
         "note": "由 Python translate_match_data 自 API/DEM 衍生字段；英雄/物品含 hero_id、item_id 映射",
         "match_id": mid,
     }
+    slim["match_tier"] = "pro"
 
     archive = DATA_DIR / f"{mid}.json"
     archive.write_text(json.dumps(slim, ensure_ascii=False, indent=2), encoding="utf-8")

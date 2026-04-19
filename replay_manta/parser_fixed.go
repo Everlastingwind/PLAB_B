@@ -5,15 +5,26 @@
 //     克隆体、阵亡瞬间等状态下的天赋加点，故不得再依赖该路径作为主数据源。
 //   - 本包以 dota_player_learned_ability 全局事件为准，在 GlobalTalentTracker 中永久记录，
 //     与你管线「最后组装阶段」的回填逻辑对接（在最终 JSON 合并前读取 GlobalTalentTracker）。
+//
+// PlayerResource（CDOTA_PlayerResource）：
+//   - 权威队伍/英雄/昵称/Steam 来自实体字段，勿用「player_id 0–4 天辉」等硬编码推断。
+//   - 解析结束后取 GlobalPlayerResourceSnapshot() 或 PlayerResourceSnapshotJSON() 写入 result.json
+//     的 "player_resource" 数组，供 dem_result_to_slim_match.py 组装 slim。
 package replayparser
 
 import (
+	"encoding/json"
 	"fmt"
 	"os"
+	"sort"
 	"strings"
+	"sync"
 
 	"github.com/dotabuff/manta"
 )
+
+// Dota SteamID64 → OpenDota 常用 32 位 account_id
+const dotaSteamID64Base int64 = 76561197960265728
 
 // GlobalTalentTracker：玩家槽位 (0–31) → 已确认学习的天赋 ability 名（含 special_bonus*）。
 // 在单场解析开始前应 ResetGlobalTalentTracker；组装输出时读取并写回 talent / skill_build。
@@ -51,6 +62,200 @@ func RegisterDotaPlayerLearnedAbilityTalentHook(p *manta.Parser) {
 	})
 }
 
+// -----------------------------------------------------------------------------
+// CDOTA_PlayerResource：队伍 / 英雄 / 昵称 / Steam（权威映射，供下游 JSON 使用）
+// -----------------------------------------------------------------------------
+
+// PlayerResourceRow 与 dem_result_to_slim_match._parse_player_resource_blob 字段对齐。
+type PlayerResourceRow struct {
+	PlayerID   int    `json:"player_id"`
+	Team       int32  `json:"team"` // 2 = Radiant, 3 = Dire
+	HeroID     int32  `json:"hero_id"`
+	PlayerName string `json:"player_name"`
+	SteamID    uint64 `json:"steam_id,omitempty"`
+	AccountID  int64  `json:"account_id,omitempty"`
+	// PlayerSlot：OpenDota 惯例 0–4 天辉、128–132 夜魇（由 m_iPlayerTeam + 队内 player_id 序稳定分配）
+	PlayerSlot int32 `json:"player_slot"`
+	IsRadiant  bool  `json:"is_radiant"`
+}
+
+var (
+	playerResourceMu sync.RWMutex
+	playerResourceSnap []PlayerResourceRow
+)
+
+// ResetGlobalPlayerResourceSnapshot 每场 replay 开始前调用，避免串场。
+func ResetGlobalPlayerResourceSnapshot() {
+	playerResourceMu.Lock()
+	playerResourceSnap = nil
+	playerResourceMu.Unlock()
+}
+
+// GlobalPlayerResourceSnapshot 返回最近一次 CDOTA_PlayerResource 快照的拷贝（可能为空）。
+func GlobalPlayerResourceSnapshot() []PlayerResourceRow {
+	playerResourceMu.RLock()
+	defer playerResourceMu.RUnlock()
+	out := make([]PlayerResourceRow, len(playerResourceSnap))
+	copy(out, playerResourceSnap)
+	return out
+}
+
+// PlayerResourceSnapshotJSON 便于写入 result.json 的 "player_resource" 字段。
+func PlayerResourceSnapshotJSON() ([]byte, error) {
+	rows := GlobalPlayerResourceSnapshot()
+	if len(rows) == 0 {
+		return []byte("[]"), nil
+	}
+	return json.MarshalIndent(rows, "", "  ")
+}
+
+func steamFieldToAccountID(u uint64) int64 {
+	if u == 0 {
+		return 0
+	}
+	v := int64(u)
+	if v > dotaSteamID64Base {
+		return v - dotaSteamID64Base
+	}
+	return v
+}
+
+func prReadStringish(e *manta.Entity, keys ...string) string {
+	for _, k := range keys {
+		if s, ok := e.GetString(k); ok && strings.TrimSpace(s) != "" {
+			return strings.TrimSpace(s)
+		}
+		v := e.Get(k)
+		if s, ok := v.(string); ok && strings.TrimSpace(s) != "" {
+			return strings.TrimSpace(s)
+		}
+	}
+	return ""
+}
+
+func prReadSteamID(e *manta.Entity, pid int) uint64 {
+	idx := fmt.Sprintf("%04d", pid)
+	keys := []string{
+		"m_vecPlayerData." + idx + ".m_iPlayerSteamID",
+		fmt.Sprintf("m_iPlayerSteamIDs.%04d", pid),
+	}
+	for _, k := range keys {
+		if u, ok := e.GetUint64(k); ok && u != 0 {
+			return u
+		}
+		v := e.Get(k)
+		switch t := v.(type) {
+		case uint64:
+			if t != 0 {
+				return t
+			}
+		case int64:
+			if t > 0 {
+				return uint64(t)
+			}
+		case uint32:
+			if t != 0 {
+				return uint64(t)
+			}
+		case int32:
+			if t > 0 {
+				return uint64(t)
+			}
+		}
+	}
+	return 0
+}
+
+// SnapshotFromPlayerResourceEntity 从单帧 CDOTA_PlayerResource 状态构建 10 人槽位表。
+func SnapshotFromPlayerResourceEntity(e *manta.Entity) []PlayerResourceRow {
+	type rawRow struct {
+		pid   int
+		team  int32
+		hero  int32
+		name  string
+		steam uint64
+	}
+	var buf []rawRow
+	for pid := 0; pid < 64; pid++ {
+		idx := fmt.Sprintf("%04d", pid)
+		hero, okH := e.GetInt32("m_vecPlayerTeamData." + idx + ".m_nSelectedHeroID")
+		if !okH || hero <= 0 {
+			continue
+		}
+		team, okT := e.GetInt32("m_vecPlayerData." + idx + ".m_iPlayerTeam")
+		if !okT || (team != 2 && team != 3) {
+			continue
+		}
+		name := prReadStringish(
+			e,
+			"m_vecPlayerData."+idx+".m_iszPlayerName",
+			fmt.Sprintf("m_iszPlayerNames.%04d", pid),
+		)
+		steam := prReadSteamID(e, pid)
+		buf = append(buf, rawRow{pid, team, hero, name, steam})
+	}
+	var rad, dire []rawRow
+	for _, r := range buf {
+		if r.team == 2 {
+			rad = append(rad, r)
+		} else if r.team == 3 {
+			dire = append(dire, r)
+		}
+	}
+	sort.Slice(rad, func(i, j int) bool { return rad[i].pid < rad[j].pid })
+	sort.Slice(dire, func(i, j int) bool { return dire[i].pid < dire[j].pid })
+
+	var out []PlayerResourceRow
+	for i, r := range rad {
+		acc := steamFieldToAccountID(r.steam)
+		out = append(out, PlayerResourceRow{
+			PlayerID:   r.pid,
+			Team:       r.team,
+			HeroID:     r.hero,
+			PlayerName: r.name,
+			SteamID:    r.steam,
+			AccountID:  acc,
+			PlayerSlot: int32(i),
+			IsRadiant:  true,
+		})
+	}
+	for i, r := range dire {
+		acc := steamFieldToAccountID(r.steam)
+		out = append(out, PlayerResourceRow{
+			PlayerID:   r.pid,
+			Team:       r.team,
+			HeroID:     r.hero,
+			PlayerName: r.name,
+			SteamID:    r.steam,
+			AccountID:  acc,
+			PlayerSlot: int32(128 + i),
+			IsRadiant:  false,
+		})
+	}
+	return out
+}
+
+// RegisterCDOTAPlayerResourceSnapshotHook 监听 CDOTA_PlayerResource，刷新全局快照。
+// 必须在 p.Start() 之前调用；与天赋 Hook 互不冲突。
+func RegisterCDOTAPlayerResourceSnapshotHook(p *manta.Parser) {
+	p.OnEntity(func(e *manta.Entity, op manta.EntityOp) error {
+		if e.GetClassName() != "CDOTA_PlayerResource" {
+			return nil
+		}
+		if op.Flag(manta.EntityOpDeleted) || op.Flag(manta.EntityOpDeletedLeft) {
+			return nil
+		}
+		snap := SnapshotFromPlayerResourceEntity(e)
+		if len(snap) == 0 {
+			return nil
+		}
+		playerResourceMu.Lock()
+		playerResourceSnap = snap
+		playerResourceMu.Unlock()
+		return nil
+	})
+}
+
 // ParseReplay 读取 Source2 .dem，注册天赋事件监听后执行解析。
 // 在 parseReplay 内于 p.Start() 之前插入 RegisterDotaPlayerLearnedAbilityTalentHook(p) 即等价于本函数中间段。
 func ParseReplay(demPath string) error {
@@ -63,7 +268,9 @@ func ParseReplay(demPath string) error {
 		return err
 	}
 	ResetGlobalTalentTracker()
+	ResetGlobalPlayerResourceSnapshot()
 	RegisterDotaPlayerLearnedAbilityTalentHook(p)
+	RegisterCDOTAPlayerResourceSnapshotHook(p)
 	return p.Start()
 }
 

@@ -10,8 +10,7 @@ import {
 } from "../lib/replaysApi";
 import type { ReplaySummary } from "../types/replaysIndex";
 import { useEntityMaps } from "../hooks/useEntityMaps";
-import { displayPlayerLabel } from "../lib/playerDisplay";
-import { seededProNameForAccount } from "../data/proPlayers";
+import { privacyMaskedPlayerDisplayName } from "../lib/playerDisplay";
 import { heroKeyFromId } from "../lib/replaysApi";
 import {
   abilityIconUrl,
@@ -210,15 +209,19 @@ export function PlayerMatchesPage() {
   }, [maps, onIntersect, visible.length]);
 
   const titleName = useMemo(() => {
+    let bestPro: string | null = null;
     for (const r of replays) {
       for (const p of r.players) {
-        if (p.account_id === aid && p.pro_name) {
-          return displayPlayerLabel(p.pro_name);
+        if (p.account_id !== aid) continue;
+        const t = String(p.pro_name ?? "").trim();
+        if (t) {
+          bestPro = t;
+          break;
         }
       }
+      if (bestPro) break;
     }
-    const seeded = seededProNameForAccount(aid);
-    return seeded ? displayPlayerLabel(seeded) : null;
+    return privacyMaskedPlayerDisplayName(aid, bestPro);
   }, [replays, aid]);
 
   /** 该选手在各局中的英雄（去重） */
@@ -241,7 +244,7 @@ export function PlayerMatchesPage() {
     return [...m.values()].sort((a, b) => b.count - a.count);
   }, [replays, aid, maps]);
 
-  const playerName = titleName && titleName !== "匿名玩家" ? titleName : `玩家 #${accountId}`;
+  const playerName = titleName !== "匿名" ? titleName : `玩家 #${accountId}`;
   const coreHeroNameEn = useMemo(() => {
     const topHero = heroSummaries[0];
     if (!topHero) return "未知英雄";
@@ -254,7 +257,7 @@ export function PlayerMatchesPage() {
 
   // 职业选手对标模块标题公式：[选手ID] [英雄名称] 深度数据对标 | DOTA2 Plan B
   // 选手ID优先用职业名/展示名，缺失时回退 accountId；英雄名称优先英文名。
-  const playerIdentifier = titleName && titleName !== "匿名玩家" ? titleName : accountId;
+  const playerIdentifier = titleName !== "匿名" ? titleName : accountId;
   const seoTitle = `${playerIdentifier} 深度数据对标`;
   const seoDescription = `查看 ${playerName} 的最新高分局出装路线与正反补细节对比，重点追踪 ${coreHeroNameEn} 等核心英雄的近期打法变化。`;
 
@@ -269,9 +272,7 @@ export function PlayerMatchesPage() {
         <main className="mx-auto w-full max-w-[1400px] px-4 py-8 sm:px-6 lg:px-8">
           <div className="mb-6 flex flex-wrap items-center gap-3">
             <h1 className="text-lg font-bold text-skin-ink">
-              {titleName && titleName !== "匿名玩家"
-                ? `选手 ${titleName}`
-                : `玩家 #${accountId}`}
+              {titleName !== "匿名" ? `选手 ${titleName}` : `玩家 #${accountId}`}
             </h1>
             <div className="flex flex-wrap items-center gap-1.5">
               <button

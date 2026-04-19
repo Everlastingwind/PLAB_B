@@ -9,8 +9,26 @@
     "players": [
       { "ability_upgrades_arr": [ 5372, 5375, ... ] },
       ... 共 10 个元素，可与 slot / player_slot 字段匹配 ...
+    ],
+    "player_resource": [
+      {
+        "player_id": 0,
+        "team": 2,
+        "hero_id": 39,
+        "player_name": "Yatoro",
+        "steam_id": 765611980...,
+        "account_id": 321580662,
+        "player_slot": 128,
+        "is_radiant": false
+      },
+      ...
     ]
   }
+
+``player_resource``（或 ``player_resource_snapshot``）来自 Go ``replayparser`` 对
+``CDOTA_PlayerResource`` 的快照（``m_vecPlayerData.*.m_iPlayerTeam`` / ``m_iszPlayerName`` /
+``m_iPlayerSteamID`` + ``m_vecPlayerTeamData.*.m_nSelectedHeroID``）。存在时**优先**据此
+校正 ``player_slot`` / 阵营 / 昵称 / Steam，不再用「interval 下标 <5 即天辉」推断。
 
 **方式 B（原始事件流）**：无 ability_upgrades_arr 时，从 events 中扫描加点事件
 （type / msg 含 ability_upgrade、DotaAbilityUpgrade 等，见 utils.dota_pipeline.try_parse_ability_upgrade_event），
@@ -37,6 +55,7 @@
 from __future__ import annotations
 
 import argparse
+import copy
 import json
 import re
 import sys
@@ -495,22 +514,38 @@ def _assign_player_slots_from_epilogue_teams(
     interval_players: Dict[int, Dict[str, Any]],
     slot_hero: Dict[int, Tuple[int, str]],
     team_by_hero: Optional[Dict[str, bool]],
+    events: Optional[List[dict]] = None,
 ) -> List[Dict[str, Any]]:
     """
     interval 下标 0..9 与真实阵营无关；用 epilogue 的阵营将 10 人重排为
     player_slot 0-4（天辉）与 128-132（夜魇），顺序按原 interval 下标稳定排序。
+
+    若无足够 epilogue 阵营信息，优先使用 events 里的 ``player_slot`` 映射（replay 原生
+    player_slot），**不再**用「interval 下标 <5 即天辉」推断（易与真实阵营错位）。
     """
     if not interval_players:
         return []
     if not team_by_hero or len(team_by_hero) < 8:
+        slot_to_ps = _slot_to_player_slot_from_events(events or [])
         out: List[Dict[str, Any]] = []
         for slot in sorted(interval_players.keys()):
             row = interval_players[slot]
-            row["player_slot"] = 128 + (slot - 5) if slot >= 5 else slot
-            row["isRadiant"] = slot < 5
+            ps = slot_to_ps.get(slot)
+            if ps is not None:
+                row["player_slot"] = int(ps)
+                row["isRadiant"] = _is_radiant_player_slot(int(ps))
+            elif slot_to_ps:
+                # 有映射表但本槽位缺项：不再用 interval 下标冒充阵营
+                row["player_slot"] = int(slot)
+                row["isRadiant"] = False
+            else:
+                # 无任何 player_slot 事件时的最后回退（旧行为）
+                row["player_slot"] = 128 + (slot - 5) if slot >= 5 else slot
+                row["isRadiant"] = slot < 5
             out.append(row)
         return out
 
+    slot_to_ps_ep = _slot_to_player_slot_from_events(events or [])
     radiant: List[Tuple[int, Dict[str, Any]]] = []
     dire: List[Tuple[int, Dict[str, Any]]] = []
     for slot in sorted(interval_players.keys()):
@@ -518,9 +553,13 @@ def _assign_player_slots_from_epilogue_teams(
         _, unit = slot_hero[slot]
         hi = _hero_internal_from_unit(unit)
         hnpc = f"npc_dota_hero_{hi}"
-        is_rad = team_by_hero.get(hnpc)
+        is_rad = team_by_hero.get(hnpc) if hnpc else None
         if is_rad is None:
-            is_rad = slot < 5
+            ps = slot_to_ps_ep.get(slot)
+            if ps is not None:
+                is_rad = _is_radiant_player_slot(int(ps))
+            else:
+                is_rad = slot < 5
         (radiant if is_rad else dire).append((slot, row))
 
     radiant.sort(key=lambda x: x[0])
@@ -537,6 +576,199 @@ def _assign_player_slots_from_epilogue_teams(
         merged.append(row)
     merged.sort(key=lambda r: int(r.get("player_slot") or 0))
     return merged
+
+
+def _parse_player_resource_blob(data: Any) -> Optional[List[Dict[str, Any]]]:
+    """
+    接受 ``player_resource`` / ``player_resource_snapshot``：
+    数组项含 player_id, team(2/3), hero_id, player_name, steam_id 或 account_id；
+    或由 Go ``replayparser.PlayerResourceSnapshotJSON()`` 写入的等价结构。
+    """
+    if data is None:
+        return None
+    if isinstance(data, dict):
+        inner = data.get("players") or data.get("rows")
+        if isinstance(inner, list):
+            data = inner
+        else:
+            return None
+    if not isinstance(data, list) or len(data) < 8:
+        return None
+    rows = [x for x in data if isinstance(x, dict)]
+    return rows if len(rows) >= 8 else None
+
+
+def _canonical_player_resource_rows(
+    pr_rows: List[Dict[str, Any]],
+) -> Optional[List[Dict[str, Any]]]:
+    """按 m_iPlayerTeam 分队，队内按 player_id 排序，写入规范 player_slot / is_radiant。"""
+    norm: List[Dict[str, Any]] = []
+    for x in pr_rows:
+        try:
+            team = int(x.get("team") or 0)
+        except (TypeError, ValueError):
+            continue
+        if team not in (2, 3):
+            continue
+        try:
+            hid = int(x.get("hero_id") or 0)
+        except (TypeError, ValueError):
+            continue
+        if hid <= 0:
+            continue
+        try:
+            pid = int(x.get("player_id") if x.get("player_id") is not None else -1)
+        except (TypeError, ValueError):
+            pid = -1
+        name = str(x.get("player_name") or x.get("name") or "").strip()
+        row = {
+            "player_id": pid,
+            "team": team,
+            "hero_id": hid,
+            "player_name": name,
+        }
+        if x.get("account_id") is not None:
+            try:
+                row["account_id"] = int(x["account_id"])
+            except (TypeError, ValueError):
+                pass
+        if x.get("steam_id") is not None:
+            try:
+                row["steam_id"] = int(x["steam_id"])
+            except (TypeError, ValueError):
+                pass
+        if "player_slot" in x and x.get("player_slot") is not None:
+            try:
+                row["player_slot"] = int(x["player_slot"])
+            except (TypeError, ValueError):
+                pass
+        if "is_radiant" in x or "isRadiant" in x:
+            v = x.get("is_radiant", x.get("isRadiant"))
+            row["is_radiant"] = bool(v)
+        norm.append(row)
+    if len(norm) < 8:
+        return None
+    # 已带规范 player_slot 时（如 Go 导出）只做校验与排序
+    if all("player_slot" in r for r in norm) and len(norm) >= 8:
+        norm.sort(key=lambda r: int(r.get("player_slot") or 0))
+        return norm
+    rad = [r for r in norm if int(r["team"]) == 2]
+    dire = [r for r in norm if int(r["team"]) == 3]
+    rad.sort(key=lambda r: int(r.get("player_id") or 0))
+    dire.sort(key=lambda r: int(r.get("player_id") or 0))
+    out: List[Dict[str, Any]] = []
+    for i, r in enumerate(rad):
+        o = dict(r)
+        o["player_slot"] = i
+        o["is_radiant"] = True
+        out.append(o)
+    for i, r in enumerate(dire):
+        o = dict(r)
+        o["player_slot"] = 128 + i
+        o["is_radiant"] = False
+        out.append(o)
+    out.sort(key=lambda r: int(r.get("player_slot") or 0))
+    return out
+
+
+_STEAM64_BASE = 76561197960265728
+
+
+def _account_id_from_pr_steam_or_account(
+    steam_id: Any, account_id: Any
+) -> Optional[int]:
+    if account_id is not None:
+        try:
+            a = int(account_id)
+            return a if a > 0 else None
+        except (TypeError, ValueError):
+            pass
+    if steam_id is None:
+        return None
+    try:
+        sid = int(steam_id)
+    except (TypeError, ValueError):
+        return None
+    if sid <= 0:
+        return None
+    if sid > _STEAM64_BASE:
+        return int(sid - _STEAM64_BASE)
+    return sid
+
+
+def _interval_slot_is_radiant_from_player_resource(
+    slot_hero: Dict[int, Tuple[int, str]],
+    pr_rows: List[Dict[str, Any]],
+) -> Optional[Dict[int, bool]]:
+    canon = _canonical_player_resource_rows(pr_rows)
+    if not canon:
+        return None
+    out: Dict[int, bool] = {}
+    used: Set[int] = set()
+    for pr in canon:
+        hid = int(pr.get("hero_id") or 0)
+        cand = [
+            s
+            for s, pair in slot_hero.items()
+            if int(pair[0]) == hid and s not in used
+        ]
+        if not cand:
+            return None
+        sl = min(cand)
+        used.add(sl)
+        out[sl] = bool(pr.get("is_radiant", pr.get("isRadiant", pr.get("team") == 2)))
+    return out if len(out) >= 8 else None
+
+
+def _assign_players_from_player_resource(
+    interval_players: Dict[int, Dict[str, Any]],
+    slot_hero: Dict[int, Tuple[int, str]],
+    pr_rows: List[Dict[str, Any]],
+    pro_rows: Any,
+) -> Optional[List[Dict[str, Any]]]:
+    """
+    仅依赖 PlayerResource 的 team / hero / 名字 / Steam，与 interval 英雄 id 对齐后输出 10 人。
+    """
+    canon = _canonical_player_resource_rows(pr_rows)
+    need = len(slot_hero)
+    if not canon:
+        return None
+    hero_ids_in_match = {int(pair[0]) for pair in slot_hero.values()}
+    canon = [r for r in canon if int(r.get("hero_id") or 0) in hero_ids_in_match]
+    if len(canon) < need:
+        return None
+    used: Set[int] = set()
+    merged_rows: List[Dict[str, Any]] = []
+    for pr in canon:
+        hid = int(pr.get("hero_id") or 0)
+        cand = [
+            s
+            for s, pair in slot_hero.items()
+            if int(pair[0]) == hid and s not in used
+        ]
+        if not cand:
+            return None
+        sl = min(cand)
+        used.add(sl)
+        base = copy.deepcopy(interval_players[sl])
+        nm = str(pr.get("player_name") or "").strip()
+        if nm:
+            base["personaname"] = nm
+            base["name"] = nm
+        acc = _account_id_from_pr_steam_or_account(
+            pr.get("steam_id"), pr.get("account_id")
+        )
+        if acc is not None:
+            base["account_id"] = acc
+            pn, tn = match_pro_player(acc, pro_rows)
+            base["pro_name"] = pn
+            base["team_name"] = tn
+        ps = int(pr.get("player_slot") or 0)
+        base["player_slot"] = ps
+        base["isRadiant"] = bool(pr.get("is_radiant", pr.get("isRadiant")))
+        merged_rows.append(base)
+    merged_rows.sort(key=lambda r: int(r.get("player_slot") or 0))
+    return merged_rows if len(merged_rows) == need else None
 
 
 def _slot_hero_from_intervals(events: List[dict]) -> Dict[int, Tuple[int, str]]:
@@ -784,11 +1016,15 @@ def _infer_lane_and_role_by_slot(
     *,
     lane_phase_sec: int = 300,
     lane_delta: float = 20.0,
+    interval_slot_is_radiant: Optional[Dict[int, bool]] = None,
 ) -> Dict[int, Dict[str, Any]]:
     """
     仅基于 interval 坐标推断对线期分路与位置（前 5 分钟）：
     - lane_early: top/mid/bot
     - role_early: carry/mid/offlane/support(4)/support(5)
+
+    ``interval_slot_is_radiant``：由 CDOTA_PlayerResource 解析得到的 interval 槽 → 是否天辉，
+    有则**优先**于此，避免用「interval 下标 <5」推断阵营。
     """
     slot_to_ps = _slot_to_player_slot_from_events(events)
     points_by_slot: Dict[int, List[Tuple[float, float]]] = {}
@@ -837,7 +1073,15 @@ def _infer_lane_and_role_by_slot(
         mx = float(median(xs))
         my = float(median(ys))
         ps = slot_to_ps.get(slot)
-        is_rad = _is_radiant_player_slot(int(ps)) if ps is not None else slot < 5
+        if (
+            interval_slot_is_radiant is not None
+            and int(slot) in interval_slot_is_radiant
+        ):
+            is_rad = bool(interval_slot_is_radiant[int(slot)])
+        elif ps is not None:
+            is_rad = _is_radiant_player_slot(int(ps))
+        else:
+            is_rad = False
         base_rows.append(
             {
                 "slot": int(slot),
@@ -2915,6 +3159,7 @@ def _talent_picks_for_slot(
 def build_slim_from_dem_events(
     events: List[dict],
     players_blob: Optional[List[Dict[str, Any]]] = None,
+    player_resource: Any = None,
 ) -> Dict[str, Any]:
     dc = get_constants()
     pro_rows = load_or_fetch_pro_players(dc.cache_dir)
@@ -2926,7 +3171,15 @@ def build_slim_from_dem_events(
     steam_acc = _epilogue_steam_account_by_hero(events)
     slot_hero = _slot_hero_from_intervals(events)
     last_iv = _last_intervals(events)
-    lane_role_by_slot = _infer_lane_and_role_by_slot(events, dc)
+    pr_parsed = _parse_player_resource_blob(player_resource)
+    interval_rad_map: Optional[Dict[int, bool]] = None
+    if pr_parsed:
+        interval_rad_map = _interval_slot_is_radiant_from_player_resource(
+            slot_hero, pr_parsed
+        )
+    lane_role_by_slot = _infer_lane_and_role_by_slot(
+        events, dc, interval_slot_is_radiant=interval_rad_map
+    )
     agg = _aggregate_combat(events)
 
     account_to_slot: Dict[int, int] = {}
@@ -3753,9 +4006,22 @@ def build_slim_from_dem_events(
                 player_row["ability_upgrades_arr"] = _ids[:25]
         interval_players[slot] = player_row
 
-    players = _assign_player_slots_from_epilogue_teams(
-        interval_players, slot_hero, team_by_hero
-    )
+    assigned_via_pr = False
+    if pr_parsed:
+        pr_players = _assign_players_from_player_resource(
+            interval_players, slot_hero, pr_parsed, pro_rows
+        )
+        if pr_players:
+            players = pr_players
+            assigned_via_pr = True
+        else:
+            players = _assign_player_slots_from_epilogue_teams(
+                interval_players, slot_hero, team_by_hero, events
+            )
+    else:
+        players = _assign_player_slots_from_epilogue_teams(
+            interval_players, slot_hero, team_by_hero, events
+        )
 
     raw_upgrade_evt_count = sum(len(v) for v in upgrades_from_raw_events.values())
     talent_layers_lit = 0
@@ -3778,14 +4044,19 @@ def build_slim_from_dem_events(
             "或 ability_upgrades_arr 中含 special_bonus。"
         )
 
-    return {
-        "_meta": {
-            "source": "dem_result_json",
-            "note": "dotaconstants；skill_build 优先 ability_upgrades_arr，其次原始事件 ability_upgrade 探矿，否则战斗日志近似；pro 见 .dota_cache/pro_players.json",
-            "match_id": mid,
-            "talent_inference": talent_inference,
-        },
+    meta_out: Dict[str, Any] = {
+        "source": "dem_result_json",
+        "note": "dotaconstants；skill_build 优先 ability_upgrades_arr，其次原始事件 ability_upgrade 探矿，否则战斗日志近似；pro 见 .dota_cache/pro_players.json",
         "match_id": mid,
+        "talent_inference": talent_inference,
+    }
+    if assigned_via_pr:
+        meta_out["player_resource_team_assign"] = True
+    return {
+        "_meta": meta_out,
+        "match_id": mid,
+        "match_tier": "pub",
+        "match_source": "local",
         "radiant_win": radiant_win if radiant_win is not None else True,
         "radiant_score": 0,
         "dire_score": 0,
@@ -3841,6 +4112,7 @@ def main() -> None:
     raw = json.loads(args.result_json.read_text(encoding="utf-8"))
     events: List[dict] = []
     players_blob: Optional[List[Dict[str, Any]]] = None
+    pr_input: Any = None
     if isinstance(raw, dict):
         ev = raw.get("events")
         if isinstance(ev, list):
@@ -3848,6 +4120,9 @@ def main() -> None:
         pb = raw.get("players")
         if isinstance(pb, list):
             players_blob = [p for p in pb if isinstance(p, dict)]
+        pr_input = raw.get("player_resource")
+        if pr_input is None:
+            pr_input = raw.get("player_resource_snapshot")
     elif isinstance(raw, list):
         events = [e for e in raw if isinstance(e, dict)]
     else:
@@ -3862,7 +4137,9 @@ def main() -> None:
             sys.exit("--players 需为非空 JSON 数组，或含非空 players 数组的对象")
         players_blob = _merge_player_blobs(players_blob, addon_pl)
 
-    slim = build_slim_from_dem_events(events, players_blob=players_blob)
+    slim = build_slim_from_dem_events(
+        events, players_blob=players_blob, player_resource=pr_input
+    )
 
     if args.inventory_overlay:
         if not args.inventory_overlay.is_file():

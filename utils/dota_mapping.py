@@ -808,6 +808,15 @@ def translate_match_data(
         slim_players.append(player)
 
     out["players"] = slim_players
+
+    meta_root = out.get("_meta") if isinstance(out.get("_meta"), dict) else {}
+    src_root = str((meta_root or {}).get("source") or "").strip()
+    tier_in = str(out.get("match_tier") or "").strip().lower()
+    if tier_in == "pub" or src_root == "dem_result_json":
+        out["match_tier"] = "pub"
+    else:
+        out["match_tier"] = "pro"
+
     return out
 
 

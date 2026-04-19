@@ -206,6 +206,12 @@ export interface SlimMatchJson {
       players_merged: number;
       match_id: number;
     };
+    /** DEM 等来源：仅合并 account_id / 昵称 / 职业名（不覆盖技能时间线） */
+    opendota_identity_merge?: {
+      at: string;
+      players_merged: number;
+      match_id: number;
+    };
     /** 前端从 OpenDota 合并终局装备（6 格 + 中立 + 神杖魔晶） */
     opendota_endgame_items_merge?: {
       at: string;
@@ -214,6 +220,9 @@ export interface SlimMatchJson {
     };
   };
   match_id?: number;
+  /** 本地录像入库为 pub；OpenDota 管线为 pro */
+  match_tier?: "pub" | "pro";
+  match_source?: string;
   radiant_win?: boolean;
   radiant_score?: number;
   dire_score?: number;
