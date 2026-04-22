@@ -18,3 +18,6 @@ __pycache__/
 *$py.class
 .Python
 .vercel
+
+# 本地导出的单场 JSON：自行上传托管，不进入 Git / Changes
+opendota-match-ui/public/data/matches/*.json
