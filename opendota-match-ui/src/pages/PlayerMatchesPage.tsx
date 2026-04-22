@@ -24,7 +24,7 @@ import { MECHA_INSET, MECHA_RAISED } from "../lib/mechaStyles";
 import type { SlimMatchJson, SlimPlayer } from "../types/slimMatch";
 import { TalentTreeBadge } from "../components/TalentTreeBadge";
 import type { TalentPickUi, TalentTreeUi } from "../data/mockMatchPlayers";
-import { SEOMeta } from "../components/SEOMeta";
+import { SEO } from "../components/SEO";
 import { forEachConcurrent } from "../lib/fetchConcurrent";
 import { staticDataSearchParam } from "../lib/staticDataVersion";
 
@@ -255,18 +255,16 @@ export function PlayerMatchesPage() {
     );
   }, [heroSummaries, maps]);
 
-  // 职业选手对标模块标题公式：[选手ID] [英雄名称] 深度数据对标 | DOTA2 Plan B
-  // 选手ID优先用职业名/展示名，缺失时回退 accountId；英雄名称优先英文名。
-  const playerIdentifier = titleName !== "匿名" ? titleName : accountId;
-  const seoTitle = `${playerIdentifier} 深度数据对标`;
+  // SEO：全页标题为「选手名 - 近期天梯战绩 - PlanB」；英雄名用于补充描述/关键词
   const seoDescription = `查看 ${playerName} 的最新高分局出装路线与正反补细节对比，重点追踪 ${coreHeroNameEn} 等核心英雄的近期打法变化。`;
 
   return (
     <>
-      <SEOMeta
-        title={seoTitle}
+      <SEO
+        fullTitle
+        title={`${playerName} - 近期天梯战绩 - PlanB`}
         description={seoDescription}
-        keywords={`${playerName},DOTA2高分局,${coreHeroNameEn},出装路线,对线正反补`}
+        keywords={`${playerName},DOTA2高分局,${coreHeroNameEn},出装路线,对线正反补,天梯`}
       />
       <PageShell centerSearch feedMode={feed} onFeedModeChange={setFeed}>
         <main className="mx-auto w-full max-w-[1400px] px-4 py-8 sm:px-6 lg:px-8">

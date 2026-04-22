@@ -1,11 +1,11 @@
-import { lazy, Suspense, useCallback } from "react";
+import { lazy, Suspense, useCallback, useMemo } from "react";
 import { useParams } from "react-router-dom";
 import { Copy } from "lucide-react";
 import { useMatchData } from "../hooks/useMatchData";
 import { isNaviOpenDotaLiveRoute } from "../lib/fetchNaviLatestOpenDotaMatch";
 import { PageShell } from "../components/PageShell";
 import { cn } from "../lib/cn";
-import { SEOMeta } from "../components/SEOMeta";
+import { SEO } from "../components/SEO";
 
 const MatchVerticalBoard = lazy(() =>
   import("../components/MatchVerticalBoard").then((m) => ({
@@ -20,6 +20,33 @@ export function MatchPage() {
   const handleCopyId = useCallback(() => {
     void navigator.clipboard.writeText(header.matchId);
   }, [header.matchId]);
+
+  const { seoTitle, seoDescription, seoKeywords } = useMemo(() => {
+    const id = (matchId || header.matchId || "").trim() || "详情";
+    const baseDesc = () =>
+      `查看比赛 #${id} 的阵容对位、经济曲线与关键团战，快速定位高分局胜负手。`;
+    if (loading) {
+      return {
+        seoTitle: `比赛 #${id} 数据解析 - PlanB`,
+        seoDescription: baseDesc(),
+        seoKeywords: `DOTA2比赛详情,${id},高分局复盘`,
+      };
+    }
+    if (error) {
+      return {
+        seoTitle: `比赛 #${id} 数据暂不可用 - PlanB`,
+        seoDescription: `无法加载比赛 #${id} 的数据，请稍后再试。`,
+        seoKeywords: `DOTA2比赛详情,${id},高分局复盘`,
+      };
+    }
+    const league = (header.leagueName || "DOTA2 对局").trim();
+    const leagueShort = league.length > 48 ? `${league.slice(0, 47)}…` : league;
+    return {
+      seoTitle: `${leagueShort} #${header.matchId} | ${header.scoreRadiant} : ${header.scoreDire} 比赛复盘 - PlanB`,
+      seoDescription: `联赛/赛事：${header.leagueName}，比分 Radiant ${header.scoreRadiant} - ${header.scoreDire} Dire，赛时 ${header.duration}。${baseDesc()}`,
+      seoKeywords: `DOTA2比赛详情,${header.matchId},高分局复盘,${header.leagueName || ""}`,
+    };
+  }, [loading, error, matchId, header]);
 
   const trailing = !loading ? (
     <div className="flex items-center gap-2 sm:gap-2.5">
@@ -47,10 +74,11 @@ export function MatchPage() {
 
   return (
     <>
-      <SEOMeta
-        title={`比赛 ${matchId || "详情"} 数据深度解析`}
-        description={`查看比赛 ${matchId || ""} 的阵容对位、经济曲线与关键团战细节，快速定位高分局胜负手。`}
-        keywords={`DOTA2比赛详情,${matchId || "比赛编号"},高分局复盘`}
+      <SEO
+        fullTitle
+        title={seoTitle}
+        description={seoDescription}
+        keywords={seoKeywords}
       />
       <PageShell centerSearch trailing={trailing}>
         {loading && (
