@@ -1,8 +1,7 @@
-import { lazy, Suspense, useCallback, useMemo } from "react";
+import { lazy, Suspense, useCallback } from "react";
 import { useParams } from "react-router-dom";
 import { Copy } from "lucide-react";
 import { useMatchData } from "../hooks/useMatchData";
-import { isNaviOpenDotaLiveRoute } from "../lib/fetchNaviLatestOpenDotaMatch";
 import { PageShell } from "../components/PageShell";
 import { cn } from "../lib/cn";
 import { SEO } from "../components/SEO";
@@ -21,32 +20,10 @@ export function MatchPage() {
     void navigator.clipboard.writeText(header.matchId);
   }, [header.matchId]);
 
-  const { seoTitle, seoDescription, seoKeywords } = useMemo(() => {
-    const id = (matchId || header.matchId || "").trim() || "详情";
-    const baseDesc = () =>
-      `查看比赛 #${id} 的阵容对位、经济曲线与关键团战，快速定位高分局胜负手。`;
-    if (loading) {
-      return {
-        seoTitle: `比赛 #${id} 数据解析 - PlanB`,
-        seoDescription: baseDesc(),
-        seoKeywords: `DOTA2比赛详情,${id},高分局复盘`,
-      };
-    }
-    if (error) {
-      return {
-        seoTitle: `比赛 #${id} 数据暂不可用 - PlanB`,
-        seoDescription: `无法加载比赛 #${id} 的数据，请稍后再试。`,
-        seoKeywords: `DOTA2比赛详情,${id},高分局复盘`,
-      };
-    }
-    const league = (header.leagueName || "DOTA2 对局").trim();
-    const leagueShort = league.length > 48 ? `${league.slice(0, 47)}…` : league;
-    return {
-      seoTitle: `${leagueShort} #${header.matchId} | ${header.scoreRadiant} : ${header.scoreDire} 比赛复盘 - PlanB`,
-      seoDescription: `联赛/赛事：${header.leagueName}，比分 Radiant ${header.scoreRadiant} - ${header.scoreDire} Dire，赛时 ${header.duration}。${baseDesc()}`,
-      seoKeywords: `DOTA2比赛详情,${header.matchId},高分局复盘,${header.leagueName || ""}`,
-    };
-  }, [loading, error, matchId, header]);
+  const displayMatchId = (matchId || header.matchId || "").trim() || "详情";
+  const seoTitle = `比赛 #${displayMatchId} 数据解析 - PlanB`;
+  const seoDescription = `提供 Dota 2 比赛 #${displayMatchId} 的高分局对战数据、经济走向与出装录像解析。`;
+  const seoKeywords = `DOTA2,比赛数据,高分局,${displayMatchId}`;
 
   const trailing = !loading ? (
     <div className="flex items-center gap-2 sm:gap-2.5">
@@ -88,9 +65,7 @@ export function MatchPage() {
               "bg-skin-muted/80 dark:bg-slate-800/80"
             )}
           >
-            {isNaviOpenDotaLiveRoute(matchId)
-              ? "正在从 OpenDota 加载 Na'Vi 最近一场…"
-              : `正在加载比赛 ${matchId} …`}
+            正在加载比赛 {matchId} …
           </div>
         )}
         <main className="min-w-0 overflow-x-hidden px-3 py-2 sm:px-4 lg:px-6">
