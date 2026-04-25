@@ -18,7 +18,7 @@ import {
 import heroPrimaryAttr from "../data/hero_primary_attr.json";
 import { FeedModeToggle, type FeedSelection } from "./FeedModeToggle";
 import { SEEDED_PRO_PLAYERS } from "../data/proPlayers";
-import { fetchDeployedDataJson } from "../lib/fetchStaticJson";
+import { fetchAllReplaySummariesForSearch } from "../lib/replaysApi";
 
 type HeroRow = HeroMapEntry & { id: string };
 type AttrFilter = "str" | "agi" | "int" | "all";
@@ -228,26 +228,19 @@ export function HeroSearch({
     let cancelled = false;
     (async () => {
       try {
-        const paths = ["/data/replays_index.json", "/data/pro_replays_index.json"] as const;
-        const payloads = await Promise.all(
-          paths.map((p) =>
-            fetchDeployedDataJson<{
-              replays?: Array<{
-                players?: Array<{ account_id?: number; pro_name?: string | null }>;
-              }>;
-            }>(p).catch(() => null)
-          )
-        );
+        const all = await fetchAllReplaySummariesForSearch();
         const uniq = new Map<number, string>();
-        for (const j of payloads) {
-          if (!j) continue;
-          for (const r of j.replays ?? []) {
-            for (const p of r.players ?? []) {
-              const aid = Number(p.account_id ?? 0);
-              const pn = String(p.pro_name ?? "").trim();
-              if (!Number.isFinite(aid) || aid <= 0 || !pn) continue;
-              if (!uniq.has(aid)) uniq.set(aid, pn);
-            }
+        for (const r of all) {
+          for (const p of r.players ?? []) {
+            const aid = Number(p.account_id ?? 0);
+            if (!Number.isFinite(aid) || aid <= 0) continue;
+            const pro = String(p.pro_name ?? "").trim();
+            const steam = String(p.personaname ?? "").trim();
+            const label = pro || steam;
+            if (!label) continue;
+            const prev = uniq.get(aid);
+            if (!prev) uniq.set(aid, label);
+            else if (pro && !String(prev).includes(pro)) uniq.set(aid, pro);
           }
         }
         if (!cancelled) {

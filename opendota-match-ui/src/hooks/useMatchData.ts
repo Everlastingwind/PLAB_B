@@ -12,6 +12,7 @@ import {
   fetchNaviLatestOpenDotaMatch,
   isNaviOpenDotaLiveRoute,
 } from "../lib/fetchNaviLatestOpenDotaMatch";
+import { fetchPlanBSlimPayload } from "../lib/supabasePlanB";
 import type { EntityMapsPayload, VpkrTalentLabelEntry } from "../types/entityMaps";
 import type { SlimMatchJson } from "../types/slimMatch";
 
@@ -120,6 +121,35 @@ export function useMatchData(matchId?: string): MatchDataState & { reload: () =>
           lastErr = e instanceof Error ? e : new Error(String(e));
         }
       } else {
+        // 1) 优先从 Supabase 读取（命中则直接用于页面）
+        if (numericMatchId > 0) {
+          try {
+            const [m, talentLabelsByKey, raw] = await Promise.all([
+              mapsPromise,
+              talentLabelsPromise,
+              fetchPlanBSlimPayload(numericMatchId),
+            ]);
+            if (raw) {
+              maps = {
+                ...m,
+                ...(talentLabelsByKey && Object.keys(talentLabelsByKey).length > 0
+                  ? { talentLabelsByKey }
+                  : {}),
+              };
+              let next = purifyMatchJsonForSlim(raw);
+              if (!isPubTierMatch(next)) {
+                next = await applyOpenDotaEnrich(next);
+                await applyOpenDotaEndgameItems(next, maps);
+              }
+              slim = next;
+            }
+          } catch (e) {
+            lastErr = e instanceof Error ? e : new Error(String(e));
+          }
+        }
+
+        // 2) Supabase 未命中时回退到静态 JSON
+        if (!slim) {
         for (const path of paths) {
           try {
             const [m, talentLabelsByKey, raw] = await Promise.all([
@@ -143,6 +173,7 @@ export function useMatchData(matchId?: string): MatchDataState & { reload: () =>
           } catch (e) {
             lastErr = e instanceof Error ? e : new Error(String(e));
           }
+        }
         }
         if (!slim && numericMatchId > 0) {
           try {

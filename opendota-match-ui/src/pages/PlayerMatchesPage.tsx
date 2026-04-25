@@ -21,12 +21,12 @@ import {
 } from "../data/mockMatchPlayers";
 import { cn } from "../lib/cn";
 import { MECHA_INSET, MECHA_RAISED } from "../lib/mechaStyles";
-import type { SlimMatchJson, SlimPlayer } from "../types/slimMatch";
+import type { SlimPlayer } from "../types/slimMatch";
 import { TalentTreeBadge } from "../components/TalentTreeBadge";
 import type { TalentPickUi, TalentTreeUi } from "../data/mockMatchPlayers";
 import { SEO } from "../components/SEO";
 import { forEachConcurrent } from "../lib/fetchConcurrent";
-import { staticDataSearchParam } from "../lib/staticDataVersion";
+import { loadSlimMatchJsonForDetail } from "../lib/loadSlimMatchJson";
 
 const MATCH_JSON_CONCURRENCY = 6;
 
@@ -166,14 +166,10 @@ export function PlayerMatchesPage() {
     if (!need.length || aid <= 0) return;
     (async () => {
       const updates: Record<number, SlimPlayer> = {};
-      const q = staticDataSearchParam();
       await forEachConcurrent(need, MATCH_JSON_CONCURRENCY, async (mid) => {
         try {
-          const res = await fetch(`/data/matches/${mid}.json${q}`, {
-            cache: "default",
-          });
-          if (!res.ok) return;
-          const j = (await res.json()) as SlimMatchJson;
+          const j = await loadSlimMatchJsonForDetail(mid);
+          if (!j) return;
           const p = (j.players || []).find(
             (x) => Number(x.account_id || 0) === aid
           );

@@ -3,7 +3,8 @@ import react from "@vitejs/plugin-react";
 
 export default defineConfig({
   plugins: [react()],
-  envDir: "..",
+  // 与 `npm run dev` 的工作目录一致：从 `opendota-match-ui/.env*` 读取，避免误用仓库根目录占位符。
+  envDir: ".",
   envPrefix: ["VITE_", "NEXT_PUBLIC_"],
   server: {
     proxy: {

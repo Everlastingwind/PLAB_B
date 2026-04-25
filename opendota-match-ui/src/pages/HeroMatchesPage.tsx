@@ -35,7 +35,7 @@ import { TalentTreeBadge } from "../components/TalentTreeBadge";
 import type { TalentPickUi, TalentTreeUi } from "../data/mockMatchPlayers";
 import { SEOMeta } from "../components/SEOMeta";
 import { forEachConcurrent } from "../lib/fetchConcurrent";
-import { staticDataSearchParam } from "../lib/staticDataVersion";
+import { loadSlimMatchJsonForDetail } from "../lib/loadSlimMatchJson";
 
 const MATCH_JSON_CONCURRENCY = 6;
 
@@ -262,14 +262,10 @@ export function HeroMatchesPage() {
           skillBuild?: SkillBuildStepUi[];
         }
       > = {};
-      const q = staticDataSearchParam();
       await forEachConcurrent(need, MATCH_JSON_CONCURRENCY, async (mid) => {
         try {
-          const res = await fetch(`/data/matches/${mid}.json${q}`, {
-            cache: "default",
-          });
-          if (!res.ok) return;
-          const j = (await res.json()) as SlimMatchJson;
+          const j = await loadSlimMatchJsonForDetail(mid);
+          if (!j) return;
           updates[mid] = j;
           try {
             const ui = buildUiFromSlim(j, maps, DEFAULT_TEAM_NAMES);

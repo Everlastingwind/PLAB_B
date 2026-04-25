@@ -1,6 +1,11 @@
 import type { EntityMapsPayload } from "../types/entityMaps";
-import type { ReplaySummary, ReplaysIndexPayload } from "../types/replaysIndex";
+import type {
+  ReplayPlayerSummary,
+  ReplaySummary,
+  ReplaysIndexPayload,
+} from "../types/replaysIndex";
 import { fetchDeployedDataJson } from "./fetchStaticJson";
+import { fetchPlanBReplayIndexRows } from "./supabasePlanB";
 
 const PAGE_SIZE = 20;
 
@@ -50,22 +55,156 @@ export function mergePubProReplays(
   );
 }
 
+/** 同 match_id 合并：保留 uploaded_at 较新的一条（用于静态 pub 与 Supabase plan_b） */
+export function mergeReplaySummariesByMatchId(
+  primary: ReplaySummary[],
+  secondary: ReplaySummary[]
+): ReplaySummary[] {
+  const byId = new Map<number, ReplaySummary>();
+  const upsert = (r: ReplaySummary) => {
+    const ex = byId.get(r.match_id);
+    if (!ex) {
+      byId.set(r.match_id, r);
+      return;
+    }
+    const t1 = new Date(ex.uploaded_at).getTime();
+    const t2 = new Date(r.uploaded_at).getTime();
+    if (t2 >= t1) byId.set(r.match_id, r);
+  };
+  for (const r of primary) upsert(r);
+  for (const r of secondary) upsert(r);
+  return Array.from(byId.values()).sort(
+    (a, b) =>
+      new Date(b.uploaded_at).getTime() - new Date(a.uploaded_at).getTime()
+  );
+}
+
+function planBRowToReplaySummary(row: Record<string, unknown>): ReplaySummary | null {
+  const matchId = Number(row.match_id);
+  if (!Number.isFinite(matchId) || matchId <= 0) return null;
+  const createdRaw = row.created_at;
+  let uploadedAt =
+    typeof createdRaw === "string" && createdRaw.trim()
+      ? createdRaw.trim()
+      : new Date().toISOString();
+  if (!uploadedAt.includes("T")) {
+    const d = new Date(uploadedAt);
+    uploadedAt = Number.isFinite(d.getTime())
+      ? d.toISOString()
+      : new Date().toISOString();
+  }
+  const durationSec = Math.max(
+    0,
+    Math.floor(Number(row.duration ?? row.duration_sec ?? 0) || 0)
+  );
+  const radiantWin = Boolean(row.radiant_win);
+  const leagueName =
+    String(row.league_name ?? "本地录像").trim() || "本地录像";
+  const rsRaw = row.radiant_score;
+  const dsRaw = row.dire_score;
+  const rs =
+    rsRaw !== undefined && rsRaw !== null
+      ? Math.floor(Number(rsRaw) || 0)
+      : undefined;
+  const ds =
+    dsRaw !== undefined && dsRaw !== null
+      ? Math.floor(Number(dsRaw) || 0)
+      : undefined;
+  const playersRaw = row.players;
+  if (!Array.isArray(playersRaw)) return null;
+  const players: ReplayPlayerSummary[] = [];
+  for (const p of playersRaw) {
+    if (!p || typeof p !== "object") continue;
+    const o = p as Record<string, unknown>;
+    const slot = Math.floor(Number(o.player_slot ?? 0) || 0);
+    const accountId = Math.floor(Number(o.account_id ?? 0) || 0);
+    const heroId = Math.floor(Number(o.hero_id ?? 0) || 0);
+    const kills = Math.floor(Number(o.kills ?? o.k ?? 0) || 0);
+    const deaths = Math.floor(Number(o.deaths ?? o.d ?? 0) || 0);
+    const assists = Math.floor(Number(o.assists ?? o.a ?? 0) || 0);
+    const proRaw = o.pro_name;
+    const proName =
+      proRaw != null && String(proRaw).trim()
+        ? String(proRaw).trim()
+        : null;
+    const pnRaw = o.personaname ?? o.name;
+    const personaname =
+      pnRaw != null && String(pnRaw).trim() ? String(pnRaw).trim() : null;
+    const roleRaw = o.role_early;
+    const roleEarly =
+      roleRaw != null && String(roleRaw).trim()
+        ? String(roleRaw).trim()
+        : null;
+    players.push({
+      player_slot: slot,
+      account_id: accountId,
+      hero_id: heroId,
+      pro_name: proName,
+      personaname,
+      role_early: roleEarly || undefined,
+      is_radiant: slot < 128,
+      kills,
+      deaths,
+      assists,
+    });
+  }
+  if (players.length === 0) return null;
+  return {
+    match_id: matchId,
+    uploaded_at: uploadedAt,
+    source: "pub",
+    match_tier: "pub",
+    duration_sec: durationSec,
+    radiant_win: radiantWin,
+    league_name: leagueName,
+    radiant_score: rs !== undefined && Number.isFinite(rs) ? rs : undefined,
+    dire_score: ds !== undefined && Number.isFinite(ds) ? ds : undefined,
+    players,
+  };
+}
+
+/** Supabase plan_b → 与 replays_index 同形的摘要行（标记为 pub） */
+export async function fetchCloudPubReplaySummaries(): Promise<ReplaySummary[]> {
+  const rows = await fetchPlanBReplayIndexRows();
+  const out: ReplaySummary[] = [];
+  for (const row of rows) {
+    const r = planBRowToReplaySummary(row);
+    if (r) out.push(r);
+  }
+  return out;
+}
+
+/** 搜索栏：静态索引 + 职业索引 + Supabase 云录像（去重） */
+export async function fetchAllReplaySummariesForSearch(): Promise<
+  ReplaySummary[]
+> {
+  const [pubIdx, proIdx, cloud] = await Promise.all([
+    fetchReplaysIndex().catch(() => ({ replays: [] as ReplaySummary[] })),
+    fetchProReplaysIndex().catch(() => ({ replays: [] as ReplaySummary[] })),
+    fetchCloudPubReplaySummaries(),
+  ]);
+  const mergedPub = mergeReplaySummariesByMatchId(pubIdx.replays, cloud);
+  return mergePubProReplays(mergedPub, proIdx.replays);
+}
+
 /** 录像索引来源（首页 / 英雄页 / 选手页共用）：PUB / PRO 可多选 */
 export type FeedSelection = { pub: boolean; pro: boolean };
 
 export async function fetchReplaysForFeedSelection(
   sel: FeedSelection
 ): Promise<ReplaySummary[]> {
+  const cloud = sel.pub ? await fetchCloudPubReplaySummaries() : [];
   if (sel.pub && sel.pro) {
     const [pubIdx, proIdx] = await Promise.all([
       fetchReplaysIndex(),
       fetchProReplaysIndex(),
     ]);
-    return mergePubProReplays(pubIdx.replays, proIdx.replays);
+    const mergedPub = mergeReplaySummariesByMatchId(pubIdx.replays, cloud);
+    return mergePubProReplays(mergedPub, proIdx.replays);
   }
   if (sel.pub) {
     const idx = await fetchReplaysIndex();
-    return idx.replays;
+    return mergeReplaySummariesByMatchId(idx.replays, cloud);
   }
   const idx = await fetchProReplaysIndex();
   return idx.replays;

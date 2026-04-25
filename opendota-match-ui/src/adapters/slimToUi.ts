@@ -121,7 +121,7 @@ function mapPurchaseHistory(raw: unknown): PlayerRowMock["purchaseHistory"] | un
     if (!row || typeof row !== "object") continue;
     const o = row as Record<string, unknown>;
     const t = Number(o.time);
-    const itemRaw = String(o.item ?? "").trim();
+    const itemRaw = String(o.item ?? (o as { item_key?: unknown }).item_key ?? "").trim();
     if (!Number.isFinite(t) || t < 0 || !itemRaw) continue;
     out.push({
       time: Math.floor(t),
