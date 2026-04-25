@@ -30,6 +30,7 @@ import { stripReplayRowFactionOutcomeNoise } from "../lib/playerDisplay";
 import {
   buildSixPlusOneFinal,
   extractSixMainSlotItemIds,
+  normalizeBackpackThreeForDisplay,
   normalizeMainSixForDisplay,
 } from "../lib/matchInventory";
 import {
@@ -85,11 +86,11 @@ function mapPlayerInventory(
   maps: EntityMapsPayload
 ): PlayerRowMock["items"] {
   const raw = p as Record<string, unknown>;
-  const six = buildSixPlusOneFinal(raw, p.items_slot ?? null, maps);
+  const inv = buildSixPlusOneFinal(raw, p.items_slot ?? null, maps);
   return {
-    main: normalizeMainSixForDisplay(six.main),
-    backpack: [null, null, null] as PlayerRowMock["items"]["backpack"],
-    neutral: null,
+    main: normalizeMainSixForDisplay(inv.main),
+    backpack: normalizeBackpackThreeForDisplay(inv.backpack),
+    neutral: inv.neutral,
   };
 }
 
@@ -111,6 +112,25 @@ function mapStartingItems(raw: unknown): StartingItemMock[] | undefined {
     });
   }
   return out.length ? out : undefined;
+}
+
+function mapPurchaseHistory(raw: unknown): PlayerRowMock["purchaseHistory"] | undefined {
+  if (!Array.isArray(raw) || raw.length === 0) return undefined;
+  const out: NonNullable<PlayerRowMock["purchaseHistory"]> = [];
+  for (const row of raw) {
+    if (!row || typeof row !== "object") continue;
+    const o = row as Record<string, unknown>;
+    const t = Number(o.time);
+    const itemRaw = String(o.item ?? "").trim();
+    if (!Number.isFinite(t) || t < 0 || !itemRaw) continue;
+    out.push({
+      time: Math.floor(t),
+      item: itemRaw,
+    });
+  }
+  if (out.length === 0) return undefined;
+  out.sort((a, b) => a.time - b.time);
+  return out;
 }
 
 function mapAbilitySteps(raw: unknown): AbilityBuildStep[] | undefined {
@@ -1286,20 +1306,23 @@ function slimPlayerToRow(p: SlimPlayer, maps: EntityMapsPayload): PlayerRowMock 
   });
   items = {
     ...items,
-    main: stripConsumedAghanimsFromMainSlots(
-      items.main,
-      mainItemIds,
-      scepterShardBuff
-    ),
+    main: stripConsumedAghanimsFromMainSlots(items.main, mainItemIds),
   };
   const scepterActive = scepterShardBuff.scepter;
   const shardActive = scepterShardBuff.shard;
   const startingItems = mapStartingItems((p as { starting_items?: unknown }).starting_items);
+  const purchaseHistory = mapPurchaseHistory(
+    (p as { purchase_history?: unknown }).purchase_history
+  );
   const spiritBearItemsRaw = (p as { spirit_bear_items_slot?: unknown }).spirit_bear_items_slot;
   const spiritBearItems = (() => {
     if (!Array.isArray(spiritBearItemsRaw) || spiritBearItemsRaw.length === 0) return undefined;
-    const six = buildSixPlusOneFinal({}, spiritBearItemsRaw as SlimPlayer["items_slot"], maps).main;
-    const normalized = normalizeMainSixForDisplay(six);
+    const bearRaw = {} as Record<string, unknown>;
+    const bearSlots = spiritBearItemsRaw as SlimPlayer["items_slot"];
+    let bearMain = buildSixPlusOneFinal(bearRaw, bearSlots, maps).main;
+    const bearMainIds = extractSixMainSlotItemIds(bearRaw, bearSlots);
+    bearMain = stripConsumedAghanimsFromMainSlots(bearMain, bearMainIds);
+    const normalized = normalizeMainSixForDisplay(bearMain);
     const hasAny = normalized.some((it) => it != null);
     return hasAny ? normalized : undefined;
   })();
@@ -1320,6 +1343,7 @@ function slimPlayerToRow(p: SlimPlayer, maps: EntityMapsPayload): PlayerRowMock 
     laneEarly: String(p.lane_early ?? "").trim() || undefined,
     roleEarly: String(p.role_early ?? "").trim() || undefined,
     startingItems,
+    purchaseHistory,
     level: numOrZero(p.level),
     kills: kda.kills,
     deaths: kda.deaths,

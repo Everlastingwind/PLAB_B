@@ -121,6 +121,11 @@ export interface SlimPlayer {
     count?: number;
     first_purchase_time?: number;
   }>;
+  /** 购买流水（仅非消耗/偏成装），用于时间轴展示 */
+  purchase_history?: Array<{
+    time?: number;
+    item?: string;
+  }>;
   net_worth?: number;
   /** OpenDota API：是否持有 A 杖效果（0/1 或布尔） */
   aghanims_scepter?: number | boolean;

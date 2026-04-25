@@ -64,6 +64,30 @@ function itemKeyClean(key: string): string {
   return key.replace(/^item_/, "");
 }
 
+function normalizePurchaseItemKey(raw: string): string {
+  return String(raw || "").trim().replace(/^item_/, "").toLowerCase();
+}
+
+function buildPurchaseEventsForTime(
+  p: PlayerRowMock,
+  currentTimeSec: number
+): Array<{ time: number; itemKey: string }> {
+  const out: Array<{ time: number; itemKey: string }> = [];
+  for (const it of p.startingItems ?? []) {
+    const key = normalizePurchaseItemKey(it.itemKey);
+    if (!key) continue;
+    const ct = Math.max(1, Math.floor(Number(it.count ?? 1) || 1));
+    for (let i = 0; i < ct; i++) out.push({ time: 0, itemKey: key });
+  }
+  for (const row of p.purchaseHistory ?? []) {
+    if (!row || Number(row.time) > currentTimeSec) continue;
+    const key = normalizePurchaseItemKey(row.item);
+    if (!key) continue;
+    out.push({ time: Math.max(0, Number(row.time) || 0), itemKey: key });
+  }
+  return out;
+}
+
 function roleEarlyLabel(role: string | undefined): string {
   const r = String(role || "").trim();
   if (!r) return "";
@@ -85,6 +109,42 @@ function hasTalentOrSkillUi(p: PlayerRowMock): boolean {
   return Boolean(tiers && tiers.length > 0);
 }
 
+function PurchaseHistoryStrip({
+  p,
+  currentTimeSec,
+}: {
+  p: PlayerRowMock;
+  currentTimeSec: number;
+}) {
+  const rows = buildPurchaseEventsForTime(p, currentTimeSec);
+  if (rows.length === 0) return null;
+  const recent = rows.slice(-10);
+  return (
+    <div className="pointer-events-auto">
+      <div className="flex max-w-full flex-wrap items-center justify-start gap-1">
+        {recent.map((x, idx) => (
+          <div
+            key={`${x.time}-${x.itemKey}-${idx}`}
+            className="flex shrink-0 items-center gap-1 rounded border border-slate-500/35 bg-slate-900/45 px-1 py-0.5"
+            title={`${Math.floor(x.time / 60)}:${String(x.time % 60).padStart(2, "0")} ${x.itemKey}`}
+          >
+            <img
+              src={itemIconUrl(itemKeyClean(x.itemKey))}
+              alt=""
+              className="h-6 w-6 rounded-[2px] object-cover"
+              {...steamCdnImgDefer}
+              onError={onDotaSteamAssetImgError}
+            />
+            <span className="font-mono text-[11px] tabular-nums text-neutral-700 dark:text-slate-300">
+              {Math.floor(x.time / 60)}
+            </span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 /** Dota 2 对阵表：6 主槽 + 神杖/魔晶状态（不展示中立槽）。 */
 function GridInventorySlots({
   p,
@@ -99,7 +159,6 @@ function GridInventorySlots({
   const scepterOn =
     p.scepterActive ?? (legacy === "scepter" || legacy === "both");
   const shardOn = p.shardActive ?? (legacy === "shard" || legacy === "both");
-
   const main = p.items.main;
   const bearMain = p.spiritBearItems;
 
@@ -157,7 +216,11 @@ function GridInventorySlots({
             normalizeDotaAssetUrl(rawImg) ||
             itemIconUrl(itemKeyClean(slot.itemKey));
           return (
-            <div key={idx} className={filledMain} role="listitem">
+            <div
+              key={idx}
+              className={filledMain}
+              role="listitem"
+            >
               <img
                 src={src}
                 alt=""
@@ -298,11 +361,13 @@ export function PlayerMatchGridRow({
   maxH,
   maxKills,
   side,
+  currentTimeSec,
 }: {
   p: PlayerRowMock;
   maxH: number;
   maxKills: number;
   side: "radiant" | "dire";
+  currentTimeSec: number;
 }) {
   const rawKda = kdaFromPlayerRecord(p as unknown as Record<string, unknown>);
   const kills = rawKda.kills;
@@ -578,6 +643,7 @@ export function PlayerMatchGridRow({
                 <SkillBuildTimeline steps={p.skillBuild} />
               </div>
             ) : null}
+            <PurchaseHistoryStrip p={p} currentTimeSec={currentTimeSec} />
           </div>
         ) : null}
       </div>
@@ -687,7 +753,7 @@ export function PlayerMatchGridRow({
               return (
                 <div
                   key={`start-empty-${idx}`}
-                  className="h-6 w-6 rounded border border-slate-500/30 bg-slate-800/35"
+                  className="h-7 w-7 rounded border border-slate-500/30 bg-slate-800/35"
                   aria-hidden
                 />
               );
@@ -698,7 +764,7 @@ export function PlayerMatchGridRow({
             return (
               <div
                 key={`start-it-${idx}`}
-                className="h-6 w-6 overflow-hidden rounded border border-slate-500/40 bg-slate-900/70"
+                className="h-7 w-7 overflow-hidden rounded border border-slate-500/40 bg-slate-900/70"
               >
                 <img
                   src={src}
@@ -777,6 +843,11 @@ export function PlayerMatchGridRow({
       {/* 7. 物品：列宽 max-content，格内左对齐，不占用装备右侧空白 */}
       <div className="min-w-0 justify-self-start overflow-visible">
         <GridInventorySlots p={p} side={side} />
+      </div>
+
+      {/* 第二行绿框：装备变化 */}
+      <div className="col-start-3 col-span-5 mt-1 min-w-0">
+        <PurchaseHistoryStrip p={p} currentTimeSec={currentTimeSec} />
       </div>
     </div>
     </>

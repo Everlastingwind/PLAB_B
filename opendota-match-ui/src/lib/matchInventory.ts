@@ -2,16 +2,22 @@
  * 从 OpenDota 风格玩家对象读取 item_0..item_5，生成固定 6 格主栏数据。
  * item_id 通过 entity_maps.items 映射为 key / CDN。
  *
- * 主栏约束：仅槽位 0–5（与 `item_0`..`item_5` 一致）。槽位 ≥6 视为背包/stash，不得写入 main。
- * 中立槽已弃用：`neutral` 恒为 null，不读 `item_neutral` / `neutral_item_key` / `neutral_img`。
+ * 主栏：仅 HUD 槽位 0–5（与 `item_0`..`item_5` 一致）。
+ * 背包：HUD 槽位 6–8（与 `backpack_0`..`backpack_2` 或 `items_slot[].slot` 一致）。
+ * 中立：HUD 槽位 16 或 `item_neutral` / `neutral_img` / `neutral_item_key`，不得写入 main。
  */
 import type { EntityMapsPayload } from "../types/entityMaps";
 import type { SlimItemSlot } from "../types/slimMatch";
 import type { ItemSlotMock } from "../data/mockMatchPlayers";
-import { itemIconUrl } from "../data/mockMatchPlayers";
+import { itemIconUrl, normalizeDotaAssetUrl } from "../data/mockMatchPlayers";
 
 /** 身上主物品栏槽位数（不含背包、不含中立）。 */
 export const MAIN_INVENTORY_SLOT_COUNT = 6;
+
+/** Dota HUD：主栏 0–5，背包 6–8，中立 16。 */
+export const HUD_BACKPACK_SLOT_START = 6;
+export const HUD_BACKPACK_SLOT_END = 8;
+export const HUD_NEUTRAL_SLOT = 16;
 
 function numId(v: unknown): number {
   if (v === null || v === undefined) return 0;
@@ -23,8 +29,27 @@ function isEmptyItemScalar(v: unknown): boolean {
   return v === null || v === undefined || v === "" || v === 0;
 }
 
-function emptyMainTuple(): SixPlusOneItems["main"] {
+export type SixMainTuple = [
+  ItemSlotMock | null,
+  ItemSlotMock | null,
+  ItemSlotMock | null,
+  ItemSlotMock | null,
+  ItemSlotMock | null,
+  ItemSlotMock | null,
+];
+
+export type BackpackThreeTuple = [
+  ItemSlotMock | null,
+  ItemSlotMock | null,
+  ItemSlotMock | null,
+];
+
+function emptyMainTuple(): SixMainTuple {
   return [null, null, null, null, null, null];
+}
+
+function emptyBackpackTuple(): BackpackThreeTuple {
+  return [null, null, null];
 }
 
 function itemEntryFromId(
@@ -44,15 +69,9 @@ function itemEntryFromId(
 }
 
 export type SixPlusOneItems = {
-  main: [
-    ItemSlotMock | null,
-    ItemSlotMock | null,
-    ItemSlotMock | null,
-    ItemSlotMock | null,
-    ItemSlotMock | null,
-    ItemSlotMock | null,
-  ];
-  /** 保留字段以兼容类型；恒为 null，UI 不展示中立槽 */
+  main: SixMainTuple;
+  backpack: BackpackThreeTuple;
+  /** 中立槽；主 6 格不得承载中立物品 */
   neutral: ItemSlotMock | null;
 };
 
@@ -69,15 +88,62 @@ export function hasOpenDotaItemSlots(p: Record<string, unknown>): boolean {
   return false;
 }
 
-/** 管线 `items_slot` 已按 0..5 建槽（translate_match_data 输出），应优先于裸 item_* */
-function itemsSlotHasIndexedRows(
+function hasOpenDotaBackpackSlots(p: Record<string, unknown>): boolean {
+  for (let i = 0; i < 3; i++) {
+    const k = `backpack_${i}`;
+    if (!Object.prototype.hasOwnProperty.call(p, k)) continue;
+    if (!isEmptyItemScalar(p[k])) return true;
+  }
+  return false;
+}
+
+/** 任意行带合法 `slot` 标量时，按 HUD 物理索引解析，禁止按数组顺序把背包塞进主栏。 */
+function itemsSlotArrayUsesExplicitSlotField(
   slots: SlimItemSlot[] | null | undefined
 ): boolean {
-  if (!Array.isArray(slots) || slots.length === 0) return false;
+  if (!Array.isArray(slots)) return false;
   for (const row of slots) {
     if (!row || typeof row !== "object") continue;
-    const idx = Math.floor(Number((row as SlimItemSlot).slot));
-    if (Number.isFinite(idx) && idx >= 0 && idx <= 5) return true;
+    if (!Object.prototype.hasOwnProperty.call(row, "slot")) continue;
+    const n = Math.floor(Number((row as SlimItemSlot).slot));
+    if (Number.isFinite(n)) return true;
+  }
+  return false;
+}
+
+function readHudSlotIndex(row: SlimItemSlot | Record<string, unknown>): number | null {
+  if (!row || typeof row !== "object") return null;
+  if (!Object.prototype.hasOwnProperty.call(row, "slot")) return null;
+  const n = Math.floor(Number((row as SlimItemSlot).slot));
+  if (!Number.isFinite(n) || n < 0 || n > HUD_NEUTRAL_SLOT) return null;
+  return n;
+}
+
+function cellEquipped(s: SlimItemSlot): boolean {
+  if (s.empty === true) return false;
+  if (String(s.item_key ?? "").trim()) return true;
+  return numId(s.item_id) > 0;
+}
+
+/** 管线 `items_slot` 上主栏 0–5 是否有装备（有 HUD slot 时只看物理主栏，不看数组前 6 项）。 */
+function itemsSlotHasMainSlotEquipped(
+  slots: SlimItemSlot[],
+  declareHudSlots: boolean
+): boolean {
+  if (declareHudSlots) {
+    for (const row of slots) {
+      if (!row || typeof row !== "object") continue;
+      const s = row as SlimItemSlot;
+      const si = readHudSlotIndex(s);
+      if (si === null || si < 0 || si > 5) continue;
+      if (cellEquipped(s)) return true;
+    }
+    return false;
+  }
+  for (let i = 0; i < Math.min(MAIN_INVENTORY_SLOT_COUNT, slots.length); i++) {
+    const row = slots[i];
+    if (!row || typeof row !== "object") continue;
+    if (cellEquipped(row as SlimItemSlot)) return true;
   }
   return false;
 }
@@ -99,41 +165,17 @@ function cellFromSlimSlotRow(
   };
 }
 
-/** 与 Python `_items_slot_has_items` 对齐：有 `item_key` 或 `item_id` 即视为管线主栏有效。 */
-function itemsSlotHasAnyEquipped(
-  slots: SlimItemSlot[] | null | undefined
-): boolean {
-  if (!Array.isArray(slots)) return false;
-  for (const row of slots.slice(0, MAIN_INVENTORY_SLOT_COUNT)) {
-    if (!row || typeof row !== "object") continue;
-    if (row.empty === true) continue;
-    if (String(row.item_key ?? "").trim()) return true;
-    if (numId(row.item_id) > 0) return true;
-  }
-  return false;
-}
-
-function buildMainFromItemsSlotFlexible(
-  slots: SlimItemSlot[],
-  maps: EntityMapsPayload
-): SixPlusOneItems["main"] {
-  if (itemsSlotHasIndexedRows(slots)) {
-    return buildMainFromIndexedItemsSlot(slots, maps);
-  }
-  return buildMainFromOrderedItemsSlotFirstSix(slots, maps);
-}
-
-/** 仅写入 slot 为 0..5 的行；≥6 为背包，忽略。 */
+/** 仅写入 HUD slot 为 0..5 的行；6–8、16 等不得进入主栏。 */
 function buildMainFromIndexedItemsSlot(
   slots: SlimItemSlot[],
   maps: EntityMapsPayload
-): SixPlusOneItems["main"] {
+): SixMainTuple {
   const main = emptyMainTuple();
   for (const row of slots) {
     if (!row || typeof row !== "object") continue;
     const s = row as SlimItemSlot;
-    const idx = Math.floor(Number(s.slot));
-    if (!Number.isFinite(idx) || idx < 0 || idx > 5) continue;
+    const idx = readHudSlotIndex(s);
+    if (idx === null || idx < 0 || idx > 5) continue;
     if (s.empty) {
       main[idx] = null;
       continue;
@@ -143,17 +185,19 @@ function buildMainFromIndexedItemsSlot(
       main[idx] = null;
       continue;
     }
-    const cell = cellFromSlimSlotRow(s, maps);
-    main[idx] = cell;
+    main[idx] = cellFromSlimSlotRow(s, maps);
   }
   return main;
 }
 
-/** 无槽位索引时：仅取数组前 6 项作为展示主栏（不读取背包段）。 */
+/**
+ * 无 HUD `slot` 列时：仅数组下标 0..5 映射到物理主栏 0..5（旧管线约定）。
+ * 一旦存在带 `slot` 的行，不得调用本函数（改走 `buildMainFromIndexedItemsSlot`）。
+ */
 function buildMainFromOrderedItemsSlotFirstSix(
   slots: SlimItemSlot[],
   maps: EntityMapsPayload
-): SixPlusOneItems["main"] {
+): SixMainTuple {
   const main = emptyMainTuple();
   const n = Math.min(MAIN_INVENTORY_SLOT_COUNT, slots.length);
   for (let i = 0; i < n; i++) {
@@ -166,10 +210,98 @@ function buildMainFromOrderedItemsSlotFirstSix(
   return main;
 }
 
+function buildBackpackFromIndexedItemsSlot(
+  slots: SlimItemSlot[],
+  maps: EntityMapsPayload
+): BackpackThreeTuple {
+  const bp = emptyBackpackTuple();
+  for (const row of slots) {
+    if (!row || typeof row !== "object") continue;
+    const s = row as SlimItemSlot;
+    const idx = readHudSlotIndex(s);
+    if (
+      idx === null ||
+      idx < HUD_BACKPACK_SLOT_START ||
+      idx > HUD_BACKPACK_SLOT_END
+    ) {
+      continue;
+    }
+    const bi = idx - HUD_BACKPACK_SLOT_START;
+    if (s.empty) {
+      bp[bi] = null;
+      continue;
+    }
+    const keyTrim = String(s.item_key ?? "").trim();
+    if (!keyTrim && numId(s.item_id) <= 0) {
+      bp[bi] = null;
+      continue;
+    }
+    bp[bi] = cellFromSlimSlotRow(s, maps);
+  }
+  return bp;
+}
+
+function buildBackpackFromOpenDotaScalars(
+  p: Record<string, unknown>,
+  maps: EntityMapsPayload
+): BackpackThreeTuple {
+  const bp = emptyBackpackTuple();
+  if (!hasOpenDotaBackpackSlots(p)) return bp;
+  for (let i = 0; i < 3; i++) {
+    const rawVal = p[`backpack_${i}`];
+    if (isEmptyItemScalar(rawVal)) {
+      bp[i] = null;
+      continue;
+    }
+    bp[i] = itemEntryFromId(numId(rawVal), maps);
+  }
+  return bp;
+}
+
+/** HUD 背包格优先，缺省时用 OpenDota 式 ``backpack_*`` 补全（合并管线与 API）。 */
+function mergeBackpackIndexedWithOpenDotaScalars(
+  indexed: BackpackThreeTuple,
+  fromScalars: BackpackThreeTuple
+): BackpackThreeTuple {
+  return [
+    indexed[0] ?? fromScalars[0] ?? null,
+    indexed[1] ?? fromScalars[1] ?? null,
+    indexed[2] ?? fromScalars[2] ?? null,
+  ];
+}
+
+function buildNeutralFromPlayerAndSlots(
+  raw: Record<string, unknown>,
+  slots: SlimItemSlot[] | null | undefined,
+  maps: EntityMapsPayload,
+  declareHudSlots: boolean
+): ItemSlotMock | null {
+  const img = String(raw["neutral_img"] ?? "").trim();
+  const keyRaw = String(raw["neutral_item_key"] ?? "").trim();
+  if (img || keyRaw) {
+    const key = keyRaw.replace(/^item_/, "");
+    return {
+      itemKey: key || "unknown",
+      ...(img ? { imageUrl: normalizeDotaAssetUrl(img) } : {}),
+    };
+  }
+  if (declareHudSlots && Array.isArray(slots)) {
+    for (const row of slots) {
+      if (!row || typeof row !== "object") continue;
+      const s = row as SlimItemSlot;
+      const idx = readHudSlotIndex(s);
+      if (idx !== HUD_NEUTRAL_SLOT) continue;
+      if (s.empty) return null;
+      return cellFromSlimSlotRow(s, maps);
+    }
+  }
+  return itemEntryFromId(numId(raw["item_neutral"]), maps);
+}
+
 /** 将任意长度的 main 压成固定 6 格，供 UI 使用（丢弃索引 ≥6 的溢出）。 */
 export function normalizeMainSixForDisplay(
   main: readonly (ItemSlotMock | null)[] | null | undefined
-): SixPlusOneItems["main"] {
+): SixMainTuple {
   const a = main ?? [];
   return [
     a[0] ?? null,
@@ -179,6 +311,13 @@ export function normalizeMainSixForDisplay(
     a[4] ?? null,
     a[5] ?? null,
   ];
+}
+
+export function normalizeBackpackThreeForDisplay(
+  bp: readonly (ItemSlotMock | null)[] | null | undefined
+): BackpackThreeTuple {
+  const a = bp ?? [];
+  return [a[0] ?? null, a[1] ?? null, a[2] ?? null];
 }
 
 export function buildSixPlusOneFromOpenDotaSlots(
@@ -197,12 +336,16 @@ export function buildSixPlusOneFromOpenDotaSlots(
     const id = numId(rawVal);
     main[i] = itemEntryFromId(id, maps);
   }
-  return { main, neutral: null };
+  return {
+    main,
+    backpack: buildBackpackFromOpenDotaScalars(p, maps),
+    neutral: buildNeutralFromPlayerAndSlots(p, null, maps, false),
+  };
 }
 
 /**
  * 与 `item_0`..`item_5` 对齐的装备 id（用于神杖/魔晶 id 检测）。
- * 优先读原始字段；否则按 `items_slot[].slot` 填回 0..5（绝不按数组顺序猜测槽位）。
+ * 优先读原始字段；否则按 `items_slot[].slot` 填回 0..5（绝不把背包下标当作主栏）。
  */
 export function extractSixMainSlotItemIds(
   raw: Record<string, unknown>,
@@ -220,47 +363,79 @@ export function extractSixMainSlotItemIds(
   }
   if (fromRaw) return out;
   if (!Array.isArray(slots)) return out;
-  for (const row of slots) {
+  if (itemsSlotArrayUsesExplicitSlotField(slots)) {
+    for (const row of slots) {
+      if (!row || typeof row !== "object") continue;
+      const s = row as SlimItemSlot;
+      const idx = readHudSlotIndex(s);
+      if (idx === null || idx < 0 || idx > 5) continue;
+      const n = numId(s.item_id);
+      out[idx] = n > 0 ? n : 0;
+    }
+    return out;
+  }
+  for (let i = 0; i < Math.min(6, slots.length); i++) {
+    const row = slots[i];
     if (!row || typeof row !== "object") continue;
-    const s = row as SlimItemSlot;
-    const idx = Math.floor(Number(s.slot));
-    if (!Number.isFinite(idx) || idx < 0 || idx > 5) continue;
-    const n = numId(s.item_id);
-    out[idx] = n > 0 ? n : 0;
+    const n = numId((row as SlimItemSlot).item_id);
+    out[i] = n > 0 ? n : 0;
   }
   return out;
 }
 
 /**
- * 结算面主 6 格（中立槽已弃用，neutral 恒 null）：
- * 1. 若 `items_slot` 含合法 `slot` 0..5，**优先**用管线槽位（避免与残留 `item_*` 冲突）。
- * 2. 否则若存在 OpenDota 式 `item_0..5`，用其主槽。
- * 3. 否则再按 `items_slot` 兜底。
+ * 结算面 HUD 装备：
+ * 1. `items_slot` 含主栏 0–5 装备时优先（若带 `slot` 列则严格按物理索引建 main/backpack/neutral）。
+ * 2. 否则若存在 OpenDota 式 `item_0..5`（及 backpack_* / item_neutral），用标量槽位。
+ * 3. 否则再按 `items_slot` 无 slot 的定长前 6 项兜底。
  */
 export function buildSixPlusOneFinal(
   raw: Record<string, unknown>,
   slots: SlimItemSlot[] | undefined | null,
   maps: EntityMapsPayload
 ): SixPlusOneItems {
-  // 只要管线 `items_slot` 上有装备，就优先于残留的 OpenDota `item_0..5`（避免 PUB 混源时主栏被错数据覆盖）
-  if (Array.isArray(slots) && slots.length > 0 && itemsSlotHasAnyEquipped(slots)) {
-    return {
-      main: buildMainFromItemsSlotFlexible(slots, maps),
-      neutral: null,
-    };
+  const slotList = Array.isArray(slots) ? slots : [];
+  const declareHud = itemsSlotArrayUsesExplicitSlotField(slotList);
+  const pipelineMain =
+    slotList.length > 0 &&
+    itemsSlotHasMainSlotEquipped(slotList, declareHud);
+
+  const buildFromPipeline = (): SixPlusOneItems => {
+    const main = declareHud
+      ? buildMainFromIndexedItemsSlot(slotList, maps)
+      : buildMainFromOrderedItemsSlotFirstSix(slotList, maps);
+    const backpackScalars = buildBackpackFromOpenDotaScalars(raw, maps);
+    const backpack = declareHud
+      ? mergeBackpackIndexedWithOpenDotaScalars(
+          buildBackpackFromIndexedItemsSlot(slotList, maps),
+          backpackScalars
+        )
+      : backpackScalars;
+    const neutral = buildNeutralFromPlayerAndSlots(
+      raw,
+      slotList,
+      maps,
+      declareHud
+    );
+    return { main, backpack, neutral };
+  };
+
+  if (pipelineMain) {
+    return buildFromPipeline();
   }
 
   const od = buildSixPlusOneFromOpenDotaSlots(raw, maps);
   if (od) {
-    return { main: od.main, neutral: null };
+    return od;
   }
 
-  if (Array.isArray(slots) && slots.length > 0) {
-    return {
-      main: buildMainFromItemsSlotFlexible(slots, maps),
-      neutral: null,
-    };
+  if (slotList.length > 0) {
+    return buildFromPipeline();
   }
 
-  return { main: emptyMainTuple(), neutral: null };
+  return {
+    main: emptyMainTuple(),
+    backpack: emptyBackpackTuple(),
+    neutral: null,
+  };
 }

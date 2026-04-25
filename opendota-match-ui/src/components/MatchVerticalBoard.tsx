@@ -106,20 +106,36 @@ export function MatchVerticalBoard({
   radiant,
   dire,
   matchMeta,
+  currentTimeSec,
+  onTimeChangeSec,
 }: {
   radiant: TeamTableMock;
   dire: TeamTableMock;
   matchMeta: MatchHeaderData;
+  currentTimeSec: number;
+  onTimeChangeSec: (sec: number) => void;
 }) {
   const maxHR = teamHeroDamageMax(radiant.players);
   const maxKR = teamHeroKillsMax(radiant.players);
   const maxHD = teamHeroDamageMax(dire.players);
   const maxKD = teamHeroKillsMax(dire.players);
 
+  const maxSec = (() => {
+    const s = String(matchMeta.duration ?? "").trim();
+    const m = s.match(/^(\d+):([0-5]\d)$/);
+    if (!m) return 0;
+    return Number(m[1]) * 60 + Number(m[2]);
+  })();
+  const safeCurrent = Math.max(0, Math.min(maxSec, Math.floor(currentTimeSec || 0)));
+  const tickMins: number[] = [];
+  for (let m = 0; m <= Math.floor(maxSec / 60); m += 10) tickMins.push(m);
+  if (tickMins[tickMins.length - 1] !== Math.floor(maxSec / 60)) {
+    tickMins.push(Math.floor(maxSec / 60));
+  }
+
   return (
     <div className="min-w-0 overflow-x-auto rounded-xl border border-skin-line/90 bg-skin-card/25 shadow-sm dark:bg-slate-900/20">
       <MatchMetaStrip meta={matchMeta} />
-
       <div className="flex flex-col">
         <GlobalColumnHeader />
 
@@ -135,6 +151,7 @@ export function MatchVerticalBoard({
             maxH={maxHR}
             maxKills={maxKR}
             side="radiant"
+            currentTimeSec={safeCurrent}
           />
         ))}
 
@@ -142,6 +159,29 @@ export function MatchVerticalBoard({
           className="mt-3 border-t border-slate-300/35 pt-0.5 dark:border-slate-600/40"
           aria-hidden
         />
+        <div className="border-y border-skin-line px-2 py-2 sm:px-4 dark:border-slate-700/60">
+          <div className="mb-1.5 flex items-center justify-between text-xs text-slate-600 dark:text-slate-400">
+            <span>装备时间轴</span>
+            <span className="font-mono tabular-nums">
+              {Math.floor(safeCurrent / 60)}:{String(safeCurrent % 60).padStart(2, "0")} / {matchMeta.duration}
+            </span>
+          </div>
+          <input
+            type="range"
+            min={0}
+            max={Math.max(0, maxSec)}
+            step={1}
+            value={safeCurrent}
+            onChange={(e) => onTimeChangeSec(Number(e.target.value))}
+            className="block w-full min-w-0 accent-amber-500"
+            aria-label="装备时间轴"
+          />
+          <div className="mt-1 flex items-center justify-between text-[10px] text-slate-500 dark:text-slate-500">
+            {tickMins.map((m) => (
+              <span key={m}>{m}</span>
+            ))}
+          </div>
+        </div>
 
         <FactionMatchBanner
           side="dire"
@@ -155,6 +195,7 @@ export function MatchVerticalBoard({
             maxH={maxHD}
             maxKills={maxKD}
             side="dire"
+            currentTimeSec={safeCurrent}
           />
         ))}
       </div>

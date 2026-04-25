@@ -537,6 +537,108 @@ def merge_ability_upgrade_step_lists(
     return _merge_ability_upgrade_sources(a, b)
 
 
+def _read_hud_item_slot_index(cell: Any) -> Optional[int]:
+    if not isinstance(cell, dict) or "slot" not in cell:
+        return None
+    try:
+        si = int(cell["slot"])  # type: ignore[arg-type]
+    except (TypeError, ValueError):
+        return None
+    if si < 0 or si > 16:
+        return None
+    return si
+
+
+def _items_slot_list_uses_physical_indices(items_slot: Any) -> bool:
+    if not isinstance(items_slot, list):
+        return False
+    for cell in items_slot:
+        if _read_hud_item_slot_index(cell) is not None:
+            return True
+    return False
+
+
+def _hydrate_player_item_scalars_from_hud_items_slot(
+    player: MutableMapping[str, Any],
+) -> None:
+    isl = player.get("items_slot")
+    if not isinstance(isl, list) or not isl:
+        return
+    if not _items_slot_list_uses_physical_indices(isl):
+        return
+    for s in range(6):
+        player[f"item_{s}"] = 0
+    # 仅在 items_slot 里出现 6..8 / 16 时才覆盖；否则保留上游已写的 backpack_* / item_neutral。
+    backpack_vals = []
+    for s in range(3):
+        try:
+            backpack_vals.append(int(player.get(f"backpack_{s}") or 0))
+        except (TypeError, ValueError):
+            backpack_vals.append(0)
+    try:
+        neutral_val = int(player.get("item_neutral") or 0)
+    except (TypeError, ValueError):
+        neutral_val = 0
+
+    for cell in isl:
+        if not isinstance(cell, dict):
+            continue
+        si = _read_hud_item_slot_index(cell)
+        if si is None:
+            continue
+        if cell.get("empty") is True:
+            iid = 0
+        else:
+            try:
+                iid = int(cell.get("item_id") or 0)
+            except (TypeError, ValueError):
+                iid = 0
+        if not str(cell.get("item_key") or "").strip() and iid <= 0:
+            iid = 0
+        if 0 <= si <= 5:
+            player[f"item_{si}"] = iid
+        elif 6 <= si <= 8:
+            backpack_vals[si - 6] = iid
+        elif si == 16:
+            neutral_val = iid
+    for s in range(3):
+        player[f"backpack_{s}"] = int(backpack_vals[s])
+    player["item_neutral"] = int(neutral_val)
+
+
+def _player_main_item_scalars_all_empty(player: Mapping[str, Any]) -> bool:
+    for i in range(6):
+        try:
+            if int(player.get(f"item_{i}") or 0) > 0:
+                return False
+        except (TypeError, ValueError):
+            continue
+    return True
+
+
+def _backfill_main_item_scalars_from_items_slot_array_order(
+    player: MutableMapping[str, Any], isl: List[Any]
+) -> None:
+    """无 HUD ``slot`` 列时，仅当 ``item_0..5`` 全空才用数组前 6 项回填（旧管线）。"""
+    if not isl or not _player_main_item_scalars_all_empty(player):
+        return
+    for s in range(6):
+        if s >= len(isl):
+            player[f"item_{s}"] = 0
+            continue
+        cell = isl[s]
+        if not isinstance(cell, dict):
+            player[f"item_{s}"] = 0
+            continue
+        if cell.get("empty") is True:
+            player[f"item_{s}"] = 0
+            continue
+        try:
+            player[f"item_{s}"] = int(cell.get("item_id") or 0)
+        except (TypeError, ValueError):
+            player[f"item_{s}"] = 0
+
+
 def _items_slot_has_items(items_slot: Any) -> bool:
     """
     DEM / 管线已写入 ``items_slot`` 时，勿用 OpenDota 式 ``item_0..5`` 覆盖。
@@ -545,8 +647,28 @@ def _items_slot_has_items(items_slot: Any) -> bool:
     在 ``item_ids`` 缺新道具映射时常为 ``item_id==0`` 但已有 ``item_key``；若仅判断
     ``item_id>0`` 会误判为空，随后 ``apply_two_step`` 用不存在的 ``item_*`` 覆盖，造成
     「上传另一场 PUB 后本场装备乱了」等现象（实为二次 translate 时主栏被冲掉）。
+
+    若 ``items_slot`` 行带 HUD ``slot``：仅 **0–5 主栏** 有装备时视为 precooked；
+    背包 / 中立（6–8、16）不得把 ``items_precooked`` 判假导致 ``mutate_items_slot`` 冲掉管线。
     """
     if not isinstance(items_slot, list):
+        return False
+    if _items_slot_list_uses_physical_indices(items_slot):
+        for cell in items_slot:
+            if not isinstance(cell, dict):
+                continue
+            si = _read_hud_item_slot_index(cell)
+            if si is None or si > 5:
+                continue
+            if cell.get("empty") is True:
+                continue
+            if str(cell.get("item_key") or "").strip():
+                return True
+            try:
+                if int(cell.get("item_id") or 0) > 0:
+                    return True
+            except (TypeError, ValueError):
+                continue
         return False
     for cell in items_slot[:6]:
         if not isinstance(cell, dict):
@@ -642,8 +764,26 @@ def translate_match_data(
             player["hero_icon_url"] = ""
             player["hero_internal_name"] = None
 
+        isl_pre = player.get("items_slot")
+        uses_phys = (
+            _items_slot_list_uses_physical_indices(isl_pre)
+            if isinstance(isl_pre, list)
+            else False
+        )
+        if uses_phys:
+            _hydrate_player_item_scalars_from_hud_items_slot(player)
+        elif isinstance(isl_pre, list):
+            _backfill_main_item_scalars_from_items_slot_array_order(player, isl_pre)
+
         # 装备栏：item_ids → items.json 两步映射（含 backpack、neutral 规整字段）
-        items_precooked = _items_slot_has_items(player.get("items_slot"))
+        # 带 HUD ``slot`` 的 ``items_slot`` 一律视为管线权威，勿用 ``apply_two_step`` 覆盖（否则仅背包装备时会误冲掉）。
+        items_precooked = bool(
+            isinstance(isl_pre, list)
+            and len(isl_pre) > 0
+            and (
+                uses_phys or _items_slot_has_items(isl_pre)
+            )
+        )
         orig_neutral_img = ""
         if items_precooked:
             _ni = player.get("neutral_img")
@@ -765,24 +905,30 @@ def translate_match_data(
         if isinstance(neutral_cell, dict) and neutral_cell.get("item_key"):
             player["neutral_item_key"] = str(neutral_cell["item_key"])
 
-        # 回填 OpenDota 式 item_0..item_5 / item_neutral（数值 item id），供聚合索引 / Go 解析器混读；
-        # 不再 pop 掉，避免 all_matches 等下游丢失或与 items_slot 不一致。
-        # DEM 已预写 items_slot 时 items_resolved.main 可能全空（因无 item_* 可读），须按槽位从 items_slot 取 item_id。
-        if items_precooked and isinstance(player.get("items_slot"), list):
-            isl = player.get("items_slot") or []
+        # 回填 OpenDota 式 item_0..item_5（数值 item id）：以 ``items_resolved.main`` 为权威（已由物理槽位 + item_* 驱动）。
+        # 无 ``slot`` 列的旧 ``items_slot`` 且 ``main`` 异常时，才按数组前 6 项兜底。
+        main_cells = nr.get("main") if isinstance(nr, dict) else None
+        if isinstance(main_cells, list) and len(main_cells) >= 6:
             for s in range(6):
-                cell = isl[s] if s < len(isl) and isinstance(isl[s], dict) else {}
+                cell = (
+                    main_cells[s]
+                    if s < len(main_cells) and isinstance(main_cells[s], dict)
+                    else {}
+                )
                 try:
                     player[f"item_{s}"] = int(cell.get("item_id") or 0)
                 except (TypeError, ValueError):
                     player[f"item_{s}"] = 0
-        else:
-            main_cells = nr.get("main") if isinstance(nr, dict) else None
-            if isinstance(main_cells, list):
+        elif items_precooked and isinstance(player.get("items_slot"), list):
+            isl_fb = player.get("items_slot") or []
+            if (
+                not _items_slot_list_uses_physical_indices(isl_fb)
+                and len(isl_fb) > 0
+            ):
                 for s in range(6):
                     cell = (
-                        main_cells[s]
-                        if s < len(main_cells) and isinstance(main_cells[s], dict)
+                        isl_fb[s]
+                        if s < len(isl_fb) and isinstance(isl_fb[s], dict)
                         else {}
                     )
                     try:

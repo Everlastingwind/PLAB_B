@@ -8,11 +8,16 @@ import type { ItemSlotMock } from "../data/mockMatchPlayers";
 export const AGHANIM_SCEPTER_ITEM_ID = 108;
 
 /** 常见魔晶 / 肉山魔晶 id（不同版本可能增减，与 item_key 检测互为兜底） */
-export const AGHANIM_SHARD_ITEM_IDS = new Set<number>([416, 609]);
+export const AGHANIM_SHARD_ITEM_IDS = new Set<number>([416, 609, 725]);
 
-/** 神杖 id：以 108 为主；变体名依赖下方 item_key 集合 */
+/**
+ * 神杖实体 id：标准杖、祝福、肉山祝福（与 entity_maps / 客户端一致）；
+ * 变体名另见 `SCEPTER_KEYS`。
+ */
 export const AGHANIM_SCEPTER_ITEM_IDS = new Set<number>([
   AGHANIM_SCEPTER_ITEM_ID,
+  271,
+  727,
 ]);
 
 const SCEPTER_KEYS = new Set([
@@ -56,14 +61,13 @@ function normItemKey(k: string): string {
 export type ScepterShardBuffState = { scepter: boolean; shard: boolean };
 
 /**
- * 当 permanent_buffs / API 已标记神杖或魔晶生效时，按展示策略处理主槽：
- * - 神杖：保留在主槽（用户需要在装备栏直接看到）
- * - 魔晶：若判定为已生效可继续从主槽去掉，避免重复占位
+ * 主 6 格展示与客户端一致：神杖 / 魔晶只由 BUFF 图标表示，不占主栏格子。
+ * 凡槽位为 A 杖或魔晶（`mainItemIds` 与 `ItemSlotMock.itemKey` 任一命中），清空该格。
+ * `computeScepterShardActive` 须已根据槽位 / API / permanent_buffs 合并过点亮状态。
  */
 export function stripConsumedAghanimsFromMainSlots(
   main: readonly (ItemSlotMock | null)[],
-  mainItemIds: readonly number[],
-  buff: ScepterShardBuffState
+  mainItemIds: readonly number[]
 ): [
   ItemSlotMock | null,
   ItemSlotMock | null,
@@ -84,11 +88,10 @@ export function stripConsumedAghanimsFromMainSlots(
     const id = mainItemIds[i] ?? 0;
     const slot = out[i];
     const key = normItemKey(slot?.itemKey ?? "");
-    if (buff.shard) {
-      if (AGHANIM_SHARD_ITEM_IDS.has(id) || SHARD_KEYS.has(key)) {
-        out[i] = null;
-      }
-    }
+    const isScepter =
+      AGHANIM_SCEPTER_ITEM_IDS.has(id) || SCEPTER_KEYS.has(key);
+    const isShard = AGHANIM_SHARD_ITEM_IDS.has(id) || SHARD_KEYS.has(key);
+    if (isScepter || isShard) out[i] = null;
   }
   return out;
 }

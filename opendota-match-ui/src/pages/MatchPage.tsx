@@ -1,4 +1,4 @@
-import { lazy, Suspense, useCallback } from "react";
+import { lazy, Suspense, useCallback, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { Copy } from "lucide-react";
 import { useMatchData } from "../hooks/useMatchData";
@@ -21,6 +21,10 @@ export function MatchPage() {
   }, [header.matchId]);
 
   const displayMatchId = (matchId || header.matchId || "").trim() || "详情";
+  const [currentTimeSec, setCurrentTimeSec] = useState<number>(0);
+  useEffect(() => {
+    setCurrentTimeSec(0);
+  }, [matchId]);
   const seoTitle = `比赛 #${displayMatchId} 数据解析 - PlanB`;
   const seoDescription = `提供 Dota 2 比赛 #${displayMatchId} 的高分局对战数据、经济走向与出装录像解析。`;
   const seoKeywords = `DOTA2,比赛数据,高分局,${displayMatchId}`;
@@ -69,7 +73,7 @@ export function MatchPage() {
           </div>
         )}
         <main className="min-w-0 overflow-x-hidden px-3 py-2 sm:px-4 lg:px-6">
-          <div className="mx-auto w-full max-w-[1600px] flex flex-col">
+          <div className="mx-auto w-full max-w-[1920px] flex flex-col">
             {loading ? (
               <div
                 className={cn(
@@ -112,6 +116,8 @@ export function MatchPage() {
                   radiant={radiant}
                   dire={dire}
                   matchMeta={header}
+                  currentTimeSec={currentTimeSec}
+                  onTimeChangeSec={setCurrentTimeSec}
                 />
               </Suspense>
             )}

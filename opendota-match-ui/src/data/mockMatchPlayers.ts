@@ -253,6 +253,12 @@ export interface PlayerRowMock {
   roleEarly?: string;
   /** 出门装（通常来自 0 秒前购买日志） */
   startingItems?: StartingItemMock[];
+  /** 购买流水（时间轴用） */
+  purchaseHistory?: Array<{
+    time: number;
+    /** item_xxx 或 xxx */
+    item: string;
+  }>;
   level: number;
   kills: number;
   deaths: number;

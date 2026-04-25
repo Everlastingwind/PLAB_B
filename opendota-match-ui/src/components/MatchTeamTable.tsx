@@ -40,6 +40,7 @@ export function MatchTeamTable({
   team,
   matchMeta,
   hideFactionLabel,
+  currentTimeSec,
 }: {
   team: TeamTableMock;
   matchMeta?: Pick<
@@ -47,7 +48,15 @@ export function MatchTeamTable({
     "scoreRadiant" | "scoreDire" | "duration" | "winnerSide"
   >;
   hideFactionLabel?: boolean;
+  currentTimeSec?: number;
 }) {
+  const maxSec = (() => {
+    const s = String(matchMeta?.duration ?? "").trim();
+    const m = s.match(/^(\d+):([0-5]\d)$/);
+    if (!m) return 0;
+    return Number(m[1]) * 60 + Number(m[2]);
+  })();
+  const timeForRows = currentTimeSec ?? maxSec;
   const maxH = teamHeroDamageMax(team.players);
   const maxKills = teamHeroKillsMax(team.players);
 
@@ -159,6 +168,7 @@ export function MatchTeamTable({
             maxH={maxH}
             maxKills={maxKills}
             side={team.side}
+            currentTimeSec={timeForRows}
           />
         ))}
       </div>

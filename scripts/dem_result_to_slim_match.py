@@ -1144,9 +1144,48 @@ def _inventory_from_api_style_player(
     return (list(items_slot[:6]), neutral_img, nik)
 
 
-def _items_slot_has_equipped(items_slot: List[Any]) -> bool:
-    """players_blob 里 item_0..5 全 0 时仍会生成 6 格空壳，不应挡住 COMBATLOG 购买推断。"""
+def _read_hud_slot_idx(cell: Any) -> Optional[int]:
+    if not isinstance(cell, dict) or "slot" not in cell:
+        return None
+    try:
+        si = int(cell["slot"])
+    except (TypeError, ValueError):
+        return None
+    if si < 0 or si > 16:
+        return None
+    return si
+
+
+def _items_slot_rows_use_hud_slot_field(items_slot: List[Any]) -> bool:
     for cell in items_slot:
+        if _read_hud_slot_idx(cell) is not None:
+            return True
+    return False
+
+
+def _items_slot_has_equipped(items_slot: List[Any]) -> bool:
+    """players_blob 里 item_0..5 全 0 时仍会生成 6 格空壳，不应挡住 COMBATLOG 购买推断。
+    若行上带 HUD ``slot``：仅统计主栏 0–5 的装备，不把背包/中立当成「主栏已有装备」。"""
+    if not isinstance(items_slot, list):
+        return False
+    if _items_slot_rows_use_hud_slot_field(items_slot):
+        for cell in items_slot:
+            if not isinstance(cell, dict):
+                continue
+            si = _read_hud_slot_idx(cell)
+            if si is None or si > 5:
+                continue
+            if cell.get("empty") is True:
+                continue
+            if str(cell.get("item_key") or "").strip():
+                return True
+            try:
+                if int(cell.get("item_id") or 0) > 0:
+                    return True
+            except (TypeError, ValueError):
+                pass
+        return False
+    for cell in items_slot[:6]:
         if not isinstance(cell, dict):
             continue
         if cell.get("empty") is True:
@@ -1659,13 +1698,118 @@ def _pick_lone_druid_bear_npc(
 
 
 def _last_neutral_key(events: List[dict], slot: int) -> Optional[str]:
-    last: Optional[dict] = None
+    """
+    neutral_item_history 里同一玩家常交替出现：
+    - isNeutralActiveDrop=True  : 真正中立物品（应进圆槽）
+    - isNeutralPassiveDrop=True : 强化词条（不应当作物品）
+    这里优先取最后一条 active；无 active 再兜底最后一条 key。
+    """
+    last_any: Optional[dict] = None
+    last_active: Optional[dict] = None
     for e in events:
-        if e.get("type") == "neutral_item_history" and int(e.get("slot", -1)) == slot:
-            last = e
-    if not last:
+        if e.get("type") != "neutral_item_history":
+            continue
+        try:
+            si = int(e.get("slot", -1))
+        except (TypeError, ValueError):
+            continue
+        if si != slot:
+            continue
+        last_any = e
+        if bool(e.get("isNeutralActiveDrop")):
+            last_active = e
+    pick = last_active or last_any
+    if not pick:
         return None
-    return str(last.get("key") or "") or None
+    return str(pick.get("key") or "") or None
+
+
+def _backpack_three_keys_from_combat_log(
+    events: List[dict],
+    hero_npc: str,
+    main_keys: List[Optional[str]],
+    dc: Any,
+    match_end_time: Optional[int] = None,
+) -> List[Optional[str]]:
+    """
+    无真实 HUD 6/7/8 槽快照时，保守推断背包候选：
+    - 来源：购买 + ITEM 活动（取最近时间）
+    - 过滤：主栏已占用 / 中立物 / 配方
+    - 目标：给 backpack_0..2 提供“最近仍有证据”的常见道具（TP/烟/眼/粉等）
+    """
+    present_main: Set[str] = set()
+    for k in main_keys[:6]:
+        if not k:
+            continue
+        rk = (dc.resolve_items_json_key(str(k).strip().lower()) or str(k).strip().lower()).strip().lower()
+        if rk:
+            present_main.add(rk)
+
+    last_t: Dict[str, int] = {}
+    max_t = int(match_end_time or 0)
+
+    for e in events:
+        tt = e.get("time")
+        if isinstance(tt, (int, float)):
+            max_t = max(max_t, int(tt))
+
+        et = e.get("type")
+        if et == "DOTA_COMBATLOG_PURCHASE":
+            if not _targetname_matches_hero_npc(str(e.get("targetname") or ""), hero_npc):
+                continue
+            key = _item_key_from_valuename(str(e.get("valuename") or ""))
+        elif et == "DOTA_COMBATLOG_ITEM":
+            if not _item_event_matches_unit(e, hero_npc):
+                continue
+            key = _item_key_from_valuename(str(e.get("inflictor") or ""))
+        else:
+            continue
+
+        if not key:
+            continue
+        rk = (dc.resolve_items_json_key(key) or key).strip().lower()
+        if not rk:
+            continue
+        if rk in present_main:
+            continue
+        if _item_allowed_neutral_trinket(dc, rk):
+            continue
+        if rk.startswith("recipe_"):
+            continue
+
+        try:
+            t = int(e.get("time") or 0)
+        except (TypeError, ValueError):
+            t = 0
+        if match_end_time is not None and t > int(match_end_time):
+            continue
+
+        prev = last_t.get(rk)
+        if prev is None or t >= prev:
+            last_t[rk] = t
+
+    if not last_t:
+        return [None, None, None]
+
+    out: List[Optional[str]] = []
+    for rk, _t in sorted(last_t.items(), key=lambda kv: kv[1], reverse=True):
+        row = dc.items.get(rk) or {}
+        try:
+            cost = int(row.get("cost") or 0)
+        except (TypeError, ValueError):
+            cost = 0
+        qual = str(row.get("qual") or "").lower()
+        age = int(max_t - int(last_t.get(rk, 0)))
+        # 低价消耗品若长期无活动，通常已用尽，不进背包。
+        if qual == "consumable" and cost <= 500 and age > 600:
+            continue
+        out.append(rk)
+        if len(out) >= 3:
+            break
+
+    while len(out) < 3:
+        out.append(None)
+    return out
 
 
 def _item_key_from_valuename(vn: str) -> Optional[str]:
@@ -2433,6 +2577,40 @@ def _non_disposable_purchase_keys_newest_first(
     return _merge_boot_into_top_six_pool(ordered, last_t_m, boot_k, dc)
 
 
+def _purchase_history_for_hero(
+    events: List[dict],
+    hero_npc: str,
+    dc: Any,
+    match_end_time: Optional[int] = None,
+) -> List[Dict[str, Any]]:
+    """
+    时间轴原始购买流水：从对局内（time>=0）保留每一次 DOTA_COMBATLOG_PURCHASE。
+    仅排除无法作为装备节点展示的记录（空 key / 配方）。
+    """
+    out: List[Dict[str, Any]] = []
+    for e in events:
+        if e.get("type") != "DOTA_COMBATLOG_PURCHASE":
+            continue
+        if not _targetname_matches_hero_npc(str(e.get("targetname") or ""), hero_npc):
+            continue
+        key = _item_key_from_valuename(str(e.get("valuename") or ""))
+        if not key:
+            continue
+        rk = (dc.resolve_items_json_key(str(key).strip().lower()) or str(key).strip().lower()).strip().lower()
+        if not rk or rk.startswith("recipe_"):
+            continue
+        try:
+            t = int(e.get("time") or 0)
+        except (TypeError, ValueError):
+            t = 0
+        if t < 0:
+            continue
+        if match_end_time is not None and t > int(match_end_time):
+            continue
+        out.append({"time": t, "item": f"item_{rk}"})
+    return out
+
+
 def _refill_main_six_strip_invalid(
     main: List[Optional[str]],
     events: List[dict],
@@ -3056,6 +3234,7 @@ def _build_endgame_main_six_item_keys(
                         present.add(k)
                         break
 
+    # 无可靠 HUD 槽时仍允许购买池回填（默认行为），避免整排 6 格全空影响可读性。
     fill_from_pool = (not have_slot_purchases_strict) and (not allow_item_activity_fallback)
     _refill_main_six_strip_invalid(
         main,
@@ -3923,6 +4102,37 @@ def build_slim_from_dem_events(
             if pb_for_row is not None and "aghanims_shard" in pb_for_row
             else (1 if shard_i else 0)
         )
+        backpack_keys = _backpack_three_keys_from_combat_log(
+            events,
+            hero_npc,
+            keys_for_agh,
+            dc,
+            match_end_time=match_end_time,
+        )
+        backpack_ids: List[int] = [0, 0, 0]
+        for _bi in range(3):
+            _bk = backpack_keys[_bi]
+            if not _bk:
+                backpack_ids[_bi] = 0
+                continue
+            _cell = _item_slot_dict_from_key(_bk, _bi + 6, dc)
+            try:
+                backpack_ids[_bi] = int(_cell.get("item_id") or 0)
+            except (TypeError, ValueError):
+                backpack_ids[_bi] = 0
+        neutral_item_id_out = 0
+        if neutral_item_key_out:
+            _ncell = _item_slot_dict_from_key(str(neutral_item_key_out), 16, dc)
+            try:
+                neutral_item_id_out = int(_ncell.get("item_id") or 0)
+            except (TypeError, ValueError):
+                neutral_item_id_out = 0
+        purchase_history = _purchase_history_for_hero(
+            events,
+            hero_npc,
+            dc,
+            match_end_time=match_end_time,
+        )
 
         player_row: Dict[str, Any] = {
                 "account_id": account_id,
@@ -3943,8 +4153,13 @@ def build_slim_from_dem_events(
                 "tower_damage": tower_dmg,
                 "hero_healing": hero_heal,
                 "starting_items": starting_items,
+                "purchase_history": purchase_history,
                 "net_worth": int(iv.get("networth") or 0),
                 "items_slot": items_slot,
+                "backpack_0": backpack_ids[0],
+                "backpack_1": backpack_ids[1],
+                "backpack_2": backpack_ids[2],
+                "item_neutral": neutral_item_id_out,
                 "neutral_img": neutral_img,
                 "aghanims_scepter": agh_scep,
                 "aghanims_shard": agh_shard,
