@@ -4236,10 +4236,14 @@ def main() -> None:
         supabase_url = "https://wmshhvmqenjxypcmpewl.supabase.co"
         supabase_key = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indtc2hodm1xZW5qeHlwY21wZXdsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYwOTMzNzgsImV4cCI6MjA5MTY2OTM3OH0.oQwdBj-PQP1O8nQAJytmYa2d9YKV6Iq9TgxxDktT644"
         supabase = create_client(supabase_url, supabase_key)
-        resp = supabase.table("plan_b").upsert(upload_data).execute()
-        print("Supabase upsert 成功:", resp)
+        _ = supabase.table("plan_b").upsert(upload_data).execute()
+        print("Supabase upsert 成功: match_id=", upload_data.get("match_id"))
     except Exception as exc:
-        print("Supabase upsert 失败:", exc)
+        try:
+            emsg = str(exc).encode("utf-8", "backslashreplace").decode("utf-8")
+        except Exception:
+            emsg = repr(exc)
+        print("Supabase upsert 失败:", emsg)
 
     print("已写入:", args.out)
     print("match_id:", slim.get("match_id"), "players:", len(slim.get("players") or []))
