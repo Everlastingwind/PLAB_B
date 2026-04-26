@@ -3,7 +3,7 @@ import { useParams, Link } from "react-router-dom";
 import { PageShell } from "../components/PageShell";
 import type { FeedSelection } from "../components/FeedModeToggle";
 import {
-  loadFeedReplaysProgressive,
+  fetchReplaysForFeedSelection,
   filterByAccountId,
   hasMore,
   slicePage,
@@ -88,26 +88,16 @@ export function PlayerMatchesPage() {
     let cancelled = false;
     setFeedListLoading(true);
     setReplays([]);
-    void loadFeedReplaysProgressive(
-      feed,
-      {
-        onStalePreview: (staticRows) => {
-          if (!cancelled) {
-            setReplays(filterByAccountId(staticRows, aid));
-            setFeedListLoading(false);
-          }
-        },
-        onMerged: ({ replays: rows, cloudIndexError }) => {
-          if (!cancelled) {
-            if (cloudIndexError) console.warn(cloudIndexError);
-            setReplays(filterByAccountId(rows, aid));
-            setDetailByMatch({});
-            setFeedListLoading(false);
-          }
-        },
-      },
-      { graceMs: 560 }
-    ).catch(() => {
+    void fetchReplaysForFeedSelection(feed)
+      .then(({ replays: rows, cloudIndexError }) => {
+        if (!cancelled) {
+          if (cloudIndexError) console.warn(cloudIndexError);
+          setReplays(filterByAccountId(rows, aid));
+          setDetailByMatch({});
+          setFeedListLoading(false);
+        }
+      })
+      .catch(() => {
       if (!cancelled) {
         setFeedListLoading(false);
         setReplays([]);

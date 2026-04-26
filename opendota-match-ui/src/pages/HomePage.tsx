@@ -3,7 +3,7 @@ import { useLocation, useSearchParams } from "react-router-dom";
 import { PageShell } from "../components/PageShell";
 import { ReplayCard } from "../components/ReplayCard";
 import type { FeedSelection } from "../components/FeedModeToggle";
-import { loadFeedReplaysProgressive, PAGE_SIZE } from "../lib/replaysApi";
+import { fetchReplaysForFeedSelection, PAGE_SIZE } from "../lib/replaysApi";
 import type { ReplaySummary } from "../types/replaysIndex";
 import { useEntityMaps } from "../hooks/useEntityMaps";
 import { SEOMeta } from "../components/SEOMeta";
@@ -20,7 +20,6 @@ export function HomePage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [feed, setFeed] = useState<FeedSelection>({ pub: true, pro: false });
   const [replays, setReplays] = useState<ReplaySummary[]>([]);
-  /** 等云合并时再出列表，避免先铺旧静态再整页跳变 */
   const [feedListLoading, setFeedListLoading] = useState(true);
   const [idxErr, setIdxErr] = useState<string | null>(null);
   const scrollKey = homeScrollStorageKey(location.pathname, location.search);
@@ -39,28 +38,19 @@ export function HomePage() {
     setIdxErr(null);
     setFeedListLoading(true);
     setReplays([]);
-    void loadFeedReplaysProgressive(
-      feed,
-      {
-        onStalePreview: (rows) => {
-          if (cancelled) return;
-          setReplays(rows);
-          setFeedListLoading(false);
-        },
-        onMerged: ({ replays: list, cloudIndexError }) => {
-          if (cancelled) return;
-          setReplays(list);
-          setIdxErr(cloudIndexError);
-          setFeedListLoading(false);
-        },
-      },
-      { graceMs: 560 }
-    ).catch((e) => {
-      if (!cancelled) {
+    void fetchReplaysForFeedSelection(feed)
+      .then(({ replays: list, cloudIndexError }) => {
+        if (cancelled) return;
+        setReplays(list);
+        setIdxErr(cloudIndexError);
         setFeedListLoading(false);
-        setIdxErr(e instanceof Error ? e.message : "索引加载失败");
-      }
-    });
+      })
+      .catch((e) => {
+        if (!cancelled) {
+          setFeedListLoading(false);
+          setIdxErr(e instanceof Error ? e.message : "索引加载失败");
+        }
+      });
     return () => {
       cancelled = true;
     };

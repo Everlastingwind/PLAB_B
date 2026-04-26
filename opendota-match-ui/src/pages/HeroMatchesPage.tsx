@@ -3,7 +3,7 @@ import { useParams, Link, useNavigate } from "react-router-dom";
 import { PageShell } from "../components/PageShell";
 import type { FeedSelection } from "../components/FeedModeToggle";
 import {
-  loadFeedReplaysProgressive,
+  fetchReplaysForFeedSelection,
   filterByHeroKey,
   hasMore,
   slicePage,
@@ -168,27 +168,17 @@ export function HeroMatchesPage() {
     let cancelled = false;
     setFeedListLoading(true);
     setReplays([]);
-    void loadFeedReplaysProgressive(
-      feed,
-      {
-        onStalePreview: (staticRows) => {
-          if (!cancelled) {
-            setReplays(filterByHeroKey(staticRows, decoded, maps));
-            setFeedListLoading(false);
-          }
-        },
-        onMerged: ({ replays: rows, cloudIndexError }) => {
-          if (!cancelled) {
-            if (cloudIndexError) console.warn(cloudIndexError);
-            setReplays(filterByHeroKey(rows, decoded, maps));
-            setDetailByMatch({});
-            setPlayerUiByMatch({});
-            setFeedListLoading(false);
-          }
-        },
-      },
-      { graceMs: 560 }
-    ).catch(() => {
+    void fetchReplaysForFeedSelection(feed)
+      .then(({ replays: rows, cloudIndexError }) => {
+        if (!cancelled) {
+          if (cloudIndexError) console.warn(cloudIndexError);
+          setReplays(filterByHeroKey(rows, decoded, maps));
+          setDetailByMatch({});
+          setPlayerUiByMatch({});
+          setFeedListLoading(false);
+        }
+      })
+      .catch(() => {
       if (!cancelled) {
         setFeedListLoading(false);
         setReplays([]);

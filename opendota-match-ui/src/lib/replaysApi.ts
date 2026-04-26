@@ -163,18 +163,37 @@ function planBRowToReplaySummary(row: Record<string, unknown>): ReplaySummary | 
   };
 }
 
-/** 多处在同一时刻拉云索引时共用一次 in-flight，减轻海外链路重复请求 */
-let cloudPubReplayInflight: Promise<{
+type CloudPubReplayPack = {
   replays: ReplaySummary[];
   error: string | null;
-}> | null = null;
+};
+
+/** 多处在同一时刻拉云索引时共用一次 in-flight，减轻海外链路重复请求 */
+let cloudPubReplayInflight: Promise<CloudPubReplayPack> | null = null;
+
+/**
+ * 首页已拉过云索引后，搜索栏 idle/定时仍会再调本函数；短期缓存避免再打一轮两阶段 Supabase。
+ * 成功结果多留一会；失败缩短 TTL 便于恢复后尽快重试。
+ */
+let cloudPubReplayCache: { pack: CloudPubReplayPack; expiresAt: number } | null =
+  null;
+const CLOUD_PUB_CACHE_TTL_OK_MS = 60_000;
+const CLOUD_PUB_CACHE_TTL_ERR_MS = 12_000;
+
+function cloneCloudPubPack(pack: CloudPubReplayPack): CloudPubReplayPack {
+  return { replays: [...pack.replays], error: pack.error };
+}
 
 /** Supabase plan_b → 与 replays_index 同形的摘要行（标记为 pub） */
-export async function fetchCloudPubReplaySummaries(): Promise<{
-  replays: ReplaySummary[];
-  error: string | null;
-}> {
+export async function fetchCloudPubReplaySummaries(): Promise<CloudPubReplayPack> {
+  const now = Date.now();
+  const hit = cloudPubReplayCache;
+  if (hit && hit.expiresAt > now) {
+    return cloneCloudPubPack(hit.pack);
+  }
+
   if (cloudPubReplayInflight) return cloudPubReplayInflight;
+
   const p = (async () => {
     const { rows, error } = await fetchPlanBReplayIndexRows();
     const out: ReplaySummary[] = [];
@@ -185,9 +204,16 @@ export async function fetchCloudPubReplaySummaries(): Promise<{
     return { replays: out, error };
   })();
   cloudPubReplayInflight = p;
-  void p.finally(() => {
-    if (cloudPubReplayInflight === p) cloudPubReplayInflight = null;
-  });
+  void p
+    .then((pack) => {
+      const ttl = pack.error
+        ? CLOUD_PUB_CACHE_TTL_ERR_MS
+        : CLOUD_PUB_CACHE_TTL_OK_MS;
+      cloudPubReplayCache = { pack, expiresAt: Date.now() + ttl };
+    })
+    .finally(() => {
+      if (cloudPubReplayInflight === p) cloudPubReplayInflight = null;
+    });
   return p;
 }
 
@@ -291,55 +317,7 @@ export function mergeCloudIntoStaticFeed(
   };
 }
 
-function sleepMs(ms: number): Promise<void> {
-  return new Promise((r) => setTimeout(r, ms));
-}
-
-/** 与 {@link loadFeedReplaysProgressive} 搭配使用 */
-export type LoadFeedProgressiveCallbacks = {
-  /**
-   * 云在 grace 内仍未返回时调用一次，用于静态保底（弱网）。
-   * 若云在 grace 内已返回，则不会调用，避免「旧静态 → 再跳最新」的闪动。
-   */
-  onStalePreview?: (replays: ReplaySummary[]) => void;
-  /** 合并完成（或仅静态）时必调 */
-  onMerged: (result: FeedReplayIndexResult) => void;
-};
-
-/**
- * 静态与云并行；云若在 graceMs 内返回则只触发 {@link LoadFeedProgressiveCallbacks.onMerged} 一次，
- * 否则先 {@link LoadFeedProgressiveCallbacks.onStalePreview} 再 onMerged（弱网保底）。
- */
-export async function loadFeedReplaysProgressive(
-  sel: FeedSelection,
-  callbacks: LoadFeedProgressiveCallbacks,
-  options?: { graceMs?: number }
-): Promise<void> {
-  const graceMs = options?.graceMs ?? 520;
-  const cloudP = sel.pub ? fetchCloudPubReplaySummaries() : null;
-  const snap = await fetchStaticFeedOnly(sel);
-
-  if (!sel.pub) {
-    callbacks.onMerged({ replays: snap.replays, cloudIndexError: null });
-    return;
-  }
-
-  const raced = await Promise.race([
-    cloudP!.then((pack) => ({ kind: "cloud" as const, pack })),
-    sleepMs(graceMs).then(() => ({ kind: "grace" as const })),
-  ]);
-
-  if (raced.kind === "cloud") {
-    callbacks.onMerged(mergeCloudIntoStaticFeed(snap, raced.pack));
-    return;
-  }
-
-  callbacks.onStalePreview?.(snap.replays);
-  const pack = await cloudP!;
-  callbacks.onMerged(mergeCloudIntoStaticFeed(snap, pack));
-}
-
-/** 单次拉全量（静态与云并行）；首屏请优先用 {@link loadFeedReplaysProgressive} */
+/** 静态与云并行，一次返回合并后的列表（无「先静态预览再等云」的中间态） */
 export async function fetchReplaysForFeedSelection(
   sel: FeedSelection
 ): Promise<FeedReplayIndexResult> {
