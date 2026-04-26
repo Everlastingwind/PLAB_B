@@ -140,6 +140,7 @@ export function HeroMatchesPage() {
   const { maps, loading: mapsLoading } = useEntityMaps();
   const [feed, setFeed] = useState<FeedSelection>({ pub: true, pro: false });
   const [replays, setReplays] = useState<ReplaySummary[]>([]);
+  const [feedListLoading, setFeedListLoading] = useState(true);
   const [roleFilter, setRoleFilter] = useState<string>("all");
   const [detailByMatch, setDetailByMatch] = useState<Record<number, SlimMatchJson>>(
     {}
@@ -165,23 +166,33 @@ export function HeroMatchesPage() {
   useEffect(() => {
     if (!maps) return;
     let cancelled = false;
+    setFeedListLoading(true);
+    setReplays([]);
     void loadFeedReplaysProgressive(
       feed,
-      (staticRows) => {
-        if (!cancelled) {
-          setReplays(filterByHeroKey(staticRows, decoded, maps));
-        }
+      {
+        onStalePreview: (staticRows) => {
+          if (!cancelled) {
+            setReplays(filterByHeroKey(staticRows, decoded, maps));
+            setFeedListLoading(false);
+          }
+        },
+        onMerged: ({ replays: rows, cloudIndexError }) => {
+          if (!cancelled) {
+            if (cloudIndexError) console.warn(cloudIndexError);
+            setReplays(filterByHeroKey(rows, decoded, maps));
+            setDetailByMatch({});
+            setPlayerUiByMatch({});
+            setFeedListLoading(false);
+          }
+        },
       },
-      ({ replays: rows, cloudIndexError }) => {
-        if (!cancelled) {
-          if (cloudIndexError) console.warn(cloudIndexError);
-          setReplays(filterByHeroKey(rows, decoded, maps));
-          setDetailByMatch({});
-          setPlayerUiByMatch({});
-        }
-      }
+      { graceMs: 560 }
     ).catch(() => {
-      if (!cancelled) setReplays([]);
+      if (!cancelled) {
+        setFeedListLoading(false);
+        setReplays([]);
+      }
     });
     return () => {
       cancelled = true;
@@ -384,7 +395,9 @@ export function HeroMatchesPage() {
             </div>
           </div>
           {!mapsLoading && maps ? (
-            filteredReplays.length === 0 ? (
+            feedListLoading ? (
+              <p className="text-sm text-skin-sub">加载录像列表…</p>
+            ) : filteredReplays.length === 0 ? (
               <p className="text-sm text-skin-sub">
                 {replays.length === 0
                   ? "暂无该英雄的录像记录。"

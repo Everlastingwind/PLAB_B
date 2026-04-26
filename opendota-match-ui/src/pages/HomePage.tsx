@@ -20,6 +20,8 @@ export function HomePage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [feed, setFeed] = useState<FeedSelection>({ pub: true, pro: false });
   const [replays, setReplays] = useState<ReplaySummary[]>([]);
+  /** 等云合并时再出列表，避免先铺旧静态再整页跳变 */
+  const [feedListLoading, setFeedListLoading] = useState(true);
   const [idxErr, setIdxErr] = useState<string | null>(null);
   const scrollKey = homeScrollStorageKey(location.pathname, location.search);
   const anchorKey = homeAnchorStorageKey(location.pathname, location.search);
@@ -35,20 +37,29 @@ export function HomePage() {
   useEffect(() => {
     let cancelled = false;
     setIdxErr(null);
+    setFeedListLoading(true);
+    setReplays([]);
     void loadFeedReplaysProgressive(
       feed,
-      (staticList) => {
-        if (!cancelled) setReplays(staticList);
-      },
-      ({ replays: list, cloudIndexError }) => {
-        if (!cancelled) {
+      {
+        onStalePreview: (rows) => {
+          if (cancelled) return;
+          setReplays(rows);
+          setFeedListLoading(false);
+        },
+        onMerged: ({ replays: list, cloudIndexError }) => {
+          if (cancelled) return;
           setReplays(list);
           setIdxErr(cloudIndexError);
-        }
-      }
+          setFeedListLoading(false);
+        },
+      },
+      { graceMs: 560 }
     ).catch((e) => {
-      if (!cancelled)
+      if (!cancelled) {
+        setFeedListLoading(false);
         setIdxErr(e instanceof Error ? e.message : "索引加载失败");
+      }
     });
     return () => {
       cancelled = true;
@@ -194,15 +205,19 @@ export function HomePage() {
             <p className="mb-4 text-sm text-amber-500/90">{mapsErr}</p>
           ) : null}
           {!mapsLoading && maps ? (
-            <div className="flex flex-col gap-2 sm:gap-3">
-              {visible.map((r) => (
-                <ReplayCard
-                  key={`${feedKey}-${r.match_id}-${r.uploaded_at}-${r.source ?? ""}`}
-                  replay={r}
-                  maps={maps}
-                />
-              ))}
-            </div>
+            feedListLoading ? (
+              <p className="text-sm text-skin-sub">加载录像列表…</p>
+            ) : (
+              <div className="flex flex-col gap-2 sm:gap-3">
+                {visible.map((r) => (
+                  <ReplayCard
+                    key={`${feedKey}-${r.match_id}-${r.uploaded_at}-${r.source ?? ""}`}
+                    replay={r}
+                    maps={maps}
+                  />
+                ))}
+              </div>
+            )
           ) : (
             <p className="text-sm text-skin-sub">加载中…</p>
           )}

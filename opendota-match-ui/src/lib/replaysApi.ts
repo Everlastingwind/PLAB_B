@@ -291,22 +291,52 @@ export function mergeCloudIntoStaticFeed(
   };
 }
 
+function sleepMs(ms: number): Promise<void> {
+  return new Promise((r) => setTimeout(r, ms));
+}
+
+/** 与 {@link loadFeedReplaysProgressive} 搭配使用 */
+export type LoadFeedProgressiveCallbacks = {
+  /**
+   * 云在 grace 内仍未返回时调用一次，用于静态保底（弱网）。
+   * 若云在 grace 内已返回，则不会调用，避免「旧静态 → 再跳最新」的闪动。
+   */
+  onStalePreview?: (replays: ReplaySummary[]) => void;
+  /** 合并完成（或仅静态）时必调 */
+  onMerged: (result: FeedReplayIndexResult) => void;
+};
+
 /**
- * 先尽快展示静态索引，再在后台合并 Supabase（适合大陆访问海外库极慢的场景）。
+ * 静态与云并行；云若在 graceMs 内返回则只触发 {@link LoadFeedProgressiveCallbacks.onMerged} 一次，
+ * 否则先 {@link LoadFeedProgressiveCallbacks.onStalePreview} 再 onMerged（弱网保底）。
  */
 export async function loadFeedReplaysProgressive(
   sel: FeedSelection,
-  onStatic: (replays: ReplaySummary[]) => void,
-  onFinal: (result: FeedReplayIndexResult) => void
+  callbacks: LoadFeedProgressiveCallbacks,
+  options?: { graceMs?: number }
 ): Promise<void> {
+  const graceMs = options?.graceMs ?? 520;
+  const cloudP = sel.pub ? fetchCloudPubReplaySummaries() : null;
   const snap = await fetchStaticFeedOnly(sel);
-  onStatic(snap.replays);
+
   if (!sel.pub) {
-    onFinal({ replays: snap.replays, cloudIndexError: null });
+    callbacks.onMerged({ replays: snap.replays, cloudIndexError: null });
     return;
   }
-  const cloudPack = await fetchCloudPubReplaySummaries();
-  onFinal(mergeCloudIntoStaticFeed(snap, cloudPack));
+
+  const raced = await Promise.race([
+    cloudP!.then((pack) => ({ kind: "cloud" as const, pack })),
+    sleepMs(graceMs).then(() => ({ kind: "grace" as const })),
+  ]);
+
+  if (raced.kind === "cloud") {
+    callbacks.onMerged(mergeCloudIntoStaticFeed(snap, raced.pack));
+    return;
+  }
+
+  callbacks.onStalePreview?.(snap.replays);
+  const pack = await cloudP!;
+  callbacks.onMerged(mergeCloudIntoStaticFeed(snap, pack));
 }
 
 /** 单次拉全量（静态与云并行）；首屏请优先用 {@link loadFeedReplaysProgressive} */
