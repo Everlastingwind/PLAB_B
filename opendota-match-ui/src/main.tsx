@@ -7,6 +7,10 @@ import { FeedbackWidget } from "./components/FeedbackWidget";
 import { RootErrorBoundary } from "./components/RootErrorBoundary";
 import "./index.css";
 
+if ("scrollRestoration" in history) {
+  history.scrollRestoration = "manual";
+}
+
 document.documentElement.classList.remove("dark");
 
 const rootEl = document.getElementById("root");

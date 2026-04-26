@@ -10,6 +10,7 @@ import type { ReplayPlayerSummary, ReplaySummary } from "../types/replaysIndex";
 import { replayIndexPlayerDisplayLabel } from "../lib/playerDisplay";
 import { heroKeyFromId } from "../lib/replaysApi";
 import { cn } from "../lib/cn";
+import { persistHomeListScrollBeforeNavigate } from "../lib/documentScroll";
 import { compareByPlayerSlot, partitionReplayRowPlayers } from "../lib/matchGrouping";
 import { kdaFromPlayerRecord } from "../lib/playerKda";
 
@@ -127,6 +128,7 @@ export function ReplayCard({ replay, maps }: { replay: ReplaySummary; maps: Enti
 
   return (
     <article
+      data-home-match-id={String(replay.match_id)}
       className={cn(
         "group relative overflow-hidden rounded-xl border border-skin-line bg-skin-card shadow-card",
         "transition-colors duration-200 ease-out",
@@ -139,6 +141,9 @@ export function ReplayCard({ replay, maps }: { replay: ReplaySummary; maps: Enti
         to={matchPath}
         className="absolute inset-0 z-0 rounded-[inherit]"
         aria-label={`查看比赛详情 ${replay.match_id}`}
+        onPointerDown={() =>
+          persistHomeListScrollBeforeNavigate(replay.match_id)
+        }
       />
       <div className="pointer-events-none absolute left-2 top-2 z-20 hidden sm:block">
         <span
