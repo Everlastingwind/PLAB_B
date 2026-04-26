@@ -1,5 +1,12 @@
 import { supabase } from "./supabaseClient.js";
 
+/**
+ * 列表查询易触发 `statement timeout`（行多 + `players` json 大 + 无索引时全表排序贵）。
+ * 在 Supabase SQL Editor 执行（按需调整表名）可明显加速：
+ *
+ *   create index if not exists plan_b_created_at_idx on public.plan_b (created_at desc);
+ */
+
 /** Supabase 行可能是整局 slim 平铺，或包在 data / payload 等 jsonb 列里 */
 export function unwrapPlanBRow(row: unknown): unknown | null {
   if (!row || typeof row !== "object" || Array.isArray(row)) return null;
@@ -38,7 +45,19 @@ export async function fetchPlanBSlimPayload(
   return unwrapPlanBRow(row);
 }
 
-const PLAN_B_INDEX_LIMIT = 2500;
+const PLAN_B_INDEX_SELECT =
+  "match_id, created_at, duration, radiant_win, radiant_score, dire_score, league_name, players";
+
+/** 默认条数：过大会触发 Supabase statement timeout；与静态索引合并后一般够用 */
+const PLAN_B_INDEX_LIMIT_PRIMARY = 800;
+/** 超时后依次降级（仍失败则把错误交给上层） */
+const PLAN_B_INDEX_LIMIT_FALLBACKS: readonly number[] = [350, 150];
+
+function looksLikeStatementTimeout(message: string): boolean {
+  return /statement timeout|query.*timeout|57014|canceling statement/i.test(
+    message
+  );
+}
 
 /** 首页 / 英雄 / 选手索引用：轻量列 + 按入库时间倒序 */
 export async function fetchPlanBReplayIndexRows(): Promise<{
@@ -47,19 +66,38 @@ export async function fetchPlanBReplayIndexRows(): Promise<{
 }> {
   const client = supabase;
   if (!client) return { rows: [], error: null };
-  const { data, error } = await client
-    .from("plan_b")
-    .select(
-      "match_id, created_at, duration, radiant_win, radiant_score, dire_score, league_name, players"
-    )
-    .order("created_at", { ascending: false })
-    .limit(PLAN_B_INDEX_LIMIT);
-  if (error) {
-    console.warn("[plan_b] 索引拉取失败:", error.message);
-    return { rows: [], error: error.message };
+
+  const limits = [
+    PLAN_B_INDEX_LIMIT_PRIMARY,
+    ...PLAN_B_INDEX_LIMIT_FALLBACKS,
+  ] as const;
+
+  let lastError: string | null = null;
+
+  for (let i = 0; i < limits.length; i++) {
+    const lim = limits[i];
+    const { data, error } = await client
+      .from("plan_b")
+      .select(PLAN_B_INDEX_SELECT)
+      .order("created_at", { ascending: false })
+      .limit(lim);
+
+    if (!error) {
+      return {
+        rows: Array.isArray(data) ? (data as Record<string, unknown>[]) : [],
+        error: null,
+      };
+    }
+
+    lastError = error.message;
+    console.warn(`[plan_b] 索引拉取失败 (limit=${lim}):`, error.message);
+
+    const retry =
+      i + 1 < limits.length && looksLikeStatementTimeout(error.message);
+    if (!retry) {
+      return { rows: [], error: lastError };
+    }
   }
-  return {
-    rows: Array.isArray(data) ? (data as Record<string, unknown>[]) : [],
-    error: null,
-  };
+
+  return { rows: [], error: lastError };
 }
