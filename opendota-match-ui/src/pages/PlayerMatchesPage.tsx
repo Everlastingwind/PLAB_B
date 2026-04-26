@@ -86,8 +86,9 @@ export function PlayerMatchesPage() {
   useEffect(() => {
     let cancelled = false;
     fetchReplaysForFeedSelection(feed)
-      .then((rows) => {
+      .then(({ replays: rows, cloudIndexError }) => {
         if (!cancelled) {
+          if (cloudIndexError) console.warn(cloudIndexError);
           setReplays(filterByAccountId(rows, aid));
           setDetailByMatch({});
         }

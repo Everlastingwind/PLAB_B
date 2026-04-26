@@ -41,11 +41,12 @@ export async function fetchPlanBSlimPayload(
 const PLAN_B_INDEX_LIMIT = 2500;
 
 /** 首页 / 英雄 / 选手索引用：轻量列 + 按入库时间倒序 */
-export async function fetchPlanBReplayIndexRows(): Promise<
-  Record<string, unknown>[]
-> {
+export async function fetchPlanBReplayIndexRows(): Promise<{
+  rows: Record<string, unknown>[];
+  error: string | null;
+}> {
   const client = supabase;
-  if (!client) return [];
+  if (!client) return { rows: [], error: null };
   const { data, error } = await client
     .from("plan_b")
     .select(
@@ -55,7 +56,10 @@ export async function fetchPlanBReplayIndexRows(): Promise<
     .limit(PLAN_B_INDEX_LIMIT);
   if (error) {
     console.warn("[plan_b] 索引拉取失败:", error.message);
-    return [];
+    return { rows: [], error: error.message };
   }
-  return Array.isArray(data) ? (data as Record<string, unknown>[]) : [];
+  return {
+    rows: Array.isArray(data) ? (data as Record<string, unknown>[]) : [],
+    error: null,
+  };
 }

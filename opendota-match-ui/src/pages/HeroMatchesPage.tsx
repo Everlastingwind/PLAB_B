@@ -166,8 +166,9 @@ export function HeroMatchesPage() {
     if (!maps) return;
     let cancelled = false;
     fetchReplaysForFeedSelection(feed)
-      .then((rows) => {
+      .then(({ replays: rows, cloudIndexError }) => {
         if (!cancelled) {
+          if (cloudIndexError) console.warn(cloudIndexError);
           setReplays(filterByHeroKey(rows, decoded, maps));
           setDetailByMatch({});
           setPlayerUiByMatch({});

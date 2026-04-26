@@ -164,25 +164,32 @@ function planBRowToReplaySummary(row: Record<string, unknown>): ReplaySummary | 
 }
 
 /** Supabase plan_b → 与 replays_index 同形的摘要行（标记为 pub） */
-export async function fetchCloudPubReplaySummaries(): Promise<ReplaySummary[]> {
-  const rows = await fetchPlanBReplayIndexRows();
+export async function fetchCloudPubReplaySummaries(): Promise<{
+  replays: ReplaySummary[];
+  error: string | null;
+}> {
+  const { rows, error } = await fetchPlanBReplayIndexRows();
   const out: ReplaySummary[] = [];
   for (const row of rows) {
     const r = planBRowToReplaySummary(row);
     if (r) out.push(r);
   }
-  return out;
+  return { replays: out, error };
 }
 
 /** 搜索栏：静态索引 + 职业索引 + Supabase 云录像（去重） */
 export async function fetchAllReplaySummariesForSearch(): Promise<
   ReplaySummary[]
 > {
-  const [pubIdx, proIdx, cloud] = await Promise.all([
+  const [pubIdx, proIdx, cloudPack] = await Promise.all([
     fetchReplaysIndex().catch(() => ({ replays: [] as ReplaySummary[] })),
     fetchProReplaysIndex().catch(() => ({ replays: [] as ReplaySummary[] })),
     fetchCloudPubReplaySummaries(),
   ]);
+  const cloud = cloudPack.replays;
+  if (cloudPack.error) {
+    console.warn("[plan_b] 搜索合并：云索引未拉取", cloudPack.error);
+  }
   const mergedPub = mergeReplaySummariesByMatchId(pubIdx.replays, cloud);
   return mergePubProReplays(mergedPub, proIdx.replays);
 }
@@ -190,24 +197,47 @@ export async function fetchAllReplaySummariesForSearch(): Promise<
 /** 录像索引来源（首页 / 英雄页 / 选手页共用）：PUB / PRO 可多选 */
 export type FeedSelection = { pub: boolean; pro: boolean };
 
+/** 拉取录像列表；云索引失败时仍可能返回静态 PUB，{@link cloudIndexError} 说明原因 */
+export type FeedReplayIndexResult = {
+  replays: ReplaySummary[];
+  cloudIndexError: string | null;
+};
+
+const CLOUD_INDEX_FAIL_HINT =
+  "仅显示已部署的静态列表，与桌面不一致时请检查：① Supabase 控制台是否允许当前站点域名（须同时包含 dota2planb.com 与 www.dota2planb.com）；② 手机是否使用 https://www.dota2planb.com 打开。";
+
 export async function fetchReplaysForFeedSelection(
   sel: FeedSelection
-): Promise<ReplaySummary[]> {
-  const cloud = sel.pub ? await fetchCloudPubReplaySummaries() : [];
+): Promise<FeedReplayIndexResult> {
+  let cloud: ReplaySummary[] = [];
+  let cloudIndexError: string | null = null;
+  if (sel.pub) {
+    const pack = await fetchCloudPubReplaySummaries();
+    cloud = pack.replays;
+    if (pack.error) {
+      cloudIndexError = `云索引（Supabase）不可用：${pack.error}。${CLOUD_INDEX_FAIL_HINT}`;
+    }
+  }
   if (sel.pub && sel.pro) {
     const [pubIdx, proIdx] = await Promise.all([
       fetchReplaysIndex(),
       fetchProReplaysIndex(),
     ]);
     const mergedPub = mergeReplaySummariesByMatchId(pubIdx.replays, cloud);
-    return mergePubProReplays(mergedPub, proIdx.replays);
+    return {
+      replays: mergePubProReplays(mergedPub, proIdx.replays),
+      cloudIndexError,
+    };
   }
   if (sel.pub) {
     const idx = await fetchReplaysIndex();
-    return mergeReplaySummariesByMatchId(idx.replays, cloud);
+    return {
+      replays: mergeReplaySummariesByMatchId(idx.replays, cloud),
+      cloudIndexError,
+    };
   }
   const idx = await fetchProReplaysIndex();
-  return idx.replays;
+  return { replays: idx.replays, cloudIndexError: null };
 }
 
 export function slicePage(replays: ReplaySummary[], page: number): ReplaySummary[] {

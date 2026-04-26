@@ -36,8 +36,11 @@ export function HomePage() {
     let cancelled = false;
     setIdxErr(null);
     fetchReplaysForFeedSelection(feed)
-      .then((list) => {
-        if (!cancelled) setReplays(list);
+      .then(({ replays: list, cloudIndexError }) => {
+        if (!cancelled) {
+          setReplays(list);
+          setIdxErr(cloudIndexError);
+        }
       })
       .catch((e) => {
         if (!cancelled)
