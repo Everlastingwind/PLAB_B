@@ -14,9 +14,21 @@ const anonKey = String(
 // 占位符或非 http(s) URL 也会触发 createClient 抛错 → 整站白屏
 const urlOk = /^https?:\/\//i.test(url);
 
+/** 避免手机端 Safari/Chrome 对 GET 的强缓存导致刷新仍看到旧 plan_b */
+function fetchNoStore(input, init) {
+  return fetch(input, {
+    ...init,
+    cache: "no-store",
+  });
+}
+
 // createClient("", "") 同样会抛错；未配置时导出 null
 export const supabase =
-  url && anonKey && urlOk ? createClient(url, anonKey) : null;
+  url && anonKey && urlOk
+    ? createClient(url, anonKey, {
+        global: { fetch: fetchNoStore },
+      })
+    : null;
 
 if (!supabase) {
   console.warn(

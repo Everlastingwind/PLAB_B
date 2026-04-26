@@ -52,7 +52,7 @@ export async function loadSlimMatchJsonForDetail(
   let local: SlimMatchJson | null = null;
   try {
     const res = await fetch(`/data/matches/${matchId}.json${q}`, {
-      cache: "default",
+      cache: "no-store",
     });
     if (res.ok) {
       const text = await res.text();

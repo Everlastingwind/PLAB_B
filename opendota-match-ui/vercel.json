@@ -1,5 +1,16 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
+  "headers": [
+    {
+      "source": "/data/:path*",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-cache, must-revalidate"
+        }
+      ]
+    }
+  ],
   "rewrites": [
     {
       "source": "/((?!data/|assets/|images/|favicon\\.ico|favicon\\.png|robots\\.txt|sitemap\\.xml|dota-a-mark\\.png|planb-logo-transparent\\.png).*)",
