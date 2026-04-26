@@ -28,6 +28,24 @@ export function unwrapPlanBRow(row: unknown): unknown | null {
   return r;
 }
 
+const PLAN_B_INDEX_SELECT =
+  "match_id, created_at, duration, radiant_win, radiant_score, dire_score, league_name, players";
+
+/**
+ * 详情页按需列：与列表 PLAN_B_INDEX_SELECT 对齐，并含 unwrap 可能用到的 json 包裹列。
+ * 避免 `*` 把表上未来加的审计/冗余大列一并拉下；players 仍是 jsonb，体积主要在此。
+ * 若库表缺某列，下方会回退 `select('*')`。
+ */
+const PLAN_B_DETAIL_SELECT = [
+  ...PLAN_B_INDEX_SELECT.split(",").map((s) => s.trim()),
+  "picks_bans",
+  "data",
+  "payload",
+  "slim",
+  "match_json",
+  "body",
+].join(",");
+
 /** 按 match_id 取整局数据（供详情页 / 选手页详情等） */
 export async function fetchPlanBSlimPayload(
   matchId: number
@@ -36,22 +54,31 @@ export async function fetchPlanBSlimPayload(
   const client = supabase;
   if (!client) return null;
 
-  const run = async (id: number | string) =>
-    client.from("plan_b").select("*").eq("match_id", id).limit(1);
+  const run = async (id: number | string, sel: string) =>
+    client.from("plan_b").select(sel).eq("match_id", id).limit(1);
 
-  let { data, error } = await run(matchId);
-  if (error) throw new Error(error.message || "Supabase 查询失败");
-  let row = Array.isArray(data) && data.length > 0 ? data[0] : null;
-  if (!row) {
-    ({ data, error } = await run(String(matchId)));
+  const fetchRow = async (id: number | string) => {
+    let { data, error } = await run(id, PLAN_B_DETAIL_SELECT);
+    if (error) {
+      const msg = error.message || "";
+      if (/column|42703|does not exist|schema cache/i.test(msg)) {
+        console.warn(
+          "[plan_b] 显式列查询失败，回退 select('*'):",
+          msg.slice(0, 200)
+        );
+        ({ data, error } = await run(id, "*"));
+      }
+    }
     if (error) throw new Error(error.message || "Supabase 查询失败");
-    row = Array.isArray(data) && data.length > 0 ? data[0] : null;
+    return Array.isArray(data) && data.length > 0 ? data[0] : null;
+  };
+
+  let row = await fetchRow(matchId);
+  if (!row) {
+    row = await fetchRow(String(matchId));
   }
   return unwrapPlanBRow(row);
 }
-
-const PLAN_B_INDEX_SELECT =
-  "match_id, created_at, duration, radiant_win, radiant_score, dire_score, league_name, players";
 
 /** 两阶段：先轻列排序取 id，再 in(match_id) 拉完整行，避免「排序 + 大 json」同一条 SQL 爆超时 */
 const PLAN_B_TWO_PHASE_ID_LIMIT = 120;
