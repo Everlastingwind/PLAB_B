@@ -4,6 +4,7 @@ import {
   heroIconUrl,
   onDotaSteamAssetImgError,
   steamCdnImgDefer,
+  steamCdnImgHero,
 } from "../data/mockMatchPlayers";
 import type { EntityMapsPayload } from "../types/entityMaps";
 import type { ReplayPlayerSummary, ReplaySummary } from "../types/replaysIndex";
@@ -25,10 +26,12 @@ function HeroCells({
   players,
   maps,
   side,
+  heroImgProps,
 }: {
   players: ReplayPlayerSummary[];
   maps: EntityMapsPayload;
   side: "radiant" | "dire";
+  heroImgProps: typeof steamCdnImgDefer | typeof steamCdnImgHero;
 }) {
   const sorted = [...players].sort(compareByPlayerSlot);
   return (
@@ -62,7 +65,7 @@ function HeroCells({
                 src={heroIconUrl(key === "unknown" ? "invoker" : key)}
                 alt=""
                 className="h-6 w-6 rounded-sm object-cover sm:h-9 sm:w-9 lg:h-10 lg:w-10"
-                {...steamCdnImgDefer}
+                {...heroImgProps}
                 onError={onDotaSteamAssetImgError}
               />
             </Link>
@@ -90,7 +93,17 @@ function HeroCells({
   );
 }
 
-export function ReplayCard({ replay, maps }: { replay: ReplaySummary; maps: EntityMapsPayload }) {
+export function ReplayCard({
+  replay,
+  maps,
+  eagerHeroPortraits = false,
+}: {
+  replay: ReplaySummary;
+  maps: EntityMapsPayload;
+  /** 首屏前几卡：英雄头像 eager + 高 fetchPriority，减轻全 lazy 的长尾 */
+  eagerHeroPortraits?: boolean;
+}) {
+  const heroImgProps = eagerHeroPortraits ? steamCdnImgHero : steamCdnImgDefer;
   const { radiantPlayers: rad, direPlayers: dire } = partitionReplayRowPlayers(
     replay.players
   );
@@ -167,7 +180,7 @@ export function ReplayCard({ replay, maps }: { replay: ReplaySummary; maps: Enti
       </div>
       <div className="relative z-10 flex max-sm:min-h-[3.25rem] flex-nowrap items-stretch gap-0.5 pointer-events-none max-sm:px-0 sm:gap-3">
         <div className="flex min-w-0 max-sm:flex-1 max-sm:justify-end sm:flex-1 items-center justify-end sm:justify-center">
-          <HeroCells players={rad} maps={maps} side="radiant" />
+          <HeroCells players={rad} maps={maps} side="radiant" heroImgProps={heroImgProps} />
         </div>
 
         <div
@@ -205,7 +218,7 @@ export function ReplayCard({ replay, maps }: { replay: ReplaySummary; maps: Enti
         </div>
 
         <div className="flex min-w-0 max-sm:flex-1 max-sm:justify-start sm:flex-1 items-center justify-start sm:justify-center">
-          <HeroCells players={dire} maps={maps} side="dire" />
+          <HeroCells players={dire} maps={maps} side="dire" heroImgProps={heroImgProps} />
         </div>
       </div>
     </article>

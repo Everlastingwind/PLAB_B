@@ -18,6 +18,8 @@ import {
   itemIconUrl,
   normalizeDotaAssetUrl,
   onDotaSteamAssetImgError,
+  steamCdnImgDefer,
+  steamCdnImgHero,
 } from "../data/mockMatchPlayers";
 import { cn } from "../lib/cn";
 import { MECHA_INSET, MECHA_RAISED } from "../lib/mechaStyles";
@@ -25,6 +27,7 @@ import type { SlimPlayer } from "../types/slimMatch";
 import { TalentTreeBadge } from "../components/TalentTreeBadge";
 import type { TalentPickUi, TalentTreeUi } from "../data/mockMatchPlayers";
 import { SEO } from "../components/SEO";
+import { ViewportMountRow } from "../components/ViewportMountRow";
 import { forEachConcurrent } from "../lib/fetchConcurrent";
 import { loadSlimMatchJsonForDetail } from "../lib/loadSlimMatchJson";
 
@@ -372,7 +375,7 @@ export function PlayerMatchesPage() {
                     <div className="text-center">天赋</div>
                     <div className="text-right pr-3">比赛编号</div>
                   </div>
-                  {visible.map((r) => {
+                  {visible.map((r, vIdx) => {
                     const row = detailByMatch[r.match_id];
                     const p = r.players.find((x) => x.account_id === aid);
                     const key = p ? heroKeyFromId(p.hero_id, maps) : "unknown";
@@ -386,9 +389,18 @@ export function PlayerMatchesPage() {
                     const talentTree = toTalentTreeUi(row?.talent_tree);
                     const talentPicks = toTalentPicksUi(row?.talent_picks);
                     return (
-                      <div
+                      <ViewportMountRow
                         key={`${r.match_id}-${r.uploaded_at}`}
-                        className="grid grid-cols-[210px_90px_90px_230px_290px_70px_170px] gap-2 border-b border-skin-line/70 px-3 py-2 text-xs last:border-b-0"
+                        index={vIdx}
+                        skeleton={
+                          <div className="grid grid-cols-[210px_90px_90px_230px_290px_70px_170px] gap-2 border-b border-skin-line/70 px-3 py-3 min-h-[52px] bg-skin-inset/30" />
+                        }
+                      >
+                      <div
+                        className={cn(
+                          "grid grid-cols-[210px_90px_90px_230px_290px_70px_170px] gap-2 border-b border-skin-line/70 px-3 py-2 text-xs",
+                          vIdx === visible.length - 1 && "border-b-0"
+                        )}
                       >
                         <Link
                           to={`/match/${r.match_id}`}
@@ -399,10 +411,7 @@ export function PlayerMatchesPage() {
                             src={heroIconUrl(key === "unknown" ? "invoker" : key)}
                             alt=""
                             className="h-10 w-10 rounded object-cover"
-                            loading="lazy"
-                            decoding="async"
-                            referrerPolicy="no-referrer"
-                            fetchPriority="low"
+                            {...(vIdx < 2 ? steamCdnImgHero : steamCdnImgDefer)}
                             onError={onDotaSteamAssetImgError}
                           />
                           <div className="min-w-0">
@@ -495,6 +504,7 @@ export function PlayerMatchesPage() {
                           </Link>
                         </div>
                       </div>
+                      </ViewportMountRow>
                     );
                   })}
                 </div>

@@ -22,6 +22,8 @@ import {
   itemIconUrl,
   normalizeDotaAssetUrl,
   onDotaSteamAssetImgError,
+  steamCdnImgDefer,
+  steamCdnImgHero,
 } from "../data/mockMatchPlayers";
 import type { SkillBuildStepUi } from "../data/mockMatchPlayers";
 import { SkillBuildTimeline } from "../components/SkillBuildTimeline";
@@ -34,6 +36,7 @@ import type { SlimMatchJson, SlimPlayer } from "../types/slimMatch";
 import { TalentTreeBadge } from "../components/TalentTreeBadge";
 import type { TalentPickUi, TalentTreeUi } from "../data/mockMatchPlayers";
 import { SEOMeta } from "../components/SEOMeta";
+import { ViewportMountRow } from "../components/ViewportMountRow";
 import { forEachConcurrent } from "../lib/fetchConcurrent";
 import { loadSlimMatchJsonForDetail } from "../lib/loadSlimMatchJson";
 
@@ -406,7 +409,7 @@ export function HeroMatchesPage() {
                     <div className="text-center">天赋</div>
                     <div className="text-right pr-3">比赛编号</div>
                   </div>
-                  {visible.map((r) => {
+                  {visible.map((r, vIdx) => {
                     const p = r.players.find(
                       (x) => heroKeyFromId(x.hero_id, maps) === decoded
                     );
@@ -463,29 +466,35 @@ export function HeroMatchesPage() {
                     const talentTree = fromAdapter?.tree ?? talentTreeFallback;
                     const talentPicks = fromAdapter?.picks ?? talentPicksFallback;
                     return (
-                      <div
+                      <ViewportMountRow
                         key={`${r.match_id}-${r.uploaded_at}`}
-                        className="grid cursor-pointer grid-cols-[190px_120px_90px_90px_240px_260px_70px_160px] gap-2 border-b border-slate-500/55 px-3 py-2 text-xs transition-colors hover:bg-slate-100/60 dark:border-slate-700/80 dark:hover:bg-slate-800/40 last:border-b-0"
-                        title={`查看比赛 ${r.match_id}`}
-                        role="button"
-                        tabIndex={0}
-                        onClick={() => nav(`/match/${r.match_id}`)}
-                        onKeyDown={(e) => {
-                          if (e.key === "Enter" || e.key === " ") {
-                            e.preventDefault();
-                            nav(`/match/${r.match_id}`);
-                          }
-                        }}
+                        index={vIdx}
+                        skeleton={
+                          <div className="grid grid-cols-[190px_120px_90px_90px_240px_260px_70px_160px] gap-2 border-b border-slate-500/55 px-3 py-3 min-h-[52px] bg-slate-100/25 dark:bg-slate-900/30" />
+                        }
                       >
+                        <div
+                          className={cn(
+                            "grid cursor-pointer grid-cols-[190px_120px_90px_90px_240px_260px_70px_160px] gap-2 border-b border-slate-500/55 px-3 py-2 text-xs transition-colors hover:bg-slate-100/60 dark:border-slate-700/80 dark:hover:bg-slate-800/40",
+                            vIdx === visible.length - 1 && "border-b-0"
+                          )}
+                          title={`查看比赛 ${r.match_id}`}
+                          role="button"
+                          tabIndex={0}
+                          onClick={() => nav(`/match/${r.match_id}`)}
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter" || e.key === " ") {
+                              e.preventDefault();
+                              nav(`/match/${r.match_id}`);
+                            }
+                          }}
+                        >
                         <div className="flex items-center gap-2">
                           <img
                             src={heroIconUrl(decoded === "unknown" ? "invoker" : decoded)}
                             alt=""
                             className="h-10 w-10 rounded object-cover"
-                            loading="lazy"
-                            decoding="async"
-                            referrerPolicy="no-referrer"
-                            fetchPriority="low"
+                            {...(vIdx < 2 ? steamCdnImgHero : steamCdnImgDefer)}
                             onError={onDotaSteamAssetImgError}
                           />
                           <div className="min-w-0">
@@ -597,6 +606,7 @@ export function HeroMatchesPage() {
                           </span>
                         </div>
                       </div>
+                      </ViewportMountRow>
                     );
                   })}
                 </div>

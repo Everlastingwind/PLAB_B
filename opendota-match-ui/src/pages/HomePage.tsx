@@ -2,6 +2,7 @@ import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } fr
 import { useLocation, useSearchParams } from "react-router-dom";
 import { PageShell } from "../components/PageShell";
 import { ReplayCard } from "../components/ReplayCard";
+import { ViewportMountRow } from "../components/ViewportMountRow";
 import type { FeedSelection } from "../components/FeedModeToggle";
 import { fetchReplaysForFeedSelection, PAGE_SIZE } from "../lib/replaysApi";
 import type { ReplaySummary } from "../types/replaysIndex";
@@ -199,12 +200,23 @@ export function HomePage() {
               <p className="text-sm text-skin-sub">加载录像列表…</p>
             ) : (
               <div className="flex flex-col gap-2 sm:gap-3">
-                {visible.map((r) => (
-                  <ReplayCard
+                {visible.map((r, i) => (
+                  <ViewportMountRow
                     key={`${feedKey}-${r.match_id}-${r.uploaded_at}-${r.source ?? ""}`}
-                    replay={r}
-                    maps={maps}
-                  />
+                    index={i}
+                    skeleton={
+                      <div
+                        aria-hidden
+                        className="min-h-[5.25rem] rounded-xl border border-skin-line bg-skin-inset/50 sm:min-h-[6.25rem]"
+                      />
+                    }
+                  >
+                    <ReplayCard
+                      replay={r}
+                      maps={maps}
+                      eagerHeroPortraits={i < 2}
+                    />
+                  </ViewportMountRow>
                 ))}
               </div>
             )
