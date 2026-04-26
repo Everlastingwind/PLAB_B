@@ -3,7 +3,7 @@ import { useParams, Link, useNavigate } from "react-router-dom";
 import { PageShell } from "../components/PageShell";
 import type { FeedSelection } from "../components/FeedModeToggle";
 import {
-  fetchReplaysForFeedSelection,
+  loadFeedReplaysProgressive,
   filterByHeroKey,
   hasMore,
   slicePage,
@@ -165,18 +165,24 @@ export function HeroMatchesPage() {
   useEffect(() => {
     if (!maps) return;
     let cancelled = false;
-    fetchReplaysForFeedSelection(feed)
-      .then(({ replays: rows, cloudIndexError }) => {
+    void loadFeedReplaysProgressive(
+      feed,
+      (staticRows) => {
+        if (!cancelled) {
+          setReplays(filterByHeroKey(staticRows, decoded, maps));
+        }
+      },
+      ({ replays: rows, cloudIndexError }) => {
         if (!cancelled) {
           if (cloudIndexError) console.warn(cloudIndexError);
           setReplays(filterByHeroKey(rows, decoded, maps));
           setDetailByMatch({});
           setPlayerUiByMatch({});
         }
-      })
-      .catch(() => {
-        if (!cancelled) setReplays([]);
-      });
+      }
+    ).catch(() => {
+      if (!cancelled) setReplays([]);
+    });
     return () => {
       cancelled = true;
     };

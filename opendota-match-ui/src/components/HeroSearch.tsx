@@ -101,6 +101,8 @@ export function HeroSearch({
   const [proPlayers, setProPlayers] = useState<ProPlayerCandidate[]>([]);
   const boxRef = useRef<HTMLDivElement>(null);
   const anchorRef = useRef<HTMLDivElement>(null);
+  /** 避免首页首屏与搜索栏同时各打一遍全量云索引 */
+  const replaySearchIndexStarted = useRef(false);
   /** Viewport px; used for `position:fixed` dropdowns below md */
   const [dockTopPx, setDockTopPx] = useState(0);
   /** Tailwind `md` breakpoint (768px) and up */
@@ -224,44 +226,61 @@ export function HeroSearch({
     };
   }, [updateDockTop, open, heroAvatarGridOpen, q, feedMode]);
 
-  useEffect(() => {
-    let cancelled = false;
-    (async () => {
-      try {
-        const all = await fetchAllReplaySummariesForSearch();
-        const uniq = new Map<number, string>();
-        for (const r of all) {
-          for (const p of r.players ?? []) {
-            const aid = Number(p.account_id ?? 0);
-            if (!Number.isFinite(aid) || aid <= 0) continue;
-            const pro = String(p.pro_name ?? "").trim();
-            const steam = String(p.personaname ?? "").trim();
-            const label = pro || steam;
-            if (!label) continue;
-            const prev = uniq.get(aid);
-            if (!prev) uniq.set(aid, label);
-            else if (pro && !String(prev).includes(pro)) uniq.set(aid, pro);
-          }
+  const runReplaySearchIndexEnhancer = useCallback(async () => {
+    if (replaySearchIndexStarted.current) return;
+    replaySearchIndexStarted.current = true;
+    try {
+      const all = await fetchAllReplaySummariesForSearch();
+      const uniq = new Map<number, string>();
+      for (const r of all) {
+        for (const p of r.players ?? []) {
+          const aid = Number(p.account_id ?? 0);
+          if (!Number.isFinite(aid) || aid <= 0) continue;
+          const pro = String(p.pro_name ?? "").trim();
+          const steam = String(p.personaname ?? "").trim();
+          const label = pro || steam;
+          if (!label) continue;
+          const prev = uniq.get(aid);
+          if (!prev) uniq.set(aid, label);
+          else if (pro && !String(prev).includes(pro)) uniq.set(aid, pro);
         }
-        if (!cancelled) {
-          for (const p of SEEDED_PRO_PLAYERS) {
-            if (!uniq.has(p.accountId)) uniq.set(p.accountId, p.proName);
-          }
-          setProPlayers(
-            [...uniq.entries()].map(([accountId, proName]) => ({
-              accountId,
-              proName,
-            }))
-          );
-        }
-      } catch {
-        // ignore search enhancer failure
       }
-    })();
-    return () => {
-      cancelled = true;
-    };
+      for (const p of SEEDED_PRO_PLAYERS) {
+        if (!uniq.has(p.accountId)) uniq.set(p.accountId, p.proName);
+      }
+      setProPlayers(
+        [...uniq.entries()].map(([accountId, proName]) => ({
+          accountId,
+          proName,
+        }))
+      );
+    } catch {
+      // ignore search enhancer failure
+    }
   }, []);
+
+  /** 用户打开下拉时再拉；否则用 idle/延迟，避免与首页抢首包 */
+  useEffect(() => {
+    if (!open) return;
+    void runReplaySearchIndexEnhancer();
+  }, [open, runReplaySearchIndexEnhancer]);
+
+  useEffect(() => {
+    const kick = () => {
+      void runReplaySearchIndexEnhancer();
+    };
+    let idleId: number | undefined;
+    if (typeof requestIdleCallback !== "undefined") {
+      idleId = requestIdleCallback(kick, { timeout: 8000 });
+    }
+    const t = window.setTimeout(kick, 6000);
+    return () => {
+      if (idleId !== undefined && typeof cancelIdleCallback !== "undefined") {
+        cancelIdleCallback(idleId);
+      }
+      clearTimeout(t);
+    };
+  }, [runReplaySearchIndexEnhancer]);
 
   if (!maps) {
     return (

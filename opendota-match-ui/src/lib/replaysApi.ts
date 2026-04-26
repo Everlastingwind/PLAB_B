@@ -163,18 +163,32 @@ function planBRowToReplaySummary(row: Record<string, unknown>): ReplaySummary | 
   };
 }
 
+/** 多处在同一时刻拉云索引时共用一次 in-flight，减轻海外链路重复请求 */
+let cloudPubReplayInflight: Promise<{
+  replays: ReplaySummary[];
+  error: string | null;
+}> | null = null;
+
 /** Supabase plan_b → 与 replays_index 同形的摘要行（标记为 pub） */
 export async function fetchCloudPubReplaySummaries(): Promise<{
   replays: ReplaySummary[];
   error: string | null;
 }> {
-  const { rows, error } = await fetchPlanBReplayIndexRows();
-  const out: ReplaySummary[] = [];
-  for (const row of rows) {
-    const r = planBRowToReplaySummary(row);
-    if (r) out.push(r);
-  }
-  return { replays: out, error };
+  if (cloudPubReplayInflight) return cloudPubReplayInflight;
+  const p = (async () => {
+    const { rows, error } = await fetchPlanBReplayIndexRows();
+    const out: ReplaySummary[] = [];
+    for (const row of rows) {
+      const r = planBRowToReplaySummary(row);
+      if (r) out.push(r);
+    }
+    return { replays: out, error };
+  })();
+  cloudPubReplayInflight = p;
+  void p.finally(() => {
+    if (cloudPubReplayInflight === p) cloudPubReplayInflight = null;
+  });
+  return p;
 }
 
 /** 搜索栏：静态索引 + 职业索引 + Supabase 云录像（去重） */
@@ -206,41 +220,108 @@ export type FeedReplayIndexResult = {
 const CLOUD_INDEX_FAIL_HINT =
   "仅显示已部署的静态列表，与桌面不一致时请检查：① Supabase 控制台是否允许当前站点域名（须同时包含 dota2planb.com 与 www.dota2planb.com）；② 手机是否使用 https://www.dota2planb.com 打开。";
 
-export async function fetchReplaysForFeedSelection(
+function cloudPackToIndexError(pack: {
+  replays: ReplaySummary[];
+  error: string | null;
+}): string | null {
+  if (!pack.error) return null;
+  const timeout = /statement timeout|57014|timeout/i.test(pack.error);
+  return timeout
+    ? `云索引（Supabase）不可用：${pack.error}。已对单次拉取条数自动降级；若仍出现请在数据库为 plan_b.created_at 建索引（见 src/lib/supabasePlanB.ts 顶部注释）。`
+    : `云索引（Supabase）不可用：${pack.error}。${CLOUD_INDEX_FAIL_HINT}`;
+}
+
+/** 仅静态索引（与云合并前的快照） */
+export type StaticFeedSnapshot =
+  | { kind: "pro"; replays: ReplaySummary[] }
+  | { kind: "pub"; replays: ReplaySummary[]; pubRows: ReplaySummary[] }
+  | {
+      kind: "pub+pro";
+      replays: ReplaySummary[];
+      pubRows: ReplaySummary[];
+      proRows: ReplaySummary[];
+    };
+
+export async function fetchStaticFeedOnly(
   sel: FeedSelection
-): Promise<FeedReplayIndexResult> {
-  let cloud: ReplaySummary[] = [];
-  let cloudIndexError: string | null = null;
-  if (sel.pub) {
-    const pack = await fetchCloudPubReplaySummaries();
-    cloud = pack.replays;
-    if (pack.error) {
-      const timeout = /statement timeout|57014|timeout/i.test(pack.error);
-      cloudIndexError = timeout
-        ? `云索引（Supabase）不可用：${pack.error}。已对单次拉取条数自动降级；若仍出现请在数据库为 plan_b.created_at 建索引（见 src/lib/supabasePlanB.ts 顶部注释）。`
-        : `云索引（Supabase）不可用：${pack.error}。${CLOUD_INDEX_FAIL_HINT}`;
-    }
-  }
+): Promise<StaticFeedSnapshot> {
   if (sel.pub && sel.pro) {
     const [pubIdx, proIdx] = await Promise.all([
       fetchReplaysIndex(),
       fetchProReplaysIndex(),
     ]);
-    const mergedPub = mergeReplaySummariesByMatchId(pubIdx.replays, cloud);
+    const pubRows = pubIdx.replays;
+    const proRows = proIdx.replays;
     return {
-      replays: mergePubProReplays(mergedPub, proIdx.replays),
-      cloudIndexError,
+      kind: "pub+pro",
+      replays: mergePubProReplays(pubRows, proRows),
+      pubRows,
+      proRows,
     };
   }
   if (sel.pub) {
-    const idx = await fetchReplaysIndex();
+    const pubIdx = await fetchReplaysIndex();
+    const pubRows = pubIdx.replays;
+    return { kind: "pub", replays: pubRows, pubRows };
+  }
+  const proIdx = await fetchProReplaysIndex();
+  return { kind: "pro", replays: proIdx.replays };
+}
+
+export function mergeCloudIntoStaticFeed(
+  snap: StaticFeedSnapshot,
+  cloudPack: { replays: ReplaySummary[]; error: string | null }
+): FeedReplayIndexResult {
+  if (snap.kind === "pro") {
+    return { replays: snap.replays, cloudIndexError: null };
+  }
+  if (snap.kind === "pub") {
     return {
-      replays: mergeReplaySummariesByMatchId(idx.replays, cloud),
-      cloudIndexError,
+      replays: mergeReplaySummariesByMatchId(snap.pubRows, cloudPack.replays),
+      cloudIndexError: cloudPackToIndexError(cloudPack),
     };
   }
-  const idx = await fetchProReplaysIndex();
-  return { replays: idx.replays, cloudIndexError: null };
+  const mergedPub = mergeReplaySummariesByMatchId(
+    snap.pubRows,
+    cloudPack.replays
+  );
+  return {
+    replays: mergePubProReplays(mergedPub, snap.proRows),
+    cloudIndexError: cloudPackToIndexError(cloudPack),
+  };
+}
+
+/**
+ * 先尽快展示静态索引，再在后台合并 Supabase（适合大陆访问海外库极慢的场景）。
+ */
+export async function loadFeedReplaysProgressive(
+  sel: FeedSelection,
+  onStatic: (replays: ReplaySummary[]) => void,
+  onFinal: (result: FeedReplayIndexResult) => void
+): Promise<void> {
+  const snap = await fetchStaticFeedOnly(sel);
+  onStatic(snap.replays);
+  if (!sel.pub) {
+    onFinal({ replays: snap.replays, cloudIndexError: null });
+    return;
+  }
+  const cloudPack = await fetchCloudPubReplaySummaries();
+  onFinal(mergeCloudIntoStaticFeed(snap, cloudPack));
+}
+
+/** 单次拉全量（静态与云并行）；首屏请优先用 {@link loadFeedReplaysProgressive} */
+export async function fetchReplaysForFeedSelection(
+  sel: FeedSelection
+): Promise<FeedReplayIndexResult> {
+  if (!sel.pub) {
+    const snap = await fetchStaticFeedOnly(sel);
+    return { replays: snap.replays, cloudIndexError: null };
+  }
+  const [snap, cloudPack] = await Promise.all([
+    fetchStaticFeedOnly(sel),
+    fetchCloudPubReplaySummaries(),
+  ]);
+  return mergeCloudIntoStaticFeed(snap, cloudPack);
 }
 
 export function slicePage(replays: ReplaySummary[], page: number): ReplaySummary[] {

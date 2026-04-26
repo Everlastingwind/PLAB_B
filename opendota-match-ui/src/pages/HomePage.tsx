@@ -3,7 +3,7 @@ import { useLocation, useSearchParams } from "react-router-dom";
 import { PageShell } from "../components/PageShell";
 import { ReplayCard } from "../components/ReplayCard";
 import type { FeedSelection } from "../components/FeedModeToggle";
-import { fetchReplaysForFeedSelection, PAGE_SIZE } from "../lib/replaysApi";
+import { loadFeedReplaysProgressive, PAGE_SIZE } from "../lib/replaysApi";
 import type { ReplaySummary } from "../types/replaysIndex";
 import { useEntityMaps } from "../hooks/useEntityMaps";
 import { SEOMeta } from "../components/SEOMeta";
@@ -35,17 +35,21 @@ export function HomePage() {
   useEffect(() => {
     let cancelled = false;
     setIdxErr(null);
-    fetchReplaysForFeedSelection(feed)
-      .then(({ replays: list, cloudIndexError }) => {
+    void loadFeedReplaysProgressive(
+      feed,
+      (staticList) => {
+        if (!cancelled) setReplays(staticList);
+      },
+      ({ replays: list, cloudIndexError }) => {
         if (!cancelled) {
           setReplays(list);
           setIdxErr(cloudIndexError);
         }
-      })
-      .catch((e) => {
-        if (!cancelled)
-          setIdxErr(e instanceof Error ? e.message : "索引加载失败");
-      });
+      }
+    ).catch((e) => {
+      if (!cancelled)
+        setIdxErr(e instanceof Error ? e.message : "索引加载失败");
+    });
     return () => {
       cancelled = true;
     };
