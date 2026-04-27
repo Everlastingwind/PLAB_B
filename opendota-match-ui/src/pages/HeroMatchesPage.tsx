@@ -261,9 +261,13 @@ export function HeroMatchesPage() {
       .filter((mid) => !detailByMatch[mid]);
     if (!need.length) return;
     (async () => {
-      const { buildUiFromSlim, DEFAULT_TEAM_NAMES } = await import(
-        "../adapters/slimToUi"
-      );
+      const [{ buildUiFromSlim, DEFAULT_TEAM_NAMES }, proOverrides] =
+        await Promise.all([
+          import("../adapters/slimToUi"),
+          import("../lib/proAccountDisplayOverrides").then((m) =>
+            m.loadProAccountDisplayOverrides()
+          ),
+        ]);
       const updates: Record<number, SlimMatchJson> = {};
       const playerUiUpdates: Record<
         number,
@@ -279,7 +283,10 @@ export function HeroMatchesPage() {
           if (!j) return;
           updates[mid] = j;
           try {
-            const ui = buildUiFromSlim(j, maps, DEFAULT_TEAM_NAMES);
+            const ui = buildUiFromSlim(j, maps, {
+              ...DEFAULT_TEAM_NAMES,
+              proDisplayNameByAccountId: proOverrides,
+            });
             const uiPlayers = [...ui.radiant.players, ...ui.dire.players];
             const p0 = (replays.find((x) => x.match_id === mid)?.players || []).find(
               (x) => heroKeyFromId(x.hero_id, maps) === decoded

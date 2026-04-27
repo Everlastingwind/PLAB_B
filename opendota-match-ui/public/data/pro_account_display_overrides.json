@@ -1,0 +1,7 @@
+{
+  "_readme": "Steam account_id（字符串数字）→ 全站展示用职业名。对局页、索引、新上传 slim 均会套用；无需改每场 JSON。",
+  "by_account_id": {
+    "308504257": "Nisha (smurf)",
+    "125581247": "Ame(smurf)"
+  }
+}

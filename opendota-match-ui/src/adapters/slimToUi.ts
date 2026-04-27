@@ -1065,7 +1065,11 @@ function warnUnmatchedTalentLearnings(
   }
 }
 
-function slimPlayerToRow(p: SlimPlayer, maps: EntityMapsPayload): PlayerRowMock {
+function slimPlayerToRow(
+  p: SlimPlayer,
+  maps: EntityMapsPayload,
+  proDisplayNameByAccountId?: ReadonlyMap<number, string> | null
+): PlayerRowMock {
   const heroId = numOrZero(p.hero_id);
   const key = heroKeyFromMaps(heroId, maps);
   const kda = kdaFromPlayerRecord(p as Record<string, unknown>);
@@ -1279,18 +1283,29 @@ function slimPlayerToRow(p: SlimPlayer, maps: EntityMapsPayload): PlayerRowMock 
     );
     if (talentPicksUi.length === 0) talentPicksUi = undefined;
   }
-  const proNameRaw = p.pro_name;
-  const proName =
-    proNameRaw === null || proNameRaw === undefined
-      ? undefined
-      : stripReplayRowFactionOutcomeNoise(
-          sanitizePlayerDisplayText(String(proNameRaw))
-        ) || undefined;
   const accountIdRaw = Number(p.account_id ?? 0);
   const accountId =
     Number.isFinite(accountIdRaw) && accountIdRaw > 0
-      ? accountIdRaw
+      ? Math.floor(accountIdRaw)
       : undefined;
+
+  const forcedProName =
+    accountId != null && proDisplayNameByAccountId?.has(accountId)
+      ? stripReplayRowFactionOutcomeNoise(
+          sanitizePlayerDisplayText(
+            String(proDisplayNameByAccountId.get(accountId) ?? "")
+          )
+        ) || undefined
+      : undefined;
+
+  const proNameRaw = p.pro_name;
+  const proName =
+    forcedProName ??
+    (proNameRaw === null || proNameRaw === undefined
+      ? undefined
+      : stripReplayRowFactionOutcomeNoise(
+          sanitizePlayerDisplayText(String(proNameRaw))
+        ) || undefined);
   const lbRaw = (p as { leaderboard_rank?: unknown }).leaderboard_rank;
   const leaderboardRank = (() => {
     const n = numOrZero(lbRaw);
@@ -1403,13 +1418,17 @@ function majorityTeamName(players: SlimPlayer[]): string | undefined {
   return best;
 }
 
+export type BuildUiFromSlimDefaults = {
+  radiantName: string;
+  direName: string;
+  /** 与 `public/data/pro_account_display_overrides.json` 一致：按 account_id 强制展示名（小号等） */
+  proDisplayNameByAccountId?: ReadonlyMap<number, string> | null;
+};
+
 export function buildUiFromSlim(
   slim: SlimMatchJson,
   maps: EntityMapsPayload,
-  defaults: {
-    radiantName: string;
-    direName: string;
-  }
+  defaults: BuildUiFromSlimDefaults
 ): {
   header: MatchHeaderData;
   radiant: TeamTableMock;
@@ -1449,19 +1468,21 @@ export function buildUiFromSlim(
     matchId: String(slim.match_id ?? slim._meta?.match_id ?? "—"),
   };
 
+  const proMap = defaults.proDisplayNameByAccountId ?? null;
+
   const radiant: TeamTableMock = {
     teamName: radiantTeamName,
     factionLabel: "天辉 · Radiant",
     side: "radiant",
     won: rw,
-    players: rad.map((p) => slimPlayerToRow(p, maps)),
+    players: rad.map((p) => slimPlayerToRow(p, maps, proMap)),
   };
   const direTeam: TeamTableMock = {
     teamName: direTeamName,
     factionLabel: "夜魇 · Dire",
     side: "dire",
     won: !rw,
-    players: dire.map((p) => slimPlayerToRow(p, maps)),
+    players: dire.map((p) => slimPlayerToRow(p, maps, proMap)),
   };
 
   return { header, radiant, dire: direTeam };

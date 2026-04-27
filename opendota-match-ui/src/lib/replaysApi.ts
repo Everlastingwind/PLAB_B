@@ -5,6 +5,7 @@ import type {
   ReplaysIndexPayload,
 } from "../types/replaysIndex";
 import { fetchDeployedDataJson } from "./fetchStaticJson";
+import { applyProDisplayOverridesToReplaySummaries } from "./proAccountDisplayOverrides";
 import { fetchPlanBReplayIndexRows } from "./supabasePlanB";
 
 const PAGE_SIZE = 15;
@@ -231,7 +232,8 @@ export async function fetchAllReplaySummariesForSearch(): Promise<
     console.warn("[plan_b] 搜索合并：云索引未拉取", cloudPack.error);
   }
   const mergedPub = mergeReplaySummariesByMatchId(pubIdx.replays, cloud);
-  return mergePubProReplays(mergedPub, proIdx.replays);
+  const merged = mergePubProReplays(mergedPub, proIdx.replays);
+  return applyProDisplayOverridesToReplaySummaries(merged);
 }
 
 /** 录像索引来源（首页 / 英雄页 / 选手页共用）：PUB / PRO 可多选 */
@@ -321,15 +323,21 @@ export function mergeCloudIntoStaticFeed(
 export async function fetchReplaysForFeedSelection(
   sel: FeedSelection
 ): Promise<FeedReplayIndexResult> {
+  let base: FeedReplayIndexResult;
   if (!sel.pub) {
     const snap = await fetchStaticFeedOnly(sel);
-    return { replays: snap.replays, cloudIndexError: null };
+    base = { replays: snap.replays, cloudIndexError: null };
+  } else {
+    const [snap, cloudPack] = await Promise.all([
+      fetchStaticFeedOnly(sel),
+      fetchCloudPubReplaySummaries(),
+    ]);
+    base = mergeCloudIntoStaticFeed(snap, cloudPack);
   }
-  const [snap, cloudPack] = await Promise.all([
-    fetchStaticFeedOnly(sel),
-    fetchCloudPubReplaySummaries(),
-  ]);
-  return mergeCloudIntoStaticFeed(snap, cloudPack);
+  const replays = await applyProDisplayOverridesToReplaySummaries(
+    base.replays
+  );
+  return { ...base, replays };
 }
 
 export function slicePage(replays: ReplaySummary[], page: number): ReplaySummary[] {

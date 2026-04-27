@@ -1,5 +1,6 @@
 import { seededProNameForAccount } from "../data/proPlayers";
 import { sanitizePlayerDisplayText } from "./display";
+import { peekProAccountDisplayOverrides } from "./proAccountDisplayOverrides";
 
 const ROW_NOISE = new Set([
   "radiant",
@@ -44,16 +45,20 @@ export function displayPlayerLabel(
   return fb.length > 0 ? fb : "匿名玩家";
 }
 
-/** 有 OpenDota `pro_name` 或命中种子职业名单时视为可公示 ID；否则为路人（展示「匿名」） */
+/** 有 OpenDota `pro_name`、命中种子、`pro_account_display_overrides` 时视为可公示 ID；否则为路人（展示「匿名」） */
 export function isRecognizedProForPrivacy(
   accountId: unknown,
   proName: string | null | undefined
 ): boolean {
+  const aid = Math.floor(Number(accountId));
+  if (Number.isFinite(aid) && aid > 0) {
+    const ov = peekProAccountDisplayOverrides()?.get(aid);
+    if (ov && String(ov).trim()) return true;
+  }
   const cleaned = stripReplayRowFactionOutcomeNoise(
     sanitizePlayerDisplayText(String(proName ?? ""))
   );
   if (cleaned.length > 0) return true;
-  const aid = Number(accountId);
   if (!Number.isFinite(aid) || aid <= 0) return false;
   return Boolean(seededProNameForAccount(aid));
 }
@@ -64,9 +69,14 @@ export function privacyMaskedPlayerDisplayName(
   proName: string | null | undefined
 ): string {
   if (!isRecognizedProForPrivacy(accountId, proName)) return "匿名";
+  const aid = Math.floor(Number(accountId));
+  const ov =
+    Number.isFinite(aid) && aid > 0
+      ? String(peekProAccountDisplayOverrides()?.get(aid) ?? "").trim()
+      : "";
   const seeded = String(seededProNameForAccount(Number(accountId)) ?? "").trim();
   const rawPro = String(proName ?? "").trim();
-  const label = rawPro || seeded;
+  const label = ov || rawPro || seeded;
   const pretty = stripReplayRowFactionOutcomeNoise(
     sanitizePlayerDisplayText(label)
   );
@@ -78,7 +88,15 @@ export function replayIndexPlayerDisplayLabel(
   accountId: number,
   proNameFromIndex: string | null | undefined
 ): string {
-  return privacyMaskedPlayerDisplayName(accountId, proNameFromIndex);
+  const aid = Math.floor(Number(accountId));
+  const ov =
+    Number.isFinite(aid) && aid > 0
+      ? peekProAccountDisplayOverrides()?.get(aid)
+      : undefined;
+  return privacyMaskedPlayerDisplayName(
+    accountId,
+    ov ?? proNameFromIndex
+  );
 }
 
 /** 索引行是否可链到 `/player/:id`：仅限已识别职业选手 */
@@ -88,6 +106,7 @@ export function replayIndexCanLinkProPlayer(
 ): boolean {
   const aid = Number(accountId);
   if (!Number.isFinite(aid) || aid <= 0) return false;
+  if (peekProAccountDisplayOverrides()?.get(Math.floor(aid))) return true;
   return isRecognizedProForPrivacy(aid, proNameFromIndex);
 }
 
@@ -96,6 +115,13 @@ export function replayIndexEffectiveProRaw(
   accountId: number,
   proNameFromIndex: string | null | undefined
 ): string {
+  const aid = Math.floor(Number(accountId));
+  const ov =
+    Number.isFinite(aid) && aid > 0
+      ? peekProAccountDisplayOverrides()?.get(aid)
+      : undefined;
+  const ovTrim = ov ? String(ov).trim() : "";
+  if (ovTrim) return ovTrim;
   const t = String(proNameFromIndex ?? "").trim();
   if (t.length > 0) return t;
   return String(seededProNameForAccount(accountId) ?? "").trim();

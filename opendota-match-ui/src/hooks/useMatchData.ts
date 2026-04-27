@@ -139,10 +139,17 @@ export function useMatchData(matchId?: string): MatchDataState & { reload: () =>
         });
         return;
       }
-      const { buildUiFromSlim, DEFAULT_TEAM_NAMES } = await import(
-        "../adapters/slimToUi"
-      );
-      const ui = buildUiFromSlim(slim, maps, DEFAULT_TEAM_NAMES);
+      const [{ buildUiFromSlim, DEFAULT_TEAM_NAMES }, proOverrides] =
+        await Promise.all([
+          import("../adapters/slimToUi"),
+          import("../lib/proAccountDisplayOverrides").then((m) =>
+            m.loadProAccountDisplayOverrides()
+          ),
+        ]);
+      const ui = buildUiFromSlim(slim, maps, {
+        ...DEFAULT_TEAM_NAMES,
+        proDisplayNameByAccountId: proOverrides,
+      });
       const rawRadiantScore = Number(ui.header.scoreRadiant ?? 0);
       const rawDireScore = Number(ui.header.scoreDire ?? 0);
       const hasValidScoreFromSource = rawRadiantScore > 0 || rawDireScore > 0;

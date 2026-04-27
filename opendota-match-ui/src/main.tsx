@@ -5,7 +5,10 @@ import { HelmetProvider } from "react-helmet-async";
 import App from "./App";
 import { FeedbackWidget } from "./components/FeedbackWidget";
 import { RootErrorBoundary } from "./components/RootErrorBoundary";
+import { loadProAccountDisplayOverrides } from "./lib/proAccountDisplayOverrides";
 import "./index.css";
+
+void loadProAccountDisplayOverrides();
 
 if ("scrollRestoration" in history) {
   history.scrollRestoration = "manual";

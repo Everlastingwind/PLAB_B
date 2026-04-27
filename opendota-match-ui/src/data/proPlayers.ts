@@ -12,6 +12,12 @@ export type SeedProPlayer = {
 /**
  * OpenDota proPlayers 按战队过滤生成（18 支战队，91 名选手）。
  * 重新生成: python scripts/build_seeded_pro_players.py
+ *
+ * 小号 / smurf（不与主号合并战绩）：
+ * - 推荐全站一条配置：`public/data/pro_account_display_overrides.json` 的 `by_account_id`，
+ *   新上传对局无需改 JSON 也会显示该名（如 `"115147095": "Nisha (smurf)"`）。
+ * - 或：为该 `accountId` 单独增加一条种子，`proName` 用 `Nisha (smurf)`；`/player/{小号id}` 与主号独立。
+ * - 单场也可在 slim 里写 `pro_name`；有 overrides 时仍以 overrides 为准（统一小号展示）。
  */
 export const SEEDED_PRO_PLAYERS: SeedProPlayer[] = [
   { accountId: 10366616, proName: "Sneyking" },
