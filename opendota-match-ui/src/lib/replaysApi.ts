@@ -7,7 +7,7 @@ import type {
 import { fetchDeployedDataJson } from "./fetchStaticJson";
 import { fetchPlanBReplayIndexRows } from "./supabasePlanB";
 
-const PAGE_SIZE = 20;
+const PAGE_SIZE = 15;
 
 export async function fetchReplaysIndex(): Promise<ReplaysIndexPayload> {
   const raw = await fetchDeployedDataJson<ReplaysIndexPayload>(
