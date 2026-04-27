@@ -178,7 +178,9 @@ function GridInventorySlots({
     sideBorderMain
   );
 
-  const aghBox = compact ? "h-5 w-5 p-px" : "h-6 w-6 p-0.5";
+  /** 神杖/魔晶：勿用 `h-full` 放在 `flex items-center` 内（部分浏览器百分比高度塌缩 + lazy 不加载 → 裂图）；与 ItemSlotStrip 一致用固定像素。 */
+  const aghShell = compact ? "h-5 w-5" : "h-6 w-6";
+  const aghImgClass = compact ? "h-3.5 w-3.5" : "h-5 w-5";
   const bearLabelClass = cn(
     "inline-flex items-center justify-center rounded border px-1 text-[10px] leading-4",
     side === "radiant"
@@ -251,8 +253,8 @@ function GridInventorySlots({
       >
         <div
           className={cn(
-            "flex items-center justify-center rounded border transition-all",
-            aghBox,
+            "grid place-items-center rounded border transition-all",
+            aghShell,
             scepterOn
               ? "border-sky-400/55 bg-sky-500/10 shadow-[0_0_10px_rgba(56,189,248,0.28)] dark:border-sky-400/50 dark:bg-sky-500/15"
               : "border-slate-600/30 bg-slate-900/25 opacity-45 dark:border-slate-600/35 dark:bg-slate-950/40"
@@ -262,15 +264,17 @@ function GridInventorySlots({
           <img
             src={AGHANIM_SCEPTER_ICON}
             alt=""
-            className="h-full w-full object-cover"
+            className={cn(aghImgClass, "object-cover")}
             {...steamCdnImgDefer}
+            loading="eager"
+            decoding="async"
             onError={onDotaSteamAssetImgError}
           />
         </div>
         <div
           className={cn(
-            "flex items-center justify-center rounded border transition-all",
-            aghBox,
+            "grid place-items-center rounded border transition-all",
+            aghShell,
             shardOn
               ? "border-cyan-400/55 bg-cyan-500/10 shadow-[0_0_10px_rgba(34,211,238,0.26)] dark:border-cyan-400/50 dark:bg-cyan-500/15"
               : "border-slate-600/30 bg-slate-900/25 opacity-45 dark:border-slate-600/35 dark:bg-slate-950/40"
@@ -280,13 +284,15 @@ function GridInventorySlots({
           <img
             src={AGHANIM_SHARD_ICON}
             alt=""
-            className="h-full w-full object-cover"
+            className={cn(aghImgClass, "object-cover")}
             {...steamCdnImgDefer}
+            loading="eager"
+            decoding="async"
             onError={onDotaSteamAssetImgError}
           />
         </div>
         {bearMain ? (
-          <div className={cn("flex items-center justify-center", aghBox)}>
+          <div className={cn("flex items-center justify-center", aghShell)}>
             <span
               className={cn(
                 bearLabelClass,
