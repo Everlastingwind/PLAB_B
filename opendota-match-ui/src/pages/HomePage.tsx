@@ -239,7 +239,7 @@ export function HomePage() {
               上一页
             </button>
             <p className="text-xs text-skin-sub">
-              第 {page} / {totalPages} 页（每页 {PAGE_SIZE} 条）
+              第 {page} / {totalPages} 页
             </p>
             <button
               type="button"
