@@ -1,6 +1,7 @@
 /**
- * Dota 2 结算面：神杖 / 魔晶是否生效（身上 6 格 + API 标量 + permanent_buffs）。
+ * Dota 2 结算面：神杖 / 魔晶是否生效（身上 6 格 + API 标量 + permanent_buffs + 购买流水）。
  * 与客户端一致：permanent_buff 2 ≈ 神杖、12 ≈ 魔晶。
+ * 本地/DEM 管线常把 `aghanims_*` 写成 0；若 `purchase_history`（或 OpenDota 式 `purchase_log`）曾购买则补推断。
  */
 import type { ItemSlotMock } from "../data/mockMatchPlayers";
 
@@ -52,6 +53,53 @@ function buffsFromPermanent(raw: unknown): { scepter: boolean; shard: boolean } 
 
 function normItemKey(k: string): string {
   return k.replace(/^item_/, "").trim().toLowerCase();
+}
+
+function itemKeySignalsAghsScepter(k: string): boolean {
+  if (SCEPTER_KEYS.has(k)) return true;
+  if (k.includes("ultimate_scepter") && !k.includes("recipe")) return true;
+  return false;
+}
+
+function itemKeySignalsAghsShard(k: string): boolean {
+  if (SHARD_KEYS.has(k)) return true;
+  if (k.includes("aghanims_shard")) return true;
+  return false;
+}
+
+/** 从 slim `purchase_history` / 原始 `purchase_log` 推断是否曾购入（含已消耗仍占 Buff 位）。 */
+function inferScepterShardFromPurchaseStreams(
+  raw: Record<string, unknown>
+): { scepter: boolean; shard: boolean } {
+  let scepter = false;
+  let shard = false;
+
+  const hist = raw["purchase_history"];
+  if (Array.isArray(hist)) {
+    for (const row of hist) {
+      if (!row || typeof row !== "object") continue;
+      const o = row as { item?: unknown; item_key?: unknown };
+      const rawItem = String(o.item ?? o.item_key ?? "").trim();
+      const k = normItemKey(rawItem);
+      if (!k) continue;
+      if (itemKeySignalsAghsScepter(k)) scepter = true;
+      if (itemKeySignalsAghsShard(k)) shard = true;
+    }
+  }
+
+  const log = raw["purchase_log"];
+  if (Array.isArray(log)) {
+    for (const row of log) {
+      if (!row || typeof row !== "object") continue;
+      const keyRaw = String((row as { key?: unknown }).key ?? "").trim();
+      const k = normItemKey(keyRaw);
+      if (!k) continue;
+      if (itemKeySignalsAghsScepter(k)) scepter = true;
+      if (itemKeySignalsAghsShard(k)) shard = true;
+    }
+  }
+
+  return { scepter, shard };
 }
 
 /**
@@ -138,6 +186,10 @@ export function computeScepterShardActive(opts: {
     if (SCEPTER_KEYS.has(key)) scepter = true;
     if (SHARD_KEYS.has(key)) shard = true;
   }
+
+  const fromPurch = inferScepterShardFromPurchaseStreams(raw);
+  if (fromPurch.scepter) scepter = true;
+  if (fromPurch.shard) shard = true;
 
   return { scepter, shard };
 }

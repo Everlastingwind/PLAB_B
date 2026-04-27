@@ -5,13 +5,8 @@ import { mockTeamDire, mockTeamRadiant } from "../data/mockMatchPlayers";
 import type { TeamTableMock } from "../data/mockMatchPlayers";
 import { loadEntityMapsPayload } from "../lib/entityMapsLoader";
 import { purifyMatchJsonForSlim } from "../lib/purifyRawMatchJson";
-import { isPubTierMatch } from "../lib/matchTier";
 import { fetchDeployedDataJson } from "../lib/fetchStaticJson";
-import {
-  fetchOpenDotaMatchById,
-  fetchNaviLatestOpenDotaMatch,
-  isNaviOpenDotaLiveRoute,
-} from "../lib/fetchNaviLatestOpenDotaMatch";
+import { isNaviOpenDotaLiveRoute } from "../lib/fetchNaviLatestOpenDotaMatch";
 import { fetchPlanBSlimPayload } from "../lib/supabasePlanB";
 import type { EntityMapsPayload, VpkrTalentLabelEntry } from "../types/entityMaps";
 import type { SlimMatchJson } from "../types/slimMatch";
@@ -38,28 +33,6 @@ async function fetchLatestTalentsMap(): Promise<
     return tbl && typeof tbl === "object" ? tbl : undefined;
   } catch {
     return undefined;
-  }
-}
-
-async function applyOpenDotaEnrich(next: SlimMatchJson) {
-  const { enrichSlimWithOpenDotaAbilityUpgrades } = await import(
-    "../lib/enrichSlimFromOpenDota"
-  );
-  try {
-    return await enrichSlimWithOpenDotaAbilityUpgrades(next);
-  } catch {
-    return next;
-  }
-}
-
-async function applyOpenDotaEndgameItems(next: SlimMatchJson, m: EntityMapsPayload) {
-  const { mergeOpenDotaEndgameItemsIntoSlim } = await import(
-    "../lib/mergeOpenDotaEndgameItems"
-  );
-  try {
-    await mergeOpenDotaEndgameItemsIntoSlim(next, m);
-  } catch {
-    /* 404 / 网络失败 */
   }
 }
 
@@ -100,56 +73,30 @@ export function useMatchData(matchId?: string): MatchDataState & { reload: () =>
       const mapsPromise = loadEntityMapsPayload();
       const talentLabelsPromise = fetchLatestTalentsMap();
 
-      if (isNaviOpenDotaLiveRoute(idForFiles || matchId)) {
+      // 1) 优先从 Supabase 读取（命中则直接用于页面）
+      if (numericMatchId > 0) {
         try {
           const [m, talentLabelsByKey, raw] = await Promise.all([
             mapsPromise,
             talentLabelsPromise,
-            fetchNaviLatestOpenDotaMatch(),
+            fetchPlanBSlimPayload(numericMatchId),
           ]);
-          maps = {
-            ...m,
-            ...(talentLabelsByKey && Object.keys(talentLabelsByKey).length > 0
-              ? { talentLabelsByKey }
-              : {}),
-          };
-          let next = purifyMatchJsonForSlim(raw);
-          next = await applyOpenDotaEnrich(next);
-          await applyOpenDotaEndgameItems(next, maps);
-          slim = next;
+          if (raw) {
+            maps = {
+              ...m,
+              ...(talentLabelsByKey && Object.keys(talentLabelsByKey).length > 0
+                ? { talentLabelsByKey }
+                : {}),
+            };
+            slim = purifyMatchJsonForSlim(raw);
+          }
         } catch (e) {
           lastErr = e instanceof Error ? e : new Error(String(e));
         }
-      } else {
-        // 1) 优先从 Supabase 读取（命中则直接用于页面）
-        if (numericMatchId > 0) {
-          try {
-            const [m, talentLabelsByKey, raw] = await Promise.all([
-              mapsPromise,
-              talentLabelsPromise,
-              fetchPlanBSlimPayload(numericMatchId),
-            ]);
-            if (raw) {
-              maps = {
-                ...m,
-                ...(talentLabelsByKey && Object.keys(talentLabelsByKey).length > 0
-                  ? { talentLabelsByKey }
-                  : {}),
-              };
-              let next = purifyMatchJsonForSlim(raw);
-              if (!isPubTierMatch(next)) {
-                next = await applyOpenDotaEnrich(next);
-                await applyOpenDotaEndgameItems(next, maps);
-              }
-              slim = next;
-            }
-          } catch (e) {
-            lastErr = e instanceof Error ? e : new Error(String(e));
-          }
-        }
+      }
 
-        // 2) Supabase 未命中时回退到静态 JSON
-        if (!slim) {
+      // 2) Supabase 未命中时回退到静态 JSON（含 navi-latest → latest_match）
+      if (!slim) {
         for (const path of paths) {
           try {
             const [m, talentLabelsByKey, raw] = await Promise.all([
@@ -163,40 +110,15 @@ export function useMatchData(matchId?: string): MatchDataState & { reload: () =>
                 ? { talentLabelsByKey }
                 : {}),
             };
-            let next = purifyMatchJsonForSlim(raw);
-            if (!isPubTierMatch(next)) {
-              next = await applyOpenDotaEnrich(next);
-              await applyOpenDotaEndgameItems(next, maps!);
-            }
-            slim = next;
+            slim = purifyMatchJsonForSlim(raw);
             break;
           } catch (e) {
             lastErr = e instanceof Error ? e : new Error(String(e));
           }
         }
-        }
-        if (!slim && numericMatchId > 0) {
-          try {
-            const [m, talentLabelsByKey, raw] = await Promise.all([
-              mapsPromise,
-              talentLabelsPromise,
-              fetchOpenDotaMatchById(numericMatchId),
-            ]);
-            maps = {
-              ...m,
-              ...(talentLabelsByKey && Object.keys(talentLabelsByKey).length > 0
-                ? { talentLabelsByKey }
-                : {}),
-            };
-            let next = purifyMatchJsonForSlim(raw);
-            next = await applyOpenDotaEnrich(next);
-            await applyOpenDotaEndgameItems(next, maps);
-            slim = next;
-          } catch {
-            // 本地与 OpenDota 都无法命中时，统一给出明确提示
-            throw new Error("没有这一场比赛数据");
-          }
-        }
+      }
+      if (!slim && numericMatchId > 0) {
+        throw new Error("没有这一场比赛数据");
       }
       if (!slim || !maps) {
         if (numericMatchId > 0) throw new Error("没有这一场比赛数据");

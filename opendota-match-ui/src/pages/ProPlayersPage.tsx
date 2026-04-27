@@ -1,65 +1,12 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
 import { Link } from "react-router-dom";
 import { PageShell } from "../components/PageShell";
 import { SEOMeta } from "../components/SEOMeta";
-import { SEEDED_PRO_PLAYERS, type SeedProPlayer } from "../data/proPlayers";
+import { SEEDED_PRO_PLAYERS } from "../data/proPlayers";
 import { normalizeDotaAssetUrl } from "../data/mockMatchPlayers";
 
-type OpenDotaPlayerMini = {
-  profile?: {
-    personaname?: string;
-    name?: string;
-    avatarfull?: string;
-  };
-  leaderboard_rank?: number;
-  rank_tier?: number;
-  mmr_estimate?: { estimate?: number };
-};
-
-type ProRow = SeedProPlayer & {
-  avatar?: string;
-  displayName?: string;
-  rankTier?: number;
-  leaderboardRank?: number;
-  mmrEstimate?: number;
-};
-
 export function ProPlayersPage() {
-  const [rows, setRows] = useState<ProRow[]>(
-    SEEDED_PRO_PLAYERS.map((p) => ({ ...p }))
-  );
-
-  useEffect(() => {
-    let cancelled = false;
-    (async () => {
-      const next = await Promise.all(
-        SEEDED_PRO_PLAYERS.map(async (p) => {
-          try {
-            const res = await fetch(
-              `https://api.opendota.com/api/players/${p.accountId}`,
-              { cache: "no-store" }
-            );
-            if (!res.ok) return { ...p };
-            const j = (await res.json()) as OpenDotaPlayerMini;
-            return {
-              ...p,
-              avatar: j.profile?.avatarfull,
-              displayName: j.profile?.name || j.profile?.personaname || p.proName,
-              rankTier: j.rank_tier,
-              leaderboardRank: j.leaderboard_rank,
-              mmrEstimate: j.mmr_estimate?.estimate,
-            };
-          } catch {
-            return { ...p };
-          }
-        })
-      );
-      if (!cancelled) setRows(next);
-    })();
-    return () => {
-      cancelled = true;
-    };
-  }, []);
+  const rows = SEEDED_PRO_PLAYERS;
 
   const sorted = useMemo(
     () =>

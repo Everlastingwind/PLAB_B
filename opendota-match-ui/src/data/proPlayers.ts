@@ -1,6 +1,12 @@
 export type SeedProPlayer = {
   accountId: number;
   proName: string;
+  /** 可选：静态种子或自建数据源填入；前端不再请求 OpenDota 补全 */
+  avatar?: string;
+  displayName?: string;
+  rankTier?: number;
+  leaderboardRank?: number;
+  mmrEstimate?: number;
 };
 
 /**
