@@ -42,6 +42,8 @@ FRONTEND_PUBLIC_DATA = _ROOT / "opendota-match-ui" / "public" / "data"
 FRONTEND_PUBLIC_DATA.mkdir(parents=True, exist_ok=True)
 FRONTEND_MATCHES_DIR = FRONTEND_PUBLIC_DATA / "matches"
 REPLAYS_INDEX_PATH = FRONTEND_PUBLIC_DATA / "replays_index.json"
+ENTITY_MAPS_PATH = FRONTEND_PUBLIC_DATA / "entity_maps.json"
+LATEST_MATCH_PATH = FRONTEND_PUBLIC_DATA / "latest_match.json"
 
 
 def _is_radiant_from_player_dict(p: Mapping[str, Any]) -> bool:
@@ -287,3 +289,126 @@ def refresh_match_from_opendota(match_id: int) -> Path:
     """
     raw = fetch_opendota_match_raw(match_id)
     return save_match_payload(raw, match_id=match_id)
+
+
+def _load_items_map() -> Dict[str, Dict[str, Any]]:
+    try:
+        data = json.loads(ENTITY_MAPS_PATH.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return {}
+    items = data.get("items") if isinstance(data, dict) else None
+    return items if isinstance(items, dict) else {}
+
+
+def _load_heroes_map() -> Dict[str, Dict[str, Any]]:
+    try:
+        data = json.loads(ENTITY_MAPS_PATH.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return {}
+    heroes = data.get("heroes") if isinstance(data, dict) else None
+    return heroes if isinstance(heroes, dict) else {}
+
+
+def _purchase_rows_for_player(player: Mapping[str, Any]) -> List[Dict[str, Any]]:
+    out: List[Dict[str, Any]] = []
+    rows = player.get("purchase_history")
+    if not isinstance(rows, list):
+        return out
+    for row in rows:
+        if not isinstance(row, Mapping):
+            continue
+        t_raw = row.get("time")
+        try:
+            t_sec = int(t_raw)
+        except (TypeError, ValueError):
+            continue
+        if t_sec < 0:
+            continue
+        minute = t_sec // 60
+        item_raw = row.get("item") if row.get("item") is not None else row.get("item_key")
+        item_key = str(item_raw or "").strip().replace("item_", "")
+        if not item_key:
+            continue
+        out.append({"minute": minute, "item_key": item_key})
+    return out
+
+
+def build_hero_item_timeline(hero_id: int) -> Dict[str, Any]:
+    heroes_map = _load_heroes_map()
+    hero_meta = heroes_map.get(str(hero_id), {}) if isinstance(heroes_map, dict) else {}
+    hero_name = str(hero_meta.get("nameEn") or hero_meta.get("nameCn") or "")
+    items_map = _load_items_map()
+    item_id_by_key: Dict[str, int] = {}
+    for sid, meta in items_map.items():
+        key = str((meta or {}).get("key") or "").strip()
+        if not key:
+            continue
+        try:
+            item_id_by_key[key] = int(sid)
+        except (TypeError, ValueError):
+            continue
+
+    total_matches_for_hero = 0
+    count_by_minute_item: Dict[tuple[int, str], int] = {}
+    files = [f for f in FRONTEND_MATCHES_DIR.glob("*.json") if f.is_file()]
+    if LATEST_MATCH_PATH.is_file():
+        files.append(LATEST_MATCH_PATH)
+
+    seen_match_ids: set[int] = set()
+    for f in files:
+        try:
+            data = json.loads(f.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError):
+            continue
+        if not isinstance(data, dict):
+            continue
+        try:
+            mid = int(data.get("match_id") or 0)
+        except (TypeError, ValueError):
+            mid = 0
+        if mid > 0:
+            if mid in seen_match_ids:
+                continue
+            seen_match_ids.add(mid)
+        players = data.get("players") if isinstance(data, dict) else None
+        if not isinstance(players, list):
+            continue
+        hero_players: List[Mapping[str, Any]] = []
+        for p in players:
+            if not isinstance(p, Mapping):
+                continue
+            try:
+                hid = int(p.get("hero_id") or 0)
+            except (TypeError, ValueError):
+                hid = 0
+            if hid == hero_id:
+                hero_players.append(p)
+        if not hero_players:
+            continue
+
+        total_matches_for_hero += 1
+        dedup_in_match: set[tuple[int, str]] = set()
+        for hp in hero_players:
+            for row in _purchase_rows_for_player(hp):
+                dedup_in_match.add((int(row["minute"]), str(row["item_key"])))
+        for key in dedup_in_match:
+            count_by_minute_item[key] = count_by_minute_item.get(key, 0) + 1
+
+    purchase_data: List[Dict[str, Any]] = []
+    for (minute, item_key), count in count_by_minute_item.items():
+        item_id = item_id_by_key.get(item_key, 0)
+        purchase_data.append(
+            {
+                "minute": minute,
+                "item_id": int(item_id),
+                "item_name": f"item_{item_key}",
+                "count": int(count),
+            }
+        )
+    purchase_data.sort(key=lambda x: (int(x["minute"]), int(x["count"]) * -1, str(x["item_name"])))
+    return {
+        "hero_id": int(hero_id),
+        "hero_name": hero_name,
+        "total_matches_for_hero": int(total_matches_for_hero),
+        "purchase_data": purchase_data,
+    }

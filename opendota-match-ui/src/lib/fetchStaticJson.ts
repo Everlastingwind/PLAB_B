@@ -16,11 +16,11 @@ export async function fetchStaticJson<T>(
 
 /**
  * 与站点一同部署的 JSON + 可选 `VITE_STATIC_DATA_VERSION`。
- * 使用 `no-store`：手机端对同源 JSON 的 HTTP 缓存很激进，用 default 会导致刷新仍非最新。
+ * 默认使用 `cache: default`：配合 `VITE_STATIC_DATA_VERSION` 进行版本失效，避免每次都全量重拉。
  */
 export async function fetchDeployedDataJson<T>(path: string): Promise<T> {
   const res = await fetch(`${path}${staticDataSearchParam()}`, {
-    cache: "no-store",
+    cache: "default",
   });
   if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
   return res.json() as Promise<T>;

@@ -3,11 +3,14 @@ import { useParams, Link, useNavigate } from "react-router-dom";
 import { PageShell } from "../components/PageShell";
 import type { FeedSelection } from "../components/FeedModeToggle";
 import {
+  fetchCloudPubReplaySummaries,
   fetchReplaysForFeedSelection,
+  fetchStaticFeedOnly,
   filterByHeroKey,
   hasMore,
   slicePage,
   heroKeyFromId,
+  mergeCloudIntoStaticFeed,
 } from "../lib/replaysApi";
 import type { ReplaySummary } from "../types/replaysIndex";
 import { useEntityMaps } from "../hooks/useEntityMaps";
@@ -39,8 +42,12 @@ import { SEOMeta } from "../components/SEOMeta";
 import { ViewportMountRow } from "../components/ViewportMountRow";
 import { forEachConcurrent } from "../lib/fetchConcurrent";
 import { loadSlimMatchJsonForDetail } from "../lib/loadSlimMatchJson";
+import { HeroBuildOverviewCard } from "../components/HeroBuildOverviewCard";
+import { applyProDisplayOverridesToReplaySummaries } from "../lib/proAccountDisplayOverrides";
 
 const MATCH_JSON_CONCURRENCY = 6;
+const DETAIL_FAST_FIRST = 4;
+const DETAIL_BATCH_SIZE = 6;
 
 function toTalentTreeUi(raw: SlimPlayer["talent_tree"]): TalentTreeUi | null {
   if (!raw || !Array.isArray(raw.tiers)) return null;
@@ -171,22 +178,41 @@ export function HeroMatchesPage() {
     let cancelled = false;
     setFeedListLoading(true);
     setReplays([]);
-    void fetchReplaysForFeedSelection(feed)
-      .then(({ replays: rows, cloudIndexError }) => {
-        if (!cancelled) {
+    void (async () => {
+      try {
+        if (!feed.pub) {
+          const { replays: rows, cloudIndexError } = await fetchReplaysForFeedSelection(feed);
+          if (cancelled) return;
           if (cloudIndexError) console.warn(cloudIndexError);
           setReplays(filterByHeroKey(rows, decoded, maps));
           setDetailByMatch({});
           setPlayerUiByMatch({});
           setFeedListLoading(false);
+          return;
         }
-      })
-      .catch(() => {
-      if (!cancelled) {
+
+        const snap = await fetchStaticFeedOnly(feed);
+        const initialRows = await applyProDisplayOverridesToReplaySummaries(snap.replays);
+        if (cancelled) return;
+        setReplays(filterByHeroKey(initialRows, decoded, maps));
+        setDetailByMatch({});
+        setPlayerUiByMatch({});
         setFeedListLoading(false);
-        setReplays([]);
+
+        const cloudPack = await fetchCloudPubReplaySummaries();
+        if (cancelled) return;
+        const merged = mergeCloudIntoStaticFeed(snap, cloudPack);
+        const mergedRows = await applyProDisplayOverridesToReplaySummaries(merged.replays);
+        if (cancelled) return;
+        if (merged.cloudIndexError) console.warn(merged.cloudIndexError);
+        setReplays(filterByHeroKey(mergedRows, decoded, maps));
+      } catch {
+        if (!cancelled) {
+          setFeedListLoading(false);
+          setReplays([]);
+        }
       }
-    });
+    })();
     return () => {
       cancelled = true;
     };
@@ -194,16 +220,17 @@ export function HeroMatchesPage() {
 
   const normalizeRole = (raw: unknown): string => {
     const s = String(raw ?? "").trim().toLowerCase();
-    if (!s) return "";
+    if (!s) return "unknown";
     if (s === "support4" || s === "support 4" || s === "support(4)") return "support(4)";
     if (s === "support5" || s === "support 5" || s === "support(5)") return "support(5)";
     if (s === "carry" || s === "mid" || s === "offlane") return s;
-    return s;
+    return "unknown";
   };
 
   const roleLabel = (role: string): string => {
     if (role === "support(4)") return "pos4";
     if (role === "support(5)") return "pos5";
+    if (role === "unknown") return "未标注";
     return role;
   };
 
@@ -224,13 +251,21 @@ export function HeroMatchesPage() {
   );
 
   const roleOptions = useMemo(
-    () => ["carry", "mid", "offlane", "support(4)", "support(5)"],
+    () => ["carry", "mid", "offlane", "support(4)", "support(5)", "unknown"],
     []
   );
 
   const filteredReplays = useMemo(() => {
     if (roleFilter === "all") return replays;
     return replays.filter((r) => replayRole(r) === roleFilter);
+  }, [replays, replayRole, roleFilter]);
+
+  const overviewReplays = useMemo(() => {
+    if (roleFilter === "all") return replays;
+    return replays.filter((r) => {
+      const rr = replayRole(r);
+      return rr === roleFilter || rr === "unknown";
+    });
   }, [replays, replayRole, roleFilter]);
 
   const roleCounts = useMemo(() => {
@@ -240,6 +275,7 @@ export function HeroMatchesPage() {
       offlane: 0,
       "support(4)": 0,
       "support(5)": 0,
+      unknown: 0,
     };
     for (const r of replays) {
       const rr = replayRole(r);
@@ -277,7 +313,7 @@ export function HeroMatchesPage() {
           skillBuild?: SkillBuildStepUi[];
         }
       > = {};
-      await forEachConcurrent(need, MATCH_JSON_CONCURRENCY, async (mid) => {
+      const consumeOne = async (mid: number) => {
         try {
           const j = await loadSlimMatchJsonForDetail(mid);
           if (!j) return;
@@ -317,7 +353,29 @@ export function HeroMatchesPage() {
         } catch {
           // ignore detail fetch errors
         }
-      });
+      };
+
+      const fast = need.slice(0, DETAIL_FAST_FIRST);
+      await forEachConcurrent(fast, MATCH_JSON_CONCURRENCY, consumeOne);
+      if (!cancelled && Object.keys(updates).length) {
+        setDetailByMatch((prev) => ({ ...prev, ...updates }));
+        if (Object.keys(playerUiUpdates).length) {
+          setPlayerUiByMatch((prev) => ({ ...prev, ...playerUiUpdates }));
+        }
+      }
+
+      for (let i = DETAIL_FAST_FIRST; i < need.length; i += DETAIL_BATCH_SIZE) {
+        const batch = need.slice(i, i + DETAIL_BATCH_SIZE);
+        await forEachConcurrent(batch, MATCH_JSON_CONCURRENCY, consumeOne);
+        if (cancelled) return;
+        if (Object.keys(updates).length) {
+          setDetailByMatch((prev) => ({ ...prev, ...updates }));
+        }
+        if (Object.keys(playerUiUpdates).length) {
+          setPlayerUiByMatch((prev) => ({ ...prev, ...playerUiUpdates }));
+        }
+        await new Promise((resolve) => window.setTimeout(resolve, 0));
+      }
       if (!cancelled && Object.keys(updates).length) {
         setDetailByMatch((prev) => ({ ...prev, ...updates }));
         if (Object.keys(playerUiUpdates).length) {
@@ -347,9 +405,15 @@ export function HeroMatchesPage() {
     return () => io.disconnect();
   }, [maps, onIntersect, visible.length]);
 
-  const heroLabel =
-    maps?.heroes &&
-    Object.values(maps.heroes).find((h) => h.key === decoded);
+  const heroEntry = useMemo(() => {
+    if (!maps?.heroes) return null;
+    for (const [sid, h] of Object.entries(maps.heroes)) {
+      if (h.key === decoded) return { id: Number(sid) || 0, ...h };
+    }
+    return null;
+  }, [maps, decoded]);
+  const heroLabel = heroEntry;
+  const heroId = heroEntry?.id ?? 0;
   const heroNameEn = heroLabel?.nameEn || decoded;
   return (
     <>
@@ -394,6 +458,16 @@ export function HeroMatchesPage() {
               ))}
             </div>
           </div>
+          {heroId > 0 && maps ? (
+            <HeroBuildOverviewCard
+              heroId={heroId}
+              heroKey={decoded}
+              heroName={heroLabel?.nameCn || heroLabel?.nameEn || decoded}
+              replays={overviewReplays}
+              maps={maps}
+              enabled={!feedListLoading && replays.length > 0}
+            />
+          ) : null}
           {!mapsLoading && maps ? (
             feedListLoading ? (
               <p className="text-sm text-skin-sub">加载录像列表…</p>

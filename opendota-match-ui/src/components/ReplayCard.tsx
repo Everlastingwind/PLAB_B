@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import type { MouseEvent } from "react";
+import { memo, useMemo, type MouseEvent } from "react";
 import {
   heroIconUrl,
   onDotaSteamAssetImgError,
@@ -33,7 +33,10 @@ function HeroCells({
   side: "radiant" | "dire";
   heroImgProps: typeof steamCdnImgDefer | typeof steamCdnImgHero;
 }) {
-  const sorted = [...players].sort(compareByPlayerSlot);
+  const sorted = useMemo(
+    () => [...players].sort(compareByPlayerSlot),
+    [players]
+  );
   return (
     <div className="flex max-sm:min-w-0 max-sm:flex-1 max-sm:justify-evenly flex-nowrap items-center justify-center gap-0 sm:gap-2">
       {sorted.map((p) => {
@@ -93,7 +96,7 @@ function HeroCells({
   );
 }
 
-export function ReplayCard({
+const ReplayCardImpl = ({
   replay,
   maps,
   eagerHeroPortraits = false,
@@ -102,10 +105,11 @@ export function ReplayCard({
   maps: EntityMapsPayload;
   /** 首屏前几卡：英雄头像 eager + 高 fetchPriority，减轻全 lazy 的长尾 */
   eagerHeroPortraits?: boolean;
-}) {
+}) => {
   const heroImgProps = eagerHeroPortraits ? steamCdnImgHero : steamCdnImgDefer;
-  const { radiantPlayers: rad, direPlayers: dire } = partitionReplayRowPlayers(
-    replay.players
+  const { radiantPlayers: rad, direPlayers: dire } = useMemo(
+    () => partitionReplayRowPlayers(replay.players),
+    [replay.players]
   );
   const radWon = replay.radiant_win;
 
@@ -143,10 +147,10 @@ export function ReplayCard({
     <article
       data-home-match-id={String(replay.match_id)}
       className={cn(
-        "group relative overflow-hidden rounded-xl border border-skin-line bg-skin-card shadow-card",
-        "transition-colors duration-200 ease-out",
-        "hover:border-slate-300 hover:shadow-md dark:hover:border-slate-600",
-        "dark:bg-slate-800/60 dark:backdrop-blur-sm dark:hover:bg-slate-700/75",
+        "group relative overflow-hidden rounded-xl border border-skin-line bg-skin-card",
+        "transition-colors duration-150 ease-out",
+        "hover:border-slate-300 dark:hover:border-slate-600",
+        "dark:bg-slate-800/60 dark:hover:bg-slate-700/75",
         "px-1.5 py-2 sm:px-4 sm:py-3.5"
       )}
     >
@@ -223,4 +227,6 @@ export function ReplayCard({
       </div>
     </article>
   );
-}
+};
+
+export const ReplayCard = memo(ReplayCardImpl);

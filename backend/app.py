@@ -25,6 +25,7 @@ if str(_ROOT) not in sys.path:
     sys.path.insert(0, str(_ROOT))
 
 from backend.match_service import (
+    build_hero_item_timeline,
     fetch_opendota_match_raw,
     save_match_payload,
     save_uploaded_match_slim,
@@ -163,3 +164,10 @@ def post_match_upload(
         "match_id": mid,
         "saved_to": str(path),
     }
+
+
+@app.get("/api/hero-item-timeline")
+def get_hero_item_timeline(hero_id: int) -> dict[str, Any]:
+    if hero_id <= 0:
+        raise HTTPException(status_code=400, detail="hero_id must be positive")
+    return build_hero_item_timeline(hero_id)

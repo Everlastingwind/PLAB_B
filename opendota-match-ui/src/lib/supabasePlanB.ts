@@ -80,8 +80,9 @@ export async function fetchPlanBSlimPayload(
   return unwrapPlanBRow(row);
 }
 
-/** 两阶段：先轻列排序取 id，再 in(match_id) 拉完整行，避免「排序 + 大 json」同一条 SQL 爆超时 */
-const PLAN_B_TWO_PHASE_ID_LIMIT = 120;
+/** 两阶段：分页轻列取 id，再 in(match_id) 拉完整行，避免「排序 + 大 json」同一条 SQL 爆超时 */
+const PLAN_B_TWO_PHASE_PAGE_SIZE = 120;
+const PLAN_B_TWO_PHASE_MAX_PAGES = 50;
 const PLAN_B_IN_CHUNK = 40;
 
 /** 单查询兜底：仍失败时递减 limit */
@@ -114,27 +115,42 @@ function orderFullRowsByIdList(
 async function fetchPlanBReplayIndexRowsTwoPhase(
   client: NonNullable<typeof supabase>
 ): Promise<{ rows: Record<string, unknown>[]; error: string | null }> {
-  const { data: thin, error: e1 } = await client
-    .from("plan_b")
-    .select("match_id, created_at")
-    .order("created_at", { ascending: false })
-    .limit(PLAN_B_TWO_PHASE_ID_LIMIT);
-
-  if (e1) {
-    return { rows: [], error: e1.message };
+  const idOrder: (string | number)[] = [];
+  for (let page = 0; page < PLAN_B_TWO_PHASE_MAX_PAGES; page++) {
+    const from = page * PLAN_B_TWO_PHASE_PAGE_SIZE;
+    const to = from + PLAN_B_TWO_PHASE_PAGE_SIZE - 1;
+    const { data: thin, error: e1 } = await client
+      .from("plan_b")
+      .select("match_id, created_at")
+      .order("created_at", { ascending: false })
+      .range(from, to);
+    if (e1) {
+      return { rows: [], error: e1.message };
+    }
+    const batch = Array.isArray(thin) ? thin : [];
+    for (const row of batch) {
+      const id = (row as { match_id?: unknown }).match_id;
+      if (id !== undefined && id !== null) idOrder.push(id as string | number);
+    }
+    if (batch.length < PLAN_B_TWO_PHASE_PAGE_SIZE) break;
   }
-
-  const idOrder = (Array.isArray(thin) ? thin : [])
-    .map((r) => (r as { match_id?: unknown }).match_id)
-    .filter((id) => id !== undefined && id !== null) as (string | number)[];
 
   if (idOrder.length === 0) {
     return { rows: [], error: null };
   }
 
+  const uniqueIdOrder: (string | number)[] = [];
+  const seen = new Set<string>();
+  for (const id of idOrder) {
+    const k = String(id);
+    if (seen.has(k)) continue;
+    seen.add(k);
+    uniqueIdOrder.push(id);
+  }
+
   const full: Record<string, unknown>[] = [];
-  for (let i = 0; i < idOrder.length; i += PLAN_B_IN_CHUNK) {
-    const chunk = idOrder.slice(i, i + PLAN_B_IN_CHUNK);
+  for (let i = 0; i < uniqueIdOrder.length; i += PLAN_B_IN_CHUNK) {
+    const chunk = uniqueIdOrder.slice(i, i + PLAN_B_IN_CHUNK);
     const { data: part, error: e2 } = await client
       .from("plan_b")
       .select(PLAN_B_INDEX_SELECT)
@@ -153,7 +169,7 @@ async function fetchPlanBReplayIndexRowsTwoPhase(
   }
 
   return {
-    rows: orderFullRowsByIdList(full, idOrder),
+    rows: orderFullRowsByIdList(full, uniqueIdOrder),
     error: null,
   };
 }

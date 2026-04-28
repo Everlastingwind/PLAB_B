@@ -413,6 +413,41 @@ def _sort_upgrades(merged: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
     return merged
 
 
+def _build_purchase_history(
+    raw_purchase_log: Any,
+    dc: DotaConstants,
+) -> List[Dict[str, Any]]:
+    if not isinstance(raw_purchase_log, list):
+        return []
+    out: List[Dict[str, Any]] = []
+    for row in raw_purchase_log:
+        if not isinstance(row, dict):
+            continue
+        t_raw = row.get("time")
+        item_raw = row.get("key")
+        try:
+            t = int(t_raw)
+        except (TypeError, ValueError):
+            continue
+        if t < 0:
+            continue
+        item_key = str(item_raw or "").strip()
+        if not item_key:
+            continue
+        items_key = dc.resolve_items_json_key(item_key) or item_key.replace("item_", "")
+        if not items_key:
+            continue
+        out.append(
+            {
+                "time": t,
+                "item": f"item_{items_key}",
+                "item_key": items_key,
+            }
+        )
+    out.sort(key=lambda x: int(x.get("time") or 0))
+    return out
+
+
 def raw_ability_upgrades_arr_to_merged_steps(
     raw: Any,
     *,
@@ -739,9 +774,12 @@ def translate_match_data(
     for p in players:
         if not isinstance(p, MutableMapping):
             continue
+        purchase_history = _build_purchase_history(p.get("purchase_log"), dc)
         player = dict(p)
         for k in _HEAVY_PLAYER_KEYS:
             player.pop(k, None)
+        if purchase_history:
+            player["purchase_history"] = purchase_history
 
         hid = player.get("hero_id")
         try:

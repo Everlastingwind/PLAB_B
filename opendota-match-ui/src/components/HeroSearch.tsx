@@ -259,28 +259,11 @@ export function HeroSearch({
     }
   }, []);
 
-  /** 用户打开下拉时再拉；否则用 idle/延迟，避免与首页抢首包 */
+  /** 用户打开下拉时再拉，避免首页首屏与搜索索引并发争抢带宽/CPU。 */
   useEffect(() => {
     if (!open) return;
     void runReplaySearchIndexEnhancer();
   }, [open, runReplaySearchIndexEnhancer]);
-
-  useEffect(() => {
-    const kick = () => {
-      void runReplaySearchIndexEnhancer();
-    };
-    let idleId: number | undefined;
-    if (typeof requestIdleCallback !== "undefined") {
-      idleId = requestIdleCallback(kick, { timeout: 8000 });
-    }
-    const t = window.setTimeout(kick, 6000);
-    return () => {
-      if (idleId !== undefined && typeof cancelIdleCallback !== "undefined") {
-        cancelIdleCallback(idleId);
-      }
-      clearTimeout(t);
-    };
-  }, [runReplaySearchIndexEnhancer]);
 
   if (!maps) {
     return (

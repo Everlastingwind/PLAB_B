@@ -8,7 +8,7 @@ import { fetchDeployedDataJson } from "./fetchStaticJson";
 import { applyProDisplayOverridesToReplaySummaries } from "./proAccountDisplayOverrides";
 import { fetchPlanBReplayIndexRows } from "./supabasePlanB";
 
-const PAGE_SIZE = 15;
+const PAGE_SIZE = 10;
 
 export async function fetchReplaysIndex(): Promise<ReplaysIndexPayload> {
   const raw = await fetchDeployedDataJson<ReplaysIndexPayload>(

@@ -3,6 +3,17 @@ import { purifyMatchJsonForSlim } from "./purifyRawMatchJson";
 import { fetchPlanBSlimPayload } from "./supabasePlanB";
 import { staticDataSearchParam } from "./staticDataVersion";
 
+const DETAIL_CACHE_TTL_OK_MS = 5 * 60 * 1000;
+const DETAIL_CACHE_TTL_EMPTY_MS = 30 * 1000;
+
+type DetailCacheEntry = {
+  value: SlimMatchJson | null;
+  expiresAt: number;
+};
+
+const detailCache = new Map<number, DetailCacheEntry>();
+const detailInflight = new Map<number, Promise<SlimMatchJson | null>>();
+
 /** 判断是否为「可用来渲染出装/加点/天赋」的整局 slim，避免把 SPA 占位页当 JSON 用 */
 function slimMatchDetailLooksUsable(s: SlimMatchJson): boolean {
   const pl = s.players ?? [];
@@ -48,6 +59,15 @@ export async function loadSlimMatchJsonForDetail(
   matchId: number
 ): Promise<SlimMatchJson | null> {
   if (!Number.isFinite(matchId) || matchId <= 0) return null;
+
+  const now = Date.now();
+  const hit = detailCache.get(matchId);
+  if (hit && hit.expiresAt > now) return hit.value;
+
+  const inflight = detailInflight.get(matchId);
+  if (inflight) return inflight;
+
+  const task = (async (): Promise<SlimMatchJson | null> => {
   const q = staticDataSearchParam();
   let local: SlimMatchJson | null = null;
   try {
@@ -81,5 +101,20 @@ export async function loadSlimMatchJsonForDetail(
     return slimMatchDetailLooksUsable(cand) ? cand : null;
   } catch {
     return null;
+  }
+  })();
+
+  detailInflight.set(matchId, task);
+  try {
+    const value = await task;
+    detailCache.set(matchId, {
+      value,
+      expiresAt: Date.now() + (value ? DETAIL_CACHE_TTL_OK_MS : DETAIL_CACHE_TTL_EMPTY_MS),
+    });
+    return value;
+  } finally {
+    if (detailInflight.get(matchId) === task) {
+      detailInflight.delete(matchId);
+    }
   }
 }
