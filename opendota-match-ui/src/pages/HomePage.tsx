@@ -34,6 +34,7 @@ export function HomePage() {
   const { maps, loading: mapsLoading, error: mapsErr } = useEntityMaps();
   const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
+  const pageParamRaw = searchParams.get("page") || "1";
   const [feed, setFeed] = useState<FeedSelection>({ pub: true, pro: false });
   const [replays, setReplays] = useState<ReplaySummary[]>([]);
   const [pagedTotalRows, setPagedTotalRows] = useState<number | null>(null);
@@ -41,6 +42,7 @@ export function HomePage() {
   const [idxErr, setIdxErr] = useState<string | null>(null);
   const [roleTab, setRoleTab] = useState<"carry" | "mid" | "offlane" | "support(4)" | "support(5)">("carry");
   const [homeView, setHomeView] = useState<"matches" | "meta">("matches");
+  const [pageState, setPageState] = useState(1);
   const [metaCache, setMetaCache] = useState<{
     byRole: Partial<
       Record<
@@ -73,12 +75,9 @@ export function HomePage() {
     let cancelled = false;
     setIdxErr(null);
     setFeedListLoading(true);
-    setPagedTotalRows(null);
     void (async () => {
       try {
-        const pageRaw = Number(searchParams.get("page") || 1);
-        const currentPage =
-          Number.isFinite(pageRaw) && pageRaw > 0 ? Math.floor(pageRaw) : 1;
+        const currentPage = Math.max(1, Math.floor(pageState || 1));
         if (homeView === "matches" && feed.pub && !feed.pro) {
           const pack = await fetchCloudPubReplaySummariesPage(currentPage, PAGE_SIZE);
           if (cancelled) return;
@@ -108,7 +107,7 @@ export function HomePage() {
     return () => {
       cancelled = true;
     };
-  }, [feed, homeView, searchParams]);
+  }, [feed, homeView, pageState]);
 
   useEffect(() => {
     try {
@@ -149,17 +148,21 @@ export function HomePage() {
     return Math.max(1, Math.ceil(replays.length / PAGE_SIZE));
   }, [feed.pro, feed.pub, homeView, pagedTotalRows, replays.length]);
   const pageFromQuery = (() => {
-    const n = Number(searchParams.get("page") || 1);
+    const n = Number(pageParamRaw || 1);
     return Number.isFinite(n) && n > 0 ? Math.floor(n) : 1;
   })();
-  const page = Math.max(pageFromQuery, 1);
+  useEffect(() => {
+    setPageState(Math.max(pageFromQuery, 1));
+  }, [pageFromQuery]);
+  const page = Math.max(pageState, 1);
   const pageForSlice = Math.min(page, totalPages);
+  const isPagedMatchesMode = homeView === "matches" && feed.pub && !feed.pro;
   const visible = useMemo(() => {
-    if (homeView === "matches" && feed.pub && !feed.pro) return replays;
+    if (isPagedMatchesMode) return replays;
     const start = (pageForSlice - 1) * PAGE_SIZE;
     const end = start + PAGE_SIZE;
     return replays.slice(start, end);
-  }, [feed.pro, feed.pub, homeView, replays, pageForSlice]);
+  }, [isPagedMatchesMode, replays, pageForSlice]);
   const shouldRestoreScroll = useMemo(() => {
     const anchorRaw = sessionStorage.getItem(anchorKey)?.trim();
     if (anchorRaw) return true;
@@ -468,7 +471,7 @@ export function HomePage() {
                 </button>
               </div>
               {homeView === "matches" ? (
-                feedListLoading ? (
+                feedListLoading && visible.length === 0 ? (
                   <p className="text-sm text-skin-sub">加载录像列表…</p>
                 ) : (
                   <div className="flex flex-col gap-2 sm:gap-3">
@@ -506,6 +509,7 @@ export function HomePage() {
                 onClick={() => {
                   const next = new URLSearchParams(searchParams);
                   const target = Math.max(1, page - 1);
+                  setPageState(target);
                   if (target <= 1) next.delete("page");
                   else next.set("page", String(target));
                   setSearchParams(next);
@@ -523,6 +527,7 @@ export function HomePage() {
                 onClick={() => {
                   const next = new URLSearchParams(searchParams);
                   const target = Math.min(totalPages, pageForSlice + 1);
+                  setPageState(target);
                   if (target <= 1) next.delete("page");
                   else next.set("page", String(target));
                   setSearchParams(next);
