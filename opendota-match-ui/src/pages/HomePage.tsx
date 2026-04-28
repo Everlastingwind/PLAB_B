@@ -20,8 +20,6 @@ import {
   scrollDocumentToY,
 } from "../lib/documentScroll";
 
-const META_CACHE_KEY = "plab_meta_cache_v1";
-
 export function HomePage() {
   const ROLE_KEYS = ["carry", "mid", "offlane", "support(4)", "support(5)"] as const;
   const ROLE_LABEL: Record<(typeof ROLE_KEYS)[number], string> = {
@@ -41,23 +39,6 @@ export function HomePage() {
   const [idxErr, setIdxErr] = useState<string | null>(null);
   const [roleTab, setRoleTab] = useState<"carry" | "mid" | "offlane" | "support(4)" | "support(5)">("carry");
   const [homeView, setHomeView] = useState<"matches" | "meta">("matches");
-  const [metaCache, setMetaCache] = useState<{
-    byRole: Partial<
-      Record<
-        "carry" | "mid" | "offlane" | "support(4)" | "support(5)",
-        Array<{ heroId: number; games: number; winRate: number }>
-      >
-    >;
-    overall: Array<{
-      heroId: number;
-      games: number;
-      winRate: number;
-      roleWinRate: Partial<
-        Record<(typeof ROLE_KEYS)[number], { games: number; winRate: number }>
-      >;
-    }>;
-    updatedAt: string;
-  } | null>(null);
   const scrollKey = homeScrollStorageKey(location.pathname, location.search);
   const anchorKey = homeAnchorStorageKey(location.pathname, location.search);
   const mainRef = useRef<HTMLElement | null>(null);
@@ -109,38 +90,6 @@ export function HomePage() {
       cancelled = true;
     };
   }, [feed, homeView, searchParams]);
-
-  useEffect(() => {
-    try {
-      const raw = localStorage.getItem(META_CACHE_KEY);
-      if (!raw) return;
-      const parsed = JSON.parse(raw) as {
-        byRole?: Partial<
-          Record<
-            "carry" | "mid" | "offlane" | "support(4)" | "support(5)",
-            Array<{ heroId: number; games: number; winRate: number }>
-          >
-        >;
-        overall?: Array<{
-          heroId: number;
-          games: number;
-          winRate: number;
-          roleWinRate: Partial<
-            Record<(typeof ROLE_KEYS)[number], { games: number; winRate: number }>
-          >;
-        }>;
-        updatedAt?: string;
-      };
-      if (!parsed || !parsed.byRole || !Array.isArray(parsed.overall)) return;
-      setMetaCache({
-        byRole: parsed.byRole,
-        overall: parsed.overall,
-        updatedAt: String(parsed.updatedAt || ""),
-      });
-    } catch {
-      // ignore invalid cache
-    }
-  }, []);
 
   const totalPages = useMemo(() => {
     if (homeView === "matches" && feed.pub && !feed.pro && pagedTotalRows != null) {
@@ -299,52 +248,32 @@ export function HomePage() {
     return null;
   }, []);
 
-  const topHeroByRoleMap = useMemo(() => {
-    if (!maps) {
-      return {} as Partial<
-        Record<
-          "carry" | "mid" | "offlane" | "support(4)" | "support(5)",
-          Array<{ heroId: number; games: number; winRate: number }>
-        >
-      >;
-    }
-    const out: Partial<
-      Record<
-        "carry" | "mid" | "offlane" | "support(4)" | "support(5)",
-        Array<{ heroId: number; games: number; winRate: number }>
-      >
-    > = {};
-    for (const rk of ROLE_KEYS) {
-      const agg = new Map<number, { games: number; wins: number }>();
-      for (const r of replays) {
-        for (const p of r.players || []) {
-          const role = normalizeRole(p.role_early);
-          if (role !== rk) continue;
-          const hid = Number(p.hero_id || 0);
-          if (!Number.isFinite(hid) || hid <= 0) continue;
-          const row = agg.get(hid) || { games: 0, wins: 0 };
-          row.games += 1;
-          const won = Boolean(p.is_radiant) === Boolean(r.radiant_win);
-          if (won) row.wins += 1;
-          agg.set(hid, row);
-        }
+  const topHeroByRole = useMemo(() => {
+    if (!maps) return [] as Array<{ heroId: number; games: number; winRate: number }>;
+    const agg = new Map<number, { games: number; wins: number }>();
+    for (const r of replays) {
+      for (const p of r.players || []) {
+        const role = normalizeRole(p.role_early);
+        if (role !== roleTab) continue;
+        const hid = Number(p.hero_id || 0);
+        if (!Number.isFinite(hid) || hid <= 0) continue;
+        const row = agg.get(hid) || { games: 0, wins: 0 };
+        row.games += 1;
+        const won = Boolean(p.is_radiant) === Boolean(r.radiant_win);
+        if (won) row.wins += 1;
+        agg.set(hid, row);
       }
-      out[rk] = Array.from(agg.entries())
-        .map(([heroId, s]) => ({
-          heroId,
-          games: s.games,
-          winRate: s.games > 0 ? (s.wins / s.games) * 100 : 0,
-        }))
-        .filter((x) => x.games >= 50)
-        .sort((a, b) => b.winRate - a.winRate || b.games - a.games)
-        .slice(0, 5);
     }
-    return out;
-  }, [replays, maps, normalizeRole, ROLE_KEYS]);
-  const topHeroByRole = useMemo(
-    () => topHeroByRoleMap[roleTab] || [],
-    [topHeroByRoleMap, roleTab]
-  );
+    return Array.from(agg.entries())
+      .map(([heroId, s]) => ({
+        heroId,
+        games: s.games,
+        winRate: s.games > 0 ? (s.wins / s.games) * 100 : 0,
+      }))
+      .filter((x) => x.games >= 50)
+      .sort((a, b) => b.winRate - a.winRate || b.games - a.games)
+      .slice(0, 5);
+  }, [replays, roleTab, maps, normalizeRole]);
 
   const topHeroOverall = useMemo(() => {
     if (!maps) return [] as Array<{
@@ -402,28 +331,6 @@ export function HomePage() {
       .filter((x) => x.games >= 100)
       .sort((a, b) => b.winRate - a.winRate || b.games - a.games);
   }, [replays, maps, normalizeRole]);
-
-  useEffect(() => {
-    if (!replays.length || !maps) return;
-    const payload = {
-      byRole: topHeroByRoleMap,
-      overall: topHeroOverall,
-      updatedAt: new Date().toISOString(),
-    };
-    setMetaCache(payload);
-    try {
-      localStorage.setItem(META_CACHE_KEY, JSON.stringify(payload));
-    } catch {
-      // ignore quota issues
-    }
-  }, [replays.length, maps, topHeroByRoleMap, topHeroOverall]);
-
-  const displayTopHeroByRole = topHeroByRole.length
-    ? topHeroByRole
-    : (metaCache?.byRole[roleTab] || []);
-  const displayTopHeroOverall = topHeroOverall.length
-    ? topHeroOverall
-    : (metaCache?.overall || []);
 
   return (
     <>
@@ -556,9 +463,9 @@ export function HomePage() {
                   </button>
                 ))}
               </div>
-              {displayTopHeroByRole.length ? (
+              {topHeroByRole.length ? (
                 <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-5">
-                  {displayTopHeroByRole.map((row) => {
+                  {topHeroByRole.map((row) => {
                     const hero = maps.heroes[String(row.heroId)];
                     const heroKey = hero?.key || "invoker";
                     return (
@@ -599,9 +506,9 @@ export function HomePage() {
 
               <div className="mt-4 rounded border border-skin-line p-3">
                 <p className="mb-2 text-xs font-semibold text-skin-sub">全英雄总胜率（出场 ≥100 局）</p>
-                {displayTopHeroOverall.length ? (
+                {topHeroOverall.length ? (
                   <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-5">
-                    {displayTopHeroOverall.map((row) => {
+                    {topHeroOverall.map((row) => {
                       const hero = maps.heroes[String(row.heroId)];
                       const heroKey = hero?.key || "invoker";
                       const roleStats = ROLE_KEYS.map((rk) => ({
