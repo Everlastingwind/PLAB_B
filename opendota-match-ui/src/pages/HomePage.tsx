@@ -56,7 +56,7 @@ export function HomePage() {
     let cancelled = false;
     setIdxErr(null);
     setFeedListLoading(true);
-    // 首屏优先：先返回静态列表，云索引后台补齐，避免首页长时间空白等待。
+    // 为避免页数在静态/云索引之间跳变，PUB 模式改为合并后一次性更新。
     void (async () => {
       try {
         if (!feed.pub) {
@@ -68,19 +68,16 @@ export function HomePage() {
           return;
         }
 
-        const snap = await fetchStaticFeedOnly(feed);
-        const initialRows = await applyProDisplayOverridesToReplaySummaries(snap.replays);
-        if (cancelled) return;
-        setReplays(initialRows);
-        setFeedListLoading(false);
-
-        const cloudPack = await fetchCloudPubReplaySummaries();
-        if (cancelled) return;
+        const [snap, cloudPack] = await Promise.all([
+          fetchStaticFeedOnly(feed),
+          fetchCloudPubReplaySummaries(),
+        ]);
         const merged = mergeCloudIntoStaticFeed(snap, cloudPack);
         const mergedRows = await applyProDisplayOverridesToReplaySummaries(merged.replays);
         if (cancelled) return;
         setReplays(mergedRows);
         setIdxErr(merged.cloudIndexError);
+        setFeedListLoading(false);
       } catch (e) {
         if (!cancelled) {
           setFeedListLoading(false);

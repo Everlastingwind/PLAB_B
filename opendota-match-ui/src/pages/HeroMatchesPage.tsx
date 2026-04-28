@@ -189,21 +189,18 @@ export function HeroMatchesPage() {
           return;
         }
 
-        const snap = await fetchStaticFeedOnly(feed);
-        const initialRows = await applyProDisplayOverridesToReplaySummaries(snap.replays);
-        if (cancelled) return;
-        setReplays(filterByHeroKey(initialRows, decoded, maps));
-        setDetailByMatch({});
-        setPlayerUiByMatch({});
-        setFeedListLoading(false);
-
-        const cloudPack = await fetchCloudPubReplaySummaries();
-        if (cancelled) return;
+        const [snap, cloudPack] = await Promise.all([
+          fetchStaticFeedOnly(feed),
+          fetchCloudPubReplaySummaries(),
+        ]);
         const merged = mergeCloudIntoStaticFeed(snap, cloudPack);
         const mergedRows = await applyProDisplayOverridesToReplaySummaries(merged.replays);
         if (cancelled) return;
         if (merged.cloudIndexError) console.warn(merged.cloudIndexError);
         setReplays(filterByHeroKey(mergedRows, decoded, maps));
+        setDetailByMatch({});
+        setPlayerUiByMatch({});
+        setFeedListLoading(false);
       } catch {
         if (!cancelled) {
           setFeedListLoading(false);
