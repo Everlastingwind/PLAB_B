@@ -63,6 +63,8 @@ function HeroCells({
                 "dark:hover:shadow-[inset_0_1px_2px_rgba(0,0,0,0.4)]"
               )}
               title="按英雄筛选对局"
+              onClick={(e) => e.stopPropagation()}
+              onKeyDown={(e) => e.stopPropagation()}
             >
               <img
                 src={heroIconUrl(key === "unknown" ? "invoker" : key)}
@@ -86,6 +88,8 @@ function HeroCells({
                     )
               )}
               title="该选手对局"
+              onClick={(e) => e.stopPropagation()}
+              onKeyDown={(e) => e.stopPropagation()}
             >
               {isAnonymous ? "匿名" : displayLabel}
             </Link>
@@ -142,6 +146,15 @@ const ReplayCardImpl = ({
       // ignore clipboard failure
     }
   };
+  const jumpToMatch = () => {
+    try {
+      persistHomeListScrollBeforeNavigate(replay.match_id);
+    } catch {
+      // ignore session persistence failure
+    }
+    // 路由中间态异常时用硬跳转兜底，保证一定能进入详情页。
+    window.location.assign(matchPath);
+  };
 
   return (
     <article
@@ -153,15 +166,17 @@ const ReplayCardImpl = ({
         "dark:bg-slate-800/60 dark:hover:bg-slate-700/75",
         "px-1.5 py-2 sm:px-4 sm:py-3.5"
       )}
-    >
-      <Link
-        to={matchPath}
-        className="absolute inset-0 z-0 rounded-[inherit]"
-        aria-label={`查看比赛详情 ${replay.match_id}`}
-        onPointerDown={() =>
-          persistHomeListScrollBeforeNavigate(replay.match_id)
+      role="button"
+      tabIndex={0}
+      title={`查看比赛 ${replay.match_id}`}
+      onClick={jumpToMatch}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          jumpToMatch();
         }
-      />
+      }}
+    >
       <div className="pointer-events-none absolute left-2 top-2 z-20 hidden sm:block">
         <span
           className={cn(
