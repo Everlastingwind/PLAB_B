@@ -1,14 +1,13 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { PageShell } from "../components/PageShell";
 import type { FeedSelection } from "../components/FeedModeToggle";
 import {
+  PAGE_SIZE,
   fetchCloudPubReplaySummaries,
   fetchReplaysForFeedSelection,
   fetchStaticFeedOnly,
   filterByHeroKey,
-  hasMore,
-  slicePage,
   heroKeyFromId,
   mergeCloudIntoStaticFeed,
 } from "../lib/replaysApi";
@@ -166,7 +165,6 @@ export function HeroMatchesPage() {
     >
   >({});
   const [page, setPage] = useState(1);
-  const sentinelRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     setPage(1);
@@ -284,10 +282,20 @@ export function HeroMatchesPage() {
     return out;
   }, [replays, replayRole]);
 
-  const visible = useMemo(
-    () => slicePage(filteredReplays, page),
-    [filteredReplays, page]
+  const totalPages = useMemo(
+    () => Math.max(1, Math.ceil(filteredReplays.length / PAGE_SIZE)),
+    [filteredReplays.length]
   );
+  const pageForSlice = Math.min(page, totalPages);
+  const visible = useMemo(() => {
+    const start = (pageForSlice - 1) * PAGE_SIZE;
+    const end = start + PAGE_SIZE;
+    return filteredReplays.slice(start, end);
+  }, [filteredReplays, pageForSlice]);
+
+  useEffect(() => {
+    if (page > totalPages) setPage(totalPages);
+  }, [page, totalPages]);
 
   useEffect(() => {
     let cancelled = false;
@@ -387,23 +395,6 @@ export function HeroMatchesPage() {
       cancelled = true;
     };
   }, [visible, detailByMatch, maps, decoded, replays]);
-
-  const onIntersect = useCallback(() => {
-    setPage((p) => (hasMore(filteredReplays.length, p) ? p + 1 : p));
-  }, [filteredReplays.length]);
-
-  useEffect(() => {
-    const el = sentinelRef.current;
-    if (!el || !maps) return;
-    const io = new IntersectionObserver(
-      ([e]) => {
-        if (e.isIntersecting) onIntersect();
-      },
-      { rootMargin: "200px" }
-    );
-    io.observe(el);
-    return () => io.disconnect();
-  }, [maps, onIntersect, visible.length]);
 
   const heroEntry = useMemo(() => {
     if (!maps?.heroes) return null;
@@ -691,7 +682,27 @@ export function HeroMatchesPage() {
                     );
                   })}
                 </div>
-                <div ref={sentinelRef} className="h-8 w-full" aria-hidden />
+                <div className="mt-4 flex items-center justify-center gap-3">
+                  <button
+                    type="button"
+                    className="rounded border border-skin-line bg-skin-inset px-3 py-1.5 text-sm text-skin-ink disabled:cursor-not-allowed disabled:opacity-40"
+                    disabled={pageForSlice <= 1}
+                    onClick={() => setPage((p) => Math.max(1, p - 1))}
+                  >
+                    上一页
+                  </button>
+                  <p className="text-xs text-skin-sub">
+                    第 {pageForSlice} / {totalPages} 页
+                  </p>
+                  <button
+                    type="button"
+                    className="rounded border border-skin-line bg-skin-inset px-3 py-1.5 text-sm text-skin-ink disabled:cursor-not-allowed disabled:opacity-40"
+                    disabled={pageForSlice >= totalPages}
+                    onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                  >
+                    下一页
+                  </button>
+                </div>
               </>
             )
           ) : (

@@ -48,6 +48,7 @@ type HeroPlayerLite = {
   talent_tree?: { tiers?: Array<{ hero_level?: number; selected?: string }> };
 };
 const HERO_PLAYER_CACHE = new Map<string, Promise<HeroPlayerLite | undefined>>();
+const HERO_OVERVIEW_CACHE = new Map<string, OverviewData>();
 const COMPOSED_ITEM_KEYS = new Set<string>([
   "abyssal_blade","aeon_disk","aether_lens","ancient_janggo","angels_demise","arcane_blink","arcane_boots","armlet","assault","basher","bfury","black_king_bar","blade_mail","bloodstone","bloodthorn","boots_of_bearing","bracer","buckler","butterfly","consecrated_wraps","crellas_crozier","crimson_guard","cyclone","dagon","desolator","devastator","diffusal_blade","diffusal_blade_2","disperser","dragon_lance","echo_sabre","essence_distiller","eternal_shroud","ethereal_blade","falcon_blade","force_staff","glimmer_cape","great_famango","greater_crit","greater_famango","guardian_greaves","gungir","hand_of_midas","harpoon","headdress","heart","heavens_halberd","helm_of_the_dominator","helm_of_the_overlord","holy_locket","hurricane_pike","hydras_breath","invis_sword","iron_talon","kaya","kaya_and_sange","lesser_crit","lotus_orb","maelstrom","mage_slayer","magic_wand","manta","mask_of_madness","medallion_of_courage","mekansm","meteor_hammer","mjollnir","monkey_king_bar","moon_shard","necronomicon","necronomicon_2","necronomicon_3","null_talisman","nullifier","oblivion_staff","octarine_core","orb_of_corrosion","orchid","overwhelming_blink","pavise","pers","phase_boots","phylactery","pipe","power_treads","radiance","rapier","refresher","revenants_brooch","ring_of_basilius","rod_of_atos","sange","sange_and_yasha","satanic","sheepstick","shivas_guard","silver_edge","skadi","solar_crest","soul_booster","soul_ring","specialists_array","sphere","spirit_vessel","swift_blink","tranquil_boots","travel_boots","travel_boots_2","trident","ultimate_scepter","ultimate_scepter_2","urn_of_shadows","vanguard","veil_of_discord","vladmir","ward_dispenser","wind_waker","witch_blade","wraith_band","wraith_pact","yasha","yasha_and_kaya",
 ]);
@@ -149,6 +150,10 @@ export function HeroBuildOverviewCard(props: Props) {
     () => rows.map((r) => r.match_id).join(","),
     [rows]
   );
+  const overviewCacheKey = useMemo(
+    () => `${heroId}:${replayIdsKey}`,
+    [heroId, replayIdsKey]
+  );
 
   async function loadHeroPlayerWithPurchaseHistory(matchId: number) {
     const cacheKey = `${heroId}:${matchId}`;
@@ -196,6 +201,15 @@ export function HeroBuildOverviewCard(props: Props) {
       return;
     }
     let cancelled = false;
+    const cached = HERO_OVERVIEW_CACHE.get(overviewCacheKey);
+    if (cached) {
+      setLoading(false);
+      setError(null);
+      setData(cached);
+      return () => {
+        cancelled = true;
+      };
+    }
     setLoading(true);
     setError(null);
     setData(null);
@@ -260,6 +274,8 @@ export function HeroBuildOverviewCard(props: Props) {
       await forEachConcurrent(fastRows, INSIGHT_CONCURRENCY, consumeRow);
       if (cancelled) return;
       setData(buildOverviewData(acc));
+      // Show first-batch result immediately; continue refining in background.
+      setLoading(false);
 
       for (let i = FAST_FIRST_BATCH_SIZE; i < rows.length; i += INCREMENTAL_BATCH_SIZE) {
         const batch = rows.slice(i, i + INCREMENTAL_BATCH_SIZE);
@@ -269,6 +285,9 @@ export function HeroBuildOverviewCard(props: Props) {
         await new Promise((resolve) => window.setTimeout(resolve, 0));
       }
 
+      const finalData = buildOverviewData(acc);
+      HERO_OVERVIEW_CACHE.set(overviewCacheKey, finalData);
+      setData(finalData);
       setLoading(false);
     })().catch((e) => {
       if (cancelled) return;
@@ -278,7 +297,7 @@ export function HeroBuildOverviewCard(props: Props) {
     return () => {
       cancelled = true;
     };
-  }, [heroId, replayIdsKey, enabled]);
+  }, [heroId, overviewCacheKey, rows, enabled]);
 
   const heroNameEn = useMemo(() => {
     return maps.heroes[String(heroId)]?.nameEn || heroKey;
@@ -311,9 +330,10 @@ export function HeroBuildOverviewCard(props: Props) {
         </button>
       </div>
 
-      {expanded && loading ? <p className="text-sm text-skin-sub">正在计算天赋/出装与对位胜率…</p> : null}
+      {expanded && loading && !data ? <p className="text-sm text-skin-sub">正在计算天赋/出装与对位胜率…</p> : null}
+      {expanded && loading && data ? <p className="text-xs text-skin-sub">正在补充更多样本，数据会持续更新…</p> : null}
       {expanded && error ? <p className="text-sm text-rose-400">聚合失败：{error}</p> : null}
-      {expanded && !loading && !error && data ? (
+      {expanded && !error && data ? (
         <div className="grid gap-3 lg:grid-cols-[1fr_300px]">
           <div className="space-y-3">
             <div className="rounded border border-skin-line p-3">
