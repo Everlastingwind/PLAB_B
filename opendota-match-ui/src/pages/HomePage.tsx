@@ -6,15 +6,12 @@ import { ViewportMountRow } from "../components/ViewportMountRow";
 import type { FeedSelection } from "../components/FeedModeToggle";
 import {
   PAGE_SIZE,
-  fetchCloudPubReplaySummaries,
+  fetchCloudPubReplaySummariesPage,
   fetchReplaysForFeedSelection,
-  fetchStaticFeedOnly,
-  mergeCloudIntoStaticFeed,
 } from "../lib/replaysApi";
 import type { ReplaySummary } from "../types/replaysIndex";
 import { useEntityMaps } from "../hooks/useEntityMaps";
 import { SEOMeta } from "../components/SEOMeta";
-import { applyProDisplayOverridesToReplaySummaries } from "../lib/proAccountDisplayOverrides";
 import { heroIconUrl, onDotaSteamAssetImgError, steamCdnImgDefer } from "../data/mockMatchPlayers";
 import {
   homeAnchorStorageKey,
@@ -37,6 +34,7 @@ export function HomePage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [feed, setFeed] = useState<FeedSelection>({ pub: true, pro: false });
   const [replays, setReplays] = useState<ReplaySummary[]>([]);
+  const [pagedTotalRows, setPagedTotalRows] = useState<number | null>(null);
   const [feedListLoading, setFeedListLoading] = useState(true);
   const [idxErr, setIdxErr] = useState<string | null>(null);
   const [roleTab, setRoleTab] = useState<"carry" | "mid" | "offlane" | "support(4)" | "support(5)">("carry");
@@ -56,27 +54,30 @@ export function HomePage() {
     let cancelled = false;
     setIdxErr(null);
     setFeedListLoading(true);
-    // 为避免页数在静态/云索引之间跳变，PUB 模式改为合并后一次性更新。
+    setPagedTotalRows(null);
     void (async () => {
       try {
-        if (!feed.pub) {
-          const { replays: list, cloudIndexError } = await fetchReplaysForFeedSelection(feed);
+        const pageRaw = Number(searchParams.get("page") || 1);
+        const currentPage =
+          Number.isFinite(pageRaw) && pageRaw > 0 ? Math.floor(pageRaw) : 1;
+        if (homeView === "matches" && feed.pub && !feed.pro) {
+          const pack = await fetchCloudPubReplaySummariesPage(currentPage, PAGE_SIZE);
           if (cancelled) return;
-          setReplays(list);
-          setIdxErr(cloudIndexError);
+          setReplays(pack.replays);
+          setPagedTotalRows(Math.max(0, pack.totalRows));
+          setIdxErr(pack.error);
           setFeedListLoading(false);
+          const nextPage = currentPage + 1;
+          if (nextPage * PAGE_SIZE - PAGE_SIZE < pack.totalRows) {
+            void fetchCloudPubReplaySummariesPage(nextPage, PAGE_SIZE);
+          }
           return;
         }
 
-        const [snap, cloudPack] = await Promise.all([
-          fetchStaticFeedOnly(feed),
-          fetchCloudPubReplaySummaries(),
-        ]);
-        const merged = mergeCloudIntoStaticFeed(snap, cloudPack);
-        const mergedRows = await applyProDisplayOverridesToReplaySummaries(merged.replays);
+        const { replays: list, cloudIndexError } = await fetchReplaysForFeedSelection(feed);
         if (cancelled) return;
-        setReplays(mergedRows);
-        setIdxErr(merged.cloudIndexError);
+        setReplays(list);
+        setIdxErr(cloudIndexError);
         setFeedListLoading(false);
       } catch (e) {
         if (!cancelled) {
@@ -88,12 +89,14 @@ export function HomePage() {
     return () => {
       cancelled = true;
     };
-  }, [feed]);
+  }, [feed, homeView, searchParams]);
 
-  const totalPages = useMemo(
-    () => Math.max(1, Math.ceil(replays.length / PAGE_SIZE)),
-    [replays.length]
-  );
+  const totalPages = useMemo(() => {
+    if (homeView === "matches" && feed.pub && !feed.pro && pagedTotalRows != null) {
+      return Math.max(1, Math.ceil(pagedTotalRows / PAGE_SIZE));
+    }
+    return Math.max(1, Math.ceil(replays.length / PAGE_SIZE));
+  }, [feed.pro, feed.pub, homeView, pagedTotalRows, replays.length]);
   const pageFromQuery = (() => {
     const n = Number(searchParams.get("page") || 1);
     return Number.isFinite(n) && n > 0 ? Math.floor(n) : 1;
@@ -101,10 +104,11 @@ export function HomePage() {
   const page = Math.max(pageFromQuery, 1);
   const pageForSlice = Math.min(page, totalPages);
   const visible = useMemo(() => {
+    if (homeView === "matches" && feed.pub && !feed.pro) return replays;
     const start = (pageForSlice - 1) * PAGE_SIZE;
     const end = start + PAGE_SIZE;
     return replays.slice(start, end);
-  }, [replays, pageForSlice]);
+  }, [feed.pro, feed.pub, homeView, replays, pageForSlice]);
   const shouldRestoreScroll = useMemo(() => {
     const anchorRaw = sessionStorage.getItem(anchorKey)?.trim();
     if (anchorRaw) return true;
@@ -417,7 +421,7 @@ export function HomePage() {
                 上一页
               </button>
               <p className="text-xs text-skin-sub">
-                第 {page} / {totalPages} 页
+                第 {pageForSlice} / {totalPages} 页
               </p>
               <button
                 type="button"

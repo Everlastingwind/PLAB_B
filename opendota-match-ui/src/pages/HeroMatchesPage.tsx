@@ -4,12 +4,9 @@ import { PageShell } from "../components/PageShell";
 import type { FeedSelection } from "../components/FeedModeToggle";
 import {
   PAGE_SIZE,
-  fetchCloudPubReplaySummaries,
   fetchReplaysForFeedSelection,
-  fetchStaticFeedOnly,
   filterByHeroKey,
   heroKeyFromId,
-  mergeCloudIntoStaticFeed,
 } from "../lib/replaysApi";
 import type { ReplaySummary } from "../types/replaysIndex";
 import { useEntityMaps } from "../hooks/useEntityMaps";
@@ -42,9 +39,9 @@ import { ViewportMountRow } from "../components/ViewportMountRow";
 import { forEachConcurrent } from "../lib/fetchConcurrent";
 import { loadSlimMatchJsonForDetail } from "../lib/loadSlimMatchJson";
 import { HeroBuildOverviewCard } from "../components/HeroBuildOverviewCard";
-import { applyProDisplayOverridesToReplaySummaries } from "../lib/proAccountDisplayOverrides";
 
 const MATCH_JSON_CONCURRENCY = 6;
+const MATCH_JSON_PREFETCH_CONCURRENCY = 3;
 const DETAIL_FAST_FIRST = 4;
 const DETAIL_BATCH_SIZE = 6;
 
@@ -178,26 +175,10 @@ export function HeroMatchesPage() {
     setReplays([]);
     void (async () => {
       try {
-        if (!feed.pub) {
-          const { replays: rows, cloudIndexError } = await fetchReplaysForFeedSelection(feed);
-          if (cancelled) return;
-          if (cloudIndexError) console.warn(cloudIndexError);
-          setReplays(filterByHeroKey(rows, decoded, maps));
-          setDetailByMatch({});
-          setPlayerUiByMatch({});
-          setFeedListLoading(false);
-          return;
-        }
-
-        const [snap, cloudPack] = await Promise.all([
-          fetchStaticFeedOnly(feed),
-          fetchCloudPubReplaySummaries(),
-        ]);
-        const merged = mergeCloudIntoStaticFeed(snap, cloudPack);
-        const mergedRows = await applyProDisplayOverridesToReplaySummaries(merged.replays);
+        const { replays: rows, cloudIndexError } = await fetchReplaysForFeedSelection(feed);
         if (cancelled) return;
-        if (merged.cloudIndexError) console.warn(merged.cloudIndexError);
-        setReplays(filterByHeroKey(mergedRows, decoded, maps));
+        if (cloudIndexError) console.warn(cloudIndexError);
+        setReplays(filterByHeroKey(rows, decoded, maps));
         setDetailByMatch({});
         setPlayerUiByMatch({});
         setFeedListLoading(false);
@@ -392,6 +373,33 @@ export function HeroMatchesPage() {
       cancelled = true;
     };
   }, [visible, detailByMatch, maps, decoded, replays]);
+
+  useEffect(() => {
+    if (!maps) return;
+    let cancelled = false;
+    const nextStart = pageForSlice * PAGE_SIZE;
+    const nextEnd = nextStart + PAGE_SIZE;
+    const nextPageRows = filteredReplays.slice(nextStart, nextEnd);
+    if (!nextPageRows.length) return;
+    const needIds = nextPageRows
+      .map((r) => r.match_id)
+      .filter((mid) => !detailByMatch[mid]);
+    if (!needIds.length) return;
+
+    void (async () => {
+      await forEachConcurrent(needIds, MATCH_JSON_PREFETCH_CONCURRENCY, async (mid) => {
+        if (cancelled) return;
+        try {
+          await loadSlimMatchJsonForDetail(mid);
+        } catch {
+          // ignore prefetch failures; foreground loading still works
+        }
+      });
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [pageForSlice, filteredReplays, detailByMatch, maps]);
 
   const heroEntry = useMemo(() => {
     if (!maps?.heroes) return null;

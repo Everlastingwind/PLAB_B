@@ -30,6 +30,8 @@ export function unwrapPlanBRow(row: unknown): unknown | null {
 
 const PLAN_B_INDEX_SELECT =
   "match_id, created_at, duration, radiant_win, radiant_score, dire_score, league_name, players";
+const PLAN_B_INDEX_LIGHT_SELECT =
+  "match_id, created_at, duration, radiant_win, radiant_score, dire_score, league_name";
 
 /**
  * 详情页按需列：与列表 PLAN_B_INDEX_SELECT 对齐，并含 unwrap 可能用到的 json 包裹列。
@@ -221,4 +223,68 @@ export async function fetchPlanBReplayIndexRows(): Promise<{
   }
 
   return { rows: [], error: lastError };
+}
+
+export async function fetchPlanBReplayIndexPage(
+  page: number,
+  pageSize: number
+): Promise<{
+  rows: Record<string, unknown>[];
+  totalRows: number;
+  error: string | null;
+}> {
+  const client = supabase;
+  if (!client) return { rows: [], totalRows: 0, error: null };
+  const safePage = Math.max(1, Math.floor(page || 1));
+  const safePageSize = Math.max(1, Math.min(100, Math.floor(pageSize || 10)));
+  const from = (safePage - 1) * safePageSize;
+  const to = from + safePageSize - 1;
+
+  const countReq = await client
+    .from("plan_b")
+    .select("match_id", { count: "exact", head: true });
+  if (countReq.error) {
+    return { rows: [], totalRows: 0, error: countReq.error.message };
+  }
+  const totalRows = Math.max(0, Number(countReq.count || 0));
+
+  const pageReq = await client
+    .from("plan_b")
+    .select(PLAN_B_INDEX_LIGHT_SELECT)
+    .order("created_at", { ascending: false })
+    .range(from, to);
+  if (pageReq.error) {
+    return { rows: [], totalRows, error: pageReq.error.message };
+  }
+  const lightRows = (Array.isArray(pageReq.data) ? pageReq.data : []) as Record<
+    string,
+    unknown
+  >[];
+  const ids: (number | string)[] = [];
+  for (const row of lightRows) {
+    const id = row.match_id;
+    if (id !== undefined && id !== null) ids.push(id as number | string);
+  }
+  if (!ids.length) return { rows: [], totalRows, error: null };
+
+  const playersReq = await client
+    .from("plan_b")
+    .select("match_id, players")
+    .in("match_id", ids);
+  if (playersReq.error) {
+    return { rows: [], totalRows, error: playersReq.error.message };
+  }
+  const playersRows = (Array.isArray(playersReq.data) ? playersReq.data : []) as Record<
+    string,
+    unknown
+  >[];
+  const playersById = new Map<string, unknown>();
+  for (const row of playersRows) {
+    playersById.set(String(row.match_id), row.players);
+  }
+  const merged = lightRows.map((row) => ({
+    ...row,
+    players: playersById.get(String(row.match_id)),
+  }));
+  return { rows: merged, totalRows, error: null };
 }

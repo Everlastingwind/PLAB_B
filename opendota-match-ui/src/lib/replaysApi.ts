@@ -6,7 +6,11 @@ import type {
 } from "../types/replaysIndex";
 import { fetchDeployedDataJson } from "./fetchStaticJson";
 import { applyProDisplayOverridesToReplaySummaries } from "./proAccountDisplayOverrides";
-import { fetchPlanBReplayIndexRows } from "./supabasePlanB";
+import {
+  fetchPlanBReplayIndexPage,
+  fetchPlanBReplayIndexRows,
+  unwrapPlanBRow,
+} from "./supabasePlanB";
 
 const PAGE_SIZE = 10;
 
@@ -168,6 +172,11 @@ type CloudPubReplayPack = {
   replays: ReplaySummary[];
   error: string | null;
 };
+type CloudPubReplayPagePack = {
+  replays: ReplaySummary[];
+  totalRows: number;
+  error: string | null;
+};
 
 /** 多处在同一时刻拉云索引时共用一次 in-flight，减轻海外链路重复请求 */
 let cloudPubReplayInflight: Promise<CloudPubReplayPack> | null = null;
@@ -180,6 +189,11 @@ let cloudPubReplayCache: { pack: CloudPubReplayPack; expiresAt: number } | null 
   null;
 const CLOUD_PUB_CACHE_TTL_OK_MS = 60_000;
 const CLOUD_PUB_CACHE_TTL_ERR_MS = 12_000;
+const CLOUD_PUB_PAGE_CACHE_TTL_MS = 60_000;
+const cloudPubPageCache = new Map<
+  string,
+  { pack: CloudPubReplayPagePack; expiresAt: number }
+>();
 
 function cloneCloudPubPack(pack: CloudPubReplayPack): CloudPubReplayPack {
   return { replays: [...pack.replays], error: pack.error };
@@ -199,7 +213,20 @@ export async function fetchCloudPubReplaySummaries(): Promise<CloudPubReplayPack
     const { rows, error } = await fetchPlanBReplayIndexRows();
     const out: ReplaySummary[] = [];
     for (const row of rows) {
-      const r = planBRowToReplaySummary(row);
+      // plan_b 行可能是顶层 slim，也可能包在 payload/data 等字段里。
+      // 列表聚合阶段也要解包，否则会把可用行误判为无效。
+      const unwrapped = unwrapPlanBRow(row);
+      const raw =
+        unwrapped && typeof unwrapped === "object" && !Array.isArray(unwrapped)
+          ? (unwrapped as Record<string, unknown>)
+          : row;
+      const mergedRow: Record<string, unknown> = {
+        ...row,
+        ...raw,
+        // 以顶层 created_at 作为索引时间主值，保证与 DB 倒序一致。
+        created_at: row.created_at ?? raw.created_at,
+      };
+      const r = planBRowToReplaySummary(mergedRow);
       if (r) out.push(r);
     }
     return { replays: out, error };
@@ -216,6 +243,46 @@ export async function fetchCloudPubReplaySummaries(): Promise<CloudPubReplayPack
       if (cloudPubReplayInflight === p) cloudPubReplayInflight = null;
     });
   return p;
+}
+
+export async function fetchCloudPubReplaySummariesPage(
+  page: number,
+  pageSize: number
+): Promise<CloudPubReplayPagePack> {
+  const safePage = Math.max(1, Math.floor(page || 1));
+  const safePageSize = Math.max(1, Math.min(100, Math.floor(pageSize || 10)));
+  const cacheKey = `${safePage}:${safePageSize}`;
+  const now = Date.now();
+  const hit = cloudPubPageCache.get(cacheKey);
+  if (hit && hit.expiresAt > now) {
+    return { ...hit.pack, replays: [...hit.pack.replays] };
+  }
+
+  const { rows, totalRows, error } = await fetchPlanBReplayIndexPage(
+    safePage,
+    safePageSize
+  );
+  const out: ReplaySummary[] = [];
+  for (const row of rows) {
+    const unwrapped = unwrapPlanBRow(row);
+    const raw =
+      unwrapped && typeof unwrapped === "object" && !Array.isArray(unwrapped)
+        ? (unwrapped as Record<string, unknown>)
+        : row;
+    const mergedRow: Record<string, unknown> = {
+      ...row,
+      ...raw,
+      created_at: row.created_at ?? raw.created_at,
+    };
+    const r = planBRowToReplaySummary(mergedRow);
+    if (r) out.push(r);
+  }
+  const pack: CloudPubReplayPagePack = { replays: out, totalRows, error };
+  cloudPubPageCache.set(cacheKey, {
+    pack,
+    expiresAt: now + CLOUD_PUB_PAGE_CACHE_TTL_MS,
+  });
+  return { ...pack, replays: [...pack.replays] };
 }
 
 /** 搜索栏：静态索引 + 职业索引 + Supabase 云录像（去重） */
@@ -244,6 +311,13 @@ export type FeedReplayIndexResult = {
   replays: ReplaySummary[];
   cloudIndexError: string | null;
 };
+type FeedReplayIndexCacheEntry = {
+  value: FeedReplayIndexResult;
+  expiresAt: number;
+};
+const FEED_INDEX_CACHE_TTL_MS = 60_000;
+const feedIndexResultCache = new Map<string, FeedReplayIndexCacheEntry>();
+const feedIndexInflight = new Map<string, Promise<FeedReplayIndexResult>>();
 
 const CLOUD_INDEX_FAIL_HINT =
   "仅显示已部署的静态列表，与桌面不一致时请检查：① Supabase 控制台是否允许当前站点域名（须同时包含 dota2planb.com 与 www.dota2planb.com）；② 手机是否使用 https://www.dota2planb.com 打开。";
@@ -323,6 +397,22 @@ export function mergeCloudIntoStaticFeed(
 export async function fetchReplaysForFeedSelection(
   sel: FeedSelection
 ): Promise<FeedReplayIndexResult> {
+  const cacheKey = `${sel.pub ? 1 : 0}${sel.pro ? 1 : 0}`;
+  const now = Date.now();
+  const cached = feedIndexResultCache.get(cacheKey);
+  if (cached && cached.expiresAt > now) {
+    return {
+      ...cached.value,
+      replays: [...cached.value.replays],
+    };
+  }
+  const hitInflight = feedIndexInflight.get(cacheKey);
+  if (hitInflight) {
+    const got = await hitInflight;
+    return { ...got, replays: [...got.replays] };
+  }
+
+  const task = (async () => {
   let base: FeedReplayIndexResult;
   if (!sel.pub) {
     const snap = await fetchStaticFeedOnly(sel);
@@ -337,7 +427,22 @@ export async function fetchReplaysForFeedSelection(
   const replays = await applyProDisplayOverridesToReplaySummaries(
     base.replays
   );
-  return { ...base, replays };
+    const value: FeedReplayIndexResult = { ...base, replays };
+    feedIndexResultCache.set(cacheKey, {
+      value,
+      expiresAt: Date.now() + FEED_INDEX_CACHE_TTL_MS,
+    });
+    return value;
+  })();
+  feedIndexInflight.set(cacheKey, task);
+  try {
+    const got = await task;
+    return { ...got, replays: [...got.replays] };
+  } finally {
+    if (feedIndexInflight.get(cacheKey) === task) {
+      feedIndexInflight.delete(cacheKey);
+    }
+  }
 }
 
 export function slicePage(replays: ReplaySummary[], page: number): ReplaySummary[] {
