@@ -1,4 +1,3 @@
-import { Link } from "react-router-dom";
 import { memo, useMemo, type MouseEvent } from "react";
 import {
   heroIconUrl,
@@ -51,8 +50,9 @@ function HeroCells({
             key={p.player_slot}
             className="flex w-[30px] shrink-0 flex-col items-center gap-0 sm:w-[62px] sm:gap-1 lg:w-[72px]"
           >
-            <Link
-              to={`/hero/${encodeURIComponent(key)}`}
+            <a
+              href={`/hero/${encodeURIComponent(key)}`}
+              data-no-match-nav="1"
               className={cn(
                 "pointer-events-auto block overflow-hidden rounded-sm p-0",
                 "ring-1 ring-slate-200 shadow-sm dark:ring-slate-950/60 dark:shadow-[inset_0_1px_3px_rgba(0,0,0,0.55)]",
@@ -63,6 +63,8 @@ function HeroCells({
                 "dark:hover:shadow-[inset_0_1px_2px_rgba(0,0,0,0.4)]"
               )}
               title="按英雄筛选对局"
+              onPointerDownCapture={(e) => e.stopPropagation()}
+              onClickCapture={(e) => e.stopPropagation()}
               onClick={(e) => e.stopPropagation()}
               onKeyDown={(e) => e.stopPropagation()}
             >
@@ -73,9 +75,10 @@ function HeroCells({
                 {...heroImgProps}
                 onError={onDotaSteamAssetImgError}
               />
-            </Link>
-            <Link
-              to={`/player/${p.account_id}`}
+            </a>
+            <a
+              href={`/player/${p.account_id}`}
+              data-no-match-nav="1"
               className={cn(
                 "pointer-events-auto w-full max-w-full truncate text-center text-[8px] leading-none underline-offset-2 transition-colors sm:whitespace-normal sm:break-all sm:text-[11px] sm:leading-tight",
                 isAnonymous
@@ -88,11 +91,13 @@ function HeroCells({
                     )
               )}
               title="该选手对局"
+              onPointerDownCapture={(e) => e.stopPropagation()}
+              onClickCapture={(e) => e.stopPropagation()}
               onClick={(e) => e.stopPropagation()}
               onKeyDown={(e) => e.stopPropagation()}
             >
               {isAnonymous ? "匿名" : displayLabel}
-            </Link>
+            </a>
           </div>
         );
       })}
@@ -155,6 +160,15 @@ const ReplayCardImpl = ({
     // 路由中间态异常时用硬跳转兜底，保证一定能进入详情页。
     window.location.assign(matchPath);
   };
+  const handleCardClick = (e: MouseEvent<HTMLElement>) => {
+    const t = e.target;
+    if (t instanceof Element) {
+      if (t.closest('[data-no-match-nav="1"]')) return;
+      const interactive = t.closest("a,button,input,select,textarea,label");
+      if (interactive) return;
+    }
+    jumpToMatch();
+  };
 
   return (
     <article
@@ -169,7 +183,7 @@ const ReplayCardImpl = ({
       role="button"
       tabIndex={0}
       title={`查看比赛 ${replay.match_id}`}
-      onClick={jumpToMatch}
+      onClick={handleCardClick}
       onKeyDown={(e) => {
         if (e.key === "Enter" || e.key === " ") {
           e.preventDefault();
@@ -197,7 +211,7 @@ const ReplayCardImpl = ({
           {replay.match_id}
         </button>
       </div>
-      <div className="relative z-10 flex max-sm:min-h-[3.25rem] flex-nowrap items-stretch gap-0.5 pointer-events-none max-sm:px-0 sm:gap-3">
+      <div className="relative z-10 flex max-sm:min-h-[3.25rem] flex-nowrap items-stretch gap-0.5 max-sm:px-0 sm:gap-3">
         <div className="flex min-w-0 max-sm:flex-1 max-sm:justify-end sm:flex-1 items-center justify-end sm:justify-center">
           <HeroCells players={rad} maps={maps} side="radiant" heroImgProps={heroImgProps} />
         </div>
