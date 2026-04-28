@@ -42,6 +42,7 @@ const MAX_MATCHES_FOR_INSIGHT = 240;
 const FAST_FIRST_BATCH_SIZE = 80;
 const INCREMENTAL_BATCH_SIZE = 60;
 const VERSUS_MIN_GAMES = 20;
+const OVERVIEW_DAILY_CACHE_PREFIX = "plab_hero_overview_daily_v1";
 type HeroPlayerLite = {
   hero_id: number;
   purchase_history?: Array<{ time?: number; item?: string; item_key?: string }>;
@@ -62,6 +63,23 @@ function isComposedCoreItem(itemKey: string): boolean {
 function pct(num: number, den: number): number {
   if (!Number.isFinite(num) || !Number.isFinite(den) || den <= 0) return 0;
   return (num / den) * 100;
+}
+
+function todayKeyLocal(): string {
+  const d = new Date();
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`;
+}
+
+function tinyHash(input: string): string {
+  let h = 2166136261;
+  for (let i = 0; i < input.length; i += 1) {
+    h ^= input.charCodeAt(i);
+    h = Math.imul(h, 16777619);
+  }
+  return String(h >>> 0);
 }
 
 type OverviewAccum = {
@@ -154,6 +172,10 @@ export function HeroBuildOverviewCard(props: Props) {
     () => `${heroId}:${replayIdsKey}`,
     [heroId, replayIdsKey]
   );
+  const overviewDailyCacheKey = useMemo(
+    () => `${OVERVIEW_DAILY_CACHE_PREFIX}:${todayKeyLocal()}:${heroId}:${tinyHash(replayIdsKey)}`,
+    [heroId, replayIdsKey]
+  );
 
   async function loadHeroPlayerWithPurchaseHistory(matchId: number) {
     const cacheKey = `${heroId}:${matchId}`;
@@ -209,6 +231,32 @@ export function HeroBuildOverviewCard(props: Props) {
       return () => {
         cancelled = true;
       };
+    }
+    try {
+      const raw = localStorage.getItem(overviewDailyCacheKey);
+      if (raw) {
+        const parsed = JSON.parse(raw) as OverviewData;
+        if (
+          parsed &&
+          typeof parsed.totalMatches === "number" &&
+          typeof parsed.winRate === "number" &&
+          Array.isArray(parsed.talentRows) &&
+          Array.isArray(parsed.itemTop) &&
+          parsed.itemMatches &&
+          Array.isArray(parsed.counteredBy) &&
+          Array.isArray(parsed.goodAgainst)
+        ) {
+          HERO_OVERVIEW_CACHE.set(overviewCacheKey, parsed);
+          setLoading(false);
+          setError(null);
+          setData(parsed);
+          return () => {
+            cancelled = true;
+          };
+        }
+      }
+    } catch {
+      // ignore broken local cache entry
     }
     setLoading(true);
     setError(null);
@@ -287,6 +335,11 @@ export function HeroBuildOverviewCard(props: Props) {
 
       const finalData = buildOverviewData(acc);
       HERO_OVERVIEW_CACHE.set(overviewCacheKey, finalData);
+      try {
+        localStorage.setItem(overviewDailyCacheKey, JSON.stringify(finalData));
+      } catch {
+        // ignore storage quota / privacy mode failures
+      }
       setData(finalData);
       setLoading(false);
     })().catch((e) => {
@@ -297,7 +350,7 @@ export function HeroBuildOverviewCard(props: Props) {
     return () => {
       cancelled = true;
     };
-  }, [heroId, overviewCacheKey, rows, enabled]);
+  }, [heroId, overviewCacheKey, overviewDailyCacheKey, rows, enabled]);
 
   const heroNameEn = useMemo(() => {
     return maps.heroes[String(heroId)]?.nameEn || heroKey;
