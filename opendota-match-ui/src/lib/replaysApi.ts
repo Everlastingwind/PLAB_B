@@ -289,14 +289,29 @@ export async function fetchCloudPubReplaySummariesPage(
 export async function fetchAllReplaySummariesForSearch(): Promise<
   ReplaySummary[]
 > {
-  const [pubIdx, proIdx, cloudPack] = await Promise.all([
-    fetchReplaysIndex().catch(() => ({ replays: [] as ReplaySummary[] })),
-    fetchProReplaysIndex().catch(() => ({ replays: [] as ReplaySummary[] })),
+  const [pubRes, proRes, cloudRes] = await Promise.allSettled([
+    fetchReplaysIndex(),
+    fetchProReplaysIndex(),
     fetchCloudPubReplaySummaries(),
   ]);
+  const pubIdx =
+    pubRes.status === "fulfilled"
+      ? pubRes.value
+      : ({ replays: [] as ReplaySummary[] } as ReplaysIndexPayload);
+  const proIdx =
+    proRes.status === "fulfilled"
+      ? proRes.value
+      : ({ replays: [] as ReplaySummary[] } as ReplaysIndexPayload);
+  const cloudPack =
+    cloudRes.status === "fulfilled"
+      ? cloudRes.value
+      : ({ replays: [] as ReplaySummary[], error: "cloud-fetch-failed" } as const);
   const cloud = cloudPack.replays;
-  if (cloudPack.error) {
-    console.warn("[plan_b] 搜索合并：云索引未拉取", cloudPack.error);
+  if (cloudPack.error || cloudRes.status === "rejected") {
+    const msg =
+      cloudPack.error ||
+      (cloudRes.status === "rejected" ? String(cloudRes.reason || "") : "");
+    console.warn("[plan_b] 搜索合并：云索引未拉取", msg);
   }
   const mergedPub = mergeReplaySummariesByMatchId(pubIdx.replays, cloud);
   const merged = mergePubProReplays(mergedPub, proIdx.replays);

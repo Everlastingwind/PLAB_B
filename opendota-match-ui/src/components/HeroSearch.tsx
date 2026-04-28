@@ -28,6 +28,20 @@ type SearchRow =
   | { kind: "player"; accountId: number; proName: string }
   | { kind: "match"; matchId: number };
 
+function seededProPlayerCandidates(): ProPlayerCandidate[] {
+  const uniq = new Map<number, string>();
+  for (const p of SEEDED_PRO_PLAYERS) {
+    if (!Number.isFinite(p.accountId) || p.accountId <= 0) continue;
+    const name = String(p.proName || "").trim();
+    if (!name) continue;
+    if (!uniq.has(p.accountId)) uniq.set(p.accountId, name);
+  }
+  return [...uniq.entries()].map(([accountId, proName]) => ({
+    accountId,
+    proName,
+  }));
+}
+
 const ATTR_LABELS: ReadonlyArray<{ id: AttrFilter; label: string }> = [
   { id: "str", label: "力量" },
   { id: "agi", label: "敏捷" },
@@ -98,7 +112,9 @@ export function HeroSearch({
   const [q, setQ] = useState("");
   const [attr, setAttr] = useState<AttrFilter>("str");
   const [heroAvatarGridOpen, setHeroAvatarGridOpen] = useState(false);
-  const [proPlayers, setProPlayers] = useState<ProPlayerCandidate[]>([]);
+  const [proPlayers, setProPlayers] = useState<ProPlayerCandidate[]>(
+    () => seededProPlayerCandidates()
+  );
   const boxRef = useRef<HTMLDivElement>(null);
   const anchorRef = useRef<HTMLDivElement>(null);
   /** 避免首页首屏与搜索栏同时各打一遍全量云索引 */
@@ -255,7 +271,8 @@ export function HeroSearch({
         }))
       );
     } catch {
-      // ignore search enhancer failure
+      // 云索引失败时仍保留内置职业选手，避免搜索结果为空
+      setProPlayers(seededProPlayerCandidates());
     }
   }, []);
 
