@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import type { MouseEvent, ReactNode } from "react";
+import type { ReactNode } from "react";
 import { cn } from "../lib/cn";
 
 interface AppHeaderProps {
@@ -10,12 +10,6 @@ interface AppHeaderProps {
 }
 
 export function AppHeader({ center, trailing }: AppHeaderProps) {
-  const goHomeHard = (e: MouseEvent<HTMLAnchorElement>) => {
-    // 某些路由状态下 Link 可能被中间态拦截，强制回首页兜底。
-    e.preventDefault();
-    window.location.assign("/");
-  };
-
   return (
     <header
       className={cn(
@@ -31,7 +25,7 @@ export function AppHeader({ center, trailing }: AppHeaderProps) {
         )}
       >
         <div className={cn("flex shrink-0 items-center", Boolean(center) && "mt-1")}>
-          <Link to="/" aria-label="返回首页" onClick={goHomeHard}>
+          <Link to="/" aria-label="返回首页">
             <span
               className="flex h-10 items-center gap-0.5 font-sans text-[28px] font-semibold leading-none tracking-[0.04em]"
               style={{ color: "#000000" }}

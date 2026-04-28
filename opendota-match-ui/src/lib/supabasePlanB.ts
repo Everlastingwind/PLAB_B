@@ -86,9 +86,6 @@ export async function fetchPlanBSlimPayload(
 const PLAN_B_TWO_PHASE_PAGE_SIZE = 120;
 const PLAN_B_TWO_PHASE_MAX_PAGES = 50;
 const PLAN_B_IN_CHUNK = 40;
-const PLAN_B_TOTAL_ROWS_TTL_MS = 60_000;
-let planBTotalRowsCache: { value: number; expiresAt: number } | null = null;
-let planBTotalRowsInflight: Promise<{ totalRows: number; error: string | null }> | null = null;
 
 /** 单查询兜底：仍失败时递减 limit */
 const PLAN_B_SINGLE_QUERY_LIMITS: readonly number[] = [80, 50, 30];
@@ -242,40 +239,14 @@ export async function fetchPlanBReplayIndexPage(
   const safePageSize = Math.max(1, Math.min(100, Math.floor(pageSize || 10)));
   const from = (safePage - 1) * safePageSize;
   const to = from + safePageSize - 1;
-  const now = Date.now();
-  const countFromCache =
-    planBTotalRowsCache && planBTotalRowsCache.expiresAt > now
-      ? planBTotalRowsCache.value
-      : null;
 
-  const resolveTotalRows = async (): Promise<{ totalRows: number; error: string | null }> => {
-    if (countFromCache != null) return { totalRows: countFromCache, error: null };
-    if (planBTotalRowsInflight) return planBTotalRowsInflight;
-    const task = (async () => {
-      const countReq = await client
-        .from("plan_b")
-        .select("match_id", { count: "exact", head: true });
-      if (countReq.error) {
-        return { totalRows: 0, error: countReq.error.message };
-      }
-      const totalRows = Math.max(0, Number(countReq.count || 0));
-      planBTotalRowsCache = {
-        value: totalRows,
-        expiresAt: Date.now() + PLAN_B_TOTAL_ROWS_TTL_MS,
-      };
-      return { totalRows, error: null };
-    })();
-    planBTotalRowsInflight = task;
-    try {
-      return await task;
-    } finally {
-      if (planBTotalRowsInflight === task) planBTotalRowsInflight = null;
-    }
-  };
-
-  const count = await resolveTotalRows();
-  if (count.error) return { rows: [], totalRows: 0, error: count.error };
-  const totalRows = count.totalRows;
+  const countReq = await client
+    .from("plan_b")
+    .select("match_id", { count: "exact", head: true });
+  if (countReq.error) {
+    return { rows: [], totalRows: 0, error: countReq.error.message };
+  }
+  const totalRows = Math.max(0, Number(countReq.count || 0));
 
   const pageReq = await client
     .from("plan_b")
