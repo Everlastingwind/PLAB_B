@@ -354,6 +354,20 @@ def _decode_byte_array(m: str) -> str:
         return ""
 
 
+def _hero_npc_aliases(hero_npc: str) -> List[str]:
+    """Return equivalent hero npc keys (snake_case vs compact)."""
+    t = str(hero_npc or "").strip()
+    if not t:
+        return []
+    out = {t}
+    pref = "npc_dota_hero_"
+    if t.startswith(pref):
+        suffix = t[len(pref) :]
+        if "_" in suffix:
+            out.add(pref + suffix.replace("_", ""))
+    return [x for x in out if x]
+
+
 def _epilogue_player_names(events: List[dict]) -> Dict[str, str]:
     out: Dict[str, str] = {}
     for e in reversed(events):
@@ -368,7 +382,8 @@ def _epilogue_player_names(events: List[dict]) -> Dict[str, str]:
             hn = _decode_byte_array(hm)
             pn = _decode_byte_array(pm)
             if hn and pn:
-                out[hn] = pn
+                for alias in _hero_npc_aliases(hn):
+                    out[alias] = pn
         break
     return out
 
@@ -391,7 +406,9 @@ def _epilogue_steam_account_by_hero(events: List[dict]) -> Dict[str, int]:
             except ValueError:
                 continue
             if hn.startswith("npc_dota_hero_"):
-                out[hn] = steam64_to_account_id(sid)
+                aid = steam64_to_account_id(sid)
+                for alias in _hero_npc_aliases(hn):
+                    out[alias] = aid
         break
     return out
 
@@ -3231,6 +3248,8 @@ def build_slim_from_dem_events(
         if compact != hnpc:
             hero_npc_to_slot[compact] = int(sl)
         acc_ep = steam_acc.get(hnpc)
+        if acc_ep is None and compact != hnpc:
+            acc_ep = steam_acc.get(compact)
         if acc_ep is not None:
             account_to_slot[int(acc_ep)] = int(sl)
 
@@ -3260,8 +3279,15 @@ def build_slim_from_dem_events(
         hid, unit = slot_hero[slot]
         hero_internal = _hero_internal_from_unit(unit)
         hero_npc = f"npc_dota_hero_{hero_internal}"
-        display = name_by_hero.get(hero_npc) or f"Player_{slot}"
+        compact_hero_npc = f"npc_dota_hero_{hero_internal.replace('_', '')}"
+        display = (
+            name_by_hero.get(hero_npc)
+            or name_by_hero.get(compact_hero_npc)
+            or f"Player_{slot}"
+        )
         account_id = steam_acc.get(hero_npc)
+        if account_id is None and compact_hero_npc != hero_npc:
+            account_id = steam_acc.get(compact_hero_npc)
         pro_name, team_name = match_pro_player(account_id, pro_rows)
 
         iv = last_iv.get(slot) or {}

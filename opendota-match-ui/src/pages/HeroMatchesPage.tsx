@@ -516,15 +516,26 @@ export function HeroMatchesPage() {
                     const k = p?.kills ?? 0;
                     const d = p?.deaths ?? 0;
                     const a = p?.assists ?? 0;
-                    const accountId = Number(p?.account_id ?? 0);
-                    const canLinkPlayer = replayIndexCanLinkProPlayer(
+                    const accountIdFromIndex = Number(p?.account_id ?? 0);
+                    const accountIdFromDetail = Number(row?.account_id ?? 0);
+                    const accountId =
+                      Number.isFinite(accountIdFromIndex) && accountIdFromIndex > 0
+                        ? accountIdFromIndex
+                        : accountIdFromDetail;
+                    const proNameRaw = (p?.pro_name ?? row?.pro_name ?? null) as
+                      | string
+                      | null;
+                    const isProReplay =
+                      String(r.source || "").toLowerCase() === "pro" ||
+                      String(r.match_tier || "").toLowerCase() === "pro";
+                    const canLinkPlayer = isProReplay
+                      ? Number.isFinite(accountId) && accountId > 0
+                      : replayIndexCanLinkProPlayer(accountId, proNameRaw);
+                    const maskedLabel = replayIndexPlayerDisplayLabel(
                       accountId,
-                      p?.pro_name ?? null
+                      proNameRaw
                     );
-                    const playerColLabel = replayIndexPlayerDisplayLabel(
-                      accountId,
-                      p?.pro_name ?? null
-                    );
+                    const playerColLabel = maskedLabel;
                     const items = (row?.items_slot || []).slice(0, 6);
                     const rawSkillSteps = (row?.skill_build || []).filter(
                       (s) => s && s.type !== "empty"
