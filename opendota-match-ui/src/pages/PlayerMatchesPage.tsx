@@ -366,18 +366,23 @@ export function PlayerMatchesPage() {
                   对局明细
                 </h2>
                 <div className="overflow-hidden rounded-lg border border-skin-line">
-                  <div className="grid grid-cols-[210px_90px_90px_230px_290px_70px_170px] gap-2 border-b border-skin-line bg-skin-inset px-3 py-2 text-[11px] font-semibold text-skin-sub">
+                  <div className="grid w-full grid-cols-[minmax(200px,1.25fr)_88px_88px_minmax(210px,1.15fr)_minmax(240px,1.4fr)_64px_56px_140px] gap-2 border-b border-skin-line bg-skin-inset px-3 py-2 text-[11px] font-semibold text-skin-sub">
                     <div>英雄</div>
                     <div>K/D/A</div>
                     <div>位置</div>
                     <div>出装</div>
                     <div>技能加点</div>
                     <div className="text-center">天赋</div>
-                    <div className="text-right pr-3">比赛编号</div>
+                    <div className="flex items-center justify-end pr-2">结果</div>
+                    <div className="flex items-end justify-end pr-3">比赛编号</div>
                   </div>
                   {visible.map((r, vIdx) => {
                     const row = detailByMatch[r.match_id];
                     const p = r.players.find((x) => x.account_id === aid);
+                    const isWin =
+                      p != null
+                        ? Boolean(p.is_radiant) === Boolean(r.radiant_win)
+                        : false;
                     const key = p ? heroKeyFromId(p.hero_id, maps) : "unknown";
                     const k = p?.kills ?? 0;
                     const d = p?.deaths ?? 0;
@@ -393,12 +398,12 @@ export function PlayerMatchesPage() {
                         key={`${r.match_id}-${r.uploaded_at}`}
                         index={vIdx}
                         skeleton={
-                          <div className="grid grid-cols-[210px_90px_90px_230px_290px_70px_170px] gap-2 border-b border-skin-line/70 px-3 py-3 min-h-[52px] bg-skin-inset/30" />
+                          <div className="grid w-full grid-cols-[minmax(200px,1.25fr)_88px_88px_minmax(210px,1.15fr)_minmax(240px,1.4fr)_64px_56px_140px] gap-2 border-b border-skin-line/70 px-3 py-3 min-h-[52px] bg-skin-inset/30" />
                         }
                       >
                       <div
                         className={cn(
-                          "grid grid-cols-[210px_90px_90px_230px_290px_70px_170px] gap-2 border-b border-skin-line/70 px-3 py-2 text-xs",
+                          "grid w-full grid-cols-[minmax(200px,1.25fr)_88px_88px_minmax(210px,1.15fr)_minmax(240px,1.4fr)_64px_56px_140px] gap-2 border-b border-skin-line/70 px-3 py-2 text-xs",
                           vIdx === visible.length - 1 && "border-b-0"
                         )}
                       >
@@ -495,7 +500,19 @@ export function PlayerMatchesPage() {
                             <span className="text-[11px] text-skin-sub">-</span>
                           )}
                         </div>
-                        <div className="flex items-center justify-end pr-3">
+                        <div className="flex items-center justify-end pr-2">
+                          <span
+                            className={cn(
+                              "text-[11px] font-semibold uppercase tracking-wide",
+                              isWin
+                                ? "text-emerald-600 dark:text-emerald-400"
+                                : "text-red-600 dark:text-red-400"
+                            )}
+                          >
+                            {isWin ? "win" : "loss"}
+                          </span>
+                        </div>
+                        <div className="flex items-end justify-end pr-3">
                           <Link
                             to={`/match/${r.match_id}`}
                             className="w-full text-right font-mono tabular-nums text-[11px] text-amber-700 hover:underline dark:text-amber-400"

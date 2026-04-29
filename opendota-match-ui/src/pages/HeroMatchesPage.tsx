@@ -476,7 +476,7 @@ export function HeroMatchesPage() {
             ) : (
               <>
                 <div className="overflow-hidden rounded-lg border border-skin-line">
-                  <div className="grid grid-cols-[190px_120px_90px_90px_240px_260px_70px_160px] gap-2 border-b border-skin-line bg-skin-inset px-3 py-2 text-[11px] font-semibold text-skin-sub">
+                  <div className="grid w-full grid-cols-[minmax(170px,1.1fr)_minmax(110px,0.9fr)_82px_82px_minmax(210px,1.15fr)_minmax(220px,1.3fr)_64px_56px_140px] gap-2 border-b border-skin-line bg-skin-inset px-3 py-2 text-[11px] font-semibold text-skin-sub">
                     <div>英雄</div>
                     <div>选手</div>
                     <div>K/D/A</div>
@@ -484,12 +484,17 @@ export function HeroMatchesPage() {
                     <div>出装</div>
                     <div>技能加点</div>
                     <div className="text-center">天赋</div>
-                    <div className="text-right pr-3">比赛编号</div>
+                    <div className="flex items-center justify-end pr-2">结果</div>
+                    <div className="flex items-end justify-end pr-3">比赛编号</div>
                   </div>
                   {visible.map((r, vIdx) => {
                     const p = r.players.find(
                       (x) => heroKeyFromId(x.hero_id, maps) === decoded
                     );
+                    const isWin =
+                      p != null
+                        ? Boolean(p.is_radiant) === Boolean(r.radiant_win)
+                        : false;
                     const matchDetail = detailByMatch[r.match_id];
                     const row = (() => {
                       const players = matchDetail?.players || [];
@@ -547,12 +552,12 @@ export function HeroMatchesPage() {
                         key={`${r.match_id}-${r.uploaded_at}`}
                         index={vIdx}
                         skeleton={
-                          <div className="grid grid-cols-[190px_120px_90px_90px_240px_260px_70px_160px] gap-2 border-b border-slate-500/55 px-3 py-3 min-h-[52px] bg-slate-100/25 dark:bg-slate-900/30" />
+                          <div className="grid w-full grid-cols-[minmax(170px,1.1fr)_minmax(110px,0.9fr)_82px_82px_minmax(210px,1.15fr)_minmax(220px,1.3fr)_64px_56px_140px] gap-2 border-b border-slate-500/55 px-3 py-3 min-h-[52px] bg-slate-100/25 dark:bg-slate-900/30" />
                         }
                       >
                         <div
                           className={cn(
-                            "grid cursor-pointer grid-cols-[190px_120px_90px_90px_240px_260px_70px_160px] gap-2 border-b border-slate-500/55 px-3 py-2 text-xs transition-colors hover:bg-slate-100/60 dark:border-slate-700/80 dark:hover:bg-slate-800/40",
+                            "grid w-full cursor-pointer grid-cols-[minmax(170px,1.1fr)_minmax(110px,0.9fr)_82px_82px_minmax(210px,1.15fr)_minmax(220px,1.3fr)_64px_56px_140px] gap-2 border-b border-slate-500/55 px-3 py-2 text-xs transition-colors hover:bg-slate-100/60 dark:border-slate-700/80 dark:hover:bg-slate-800/40",
                             vIdx === visible.length - 1 && "border-b-0"
                           )}
                           title={`查看比赛 ${r.match_id}`}
@@ -677,7 +682,19 @@ export function HeroMatchesPage() {
                             <span className="text-[11px] text-skin-sub">-</span>
                           )}
                         </div>
-                        <div className="flex items-center justify-end pr-3">
+                        <div className="flex items-center justify-end pr-2">
+                          <span
+                            className={cn(
+                              "text-[11px] font-semibold uppercase tracking-wide",
+                              isWin
+                                ? "text-emerald-600 dark:text-emerald-400"
+                                : "text-red-600 dark:text-red-400"
+                            )}
+                          >
+                            {isWin ? "win" : "loss"}
+                          </span>
+                        </div>
+                        <div className="flex items-end justify-end pr-3">
                           <span className="w-full text-right font-mono tabular-nums text-[11px] text-amber-700 dark:text-amber-400">
                             {r.match_id}
                           </span>
