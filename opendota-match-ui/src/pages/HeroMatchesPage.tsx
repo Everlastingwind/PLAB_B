@@ -485,7 +485,7 @@ export function HeroMatchesPage() {
                     <div>技能加点</div>
                     <div className="text-center">天赋</div>
                     <div className="text-center">结果</div>
-                    <div className="flex items-end justify-end pr-3">比赛编号</div>
+                    <div className="flex items-center justify-center">比赛编号</div>
                   </div>
                   {visible.map((r, vIdx) => {
                     const p = r.players.find(
@@ -694,8 +694,8 @@ export function HeroMatchesPage() {
                             {isWin ? "win" : "loss"}
                           </span>
                         </div>
-                        <div className="flex items-end justify-end pr-3">
-                          <span className="w-full text-right font-mono tabular-nums text-[11px] text-amber-700 dark:text-amber-400">
+                        <div className="flex items-center justify-center">
+                          <span className="font-mono tabular-nums text-[11px] text-amber-700 dark:text-amber-400">
                             {r.match_id}
                           </span>
                         </div>

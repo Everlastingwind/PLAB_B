@@ -374,7 +374,7 @@ export function PlayerMatchesPage() {
                     <div>技能加点</div>
                     <div className="text-center">天赋</div>
                     <div className="text-center">结果</div>
-                    <div className="flex items-end justify-end pr-3">比赛编号</div>
+                    <div className="flex items-center justify-center">比赛编号</div>
                   </div>
                   {visible.map((r, vIdx) => {
                     const row = detailByMatch[r.match_id];
@@ -512,10 +512,10 @@ export function PlayerMatchesPage() {
                             {isWin ? "win" : "loss"}
                           </span>
                         </div>
-                        <div className="flex items-end justify-end pr-3">
+                        <div className="flex items-center justify-center">
                           <Link
                             to={`/match/${r.match_id}`}
-                            className="w-full text-right font-mono tabular-nums text-[11px] text-amber-700 hover:underline dark:text-amber-400"
+                            className="font-mono tabular-nums text-[11px] text-amber-700 hover:underline dark:text-amber-400"
                           >
                             {r.match_id}
                           </Link>
