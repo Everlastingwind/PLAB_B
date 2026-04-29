@@ -76,3 +76,13 @@
 .skill-build-scroll::-webkit-scrollbar-thumb {
   @apply rounded-full bg-slate-300/80 dark:bg-slate-600/70;
 }
+
+@layer components {
+  /**
+   * Meta 页两大区块标题（胜率统计 / 单人击杀 Top 5）：
+   * 琥珀色与首页 Matches·Meta、分路 Tab 强调一致，区别于正文 skin-ink / 次要 skin-sub。
+   */
+  .meta-major-title {
+    @apply text-sm font-semibold tracking-wide text-amber-900 dark:text-amber-200;
+  }
+}
