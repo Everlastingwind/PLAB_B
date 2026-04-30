@@ -9,6 +9,7 @@ import {
 } from "../data/mockMatchPlayers";
 import { loadSlimMatchJsonForDetail } from "../lib/loadSlimMatchJson";
 import { replayIndexPlayerDisplayLabel } from "../lib/playerDisplay";
+import { ReplayCard } from "./ReplayCard";
 import type { EntityMapsPayload } from "../types/entityMaps";
 import type { ReplayPlayerSummary, ReplaySummary } from "../types/replaysIndex";
 import type { SlimMatchJson, SlimPlayer } from "../types/slimMatch";
@@ -90,6 +91,24 @@ function itemIconsForPlayer(
   return out;
 }
 
+function totalKillsByReplay(replay: ReplaySummary): number {
+  const radiant = Number(replay.radiant_score);
+  const dire = Number(replay.dire_score);
+  // 索引里偶发写入 0:0 占位；与首页 ReplayCard 规则保持一致：0:0 时回退玩家击杀求和。
+  const hasValidIndexedScore =
+    (Number.isFinite(radiant) && radiant > 0) ||
+    (Number.isFinite(dire) && dire > 0);
+  if (hasValidIndexedScore) {
+    return radiant + dire;
+  }
+  let sum = 0;
+  for (const p of replay.players || []) {
+    const k = Number(p.kills);
+    if (Number.isFinite(k) && k > 0) sum += k;
+  }
+  return sum;
+}
+
 export function MetaTopKillGamesSection(props: Props) {
   const { replays, maps, listLoading } = props;
 
@@ -122,6 +141,15 @@ export function MetaTopKillGamesSection(props: Props) {
       if (out.length >= 5) break;
     }
     return out;
+  }, [replays]);
+
+  const topTotalRows = useMemo(() => {
+    const scored = replays.map((replay) => {
+      const totalKills = totalKillsByReplay(replay);
+      return { replay, totalKills };
+    });
+    scored.sort((a, b) => b.totalKills - a.totalKills || b.replay.match_id - a.replay.match_id);
+    return scored.slice(0, 5).map((x) => x.replay);
   }, [replays]);
 
   const idsKey = useMemo(
@@ -249,6 +277,25 @@ export function MetaTopKillGamesSection(props: Props) {
           })}
         </div>
       )}
+      <div className="mt-6 border-t border-skin-line pt-4">
+        <p className="meta-major-title mb-2">总人头 Top 5</p>
+        {listLoading ? (
+          <p className="text-xs text-skin-sub">加载对局索引…</p>
+        ) : topTotalRows.length === 0 ? (
+          <p className="text-xs text-skin-sub">暂无可用数据。</p>
+        ) : (
+          <div className="flex flex-col gap-2 sm:gap-3">
+            {topTotalRows.map((replay, i) => (
+              <ReplayCard
+                key={`total-${replay.match_id}`}
+                replay={replay}
+                maps={maps}
+                eagerHeroPortraits={i < 1}
+              />
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 }

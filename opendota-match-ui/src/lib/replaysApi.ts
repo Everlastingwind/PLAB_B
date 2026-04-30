@@ -14,13 +14,31 @@ import {
 
 const PAGE_SIZE = 10;
 
+function normalizeReplaySource(
+  row: ReplaySummary,
+  fallback: "pub" | "pro"
+): "pub" | "pro" {
+  const src = String(row.source ?? "").trim().toLowerCase();
+  if (src === "pro" || src === "pub") return src;
+  const tier = String(row.match_tier ?? "").trim().toLowerCase();
+  if (tier === "pro" || tier === "pub") return tier;
+  return fallback;
+}
+
+function isProReplaySummary(row: ReplaySummary): boolean {
+  return normalizeReplaySource(row, "pub") === "pro";
+}
+
 export async function fetchReplaysIndex(): Promise<ReplaysIndexPayload> {
   const raw = await fetchDeployedDataJson<ReplaysIndexPayload>(
     "/data/replays_index.json"
   );
   return {
     ...raw,
-    replays: (raw.replays || []).map((r) => ({ ...r, source: "pub" })),
+    replays: (raw.replays || []).map((r) => ({
+      ...r,
+      source: normalizeReplaySource(r, "pub"),
+    })),
   };
 }
 
@@ -31,7 +49,10 @@ export async function fetchProReplaysIndex(): Promise<ReplaysIndexPayload> {
   );
   return {
     ...raw,
-    replays: (raw.replays || []).map((r) => ({ ...r, source: "pro" })),
+    replays: (raw.replays || []).map((r) => ({
+      ...r,
+      source: normalizeReplaySource(r, "pro"),
+    })),
   };
 }
 
@@ -42,7 +63,7 @@ export function mergePubProReplays(
 ): ReplaySummary[] {
   const byId = new Map<number, ReplaySummary>();
   const upsert = (r: ReplaySummary, defaultSource: "pub" | "pro") => {
-    const row = { ...r, source: r.source ?? defaultSource };
+    const row = { ...r, source: normalizeReplaySource(r, defaultSource) };
     const ex = byId.get(row.match_id);
     if (!ex) {
       byId.set(row.match_id, row);
@@ -381,8 +402,13 @@ export async function fetchStaticFeedOnly(
     const pubRows = pubIdx.replays;
     return { kind: "pub", replays: pubRows, pubRows };
   }
-  const proIdx = await fetchProReplaysIndex();
-  return { kind: "pro", replays: proIdx.replays };
+  const [mainIdx, proIdx] = await Promise.all([
+    fetchReplaysIndex(),
+    fetchProReplaysIndex(),
+  ]);
+  const proFromMain = mainIdx.replays.filter(isProReplaySummary);
+  const mergedPro = mergeReplaySummariesByMatchId(proFromMain, proIdx.replays);
+  return { kind: "pro", replays: mergedPro };
 }
 
 export function mergeCloudIntoStaticFeed(

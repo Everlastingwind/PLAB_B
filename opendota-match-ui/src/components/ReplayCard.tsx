@@ -125,9 +125,12 @@ const ReplayCardImpl = ({
   const ds = hasValidIndexedScore ? (rawDs ?? direKills) : direKills;
 
   const matchPath = `/match/${replay.match_id}`;
-  const srcTag = replay.source === "pro" ? "PRO" : "PUB";
+  const isProSource =
+    String(replay.source || "").toLowerCase() === "pro" ||
+    String(replay.match_tier || "").toLowerCase() === "pro";
+  const srcTag = isProSource ? "PRO" : "PUB";
   const srcCls =
-    replay.source === "pro"
+    isProSource
       ? "border-sky-300/70 bg-sky-100 text-sky-800 dark:border-sky-500/40 dark:bg-sky-500/15 dark:text-sky-300"
       : "border-amber-300/70 bg-amber-100 text-amber-800 dark:border-amber-500/40 dark:bg-amber-500/15 dark:text-amber-300";
 
