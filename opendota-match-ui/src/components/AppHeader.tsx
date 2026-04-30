@@ -7,9 +7,11 @@ interface AppHeaderProps {
   center?: ReactNode;
   /** 右侧：比赛页放编号等 */
   trailing?: ReactNode;
+  /** 手机端：LOGO 下方的「支持一下」触发器（由 PageShell 在 centerSearch 时传入） */
+  supportMobileSlot?: ReactNode;
 }
 
-export function AppHeader({ center, trailing }: AppHeaderProps) {
+export function AppHeader({ center, trailing, supportMobileSlot }: AppHeaderProps) {
   return (
     <header
       className={cn(
@@ -24,7 +26,15 @@ export function AppHeader({ center, trailing }: AppHeaderProps) {
           center ? "items-start" : "items-center"
         )}
       >
-        <div className={cn("flex shrink-0 items-center", Boolean(center) && "mt-1")}>
+        <div
+          className={cn(
+            "flex shrink-0",
+            supportMobileSlot
+              ? "flex-col items-start gap-1.5"
+              : "items-center",
+            Boolean(center) && "mt-1"
+          )}
+        >
           <Link to="/" aria-label="返回首页">
             <span
               className="flex h-10 items-center gap-0.5 font-sans text-[28px] font-semibold leading-none tracking-[0.04em]"
@@ -38,6 +48,7 @@ export function AppHeader({ center, trailing }: AppHeaderProps) {
               <span>NB</span>
             </span>
           </Link>
+          {supportMobileSlot}
         </div>
         <div className="flex min-w-0 flex-1 basis-0 flex-row items-center justify-start sm:justify-center">
           {center}

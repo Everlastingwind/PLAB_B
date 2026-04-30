@@ -17,6 +17,7 @@ import {
 } from "../data/mockMatchPlayers";
 import heroPrimaryAttr from "../data/hero_primary_attr.json";
 import { FeedModeToggle, type FeedSelection } from "./FeedModeToggle";
+import { SupportUsHeaderDesktopTrigger } from "./SupportUsButton";
 import { SEEDED_PRO_PLAYERS } from "../data/proPlayers";
 import { fetchAllReplaySummariesForSearch } from "../lib/replaysApi";
 
@@ -332,6 +333,7 @@ export function HeroSearch({
           {feedMode && onFeedModeChange ? (
             <FeedModeToggle selection={feedMode} onChange={onFeedModeChange} />
           ) : null}
+          <SupportUsHeaderDesktopTrigger />
         </div>
         {open && list.length > 0 ? (
           <ul

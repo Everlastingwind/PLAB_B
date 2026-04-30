@@ -3,6 +3,10 @@ import { AppHeader } from "./AppHeader";
 import { HeroSearch } from "./HeroSearch";
 import type { FeedSelection } from "./FeedModeToggle";
 import { useEntityMaps } from "../hooks/useEntityMaps";
+import {
+  SupportUsProvider,
+  SupportUsHeaderMobileTrigger,
+} from "./SupportUsButton";
 
 export function PageShell({
   centerSearch,
@@ -35,10 +39,18 @@ export function PageShell({
       <div className="h-10 w-full max-w-full animate-pulse rounded-md bg-skin-inset sm:mx-auto sm:max-w-3xl" />
     ) : undefined;
 
-  return (
+  const shell = (
     <div className="min-h-screen bg-skin-page text-skin-ink antialiased transition-colors">
-      <AppHeader center={center} trailing={trailing} />
+      <AppHeader
+        center={center}
+        trailing={trailing}
+        supportMobileSlot={
+          centerSearch ? <SupportUsHeaderMobileTrigger /> : undefined
+        }
+      />
       <div className="relative z-0 min-w-0">{children}</div>
     </div>
   );
+
+  return centerSearch ? <SupportUsProvider>{shell}</SupportUsProvider> : shell;
 }
