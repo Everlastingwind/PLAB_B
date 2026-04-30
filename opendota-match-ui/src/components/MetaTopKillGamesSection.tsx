@@ -9,6 +9,7 @@ import {
 } from "../data/mockMatchPlayers";
 import { loadSlimMatchJsonForDetail } from "../lib/loadSlimMatchJson";
 import { replayIndexPlayerDisplayLabel } from "../lib/playerDisplay";
+import { fetchProReplaysIndex } from "../lib/replaysApi";
 import { ReplayCard } from "./ReplayCard";
 import type { EntityMapsPayload } from "../types/entityMaps";
 import type { ReplayPlayerSummary, ReplaySummary } from "../types/replaysIndex";
@@ -19,6 +20,9 @@ type Props = {
   maps: EntityMapsPayload | null;
   listLoading: boolean;
 };
+
+// 手动迁移到 PRO：这些对局不应出现在 PUB 榜单
+const FORCE_PRO_MATCH_IDS = new Set<number>([8763984403, 8776094912]);
 
 function formatRoleEarly(role: string | null | undefined): string {
   const r = String(role || "").trim();
@@ -111,6 +115,7 @@ function totalKillsByReplay(replay: ReplaySummary): number {
 
 export function MetaTopKillGamesSection(props: Props) {
   const { replays, maps, listLoading } = props;
+  const [proIndexMatchIds, setProIndexMatchIds] = useState<Set<number> | null>(null);
 
   const topRows = useMemo(() => {
     const scored: {
@@ -152,6 +157,31 @@ export function MetaTopKillGamesSection(props: Props) {
     return scored.slice(0, 5).map((x) => x.replay);
   }, [replays]);
 
+  const topPubWithMostProRows = useMemo(() => {
+    const scored = replays
+      .filter((r) => {
+        if (FORCE_PRO_MATCH_IDS.has(r.match_id)) return false;
+        const isPub = (r.source ?? "pub") === "pub";
+        if (!isPub) return false;
+        if (proIndexMatchIds && proIndexMatchIds.has(r.match_id)) return false;
+        return true;
+      })
+      .map((replay) => {
+        const proCount = (replay.players || []).reduce((acc, p) => {
+          const name = String(p.pro_name || "").trim();
+          return name ? acc + 1 : acc;
+        }, 0);
+        return { replay, proCount };
+      });
+    scored.sort(
+      (a, b) =>
+        b.proCount - a.proCount ||
+        totalKillsByReplay(b.replay) - totalKillsByReplay(a.replay) ||
+        b.replay.match_id - a.replay.match_id
+    );
+    return scored.slice(0, 5);
+  }, [proIndexMatchIds, replays]);
+
   const idsKey = useMemo(
     () => topRows.map((r) => r.replay.match_id).join(","),
     [topRows]
@@ -181,6 +211,27 @@ export function MetaTopKillGamesSection(props: Props) {
       cancelled = true;
     };
   }, [maps, idsKey]);
+
+  useEffect(() => {
+    let cancelled = false;
+    void fetchProReplaysIndex()
+      .then((idx) => {
+        if (cancelled) return;
+        const ids = new Set<number>();
+        for (const r of idx.replays || []) {
+          const id = Number(r.match_id);
+          if (Number.isFinite(id) && id > 0) ids.add(id);
+        }
+        setProIndexMatchIds(ids);
+      })
+      .catch(() => {
+        if (cancelled) return;
+        setProIndexMatchIds(new Set());
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   if (!maps) return null;
 
@@ -292,6 +343,31 @@ export function MetaTopKillGamesSection(props: Props) {
                 maps={maps}
                 eagerHeroPortraits={i < 1}
               />
+            ))}
+          </div>
+        )}
+      </div>
+      <div className="mt-6 border-t border-skin-line pt-4">
+        <p className="meta-major-title mb-2">Most pros</p>
+        {listLoading ? (
+          <p className="text-xs text-skin-sub">加载对局索引…</p>
+        ) : topPubWithMostProRows.length === 0 ? (
+          <p className="text-xs text-skin-sub">暂无可用数据。</p>
+        ) : (
+          <div className="flex flex-col gap-2 sm:gap-3">
+            {topPubWithMostProRows.map(({ replay, proCount }, i) => (
+              <div key={`pub-pro-${replay.match_id}`}>
+                <div className="mb-1.5 flex items-center justify-start">
+                  <span className="rounded-full border border-violet-500/35 bg-violet-100/70 px-2.5 py-0.5 text-[11px] font-semibold text-violet-800 dark:border-violet-500/45 dark:bg-violet-500/15 dark:text-violet-300">
+                    职业选手 {proCount} / 10
+                  </span>
+                </div>
+                <ReplayCard
+                  replay={replay}
+                  maps={maps}
+                  eagerHeroPortraits={i < 1}
+                />
+              </div>
             ))}
           </div>
         )}
