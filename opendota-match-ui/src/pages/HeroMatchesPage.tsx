@@ -12,7 +12,6 @@ import type { ReplaySummary } from "../types/replaysIndex";
 import { useEntityMaps } from "../hooks/useEntityMaps";
 import {
   replayIndexCanLinkProPlayer,
-  replayIndexEffectiveProRaw,
   replayIndexPlayerDisplayLabel,
 } from "../lib/playerDisplay";
 import {
@@ -24,8 +23,6 @@ import {
   steamCdnImgDefer,
   steamCdnImgHero,
 } from "../data/mockMatchPlayers";
-import type { SkillBuildStepUi } from "../data/mockMatchPlayers";
-import { SkillBuildTimeline } from "../components/SkillBuildTimeline";
 import {
   isRubickHero,
   isRubickNativeSlimSkillBuildStep,
@@ -151,16 +148,6 @@ export function HeroMatchesPage() {
   const [detailByMatch, setDetailByMatch] = useState<Record<number, SlimMatchJson>>(
     {}
   );
-  const [playerUiByMatch, setPlayerUiByMatch] = useState<
-    Record<
-      number,
-      {
-        tree: TalentTreeUi | null | undefined;
-        picks?: TalentPickUi[];
-        skillBuild?: SkillBuildStepUi[];
-      }
-    >
-  >({});
   const [page, setPage] = useState(1);
 
   useEffect(() => {
@@ -180,7 +167,6 @@ export function HeroMatchesPage() {
         if (cloudIndexError) console.warn(cloudIndexError);
         setReplays(filterByHeroKey(rows, decoded, maps));
         setDetailByMatch({});
-        setPlayerUiByMatch({});
         setFeedListLoading(false);
       } catch {
         if (!cancelled) {
@@ -283,59 +269,12 @@ export function HeroMatchesPage() {
       .filter((mid) => !detailByMatch[mid]);
     if (!need.length) return;
     (async () => {
-      const [{ buildUiFromSlim, DEFAULT_TEAM_NAMES }, proOverrides] =
-        await Promise.all([
-          import("../adapters/slimToUi"),
-          import("../lib/proAccountDisplayOverrides").then((m) =>
-            m.loadProAccountDisplayOverrides()
-          ),
-        ]);
       const updates: Record<number, SlimMatchJson> = {};
-      const playerUiUpdates: Record<
-        number,
-        {
-          tree: TalentTreeUi | null | undefined;
-          picks?: TalentPickUi[];
-          skillBuild?: SkillBuildStepUi[];
-        }
-      > = {};
       const consumeOne = async (mid: number) => {
         try {
           const j = await loadSlimMatchJsonForDetail(mid);
           if (!j) return;
           updates[mid] = j;
-          try {
-            const ui = buildUiFromSlim(j, maps, {
-              ...DEFAULT_TEAM_NAMES,
-              proDisplayNameByAccountId: proOverrides,
-            });
-            const uiPlayers = [...ui.radiant.players, ...ui.dire.players];
-            const p0 = (replays.find((x) => x.match_id === mid)?.players || []).find(
-              (x) => heroKeyFromId(x.hero_id, maps) === decoded
-            );
-            const exact = uiPlayers.find((x) => {
-              if (x.heroKey !== decoded) return false;
-              const pName =
-                p0 && Number(p0.account_id) > 0
-                  ? replayIndexEffectiveProRaw(
-                      Number(p0.account_id),
-                      p0.pro_name
-                    )
-                  : String(p0?.pro_name ?? "").trim();
-              const xName = String(x.proName ?? "").trim();
-              if (pName && xName) return pName === xName;
-              return true;
-            });
-            if (exact) {
-              playerUiUpdates[mid] = {
-                tree: exact.talentTree,
-                picks: exact.talentPicks,
-                skillBuild: exact.skillBuild,
-              };
-            }
-          } catch {
-            // adapter failure should not block main row rendering
-          }
         } catch {
           // ignore detail fetch errors
         }
@@ -345,9 +284,6 @@ export function HeroMatchesPage() {
       await forEachConcurrent(fast, MATCH_JSON_CONCURRENCY, consumeOne);
       if (!cancelled && Object.keys(updates).length) {
         setDetailByMatch((prev) => ({ ...prev, ...updates }));
-        if (Object.keys(playerUiUpdates).length) {
-          setPlayerUiByMatch((prev) => ({ ...prev, ...playerUiUpdates }));
-        }
       }
 
       for (let i = DETAIL_FAST_FIRST; i < need.length; i += DETAIL_BATCH_SIZE) {
@@ -357,22 +293,16 @@ export function HeroMatchesPage() {
         if (Object.keys(updates).length) {
           setDetailByMatch((prev) => ({ ...prev, ...updates }));
         }
-        if (Object.keys(playerUiUpdates).length) {
-          setPlayerUiByMatch((prev) => ({ ...prev, ...playerUiUpdates }));
-        }
         await new Promise((resolve) => window.setTimeout(resolve, 0));
       }
       if (!cancelled && Object.keys(updates).length) {
         setDetailByMatch((prev) => ({ ...prev, ...updates }));
-        if (Object.keys(playerUiUpdates).length) {
-          setPlayerUiByMatch((prev) => ({ ...prev, ...playerUiUpdates }));
-        }
       }
     })();
     return () => {
       cancelled = true;
     };
-  }, [visible, detailByMatch, maps, decoded, replays]);
+  }, [visible, detailByMatch, maps]);
 
   useEffect(() => {
     if (!maps) return;
@@ -548,16 +478,14 @@ export function HeroMatchesPage() {
                           )
                         : rawSkillSteps;
                     const stepsSlice = steps.slice(0, 16);
-                    const skillBuildFromAdapter = playerUiByMatch[r.match_id]?.skillBuild;
                     const talentTreeFallback = mergeTalentTreeBySkillBuild(
                       toTalentTreeUi(row?.talent_tree),
                       row,
                       maps
                     );
                     const talentPicksFallback = toTalentPicksUi(row?.talent_picks);
-                    const fromAdapter = playerUiByMatch[r.match_id];
-                    const talentTree = fromAdapter?.tree ?? talentTreeFallback;
-                    const talentPicks = fromAdapter?.picks ?? talentPicksFallback;
+                    const talentTree = talentTreeFallback;
+                    const talentPicks = talentPicksFallback;
                     return (
                       <ViewportMountRow
                         key={`${r.match_id}-${r.uploaded_at}`}
@@ -653,11 +581,7 @@ export function HeroMatchesPage() {
                             : <span className="text-skin-sub">-</span>}
                         </div>
                         <div className="flex min-w-0 items-center gap-1 overflow-hidden">
-                          {skillBuildFromAdapter?.length ? (
-                            <div className="min-w-0 max-w-full scale-90 origin-left">
-                              <SkillBuildTimeline steps={skillBuildFromAdapter} />
-                            </div>
-                          ) : stepsSlice.length ? (
+                          {stepsSlice.length ? (
                             stepsSlice.map((s, idx) => {
                               const k0 = String(s.ability_key || "").trim();
                               const isTalent =

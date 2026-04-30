@@ -11,8 +11,6 @@ import {
 } from "../data/mockMatchPlayers";
 import { loadSlimMatchJsonForDetail } from "../lib/loadSlimMatchJson";
 import { forEachConcurrent } from "../lib/fetchConcurrent";
-import { fetchPlanBSlimPayload } from "../lib/supabasePlanB";
-import { purifyMatchJsonForSlim } from "../lib/purifyRawMatchJson";
 
 type Props = {
   heroId: number;
@@ -37,8 +35,8 @@ type OverviewData = {
   goodAgainst: Array<{ heroId: number; winRate: number; games: number }>;
 };
 
-const INSIGHT_CONCURRENCY = 6;
-const MAX_MATCHES_FOR_INSIGHT = 240;
+const INSIGHT_CONCURRENCY = 4;
+const MAX_MATCHES_FOR_INSIGHT = 180;
 const FAST_FIRST_BATCH_SIZE = 80;
 const INCREMENTAL_BATCH_SIZE = 60;
 const VERSUS_MIN_GAMES = 20;
@@ -186,30 +184,7 @@ export function HeroBuildOverviewCard(props: Props) {
       const localPlayer = (localSlim?.players || []).find(
         (p) => Number(p.hero_id || 0) === heroId
       );
-      const localHist = (
-        localPlayer as {
-          purchase_history?: Array<{ time?: number; item?: string; item_key?: string }>;
-        } | undefined
-      )?.purchase_history;
-      if (Array.isArray(localHist) && localHist.length > 0) {
-        return localPlayer as HeroPlayerLite | undefined;
-      }
-
-      // Local/detail cache often has old slim without purchase_history;
-      // force one more read from plan_b row payload for purchase timeline.
-      const cloudRaw = await fetchPlanBSlimPayload(matchId);
-      if (!cloudRaw) return localPlayer as HeroPlayerLite | undefined;
-      const cloudSlim = purifyMatchJsonForSlim(cloudRaw);
-      const cloudPlayer = (cloudSlim?.players || []).find(
-        (p) => Number(p.hero_id || 0) === heroId
-      );
-      const cloudHist = (
-        cloudPlayer as {
-          purchase_history?: Array<{ time?: number; item?: string; item_key?: string }>;
-        } | undefined
-      )?.purchase_history;
-      if (Array.isArray(cloudHist) && cloudHist.length > 0) return cloudPlayer as HeroPlayerLite | undefined;
-      return (localPlayer ?? cloudPlayer) as HeroPlayerLite | undefined;
+      return localPlayer as HeroPlayerLite | undefined;
     })();
     HERO_PLAYER_CACHE.set(cacheKey, task);
     return task;
