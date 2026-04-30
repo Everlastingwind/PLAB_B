@@ -839,7 +839,7 @@ def _hero_internal_from_unit(unit: str) -> str:
     return "_".join(_camel_token_to_snake(p) for p in parts)
 
 
-def _aggregate_combat(events: List[dict]) -> Dict[str, Dict[str, float]]:
+def _aggregate_combat(events: List[dict]) -> Dict[str, Any]:
     """
     英雄对英雄伤害：与客户端计分板「造成伤害 - 英雄」对齐的近似规则。
 
@@ -849,11 +849,15 @@ def _aggregate_combat(events: List[dict]) -> Dict[str, Dict[str, float]]:
     - ``attackername == targetname``（对自身的伤害）；
     - ``targetillusion is True``（目标为幻象单位；攻击者可为真身或幻象，仍记在英雄名上）。
 
+    独行德鲁伊 **熊灵** 的攻击者名不是 ``npc_dota_hero_*``，若不单独统计，客户端里的「对英雄/建筑
+    伤害」会整体偏低；记入 ``bear_to_hero`` / 塔伤字典（键为小写熊 npc），再由 Lone Druid 行合并。
+
     少数英雄在部分对局上可能与客户端仍有小偏差（幻象标记边界），无 OpenDota 时属已知限制。
     """
     dmg_hero = defaultdict(float)
     dmg_tower = defaultdict(float)
     heal = defaultdict(float)
+    dmg_bear_to_hero = defaultdict(float)
     tower_keywords = ("tower", "fort", "building", "rax", "ancient")
 
     for e in events:
@@ -862,6 +866,8 @@ def _aggregate_combat(events: List[dict]) -> Dict[str, Dict[str, float]]:
             val = float(e.get("value") or 0)
             att = e.get("attackername") or ""
             tar = e.get("targetname") or ""
+            att_l = str(att).lower()
+            tar_l = str(tar).lower()
             if "npc_dota_hero_" in att:
                 if "npc_dota_hero_" in tar:
                     if att == tar:
@@ -871,6 +877,16 @@ def _aggregate_combat(events: List[dict]) -> Dict[str, Dict[str, float]]:
                     dmg_hero[att] += val
                 elif any(x in tar for x in tower_keywords):
                     dmg_tower[att] += val
+            elif att_l.startswith("npc_dota_lone_druid_bear"):
+                # 熊灵对英雄 / 建筑：客户端计在德鲁伊「造成伤害」里；日志里 attacker 非 hero npc
+                if "npc_dota_hero_" in tar_l:
+                    if att_l == tar_l:
+                        continue
+                    if e.get("targetillusion"):
+                        continue
+                    dmg_bear_to_hero[att_l] += val
+                elif any(x in tar_l for x in tower_keywords):
+                    dmg_tower[att_l] += val
         elif t == "DOTA_COMBATLOG_HEAL":
             val = float(e.get("value") or 0)
             att = e.get("attackername") or ""
@@ -880,7 +896,21 @@ def _aggregate_combat(events: List[dict]) -> Dict[str, Dict[str, float]]:
         "hero": dict(dmg_hero),
         "tower": dict(dmg_tower),
         "heal": dict(heal),
+        "bear_to_hero": dict(dmg_bear_to_hero),
     }
+
+
+def _sum_combat_table_two_hero_keys(
+    table: Mapping[str, float], canonical_npc: str, compact_npc: str
+) -> float:
+    """
+    同一英雄在战斗日志里可能出现 ``npc_dota_hero_foo_bar`` 与 ``npc_dota_hero_foobar`` 两种 attacker
+    字符串；只查一种会漏加，与客户端总伤害差一截。
+    """
+    s = float(table.get(canonical_npc, 0))
+    if compact_npc != canonical_npc:
+        s += float(table.get(compact_npc, 0))
+    return s
 
 
 def _slot_to_player_slot_from_events(events: List[dict]) -> Dict[int, int]:
@@ -3303,9 +3333,30 @@ def build_slim_from_dem_events(
             if isinstance(tpb, dict):
                 pb_for_row = tpb
 
-        hero_dmg = int(agg["hero"].get(hero_npc, 0))
-        tower_dmg = int(agg["tower"].get(hero_npc, 0))
-        hero_heal = int(agg["heal"].get(hero_npc, 0))
+        hero_dmg = int(
+            _sum_combat_table_two_hero_keys(agg["hero"], hero_npc, compact_hero_npc)
+        )
+        tower_dmg = int(
+            _sum_combat_table_two_hero_keys(agg["tower"], hero_npc, compact_hero_npc)
+        )
+        hero_heal = int(
+            _sum_combat_table_two_hero_keys(agg["heal"], hero_npc, compact_hero_npc)
+        )
+        if hero_internal == "lone_druid":
+            bear_npc = _pick_lone_druid_bear_npc(
+                events,
+                slot,
+                match_end_time=duration_sec if duration_sec > 0 else None,
+                fallback_npc=None,
+            )
+            if bear_npc:
+                bl = str(bear_npc).strip().lower()
+                bear_map = agg.get("bear_to_hero") or {}
+                if isinstance(bear_map, dict) and bl:
+                    hero_dmg += int(float(bear_map.get(bl, 0)))
+                tw = agg.get("tower") or {}
+                if isinstance(tw, dict) and bl:
+                    tower_dmg += int(float(tw.get(bl, 0)))
         starting_items = _starting_items_from_purchases(events, hero_npc, dc)
         purchase_history = _purchase_history_for_hero(
             events,
