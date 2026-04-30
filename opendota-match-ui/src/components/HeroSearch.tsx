@@ -303,11 +303,11 @@ export function HeroSearch({
         <div className="flex w-full min-w-0 max-w-full items-center justify-center gap-2">
           <div
             className={cn(
-              "flex min-w-0 flex-1 items-center gap-2 rounded-lg border border-skin-line bg-white px-3 py-2 shadow-inner dark:border-slate-600 dark:bg-slate-800/90",
+              "flex min-w-0 flex-1 items-center gap-2 rounded-lg border border-skin-line bg-white px-3 py-2 shadow-inner dark:border-zinc-600 dark:bg-zinc-800/90",
               open && "ring-1 ring-amber-400/35 dark:ring-amber-500/25"
             )}
           >
-            <Search className="h-4 w-4 shrink-0 text-slate-400 dark:text-slate-500" aria-hidden />
+            <Search className="h-4 w-4 shrink-0 text-slate-400 dark:text-zinc-400" aria-hidden />
             <input
               type="search"
               value={q}
@@ -326,7 +326,7 @@ export function HeroSearch({
                 }
               }}
               placeholder="搜索英雄/职业选手/比赛编号…"
-              className="min-w-0 flex-1 bg-transparent text-sm text-skin-ink placeholder:text-slate-400 focus:outline-none dark:text-slate-100 dark:placeholder:text-slate-500"
+              className="min-w-0 flex-1 bg-transparent text-sm text-skin-ink placeholder:text-slate-400 focus:outline-none dark:text-zinc-100 dark:placeholder:text-zinc-500"
               autoComplete="off"
             />
           </div>
@@ -341,8 +341,8 @@ export function HeroSearch({
               !mdUp && dockTopPx > 0 ? { top: dockTopPx } : undefined
             }
             className={cn(
-              "max-h-72 overflow-auto rounded-lg border border-skin-line bg-white py-1 dark:border-slate-600 dark:bg-slate-900",
-              "max-md:z-[5000] max-md:fixed max-md:left-4 max-md:right-4 max-md:mt-0 max-md:min-w-0 max-md:w-auto max-md:max-w-none max-md:shadow-xl max-md:shadow-black/15 max-md:ring-1 max-md:ring-slate-800/25",
+              "max-h-72 overflow-auto rounded-lg border border-skin-line bg-white py-1 dark:border-zinc-600 dark:bg-zinc-900",
+              "max-md:z-[5000] max-md:fixed max-md:left-4 max-md:right-4 max-md:mt-0 max-md:min-w-0 max-md:w-auto max-md:max-w-none max-md:shadow-xl max-md:shadow-black/15 max-md:ring-1 max-md:ring-zinc-700/30",
               "md:z-[200] md:absolute md:left-0 md:right-0 md:top-full md:mt-1 md:min-w-full md:w-full md:max-w-none md:shadow-lg md:shadow-black/10"
             )}
             role="listbox"
@@ -352,33 +352,33 @@ export function HeroSearch({
                 <li key={`h-${row.id}`}>
                   <button
                     type="button"
-                    className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-skin-ink hover:bg-slate-100 dark:text-slate-100 dark:hover:bg-slate-800/90"
+                    className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-skin-ink hover:bg-slate-100 dark:text-zinc-100 dark:hover:bg-zinc-800/90"
                     onClick={() => goHero(row.key)}
                   >
-                    <span className="font-mono text-xs text-slate-500">{row.key}</span>
+                    <span className="font-mono text-xs text-slate-500 dark:text-zinc-400">{row.key}</span>
                     <span>{row.nameCn || row.nameEn}</span>
-                    <span className="truncate text-xs text-slate-500">{row.nameEn}</span>
+                    <span className="truncate text-xs text-slate-500 dark:text-zinc-400">{row.nameEn}</span>
                   </button>
                 </li>
               ) : row.kind === "player" ? (
                 <li key={`p-${row.accountId}`}>
                   <button
                     type="button"
-                    className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-skin-ink hover:bg-slate-100 dark:text-slate-100 dark:hover:bg-slate-800/90"
+                    className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-skin-ink hover:bg-slate-100 dark:text-zinc-100 dark:hover:bg-zinc-800/90"
                     onClick={() => goPlayer(row.accountId)}
                   >
                     <span className="rounded bg-sky-100 px-1.5 py-0.5 text-[10px] font-semibold text-sky-700 dark:bg-sky-500/20 dark:text-sky-300">
                       选手
                     </span>
                     <span>{row.proName}</span>
-                    <span className="truncate text-xs text-slate-500">{row.accountId}</span>
+                    <span className="truncate text-xs text-slate-500 dark:text-zinc-400">{row.accountId}</span>
                   </button>
                 </li>
               ) : (
                 <li key={`m-${row.matchId}`}>
                   <button
                     type="button"
-                    className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-skin-ink hover:bg-slate-100 dark:text-slate-100 dark:hover:bg-slate-800/90"
+                    className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-skin-ink hover:bg-slate-100 dark:text-zinc-100 dark:hover:bg-zinc-800/90"
                     onClick={() => goMatch(row.matchId)}
                   >
                     <span className="rounded bg-amber-100 px-1.5 py-0.5 text-[10px] font-semibold text-amber-700 dark:bg-amber-500/20 dark:text-amber-300">
@@ -407,7 +407,7 @@ export function HeroSearch({
       >
         <div
           className={cn(
-            "relative w-full min-w-0 max-w-full rounded-lg border border-skin-line bg-skin-card p-2 dark:border-slate-700 dark:bg-slate-900/50",
+            "relative w-full min-w-0 max-w-full rounded-lg border border-skin-line bg-skin-card p-2 dark:border-zinc-700 dark:bg-zinc-900/45",
             "max-md:shadow-xl max-md:ring-1 max-md:ring-slate-900/10 max-md:dark:ring-white/10",
             "md:w-full md:max-w-none md:shadow-none md:ring-0"
           )}
@@ -435,7 +435,7 @@ export function HeroSearch({
                 "max-md:shrink-0 max-md:basis-auto max-md:px-2 max-md:text-[11px] max-md:leading-tight max-md:whitespace-nowrap",
                 attr === row.id
                   ? "border-amber-500/70 bg-amber-100 text-amber-900 dark:border-amber-500/60 dark:bg-amber-500/20 dark:text-amber-200"
-                  : "border-slate-300 bg-white text-slate-700 hover:bg-slate-100 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
+                  : "border-slate-300 bg-white text-slate-700 hover:bg-slate-100 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-200 dark:hover:bg-zinc-700"
               )}
             >
               {row.label}
@@ -461,7 +461,7 @@ export function HeroSearch({
                 <div
                   className={cn(
                     "relative w-full overflow-hidden rounded-sm bg-slate-800 ring-1 ring-slate-300 transition-all",
-                    "aspect-[4/3] dark:bg-slate-900 dark:ring-slate-600",
+                    "aspect-[4/3] dark:bg-zinc-900 dark:ring-zinc-600",
                     "group-hover:ring-2 group-hover:ring-emerald-500 dark:group-hover:ring-emerald-500"
                   )}
                 >

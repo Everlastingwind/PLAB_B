@@ -8,13 +8,22 @@ import { RootErrorBoundary } from "./components/RootErrorBoundary";
 import { loadProAccountDisplayOverrides } from "./lib/proAccountDisplayOverrides";
 import "./index.css";
 
+const THEME_STORAGE_KEY = "plab-theme";
+
+function bootstrapThemeClass(): void {
+  const saved = window.localStorage.getItem(THEME_STORAGE_KEY);
+  const prefersDark = window.matchMedia?.("(prefers-color-scheme: dark)").matches ?? false;
+  const useDark = saved ? saved === "dark" : prefersDark;
+  document.documentElement.classList.toggle("dark", useDark);
+}
+
 void loadProAccountDisplayOverrides();
 
 if ("scrollRestoration" in history) {
   history.scrollRestoration = "manual";
 }
 
-document.documentElement.classList.remove("dark");
+bootstrapThemeClass();
 
 const rootEl = document.getElementById("root");
 if (!rootEl) {

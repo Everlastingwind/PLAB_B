@@ -49,7 +49,7 @@ function HeroCells({
         return (
           <div
             key={p.player_slot}
-            className="flex w-[30px] shrink-0 flex-col items-center gap-0 sm:w-[62px] sm:gap-1 lg:w-[72px]"
+            className="flex w-[34px] shrink-0 flex-col items-center gap-0 sm:w-[66px] sm:gap-1 lg:w-[76px]"
           >
             <Link
               to={`/hero/${encodeURIComponent(key)}`}
@@ -67,7 +67,7 @@ function HeroCells({
               <img
                 src={heroIconUrl(key === "unknown" ? "invoker" : key)}
                 alt=""
-                className="h-6 w-6 rounded-sm object-cover sm:h-9 sm:w-9 lg:h-10 lg:w-10"
+                className="h-7 w-7 rounded-sm object-cover sm:h-10 sm:w-10 lg:h-11 lg:w-11"
                 {...heroImgProps}
                 onError={onDotaSteamAssetImgError}
               />
@@ -75,14 +75,14 @@ function HeroCells({
             <Link
               to={`/player/${p.account_id}`}
               className={cn(
-                "pointer-events-auto w-full max-w-full truncate text-center text-[8px] leading-none underline-offset-2 transition-colors sm:whitespace-normal sm:break-all sm:text-[11px] sm:leading-tight",
+                "pointer-events-auto w-full max-w-full truncate text-center text-[9px] font-semibold leading-none underline-offset-2 transition-colors sm:whitespace-normal sm:break-all sm:text-xs sm:leading-tight",
                 isAnonymous
-                  ? "text-slate-400 hover:text-slate-600 dark:text-slate-500 dark:hover:text-slate-400"
+                  ? "text-slate-500 hover:text-slate-700 dark:text-zinc-400 dark:hover:text-zinc-200"
                   : cn(
                       "hover:underline",
                       side === "radiant"
-                        ? "text-slate-600 hover:text-emerald-800 dark:text-slate-400 dark:hover:text-emerald-300"
-                        : "text-slate-600 hover:text-rose-800 dark:text-slate-400 dark:hover:text-rose-300"
+                        ? "text-slate-600 hover:text-emerald-800 dark:text-zinc-100 dark:hover:text-emerald-300"
+                        : "text-slate-600 hover:text-rose-800 dark:text-zinc-100 dark:hover:text-rose-300"
                     )
               )}
               title="该选手对局"
@@ -152,8 +152,8 @@ const ReplayCardImpl = ({
       className={cn(
         "group relative overflow-hidden rounded-xl border border-skin-line bg-skin-card",
         "transition-colors duration-150 ease-out",
-        "hover:border-slate-300 dark:hover:border-slate-600",
-        "dark:bg-slate-800/60 dark:hover:bg-slate-700/75",
+        "hover:border-slate-300 dark:hover:border-zinc-500",
+        "dark:bg-zinc-800/62 dark:hover:bg-zinc-700/72",
         "px-1.5 py-2 sm:px-4 sm:py-3.5"
       )}
     >
@@ -180,7 +180,7 @@ const ReplayCardImpl = ({
           type="button"
           onClick={handleCopyMatchId}
           title="点击复制比赛编号"
-          className="rounded border border-slate-300/70 bg-white/90 px-2 py-1 font-mono text-xs leading-none text-slate-700 transition-colors hover:bg-slate-100 dark:border-slate-600 dark:bg-slate-900/80 dark:text-slate-300 dark:hover:bg-slate-800"
+          className="rounded border border-slate-300/70 bg-white/90 px-2 py-1 font-mono text-sm font-semibold leading-none text-slate-700 transition-colors hover:bg-slate-100 dark:border-zinc-600 dark:bg-zinc-800/90 dark:text-zinc-100 dark:hover:bg-zinc-700"
         >
           {replay.match_id}
         </button>
@@ -193,7 +193,7 @@ const ReplayCardImpl = ({
         <div
           className={cn(
             "flex w-[3.25rem] shrink-0 flex-col items-center justify-center rounded-md border border-skin-line px-0.5 py-0.5 sm:w-24 sm:rounded-lg sm:px-2 sm:py-2",
-            "bg-skin-inset shadow-inner dark:border-transparent dark:bg-slate-950/35 dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]"
+            "bg-skin-inset shadow-inner dark:border-transparent dark:bg-zinc-900/45 dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]"
           )}
         >
           <div className="mb-0.5 text-[9px] font-bold uppercase leading-none tracking-wide sm:mb-1 sm:text-[10px] md:text-[11px]">

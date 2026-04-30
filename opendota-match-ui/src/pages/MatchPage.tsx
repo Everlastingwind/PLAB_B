@@ -31,17 +31,17 @@ export function MatchPage() {
 
   const trailing = !loading ? (
     <div className="flex items-center gap-2 sm:gap-2.5">
-      <span className="hidden text-xs font-medium text-gray-700 dark:text-slate-300 sm:inline">
+      <span className="hidden text-xs font-semibold text-gray-700 dark:text-zinc-300 sm:inline">
         比赛编号
       </span>
       <div className="flex items-center gap-2">
-        <span className="font-sans text-sm font-semibold tabular-nums tracking-normal text-gray-800 dark:text-slate-200 sm:text-base">
+        <span className="font-sans text-sm font-semibold tabular-nums tracking-normal text-gray-800 dark:text-zinc-100 sm:text-base">
           {header.matchId}
         </span>
         <button
           type="button"
           onClick={handleCopyId}
-          className="inline-flex shrink-0 items-center justify-center rounded-md p-1 text-gray-600 transition-colors hover:bg-gray-100 hover:text-gray-900 dark:text-slate-400 dark:hover:bg-white/10 dark:hover:text-white"
+          className="inline-flex shrink-0 items-center justify-center rounded-md p-1 text-gray-600 transition-colors hover:bg-gray-100 hover:text-gray-900 dark:text-zinc-400 dark:hover:bg-zinc-700/70 dark:hover:text-zinc-100"
           title="复制比赛编号"
           aria-label="复制比赛编号"
         >

@@ -453,7 +453,7 @@ export function HomePage() {
           {homeView === "meta" && !mapsLoading && maps ? (
             <section className="mt-6 rounded-lg border border-skin-line bg-skin-card p-3">
               <p className="meta-major-title mb-2">胜率统计</p>
-              <p className="mb-2 text-xs font-semibold text-skin-sub">
+              <p className="mb-2 text-sm font-semibold text-skin-sub">
                 分位置胜率 Top 5（出场 ≥50 局）
               </p>
               <div className="mb-3 flex flex-wrap items-center gap-1.5">
@@ -468,7 +468,7 @@ export function HomePage() {
                     key={id}
                     type="button"
                     onClick={() => setRoleTab(id)}
-                    className={`rounded border px-2 py-1 text-[11px] font-semibold ${roleTab === id
+                    className={`rounded border px-2.5 py-1 text-xs font-semibold ${roleTab === id
                       ? "border-amber-500/50 bg-amber-100/70 text-amber-700 dark:border-amber-500/45 dark:bg-amber-500/15 dark:text-amber-300"
                       : "border-slate-500/35 bg-slate-200/35 text-skin-sub hover:bg-slate-300/35 dark:border-slate-500/45 dark:bg-slate-700/35 dark:hover:bg-slate-700/55"
                       }`}
@@ -497,13 +497,13 @@ export function HomePage() {
                             onError={onDotaSteamAssetImgError}
                           />
                           <div className="min-w-0">
-                            <p className="truncate text-xs font-semibold text-skin-ink">
+                            <p className="truncate text-sm font-semibold text-skin-ink">
                               {hero?.nameCn || hero?.nameEn || heroKey}
                             </p>
-                            <p className="text-[11px] text-skin-sub">
+                            <p className="text-xs text-skin-sub">
                               胜率 {row.winRate.toFixed(1)}%
                             </p>
-                            <p className="text-[11px] text-skin-sub">
+                            <p className="text-xs text-skin-sub">
                               场次 {row.games}
                             </p>
                           </div>
@@ -513,12 +513,12 @@ export function HomePage() {
                   })}
                 </div>
               ) : (
-                <p className="text-xs text-skin-sub">
+                <p className="text-sm text-skin-sub">
                   当前 {roleTab} 位置暂无出场 ≥50 局的英雄。
                 </p>
               )}
               <div className="mt-4 rounded border border-skin-line p-3">
-                <p className="mb-2 text-xs font-semibold text-skin-sub">
+                <p className="mb-2 text-sm font-semibold text-skin-sub">
                   全英雄总胜率（出场 ≥100 局）
                 </p>
                 {topHeroOverall.length ? (
@@ -550,10 +550,10 @@ export function HomePage() {
                               onError={onDotaSteamAssetImgError}
                             />
                             <div className="min-w-0 flex-1">
-                              <p className="truncate text-xs font-semibold text-skin-ink">
+                              <p className="truncate text-sm font-semibold text-skin-ink">
                                 {hero?.nameCn || hero?.nameEn || heroKey}
                               </p>
-                              <div className="mt-0.5 flex items-center gap-2 text-[11px] text-skin-sub">
+                              <div className="mt-0.5 flex items-center gap-2 text-xs text-skin-sub">
                                 <span>胜率 {row.winRate.toFixed(1)}%</span>
                                 <span>场次 {row.games}</span>
                               </div>
@@ -566,7 +566,7 @@ export function HomePage() {
                                   return (
                                     <span
                                       key={`${row.heroId}-${key}`}
-                                      className="rounded border border-slate-500/35 px-1 py-0.5 text-[10px] dark:border-slate-500/45"
+                                      className="rounded border border-slate-500/35 px-1.5 py-0.5 text-[11px] dark:border-slate-500/45"
                                     >
                                       <span className="text-skin-sub">{label} </span>
                                       <span
@@ -589,7 +589,7 @@ export function HomePage() {
                     })}
                   </div>
                 ) : (
-                  <p className="text-xs text-skin-sub">暂无出场 ≥100 局的全英雄总胜率数据。</p>
+                  <p className="text-sm text-skin-sub">暂无出场 ≥100 局的全英雄总胜率数据。</p>
                 )}
               </div>
             </section>

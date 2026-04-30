@@ -20,18 +20,19 @@
   }
 
   .dark {
-    --app-bg: #0f172a;
-    --app-bg-muted: #1e293b;
-    --app-text: #e2e8f0;
-    --app-text-muted: #94a3b8;
-    --app-border: #334155;
-    --app-header-bg: rgba(15, 23, 42, 0.96);
-    --app-card-bg: rgba(30, 41, 59, 0.94);
-    --app-card-border: #334155;
-    --app-card-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
-    --app-inset-bg: rgba(15, 23, 42, 0.55);
-    --app-raised-bg: rgba(51, 65, 85, 0.5);
-    --app-frame-bg: #0f172a;
+    /* 参考 Google 深色模式：中性深灰底 + 灰白文字 */
+    --app-bg: #202124;
+    --app-bg-muted: #303134;
+    --app-text: #e8eaed;
+    --app-text-muted: #bdc1c6;
+    --app-border: #5f6368;
+    --app-header-bg: rgba(32, 33, 36, 0.96);
+    --app-card-bg: rgba(48, 49, 52, 0.94);
+    --app-card-border: #5f6368;
+    --app-card-shadow: 0 1px 3px rgba(0, 0, 0, 0.45);
+    --app-inset-bg: rgba(26, 27, 30, 0.66);
+    --app-raised-bg: rgba(60, 64, 67, 0.65);
+    --app-frame-bg: #202124;
   }
 
   /* 不用 @apply bg-skin-page：JIT 对仅在 CSS 里 @apply 的自定义色偶发不生成，改用变量与类一致 */
