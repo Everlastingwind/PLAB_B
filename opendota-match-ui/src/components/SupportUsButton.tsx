@@ -8,8 +8,51 @@ import {
   type ReactNode,
 } from "react";
 import { createPortal } from "react-dom";
-import { X } from "lucide-react";
+import { Download, X } from "lucide-react";
 import { cn } from "../lib/cn";
+
+/** 优先系统分享（手机相册/文件），否则触发下载；需用户点击触发（Share API 要求） */
+async function saveQrImageToGallery(src: string, filename: string): Promise<void> {
+  const res = await fetch(src);
+  if (!res.ok) throw new Error(String(res.status));
+  const blob = await res.blob();
+  const mime =
+    blob.type && blob.type !== "application/octet-stream"
+      ? blob.type
+      : "image/png";
+  const ext = mime.includes("jpeg") ? ".jpg" : ".png";
+  const base = filename.replace(/\.(png|jpe?g)$/i, "");
+  const file = new File([blob], `${base}${ext}`, { type: mime });
+
+  if (
+    typeof navigator !== "undefined" &&
+    typeof navigator.share === "function" &&
+    typeof navigator.canShare === "function" &&
+    navigator.canShare({ files: [file] })
+  ) {
+    try {
+      await navigator.share({ files: [file], title: base });
+      return;
+    } catch (e) {
+      const name = e instanceof Error ? e.name : "";
+      if (name === "AbortError") return;
+      // 继续尝试下载
+    }
+  }
+
+  const url = URL.createObjectURL(blob);
+  try {
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `${base}${ext}`;
+    a.rel = "noopener";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+  } finally {
+    URL.revokeObjectURL(url);
+  }
+}
 
 const SUPPORT_BODY =
   "网站的开发和维护费用远超预期，如果你觉得网站的数据分析对你有帮助，欢迎支持一下，你们的每一份心意，都是网站持续运转的动力，万分感谢！";
@@ -32,6 +75,9 @@ function useSupportUs(): SupportUsContextValue | null {
   return useContext(SupportUsContext);
 }
 
+const WECHAT_QR_SRC = "/images/wechat.png";
+const ALIPAY_QR_SRC = "/images/alipay.png";
+
 function SupportUsModalDialog({
   open,
   onClose,
@@ -39,6 +85,24 @@ function SupportUsModalDialog({
   open: boolean;
   onClose: () => void;
 }) {
+  const [saving, setSaving] = useState<"wechat" | "alipay" | null>(null);
+
+  const handleSave = useCallback(async (which: "wechat" | "alipay") => {
+    const isWechat = which === "wechat";
+    const src = isWechat ? WECHAT_QR_SRC : ALIPAY_QR_SRC;
+    const filename = isWechat ? "PlanB-微信收款码.png" : "PlanB-支付宝收款码.png";
+    setSaving(which);
+    try {
+      await saveQrImageToGallery(src, filename);
+    } catch {
+      window.alert(
+        "无法自动保存，请在图片上长按并选择「保存图片」或「添加到照片」。"
+      );
+    } finally {
+      setSaving(null);
+    }
+  }, []);
+
   useEffect(() => {
     if (!open) return;
     const onKey = (e: KeyboardEvent) => {
@@ -98,9 +162,9 @@ function SupportUsModalDialog({
           {SUPPORT_BODY}
         </p>
         <div className="flex flex-wrap items-start justify-center gap-6 sm:gap-8">
-          <div className="flex w-[128px] flex-col items-center gap-1.5">
+          <div className="flex w-[128px] flex-col items-center gap-1">
             <img
-              src="/images/wechat.png"
+              src={WECHAT_QR_SRC}
               alt="微信收款码"
               width={128}
               height={128}
@@ -110,10 +174,26 @@ function SupportUsModalDialog({
             <span className="text-center text-xs text-slate-500 dark:text-slate-400">
               微信扫码
             </span>
+            <button
+              type="button"
+              disabled={saving !== null}
+              onClick={() => void handleSave("wechat")}
+              className={cn(
+                "mt-0.5 inline-flex items-center justify-center gap-0.5 rounded-md border border-slate-200/90 bg-slate-50/90 px-2 py-1 text-[11px] font-medium text-slate-600 transition-colors md:hidden",
+                "hover:border-sky-300/80 hover:bg-sky-50/90 hover:text-sky-800",
+                "disabled:pointer-events-none disabled:opacity-50",
+                "dark:border-slate-600 dark:bg-slate-800/80 dark:text-slate-300 dark:hover:border-sky-500/50 dark:hover:bg-sky-950/40 dark:hover:text-sky-200"
+              )}
+              aria-busy={saving === "wechat"}
+              aria-label="保存微信收款码"
+            >
+              <Download className="h-3 w-3 shrink-0 opacity-80" aria-hidden />
+              {saving === "wechat" ? "保存中…" : "保存"}
+            </button>
           </div>
-          <div className="flex w-[128px] flex-col items-center gap-1.5">
+          <div className="flex w-[128px] flex-col items-center gap-1">
             <img
-              src="/images/alipay.png"
+              src={ALIPAY_QR_SRC}
               alt="支付宝收款码"
               width={128}
               height={128}
@@ -123,6 +203,22 @@ function SupportUsModalDialog({
             <span className="text-center text-xs text-slate-500 dark:text-slate-400">
               支付宝扫码
             </span>
+            <button
+              type="button"
+              disabled={saving !== null}
+              onClick={() => void handleSave("alipay")}
+              className={cn(
+                "mt-0.5 inline-flex items-center justify-center gap-0.5 rounded-md border border-slate-200/90 bg-slate-50/90 px-2 py-1 text-[11px] font-medium text-slate-600 transition-colors md:hidden",
+                "hover:border-sky-300/80 hover:bg-sky-50/90 hover:text-sky-800",
+                "disabled:pointer-events-none disabled:opacity-50",
+                "dark:border-slate-600 dark:bg-slate-800/80 dark:text-slate-300 dark:hover:border-sky-500/50 dark:hover:bg-sky-950/40 dark:hover:text-sky-200"
+              )}
+              aria-busy={saving === "alipay"}
+              aria-label="保存支付宝收款码"
+            >
+              <Download className="h-3 w-3 shrink-0 opacity-80" aria-hidden />
+              {saving === "alipay" ? "保存中…" : "保存"}
+            </button>
           </div>
         </div>
       </div>
