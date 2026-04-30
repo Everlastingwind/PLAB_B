@@ -79,8 +79,8 @@
 
 @layer components {
   /**
-   * Meta 页两大区块标题（胜率统计 / 单人击杀 Top 5）：
-   * 琥珀色与首页 Matches·Meta、分路 Tab 强调一致，区别于正文 skin-ink / 次要 skin-sub。
+   * 首页 Meta / TOP 区块标题（胜率统计、单人击杀 Top 5 等）：
+   * 琥珀色与 Matches·Meta·TOP、分路 Tab 强调一致。
    */
   .meta-major-title {
     @apply text-sm font-semibold tracking-wide text-amber-900 dark:text-amber-200;

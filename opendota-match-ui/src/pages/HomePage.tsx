@@ -39,9 +39,7 @@ export function HomePage() {
   const [feedListLoading, setFeedListLoading] = useState(true);
   const [idxErr, setIdxErr] = useState<string | null>(null);
   const [roleTab, setRoleTab] = useState<"carry" | "mid" | "offlane" | "support(4)" | "support(5)">("carry");
-  const [homeView, setHomeView] = useState<"matches" | "meta">("matches");
-  /** Meta：分位置 Top5 + 全英雄总胜率，共用展开，默认展开 */
-  const [metaWinRatesOpen, setMetaWinRatesOpen] = useState(true);
+  const [homeView, setHomeView] = useState<"matches" | "meta" | "top">("matches");
   const scrollKey = homeScrollStorageKey(location.pathname, location.search);
   const anchorKey = homeAnchorStorageKey(location.pathname, location.search);
   const mainRef = useRef<HTMLElement | null>(null);
@@ -376,6 +374,16 @@ export function HomePage() {
                 >
                   Meta
                 </button>
+                <button
+                  type="button"
+                  onClick={() => setHomeView("top")}
+                  className={`rounded border px-3 py-1.5 text-sm font-semibold ${homeView === "top"
+                    ? "border-amber-500/50 bg-amber-100/70 text-amber-700 dark:border-amber-500/45 dark:bg-amber-500/15 dark:text-amber-300"
+                    : "border-slate-500/35 bg-slate-200/35 text-skin-sub hover:bg-slate-300/35 dark:border-slate-500/45 dark:bg-slate-700/35 dark:hover:bg-slate-700/55"
+                    }`}
+                >
+                  TOP
+                </button>
               </div>
               {homeView === "matches" ? (
                 feedListLoading ? (
@@ -444,160 +452,150 @@ export function HomePage() {
           ) : null}
           {homeView === "meta" && !mapsLoading && maps ? (
             <section className="mt-6 rounded-lg border border-skin-line bg-skin-card p-3">
-              <div className="mb-2 flex items-center justify-between gap-2">
-                <p className="meta-major-title">胜率统计</p>
-                <button
-                  type="button"
-                  onClick={() => setMetaWinRatesOpen((o) => !o)}
-                  aria-expanded={metaWinRatesOpen}
-                  className="shrink-0 rounded border border-slate-500/35 bg-slate-200/40 px-2 py-1 text-[11px] font-semibold text-skin-sub hover:bg-slate-300/45 dark:border-slate-500/45 dark:bg-slate-700/40 dark:hover:bg-slate-600/55"
-                >
-                  {metaWinRatesOpen ? "收起" : "展开"}
-                </button>
+              <p className="meta-major-title mb-2">胜率统计</p>
+              <p className="mb-2 text-xs font-semibold text-skin-sub">
+                分位置胜率 Top 5（出场 ≥50 局）
+              </p>
+              <div className="mb-3 flex flex-wrap items-center gap-1.5">
+                {([
+                  ["carry", "Carry"],
+                  ["mid", "Mid"],
+                  ["offlane", "Offlane"],
+                  ["support(4)", "Pos4"],
+                  ["support(5)", "Pos5"],
+                ] as const).map(([id, label]) => (
+                  <button
+                    key={id}
+                    type="button"
+                    onClick={() => setRoleTab(id)}
+                    className={`rounded border px-2 py-1 text-[11px] font-semibold ${roleTab === id
+                      ? "border-amber-500/50 bg-amber-100/70 text-amber-700 dark:border-amber-500/45 dark:bg-amber-500/15 dark:text-amber-300"
+                      : "border-slate-500/35 bg-slate-200/35 text-skin-sub hover:bg-slate-300/35 dark:border-slate-500/45 dark:bg-slate-700/35 dark:hover:bg-slate-700/55"
+                      }`}
+                  >
+                    {label}
+                  </button>
+                ))}
               </div>
-              {metaWinRatesOpen ? (
-                <>
-                  <p className="mb-2 text-xs font-semibold text-skin-sub">
-                    分位置胜率 Top 5（出场 ≥50 局）
-                  </p>
-                  <div className="mb-3 flex flex-wrap items-center gap-1.5">
-                    {([
-                      ["carry", "Carry"],
-                      ["mid", "Mid"],
-                      ["offlane", "Offlane"],
-                      ["support(4)", "Pos4"],
-                      ["support(5)", "Pos5"],
-                    ] as const).map(([id, label]) => (
-                      <button
-                        key={id}
-                        type="button"
-                        onClick={() => setRoleTab(id)}
-                        className={`rounded border px-2 py-1 text-[11px] font-semibold ${roleTab === id
-                          ? "border-amber-500/50 bg-amber-100/70 text-amber-700 dark:border-amber-500/45 dark:bg-amber-500/15 dark:text-amber-300"
-                          : "border-slate-500/35 bg-slate-200/35 text-skin-sub hover:bg-slate-300/35 dark:border-slate-500/45 dark:bg-slate-700/35 dark:hover:bg-slate-700/55"
-                          }`}
+              {topHeroByRole.length ? (
+                <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-5">
+                  {topHeroByRole.map((row) => {
+                    const hero = maps.heroes[String(row.heroId)];
+                    const heroKey = hero?.key || "invoker";
+                    return (
+                      <Link
+                        key={`${roleTab}-${row.heroId}`}
+                        to={`/hero/${encodeURIComponent(heroKey)}`}
+                        className="rounded border border-slate-500/35 bg-slate-200/30 p-2 dark:border-slate-500/45 dark:bg-slate-700/30"
                       >
-                        {label}
-                      </button>
-                    ))}
-                  </div>
-                  {topHeroByRole.length ? (
-                    <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-5">
-                      {topHeroByRole.map((row) => {
-                        const hero = maps.heroes[String(row.heroId)];
-                        const heroKey = hero?.key || "invoker";
-                        return (
-                          <Link
-                            key={`${roleTab}-${row.heroId}`}
-                            to={`/hero/${encodeURIComponent(heroKey)}`}
-                            className="rounded border border-slate-500/35 bg-slate-200/30 p-2 dark:border-slate-500/45 dark:bg-slate-700/30"
-                          >
-                            <div className="flex items-center gap-2">
-                              <img
-                                src={heroIconUrl(heroKey)}
-                                alt={hero?.nameEn || heroKey}
-                                className="h-9 w-9 rounded object-cover"
-                                {...steamCdnImgDefer}
-                                onError={onDotaSteamAssetImgError}
-                              />
-                              <div className="min-w-0">
-                                <p className="truncate text-xs font-semibold text-skin-ink">
-                                  {hero?.nameCn || hero?.nameEn || heroKey}
-                                </p>
-                                <p className="text-[11px] text-skin-sub">
-                                  胜率 {row.winRate.toFixed(1)}%
-                                </p>
-                                <p className="text-[11px] text-skin-sub">
-                                  场次 {row.games}
-                                </p>
+                        <div className="flex items-center gap-2">
+                          <img
+                            src={heroIconUrl(heroKey)}
+                            alt={hero?.nameEn || heroKey}
+                            className="h-9 w-9 rounded object-cover"
+                            {...steamCdnImgDefer}
+                            onError={onDotaSteamAssetImgError}
+                          />
+                          <div className="min-w-0">
+                            <p className="truncate text-xs font-semibold text-skin-ink">
+                              {hero?.nameCn || hero?.nameEn || heroKey}
+                            </p>
+                            <p className="text-[11px] text-skin-sub">
+                              胜率 {row.winRate.toFixed(1)}%
+                            </p>
+                            <p className="text-[11px] text-skin-sub">
+                              场次 {row.games}
+                            </p>
+                          </div>
+                        </div>
+                      </Link>
+                    );
+                  })}
+                </div>
+              ) : (
+                <p className="text-xs text-skin-sub">
+                  当前 {roleTab} 位置暂无出场 ≥50 局的英雄。
+                </p>
+              )}
+              <div className="mt-4 rounded border border-skin-line p-3">
+                <p className="mb-2 text-xs font-semibold text-skin-sub">
+                  全英雄总胜率（出场 ≥100 局）
+                </p>
+                {topHeroOverall.length ? (
+                  <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-5">
+                    {topHeroOverall.map((row) => {
+                      const hero = maps.heroes[String(row.heroId)];
+                      const heroKey = hero?.key || "invoker";
+                      const roleStats = ROLE_KEYS.map((rk) => ({
+                        key: rk,
+                        label: ROLE_LABEL[rk],
+                        stat: row.roleWinRate[rk],
+                      }));
+                      const maxRoleWinRate = roleStats.reduce((acc, item) => {
+                        if (!item.stat) return acc;
+                        return Math.max(acc, item.stat.winRate);
+                      }, -1);
+                      return (
+                        <Link
+                          key={`overall-${row.heroId}`}
+                          to={`/hero/${encodeURIComponent(heroKey)}`}
+                          className="rounded border border-slate-500/35 bg-slate-200/30 p-2 dark:border-slate-500/45 dark:bg-slate-700/30"
+                        >
+                          <div className="flex items-start gap-2">
+                            <img
+                              src={heroIconUrl(heroKey)}
+                              alt={hero?.nameEn || heroKey}
+                              className="h-9 w-9 rounded object-cover"
+                              {...steamCdnImgDefer}
+                              onError={onDotaSteamAssetImgError}
+                            />
+                            <div className="min-w-0 flex-1">
+                              <p className="truncate text-xs font-semibold text-skin-ink">
+                                {hero?.nameCn || hero?.nameEn || heroKey}
+                              </p>
+                              <div className="mt-0.5 flex items-center gap-2 text-[11px] text-skin-sub">
+                                <span>胜率 {row.winRate.toFixed(1)}%</span>
+                                <span>场次 {row.games}</span>
+                              </div>
+                              <div className="mt-1 grid grid-cols-2 gap-1">
+                                {roleStats.map(({ key, label, stat }) => {
+                                  const isBestRole =
+                                    !!stat &&
+                                    maxRoleWinRate >= 0 &&
+                                    stat.winRate === maxRoleWinRate;
+                                  return (
+                                    <span
+                                      key={`${row.heroId}-${key}`}
+                                      className="rounded border border-slate-500/35 px-1 py-0.5 text-[10px] dark:border-slate-500/45"
+                                    >
+                                      <span className="text-skin-sub">{label} </span>
+                                      <span
+                                        className={
+                                          isBestRole
+                                            ? "font-semibold text-red-600 dark:text-red-400"
+                                            : "text-skin-sub"
+                                        }
+                                      >
+                                        {stat ? `${stat.winRate.toFixed(0)}%(${stat.games})` : "-"}
+                                      </span>
+                                    </span>
+                                  );
+                                })}
                               </div>
                             </div>
-                          </Link>
-                        );
-                      })}
-                    </div>
-                  ) : (
-                    <p className="text-xs text-skin-sub">
-                      当前 {roleTab} 位置暂无出场 ≥50 局的英雄。
-                    </p>
-                  )}
-                  <div className="mt-4 rounded border border-skin-line p-3">
-                    <p className="mb-2 text-xs font-semibold text-skin-sub">
-                      全英雄总胜率（出场 ≥100 局）
-                    </p>
-                    {topHeroOverall.length ? (
-                      <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-5">
-                        {topHeroOverall.map((row) => {
-                          const hero = maps.heroes[String(row.heroId)];
-                          const heroKey = hero?.key || "invoker";
-                          const roleStats = ROLE_KEYS.map((rk) => ({
-                            key: rk,
-                            label: ROLE_LABEL[rk],
-                            stat: row.roleWinRate[rk],
-                          }));
-                          const maxRoleWinRate = roleStats.reduce((acc, item) => {
-                            if (!item.stat) return acc;
-                            return Math.max(acc, item.stat.winRate);
-                          }, -1);
-                          return (
-                            <Link
-                              key={`overall-${row.heroId}`}
-                              to={`/hero/${encodeURIComponent(heroKey)}`}
-                              className="rounded border border-slate-500/35 bg-slate-200/30 p-2 dark:border-slate-500/45 dark:bg-slate-700/30"
-                            >
-                              <div className="flex items-start gap-2">
-                                <img
-                                  src={heroIconUrl(heroKey)}
-                                  alt={hero?.nameEn || heroKey}
-                                  className="h-9 w-9 rounded object-cover"
-                                  {...steamCdnImgDefer}
-                                  onError={onDotaSteamAssetImgError}
-                                />
-                                <div className="min-w-0 flex-1">
-                                  <p className="truncate text-xs font-semibold text-skin-ink">
-                                    {hero?.nameCn || hero?.nameEn || heroKey}
-                                  </p>
-                                  <div className="mt-0.5 flex items-center gap-2 text-[11px] text-skin-sub">
-                                    <span>胜率 {row.winRate.toFixed(1)}%</span>
-                                    <span>场次 {row.games}</span>
-                                  </div>
-                                  <div className="mt-1 grid grid-cols-2 gap-1">
-                                    {roleStats.map(({ key, label, stat }) => {
-                                      const isBestRole =
-                                        !!stat &&
-                                        maxRoleWinRate >= 0 &&
-                                        stat.winRate === maxRoleWinRate;
-                                      return (
-                                        <span
-                                          key={`${row.heroId}-${key}`}
-                                          className="rounded border border-slate-500/35 px-1 py-0.5 text-[10px] dark:border-slate-500/45"
-                                        >
-                                          <span className="text-skin-sub">{label} </span>
-                                          <span
-                                            className={
-                                              isBestRole
-                                                ? "font-semibold text-red-600 dark:text-red-400"
-                                                : "text-skin-sub"
-                                            }
-                                          >
-                                            {stat ? `${stat.winRate.toFixed(0)}%(${stat.games})` : "-"}
-                                          </span>
-                                        </span>
-                                      );
-                                    })}
-                                  </div>
-                                </div>
-                              </div>
-                            </Link>
-                          );
-                        })}
-                      </div>
-                    ) : (
-                      <p className="text-xs text-skin-sub">暂无出场 ≥100 局的全英雄总胜率数据。</p>
-                    )}
+                          </div>
+                        </Link>
+                      );
+                    })}
                   </div>
-                </>
-              ) : null}
+                ) : (
+                  <p className="text-xs text-skin-sub">暂无出场 ≥100 局的全英雄总胜率数据。</p>
+                )}
+              </div>
+            </section>
+          ) : null}
+          {homeView === "top" && !mapsLoading && maps ? (
+            <section className="mt-6 rounded-lg border border-skin-line bg-skin-card p-3">
               <MetaTopKillGamesSection
                 replays={replays}
                 maps={maps}
