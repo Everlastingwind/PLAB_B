@@ -1,6 +1,8 @@
 import type { ReactNode } from "react";
+import { useState } from "react";
 import { AppHeader } from "./AppHeader";
 import { HeroSearch } from "./HeroSearch";
+import { cn } from "../lib/cn";
 import type { FeedSelection } from "./FeedModeToggle";
 import { useEntityMaps } from "../hooks/useEntityMaps";
 import {
@@ -24,6 +26,7 @@ export function PageShell({
   children: ReactNode;
 }) {
   const { maps, loading } = useEntityMaps();
+  const [mobileHeroAttrBackdrop, setMobileHeroAttrBackdrop] = useState(false);
   const center =
     centerSearch && maps ? (
       <div className="flex w-full min-w-0 flex-1 basis-0 flex-row items-stretch justify-start gap-2 max-w-full sm:mx-auto sm:max-w-3xl sm:justify-center sm:gap-3">
@@ -32,6 +35,7 @@ export function PageShell({
             maps={maps}
             feedMode={feedMode}
             onFeedModeChange={onFeedModeChange}
+            onMobileHeroAttrBackdropChange={setMobileHeroAttrBackdrop}
           />
         </div>
       </div>
@@ -48,7 +52,15 @@ export function PageShell({
           centerSearch ? <SupportUsHeaderMobileTrigger /> : undefined
         }
       />
-      <div className="relative z-0 min-w-0">{children}</div>
+      <div
+        className={cn(
+          "relative z-0 min-w-0 transition-[filter,opacity] duration-200 ease-out",
+          mobileHeroAttrBackdrop &&
+            "pointer-events-none max-md:blur-[6px] max-md:opacity-[0.82]"
+        )}
+      >
+        {children}
+      </div>
     </div>
   );
 

@@ -103,10 +103,13 @@ export function HeroSearch({
   maps,
   feedMode,
   onFeedModeChange,
+  onMobileHeroAttrBackdropChange,
 }: {
   maps: EntityMapsPayload | null;
   feedMode?: FeedSelection;
   onFeedModeChange?: (m: FeedSelection) => void;
+  /** 手机端展开属性头像网格时通知上层，用于压低 / 模糊下方战绩区 */
+  onMobileHeroAttrBackdropChange?: (active: boolean) => void;
 }) {
   const nav = useNavigate();
   const [open, setOpen] = useState(false);
@@ -217,6 +220,14 @@ export function HeroSearch({
     document.addEventListener("mousedown", onDoc);
     return () => document.removeEventListener("mousedown", onDoc);
   }, []);
+
+  useEffect(() => {
+    const active = Boolean(heroAvatarGridOpen && !mdUp);
+    onMobileHeroAttrBackdropChange?.(active);
+    return () => {
+      onMobileHeroAttrBackdropChange?.(false);
+    };
+  }, [heroAvatarGridOpen, mdUp, onMobileHeroAttrBackdropChange]);
 
   const updateDockTop = useCallback(() => {
     const el = anchorRef.current;
