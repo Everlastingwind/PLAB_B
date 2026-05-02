@@ -37,10 +37,10 @@ const PLAN_B_INDEX_LIGHT_SELECT =
  * 详情页按需列：与列表 PLAN_B_INDEX_SELECT 对齐，并含 unwrap 可能用到的 json 包裹列。
  * 避免 `*` 把表上未来加的审计/冗余大列一并拉下；players 仍是 jsonb，体积主要在此。
  * 若库表缺某列，下方会回退 `select('*')`。
+ * 不含独立列 picks_bans：多数库未建该列；pick/ban 已在 slim / players 等 json 内。
  */
 const PLAN_B_DETAIL_SELECT = [
   ...PLAN_B_INDEX_SELECT.split(",").map((s) => s.trim()),
-  "picks_bans",
   "data",
   "payload",
   "slim",
@@ -80,6 +80,64 @@ export async function fetchPlanBSlimPayload(
     row = await fetchRow(String(matchId));
   }
   return unwrapPlanBRow(row);
+}
+
+const PLAN_B_DETAIL_CHUNK = 40;
+
+/**
+ * 按多 match_id 批量取 slim（英雄/选手列表页用），显著减少 Supabase 往返与 OPTIONS 预检次数。
+ */
+export async function fetchPlanBSlimPayloadBatch(
+  matchIds: readonly number[]
+): Promise<Map<number, unknown>> {
+  const out = new Map<number, unknown>();
+  const client = supabase;
+  if (!client) return out;
+
+  const ids = [
+    ...new Set(
+      matchIds.filter((id) => Number.isFinite(id) && (id as number) > 0)
+    ),
+  ] as number[];
+  if (ids.length === 0) return out;
+
+  const runChunk = async (chunk: number[], sel: string) =>
+    client.from("plan_b").select(sel).in("match_id", chunk);
+
+  for (let i = 0; i < ids.length; i += PLAN_B_DETAIL_CHUNK) {
+    const chunk = ids.slice(i, i + PLAN_B_DETAIL_CHUNK);
+    let { data, error } = await runChunk(chunk, PLAN_B_DETAIL_SELECT);
+    if (error) {
+      const msg = error.message || "";
+      if (/column|42703|does not exist|schema cache/i.test(msg)) {
+        ({ data, error } = await runChunk(chunk, "*"));
+      }
+    }
+    if (error) {
+      console.warn("[plan_b] batch 查询失败，逐条回退:", error.message?.slice(0, 200));
+      for (const id of chunk) {
+        try {
+          const one = await fetchPlanBSlimPayload(id);
+          const u = one as unknown;
+          if (u) out.set(id, u);
+        } catch {
+          /* skip */
+        }
+      }
+      continue;
+    }
+    const rows = Array.isArray(data) ? data : [];
+    for (const row of rows) {
+      if (!row || typeof row !== "object") continue;
+      const r = row as Record<string, unknown>;
+      const mid = Number(r.match_id);
+      if (!Number.isFinite(mid) || mid <= 0) continue;
+      const unwrapped = unwrapPlanBRow(row);
+      if (unwrapped) out.set(mid, unwrapped);
+    }
+  }
+
+  return out;
 }
 
 /** 两阶段：分页轻列取 id，再 in(match_id) 拉完整行，避免「排序 + 大 json」同一条 SQL 爆超时 */

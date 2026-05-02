@@ -1,7 +1,11 @@
 import type { SlimMatchJson, SlimPlayer } from "../types/slimMatch";
 import { purifyMatchJsonForSlim } from "./purifyRawMatchJson";
-import { fetchPlanBSlimPayload } from "./supabasePlanB";
+import {
+  fetchPlanBSlimPayload,
+  fetchPlanBSlimPayloadBatch,
+} from "./supabasePlanB";
 import { staticDataSearchParam } from "./staticDataVersion";
+import { forEachConcurrent } from "./fetchConcurrent";
 
 const DETAIL_CACHE_TTL_OK_MS = 5 * 60 * 1000;
 const DETAIL_CACHE_TTL_EMPTY_MS = 30 * 1000;
@@ -52,6 +56,104 @@ function playerRowLooksUsable(p: SlimPlayer): boolean {
   );
 }
 
+/** 生产环境可对带 `?v=` 的静态文件使用默认缓存，减少重复拉取；开发保留 no-store。 */
+const LOCAL_MATCH_JSON_CACHE: RequestCache = import.meta.env.DEV
+  ? "no-store"
+  : "default";
+
+async function tryFetchLocalSlimMatchJson(
+  matchId: number
+): Promise<SlimMatchJson | null> {
+  const q = staticDataSearchParam();
+  try {
+    const res = await fetch(`/data/matches/${matchId}.json${q}`, {
+      cache: LOCAL_MATCH_JSON_CACHE,
+    });
+    if (!res.ok) return null;
+    const text = await res.text();
+    const head = text.trimStart();
+    if (head.startsWith("<") || head.startsWith("<!")) {
+      return null;
+    }
+    try {
+      const parsed: unknown = JSON.parse(text);
+      const cand = purifyMatchJsonForSlim(parsed) as SlimMatchJson;
+      return slimMatchDetailLooksUsable(cand) ? cand : null;
+    } catch {
+      return null;
+    }
+  } catch {
+    return null;
+  }
+}
+
+function putDetailCache(matchId: number, value: SlimMatchJson | null): void {
+  detailCache.set(matchId, {
+    value,
+    expiresAt:
+      Date.now() +
+      (value ? DETAIL_CACHE_TTL_OK_MS : DETAIL_CACHE_TTL_EMPTY_MS),
+  });
+}
+
+/**
+ * 列表页一次拉多局：先读缓存/进行中的单局 Promise，再并行试本地 JSON，最后一批查 Supabase。
+ */
+export async function loadSlimMatchJsonForDetails(
+  matchIds: readonly number[]
+): Promise<Record<number, SlimMatchJson | null>> {
+  const out: Record<number, SlimMatchJson | null> = {};
+  const now = Date.now();
+  const unique = [
+    ...new Set(
+      matchIds.filter((id) => Number.isFinite(id) && (id as number) > 0)
+    ),
+  ] as number[];
+  if (unique.length === 0) return out;
+
+  const work: number[] = [];
+  for (const id of unique) {
+    const hit = detailCache.get(id);
+    if (hit && hit.expiresAt > now) {
+      out[id] = hit.value;
+      continue;
+    }
+    const inflight = detailInflight.get(id);
+    if (inflight) {
+      out[id] = await inflight;
+      continue;
+    }
+    work.push(id);
+  }
+  if (work.length === 0) return out;
+
+  const needCloud: number[] = [];
+  await forEachConcurrent(work, 12, async (mid) => {
+    const local = await tryFetchLocalSlimMatchJson(mid);
+    if (local) {
+      putDetailCache(mid, local);
+      out[mid] = local;
+    } else {
+      needCloud.push(mid);
+    }
+  });
+
+  if (needCloud.length === 0) return out;
+
+  const rawMap = await fetchPlanBSlimPayloadBatch(needCloud);
+  for (const mid of needCloud) {
+    const raw = rawMap.get(mid);
+    let cand: SlimMatchJson | null = null;
+    if (raw) {
+      const p = purifyMatchJsonForSlim(raw) as SlimMatchJson;
+      cand = slimMatchDetailLooksUsable(p) ? p : null;
+    }
+    putDetailCache(mid, cand);
+    out[mid] = cand;
+  }
+  return out;
+}
+
 /**
  * 优先读本地 `/data/matches/{id}.json`；若缺失、非 JSON 或内容不足以渲染明细，则回退 Supabase plan_b。
  */
@@ -68,30 +170,7 @@ export async function loadSlimMatchJsonForDetail(
   if (inflight) return inflight;
 
   const task = (async (): Promise<SlimMatchJson | null> => {
-  const q = staticDataSearchParam();
-  let local: SlimMatchJson | null = null;
-  try {
-    const res = await fetch(`/data/matches/${matchId}.json${q}`, {
-      cache: "no-store",
-    });
-    if (res.ok) {
-      const text = await res.text();
-      const head = text.trimStart();
-      if (head.startsWith("<") || head.startsWith("<!")) {
-        /* 常见：dev 服务器对未知路径回 HTML（仍 200） */
-      } else {
-        try {
-          const parsed: unknown = JSON.parse(text);
-          const cand = purifyMatchJsonForSlim(parsed) as SlimMatchJson;
-          if (slimMatchDetailLooksUsable(cand)) local = cand;
-        } catch {
-          /* 非 JSON */
-        }
-      }
-    }
-  } catch {
-    /* 网络错误 → 走云端 */
-  }
+  const local = await tryFetchLocalSlimMatchJson(matchId);
   if (local) return local;
 
   try {
@@ -107,10 +186,7 @@ export async function loadSlimMatchJsonForDetail(
   detailInflight.set(matchId, task);
   try {
     const value = await task;
-    detailCache.set(matchId, {
-      value,
-      expiresAt: Date.now() + (value ? DETAIL_CACHE_TTL_OK_MS : DETAIL_CACHE_TTL_EMPTY_MS),
-    });
+    putDetailCache(matchId, value);
     return value;
   } finally {
     if (detailInflight.get(matchId) === task) {

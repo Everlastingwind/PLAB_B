@@ -34,14 +34,10 @@ import { TalentTreeBadge } from "../components/TalentTreeBadge";
 import type { TalentPickUi, TalentTreeUi } from "../data/mockMatchPlayers";
 import { SEOMeta } from "../components/SEOMeta";
 import { ViewportMountRow } from "../components/ViewportMountRow";
-import { forEachConcurrent } from "../lib/fetchConcurrent";
-import { loadSlimMatchJsonForDetail } from "../lib/loadSlimMatchJson";
+import { loadSlimMatchJsonForDetails } from "../lib/loadSlimMatchJson";
 import { HeroBuildOverviewCard } from "../components/HeroBuildOverviewCard";
 
-const MATCH_JSON_CONCURRENCY = 6;
-const MATCH_JSON_PREFETCH_CONCURRENCY = 3;
 const DETAIL_FAST_FIRST = 4;
-const DETAIL_BATCH_SIZE = 6;
 
 function toTalentTreeUi(raw: SlimPlayer["talent_tree"]): TalentTreeUi | null {
   if (!raw || !Array.isArray(raw.tiers)) return null;
@@ -340,35 +336,44 @@ export function HeroMatchesPage() {
       .map((r) => r.match_id)
       .filter((mid) => !detailByMatch[mid]);
     if (!need.length) return;
-    (async () => {
+
+    const picksFromBatch = (
+      ids: number[],
+      batch: Record<number, SlimMatchJson | null>
+    ): Record<number, SlimMatchJson> => {
       const updates: Record<number, SlimMatchJson> = {};
-      const consumeOne = async (mid: number) => {
-        try {
-          const j = await loadSlimMatchJsonForDetail(mid);
-          if (!j) return;
-          updates[mid] = j;
-        } catch {
-          // ignore detail fetch errors
-        }
-      };
+      for (const mid of ids) {
+        const j = batch[mid];
+        if (j) updates[mid] = j;
+      }
+      return updates;
+    };
 
+    (async () => {
       const fast = need.slice(0, DETAIL_FAST_FIRST);
-      await forEachConcurrent(fast, MATCH_JSON_CONCURRENCY, consumeOne);
-      if (!cancelled && Object.keys(updates).length) {
-        setDetailByMatch((prev) => ({ ...prev, ...updates }));
-      }
-
-      for (let i = DETAIL_FAST_FIRST; i < need.length; i += DETAIL_BATCH_SIZE) {
-        const batch = need.slice(i, i + DETAIL_BATCH_SIZE);
-        await forEachConcurrent(batch, MATCH_JSON_CONCURRENCY, consumeOne);
-        if (cancelled) return;
-        if (Object.keys(updates).length) {
-          setDetailByMatch((prev) => ({ ...prev, ...updates }));
+      const rest = need.slice(DETAIL_FAST_FIRST);
+      if (fast.length) {
+        try {
+          const first = await loadSlimMatchJsonForDetails(fast);
+          if (cancelled) return;
+          const u = picksFromBatch(fast, first);
+          if (Object.keys(u).length) {
+            setDetailByMatch((prev) => ({ ...prev, ...u }));
+          }
+        } catch {
+          /* ignore */
         }
-        await new Promise((resolve) => window.setTimeout(resolve, 0));
       }
-      if (!cancelled && Object.keys(updates).length) {
-        setDetailByMatch((prev) => ({ ...prev, ...updates }));
+      if (cancelled || !rest.length) return;
+      try {
+        const second = await loadSlimMatchJsonForDetails(rest);
+        if (cancelled) return;
+        const u = picksFromBatch(rest, second);
+        if (Object.keys(u).length) {
+          setDetailByMatch((prev) => ({ ...prev, ...u }));
+        }
+      } catch {
+        /* ignore */
       }
     })();
     return () => {
@@ -389,14 +394,12 @@ export function HeroMatchesPage() {
     if (!needIds.length) return;
 
     void (async () => {
-      await forEachConcurrent(needIds, MATCH_JSON_PREFETCH_CONCURRENCY, async (mid) => {
-        if (cancelled) return;
-        try {
-          await loadSlimMatchJsonForDetail(mid);
-        } catch {
-          // ignore prefetch failures; foreground loading still works
-        }
-      });
+      if (cancelled) return;
+      try {
+        await loadSlimMatchJsonForDetails(needIds);
+      } catch {
+        /* prefetch best-effort */
+      }
     })();
     return () => {
       cancelled = true;

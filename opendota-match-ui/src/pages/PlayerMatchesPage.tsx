@@ -27,10 +27,8 @@ import { TalentTreeBadge } from "../components/TalentTreeBadge";
 import type { TalentPickUi, TalentTreeUi } from "../data/mockMatchPlayers";
 import { SEO } from "../components/SEO";
 import { ViewportMountRow } from "../components/ViewportMountRow";
-import { forEachConcurrent } from "../lib/fetchConcurrent";
-import { loadSlimMatchJsonForDetail } from "../lib/loadSlimMatchJson";
+import { loadSlimMatchJsonForDetails } from "../lib/loadSlimMatchJson";
 
-const MATCH_JSON_CONCURRENCY = 6;
 
 function toTalentTreeUi(raw: SlimPlayer["talent_tree"]): TalentTreeUi | null {
   if (!raw || !Array.isArray(raw.tiers)) return null;
@@ -184,21 +182,23 @@ export function PlayerMatchesPage() {
       .filter((mid) => !detailByMatch[mid]);
     if (!need.length || aid <= 0) return;
     (async () => {
-      const updates: Record<number, SlimPlayer> = {};
-      await forEachConcurrent(need, MATCH_JSON_CONCURRENCY, async (mid) => {
-        try {
-          const j = await loadSlimMatchJsonForDetail(mid);
-          if (!j) return;
+      try {
+        const batch = await loadSlimMatchJsonForDetails(need);
+        if (cancelled) return;
+        const updates: Record<number, SlimPlayer> = {};
+        for (const mid of need) {
+          const j = batch[mid];
+          if (!j) continue;
           const p = (j.players || []).find(
             (x) => Number(x.account_id || 0) === aid
           );
           if (p) updates[mid] = p;
-        } catch {
-          // ignore detail fetch failures
         }
-      });
-      if (!cancelled && Object.keys(updates).length) {
-        setDetailByMatch((prev) => ({ ...prev, ...updates }));
+        if (Object.keys(updates).length) {
+          setDetailByMatch((prev) => ({ ...prev, ...updates }));
+        }
+      } catch {
+        /* ignore detail fetch failures */
       }
     })();
     return () => {
