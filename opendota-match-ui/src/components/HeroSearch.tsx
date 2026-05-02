@@ -19,7 +19,11 @@ import heroPrimaryAttr from "../data/hero_primary_attr.json";
 import { FeedModeToggle, type FeedSelection } from "./FeedModeToggle";
 import { SupportUsHeaderDesktopTrigger } from "./SupportUsButton";
 import { SEEDED_PRO_PLAYERS } from "../data/proPlayers";
+import { useDebouncedValue } from "../hooks/useDebouncedValue";
 import { fetchAllReplaySummariesForSearch } from "../lib/replaysApi";
+
+/** 搜索联想过滤防抖：避免在数万条选手索引上用完整查询串逐键重算 */
+const SEARCH_FILTER_DEBOUNCE_MS = 380;
 
 type HeroRow = HeroMapEntry & { id: string };
 type AttrFilter = "str" | "agi" | "int" | "all";
@@ -99,6 +103,54 @@ function matchesHero(q: string, h: HeroRow): boolean {
   );
 }
 
+function buildSearchRows(
+  maps: EntityMapsPayload,
+  proPlayers: ProPlayerCandidate[],
+  queryRaw: string
+): SearchRow[] {
+  const s = queryRaw.trim();
+  if (!s) return [];
+
+  const heroRows: SearchRow[] = flattenHeroes(maps)
+    .filter((h) => matchesHero(s, h))
+    .map((h) => ({
+      kind: "hero" as const,
+      key: h.key,
+      id: h.id,
+      nameCn: h.nameCn || "",
+      nameEn: h.nameEn || "",
+    }));
+
+  const sq = s.toLowerCase();
+  const playerRows: SearchRow[] = proPlayers
+    .filter((p) => {
+      const idText = String(p.accountId);
+      return (
+        idText.includes(s) ||
+        p.proName.toLowerCase().includes(sq) ||
+        p.proName.includes(s)
+      );
+    })
+    .map((p) => ({
+      kind: "player" as const,
+      accountId: p.accountId,
+      proName: p.proName,
+    }));
+
+  const numeric = /^\d+$/.test(s);
+  const matchRows: SearchRow[] = [];
+  if (numeric) {
+    const mid = Number(s);
+    if (Number.isFinite(mid) && mid > 0) {
+      matchRows.push({ kind: "match", matchId: mid });
+    }
+  }
+  const merged = numeric
+    ? [...matchRows, ...playerRows, ...heroRows]
+    : [...heroRows, ...playerRows];
+  return merged.slice(0, 24);
+}
+
 export function HeroSearch({
   maps,
   feedMode,
@@ -119,10 +171,13 @@ export function HeroSearch({
   const [proPlayers, setProPlayers] = useState<ProPlayerCandidate[]>(
     () => seededProPlayerCandidates()
   );
+  const [proIndexLoading, setProIndexLoading] = useState(false);
   const boxRef = useRef<HTMLDivElement>(null);
   const anchorRef = useRef<HTMLDivElement>(null);
-  /** 避免首页首屏与搜索栏同时各打一遍全量云索引 */
-  const replaySearchIndexStarted = useRef(false);
+  /** 云索引合并成功后置位，失败不置位以便下次打开搜索可重试 */
+  const replayEnhancerCompletedOk = useRef(false);
+  const replayEnhancerInflight = useRef<Promise<void> | null>(null);
+  const debouncedFilterQ = useDebouncedValue(q, SEARCH_FILTER_DEBOUNCE_MS);
   /** Viewport px; used for `position:fixed` dropdowns below md */
   const [dockTopPx, setDockTopPx] = useState(0);
   /** Tailwind `md` breakpoint (768px) and up */
@@ -132,48 +187,8 @@ export function HeroSearch({
 
   const list = useMemo<SearchRow[]>(() => {
     if (!maps) return [];
-    const s = q.trim();
-    if (!s) return [];
-
-    const heroRows: SearchRow[] = flattenHeroes(maps)
-      .filter((h) => matchesHero(s, h))
-      .map((h) => ({
-        kind: "hero",
-        key: h.key,
-        id: h.id,
-        nameCn: h.nameCn || "",
-        nameEn: h.nameEn || "",
-      }));
-
-    const sq = s.toLowerCase();
-    const playerRows: SearchRow[] = proPlayers
-      .filter((p) => {
-        const idText = String(p.accountId);
-        return (
-          idText.includes(s) ||
-          p.proName.toLowerCase().includes(sq) ||
-          p.proName.includes(s)
-        );
-      })
-      .map((p) => ({
-        kind: "player",
-        accountId: p.accountId,
-        proName: p.proName,
-      }));
-
-    const numeric = /^\d+$/.test(s);
-    const matchRows: SearchRow[] = [];
-    if (numeric) {
-      const mid = Number(s);
-      if (Number.isFinite(mid) && mid > 0) {
-        matchRows.push({ kind: "match", matchId: mid });
-      }
-    }
-    const merged = numeric
-      ? [...matchRows, ...playerRows, ...heroRows]
-      : [...heroRows, ...playerRows];
-    return merged.slice(0, 24);
-  }, [maps, proPlayers, q]);
+    return buildSearchRows(maps, proPlayers, debouncedFilterQ);
+  }, [maps, proPlayers, debouncedFilterQ]);
 
   const goHero = useCallback(
     (key: string) => {
@@ -252,40 +267,54 @@ export function HeroSearch({
       window.removeEventListener("resize", run);
       window.removeEventListener("scroll", run, true);
     };
-  }, [updateDockTop, open, heroAvatarGridOpen, q, feedMode]);
+  }, [updateDockTop, open, heroAvatarGridOpen, q, feedMode, proIndexLoading]);
 
   const runReplaySearchIndexEnhancer = useCallback(async () => {
-    if (replaySearchIndexStarted.current) return;
-    replaySearchIndexStarted.current = true;
-    try {
-      const all = await fetchAllReplaySummariesForSearch();
-      const uniq = new Map<number, string>();
-      for (const r of all) {
-        for (const p of r.players ?? []) {
-          const aid = Number(p.account_id ?? 0);
-          if (!Number.isFinite(aid) || aid <= 0) continue;
-          const pro = String(p.pro_name ?? "").trim();
-          const steam = String(p.personaname ?? "").trim();
-          const label = pro || steam;
-          if (!label) continue;
-          const prev = uniq.get(aid);
-          if (!prev) uniq.set(aid, label);
-          else if (pro && !String(prev).includes(pro)) uniq.set(aid, pro);
+    if (replayEnhancerCompletedOk.current) return;
+    if (replayEnhancerInflight.current) return replayEnhancerInflight.current;
+
+    const task = (async () => {
+      setProIndexLoading(true);
+      try {
+        const all = await fetchAllReplaySummariesForSearch();
+        const uniq = new Map<number, string>();
+        for (const r of all) {
+          for (const p of r.players ?? []) {
+            const aid = Number(p.account_id ?? 0);
+            if (!Number.isFinite(aid) || aid <= 0) continue;
+            const pro = String(p.pro_name ?? "").trim();
+            const steam = String(p.personaname ?? "").trim();
+            const label = pro || steam;
+            if (!label) continue;
+            const prev = uniq.get(aid);
+            if (!prev) uniq.set(aid, label);
+            else if (pro && !String(prev).includes(pro)) uniq.set(aid, pro);
+          }
         }
+        for (const p of SEEDED_PRO_PLAYERS) {
+          if (!uniq.has(p.accountId)) uniq.set(p.accountId, p.proName);
+        }
+        setProPlayers(
+          [...uniq.entries()].map(([accountId, proName]) => ({
+            accountId,
+            proName,
+          }))
+        );
+        replayEnhancerCompletedOk.current = true;
+      } catch {
+        // 云索引失败时仍保留内置职业选手；不标记完成，便于用户稍后再次打开搜索重试
+        setProPlayers(seededProPlayerCandidates());
+      } finally {
+        setProIndexLoading(false);
       }
-      for (const p of SEEDED_PRO_PLAYERS) {
-        if (!uniq.has(p.accountId)) uniq.set(p.accountId, p.proName);
+    })();
+
+    replayEnhancerInflight.current = task.finally(() => {
+      if (replayEnhancerInflight.current === task) {
+        replayEnhancerInflight.current = null;
       }
-      setProPlayers(
-        [...uniq.entries()].map(([accountId, proName]) => ({
-          accountId,
-          proName,
-        }))
-      );
-    } catch {
-      // 云索引失败时仍保留内置职业选手，避免搜索结果为空
-      setProPlayers(seededProPlayerCandidates());
-    }
+    });
+    return task;
   }, []);
 
   /** 用户打开下拉时再拉，避免首页首屏与搜索索引并发争抢带宽/CPU。 */
@@ -329,16 +358,19 @@ export function HeroSearch({
               }}
               onFocus={() => setOpen(q.trim().length > 0)}
               onKeyDown={(e) => {
-                if (e.key === "Enter" && list[0]) {
-                  e.preventDefault();
-                  if (list[0].kind === "hero") goHero(list[0].key);
-                  else if (list[0].kind === "player") goPlayer(list[0].accountId);
-                  else goMatch(list[0].matchId);
-                }
+                if (e.key !== "Enter" || !maps) return;
+                const enterList = buildSearchRows(maps, proPlayers, q);
+                const first = enterList[0];
+                if (!first) return;
+                e.preventDefault();
+                if (first.kind === "hero") goHero(first.key);
+                else if (first.kind === "player") goPlayer(first.accountId);
+                else goMatch(first.matchId);
               }}
               placeholder="搜索英雄/职业选手/比赛编号…"
               className="min-w-0 flex-1 bg-transparent text-sm text-skin-ink placeholder:text-slate-400 focus:outline-none dark:text-zinc-100 dark:placeholder:text-zinc-500"
               autoComplete="off"
+              aria-busy={proIndexLoading}
             />
           </div>
           {feedMode && onFeedModeChange ? (
@@ -346,6 +378,11 @@ export function HeroSearch({
           ) : null}
           <SupportUsHeaderDesktopTrigger />
         </div>
+        {open && proIndexLoading ? (
+          <p className="mt-1.5 px-1 text-xs text-slate-500 dark:text-zinc-500">
+            正在合并录像索引中的选手（首次可能需数十秒）…
+          </p>
+        ) : null}
         {open && list.length > 0 ? (
           <ul
             style={
