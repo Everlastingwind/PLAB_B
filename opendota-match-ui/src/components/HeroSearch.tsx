@@ -171,7 +171,6 @@ export function HeroSearch({
   const [proPlayers, setProPlayers] = useState<ProPlayerCandidate[]>(
     () => seededProPlayerCandidates()
   );
-  const [proIndexLoading, setProIndexLoading] = useState(false);
   const boxRef = useRef<HTMLDivElement>(null);
   const anchorRef = useRef<HTMLDivElement>(null);
   /** 云索引合并成功后置位，失败不置位以便下次打开搜索可重试 */
@@ -267,14 +266,13 @@ export function HeroSearch({
       window.removeEventListener("resize", run);
       window.removeEventListener("scroll", run, true);
     };
-  }, [updateDockTop, open, heroAvatarGridOpen, q, feedMode, proIndexLoading]);
+  }, [updateDockTop, open, heroAvatarGridOpen, q, feedMode]);
 
   const runReplaySearchIndexEnhancer = useCallback(async () => {
     if (replayEnhancerCompletedOk.current) return;
     if (replayEnhancerInflight.current) return replayEnhancerInflight.current;
 
     const task = (async () => {
-      setProIndexLoading(true);
       try {
         const all = await fetchAllReplaySummariesForSearch();
         const uniq = new Map<number, string>();
@@ -304,8 +302,6 @@ export function HeroSearch({
       } catch {
         // 云索引失败时仍保留内置职业选手；不标记完成，便于用户稍后再次打开搜索重试
         setProPlayers(seededProPlayerCandidates());
-      } finally {
-        setProIndexLoading(false);
       }
     })();
 
@@ -370,7 +366,6 @@ export function HeroSearch({
               placeholder="搜索英雄/职业选手/比赛编号…"
               className="min-w-0 flex-1 bg-transparent text-sm text-skin-ink placeholder:text-slate-400 focus:outline-none dark:text-zinc-100 dark:placeholder:text-zinc-500"
               autoComplete="off"
-              aria-busy={proIndexLoading}
             />
           </div>
           {feedMode && onFeedModeChange ? (
@@ -378,11 +373,6 @@ export function HeroSearch({
           ) : null}
           <SupportUsHeaderDesktopTrigger />
         </div>
-        {open && proIndexLoading ? (
-          <p className="mt-1.5 px-1 text-xs text-slate-500 dark:text-zinc-500">
-            正在合并录像索引中的选手（首次可能需数十秒）…
-          </p>
-        ) : null}
         {open && list.length > 0 ? (
           <ul
             style={
