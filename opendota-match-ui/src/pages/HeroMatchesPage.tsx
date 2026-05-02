@@ -1,11 +1,12 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { useParams, Link, useNavigate } from "react-router-dom";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useParams, Link, useNavigate, useSearchParams } from "react-router-dom";
 import { PageShell } from "../components/PageShell";
 import type { FeedSelection } from "../components/FeedModeToggle";
 import {
   PAGE_SIZE,
   fetchReplaysForFeedSelection,
   filterByHeroKey,
+  filterReplaysByTeammateOpponentHero,
   heroKeyFromId,
 } from "../lib/replaysApi";
 import type { ReplaySummary } from "../types/replaysIndex";
@@ -139,6 +140,7 @@ function mergeTalentTreeBySkillBuild(
 export function HeroMatchesPage() {
   const { heroKey = "" } = useParams<{ heroKey: string }>();
   const nav = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const decoded = decodeURIComponent(heroKey);
   const { maps, loading: mapsLoading } = useEntityMaps();
   const [feed, setFeed] = useState<FeedSelection>({ pub: true, pro: false });
@@ -150,10 +152,72 @@ export function HeroMatchesPage() {
   );
   const [page, setPage] = useState(1);
 
+  const withHeroIdParam = useMemo(() => {
+    const raw = searchParams.get("with_hero_id");
+    const n = raw ? parseInt(raw, 10) : NaN;
+    return Number.isFinite(n) && n > 0 ? n : null;
+  }, [searchParams]);
+
+  const vsHeroIdParam = useMemo(() => {
+    const raw = searchParams.get("vs_hero_id");
+    const n = raw ? parseInt(raw, 10) : NaN;
+    return Number.isFinite(n) && n > 0 ? n : null;
+  }, [searchParams]);
+
+  const setWithHeroIdParam = useCallback(
+    (id: number | null) => {
+      setSearchParams(
+        (prev) => {
+          const next = new URLSearchParams(prev);
+          if (id != null && id > 0) next.set("with_hero_id", String(id));
+          else next.delete("with_hero_id");
+          return next;
+        },
+        { replace: true }
+      );
+    },
+    [setSearchParams]
+  );
+
+  const setVsHeroIdParam = useCallback(
+    (id: number | null) => {
+      setSearchParams(
+        (prev) => {
+          const next = new URLSearchParams(prev);
+          if (id != null && id > 0) next.set("vs_hero_id", String(id));
+          else next.delete("vs_hero_id");
+          return next;
+        },
+        { replace: true }
+      );
+    },
+    [setSearchParams]
+  );
+
+  const decodedNavRef = useRef<string | null>(null);
+  useEffect(() => {
+    if (decodedNavRef.current !== null && decodedNavRef.current !== decoded) {
+      setSearchParams(
+        (prev) => {
+          const next = new URLSearchParams(prev);
+          next.delete("with_hero_id");
+          next.delete("vs_hero_id");
+          return next;
+        },
+        { replace: true }
+      );
+    }
+    decodedNavRef.current = decoded;
+  }, [decoded, setSearchParams]);
+
   useEffect(() => {
     setPage(1);
     setRoleFilter("all");
   }, [decoded, feed]);
+
+  useEffect(() => {
+    setPage(1);
+  }, [withHeroIdParam, vsHeroIdParam]);
 
   useEffect(() => {
     if (!maps) return;
@@ -217,18 +281,26 @@ export function HeroMatchesPage() {
     []
   );
 
+  const replaysSynergy = useMemo(() => {
+    if (!maps) return [];
+    return filterReplaysByTeammateOpponentHero(replays, maps, decoded, {
+      withHeroId: withHeroIdParam,
+      vsHeroId: vsHeroIdParam,
+    });
+  }, [replays, maps, decoded, withHeroIdParam, vsHeroIdParam]);
+
   const filteredReplays = useMemo(() => {
-    if (roleFilter === "all") return replays;
-    return replays.filter((r) => replayRole(r) === roleFilter);
-  }, [replays, replayRole, roleFilter]);
+    if (roleFilter === "all") return replaysSynergy;
+    return replaysSynergy.filter((r) => replayRole(r) === roleFilter);
+  }, [replaysSynergy, replayRole, roleFilter]);
 
   const overviewReplays = useMemo(() => {
-    if (roleFilter === "all") return replays;
-    return replays.filter((r) => {
+    if (roleFilter === "all") return replaysSynergy;
+    return replaysSynergy.filter((r) => {
       const rr = replayRole(r);
       return rr === roleFilter || rr === "unknown";
     });
-  }, [replays, replayRole, roleFilter]);
+  }, [replaysSynergy, replayRole, roleFilter]);
 
   const roleCounts = useMemo(() => {
     const out: Record<string, number> = {
@@ -239,12 +311,12 @@ export function HeroMatchesPage() {
       "support(5)": 0,
       unknown: 0,
     };
-    for (const r of replays) {
+    for (const r of replaysSynergy) {
       const rr = replayRole(r);
       if (rr in out) out[rr] += 1;
     }
     return out;
-  }, [replays, replayRole]);
+  }, [replaysSynergy, replayRole]);
 
   const totalPages = useMemo(
     () => Math.max(1, Math.ceil(filteredReplays.length / PAGE_SIZE)),
@@ -365,7 +437,7 @@ export function HeroMatchesPage() {
                     : "border-slate-500/35 bg-slate-200/40 text-slate-700 hover:bg-slate-300/45 dark:border-slate-500/45 dark:bg-slate-700/40 dark:text-slate-200 dark:hover:bg-slate-700/60"
                 )}
               >
-                all ({replays.length})
+                all ({replaysSynergy.length})
               </button>
               {roleOptions.map((role) => (
                 <button
@@ -392,6 +464,10 @@ export function HeroMatchesPage() {
               replays={overviewReplays}
               maps={maps}
               enabled={!feedListLoading && replays.length > 0}
+              withHeroId={withHeroIdParam}
+              vsHeroId={vsHeroIdParam}
+              onWithHeroChange={setWithHeroIdParam}
+              onVsHeroChange={setVsHeroIdParam}
             />
           ) : null}
           {!mapsLoading && maps ? (
@@ -401,7 +477,10 @@ export function HeroMatchesPage() {
               <p className="text-sm text-skin-sub">
                 {replays.length === 0
                   ? "暂无该英雄的录像记录。"
-                  : `暂无该英雄在 ${roleLabel(roleFilter)} 位置的对局。`}
+                  : replaysSynergy.length === 0 &&
+                      (withHeroIdParam != null || vsHeroIdParam != null)
+                    ? "暂无同时满足「队友 / 对手」英雄条件的录像，请尝试清除组合筛选或换英雄。"
+                    : `暂无该英雄在 ${roleLabel(roleFilter)} 位置的对局。`}
               </p>
             ) : (
               <>

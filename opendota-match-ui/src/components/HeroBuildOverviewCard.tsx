@@ -11,6 +11,7 @@ import {
 } from "../data/mockMatchPlayers";
 import { loadSlimMatchJsonForDetail } from "../lib/loadSlimMatchJson";
 import { forEachConcurrent } from "../lib/fetchConcurrent";
+import { HeroPickerPopover } from "./HeroPickerPopover";
 
 type Props = {
   heroId: number;
@@ -19,6 +20,11 @@ type Props = {
   replays: ReplaySummary[];
   maps: EntityMapsPayload;
   enabled?: boolean;
+  /** URL ?with_hero_id / ?vs_hero_id 联动：组合筛选队友 / 对手 */
+  withHeroId?: number | null;
+  vsHeroId?: number | null;
+  onWithHeroChange?: (heroId: number | null) => void;
+  onVsHeroChange?: (heroId: number | null) => void;
 };
 
 type OverviewData = {
@@ -152,7 +158,18 @@ function buildOverviewData(acc: OverviewAccum): OverviewData {
 }
 
 export function HeroBuildOverviewCard(props: Props) {
-  const { heroId, heroKey, heroName, replays, maps, enabled = true } = props;
+  const {
+    heroId,
+    heroKey,
+    heroName,
+    replays,
+    maps,
+    enabled = true,
+    withHeroId = null,
+    vsHeroId = null,
+    onWithHeroChange,
+    onVsHeroChange,
+  } = props;
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [data, setData] = useState<OverviewData | null>(null);
@@ -456,6 +473,31 @@ export function HeroBuildOverviewCard(props: Props) {
                 })}
               </div>
             </div>
+            {onWithHeroChange && onVsHeroChange ? (
+              <div className="rounded border border-skin-line p-3">
+                <p className="mb-2 text-xs font-semibold text-skin-sub">组合筛选</p>
+                <div className="space-y-2">
+                  <div>
+                    <p className="mb-1 text-[11px] text-skin-sub">搭配队友</p>
+                    <HeroPickerPopover
+                      mode="teammate"
+                      maps={maps}
+                      value={withHeroId}
+                      onChange={onWithHeroChange}
+                    />
+                  </div>
+                  <div>
+                    <p className="mb-1 text-[11px] text-skin-sub">对抗对手</p>
+                    <HeroPickerPopover
+                      mode="opponent"
+                      maps={maps}
+                      value={vsHeroId}
+                      onChange={onVsHeroChange}
+                    />
+                  </div>
+                </div>
+              </div>
+            ) : null}
           </aside>
         </div>
       ) : null}

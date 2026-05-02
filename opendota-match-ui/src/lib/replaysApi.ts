@@ -511,6 +511,58 @@ export function filterByHeroKey(
   );
 }
 
+/**
+ * 在「已包含本页英雄」的录像集合上，按队友 / 对手英雄再筛一层。
+ * - withHeroId：同队存在另一名使用该 hero_id 的玩家（不含自己所在槽位）。
+ * - vsHeroId：敌队存在使用该 hero_id 的玩家。
+ */
+export function filterReplaysByTeammateOpponentHero(
+  replays: ReplaySummary[],
+  maps: EntityMapsPayload,
+  pageHeroKey: string,
+  opts: { withHeroId?: number | null; vsHeroId?: number | null }
+): ReplaySummary[] {
+  const withId =
+    opts.withHeroId != null && opts.withHeroId > 0 ? opts.withHeroId : null;
+  const vsId =
+    opts.vsHeroId != null && opts.vsHeroId > 0 ? opts.vsHeroId : null;
+  if (!withId && !vsId) return replays;
+
+  const k = pageHeroKey.toLowerCase();
+
+  return replays.filter((r) => {
+    const players = r.players ?? [];
+    const self = players.find((p) => {
+      const e = maps.heroes[String(p.hero_id)];
+      return e?.key?.toLowerCase() === k;
+    });
+    if (!self) return false;
+
+    const selfRadiant = Boolean(self.is_radiant);
+    const selfSlot = self.player_slot;
+
+    if (withId) {
+      const hasMate = players.some(
+        (p) =>
+          p.hero_id === withId &&
+          Boolean(p.is_radiant) === selfRadiant &&
+          p.player_slot !== selfSlot
+      );
+      if (!hasMate) return false;
+    }
+
+    if (vsId) {
+      const hasOpp = players.some(
+        (p) =>
+          p.hero_id === vsId && Boolean(p.is_radiant) !== selfRadiant
+      );
+      if (!hasOpp) return false;
+    }
+
+    return true;
+  });
+}
+
 export function filterByAccountId(
   replays: ReplaySummary[],
   accountId: number
