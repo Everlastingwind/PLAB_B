@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useSearchParams } from "react-router-dom";
 import { PageShell } from "../components/PageShell";
 import type { FeedSelection } from "../components/FeedModeToggle";
 import {
@@ -67,6 +67,8 @@ function toTalentPicksUi(raw: SlimPlayer["talent_picks"]): TalentPickUi[] {
 
 export function PlayerMatchesPage() {
   const { accountId = "0" } = useParams<{ accountId: string }>();
+  const [searchParams] = useSearchParams();
+  const heroFilterKey = (searchParams.get("hero") || "").trim();
   const aid = Number(accountId) || 0;
   const { maps, loading: mapsLoading } = useEntityMaps();
   const [feed, setFeed] = useState<FeedSelection>({ pub: true, pro: false });
@@ -82,6 +84,10 @@ export function PlayerMatchesPage() {
     setPage(1);
     setRoleFilter("all");
   }, [aid, feed]);
+
+  useEffect(() => {
+    setPage(1);
+  }, [heroFilterKey]);
 
   useEffect(() => {
     let cancelled = false;
@@ -140,10 +146,19 @@ export function PlayerMatchesPage() {
     []
   );
 
-  const filteredReplays = useMemo(() => {
+  const roleFilteredReplays = useMemo(() => {
     if (roleFilter === "all") return replays;
     return replays.filter((r) => replayRole(r) === roleFilter);
   }, [replays, replayRole, roleFilter]);
+
+  const filteredReplays = useMemo(() => {
+    if (!heroFilterKey || !maps) return roleFilteredReplays;
+    return roleFilteredReplays.filter((r) => {
+      const p = r.players.find((x) => Number(x.account_id || 0) === aid);
+      if (!p) return false;
+      return heroKeyFromId(p.hero_id, maps) === heroFilterKey;
+    });
+  }, [roleFilteredReplays, heroFilterKey, maps, aid]);
 
   const roleCounts = useMemo(() => {
     const out: Record<string, number> = {
@@ -303,17 +318,28 @@ export function PlayerMatchesPage() {
 
           {!mapsLoading && maps && heroSummaries.length > 0 ? (
             <section className="mb-8">
-              <h2 className="mb-3 text-xs font-bold uppercase tracking-[0.15em] text-skin-sub">
-                使用英雄
+              <h2 className="mb-3 flex flex-wrap items-baseline gap-x-2 gap-y-1 text-xs font-bold uppercase tracking-[0.15em] text-skin-sub">
+                <span>使用英雄</span>
+                {heroFilterKey ? (
+                  <Link
+                    to={`/player/${encodeURIComponent(accountId)}`}
+                    className="font-sans text-[11px] font-medium normal-case tracking-normal text-amber-700 hover:underline dark:text-amber-400"
+                  >
+                    显示全部对局
+                  </Link>
+                ) : null}
               </h2>
               <div className="flex flex-wrap gap-2">
                 {heroSummaries.map((h) => (
                   <Link
                     key={h.hero_id}
-                    to={`/hero/${encodeURIComponent(h.key)}`}
+                    to={`/player/${encodeURIComponent(accountId)}?hero=${encodeURIComponent(h.key)}`}
                     className={cn(
-                      "flex items-center gap-2 rounded-md border border-skin-line px-2 py-1.5 text-xs text-skin-ink transition hover:border-amber-500/40 hover:text-amber-700 dark:border-slate-700 dark:text-slate-300 dark:hover:text-amber-400",
-                      MECHA_INSET
+                      "flex items-center gap-2 rounded-md border px-2 py-1.5 text-xs text-skin-ink transition hover:border-amber-500/40 hover:text-amber-700 dark:border-slate-700 dark:text-slate-300 dark:hover:text-amber-400",
+                      MECHA_INSET,
+                      heroFilterKey === h.key
+                        ? "border-amber-500/50 bg-amber-100/60 text-amber-900 dark:border-amber-500/40 dark:bg-amber-500/10 dark:text-amber-200"
+                        : "border-skin-line"
                     )}
                   >
                     <span className={cn("rounded p-0.5", MECHA_RAISED)}>
@@ -349,7 +375,9 @@ export function PlayerMatchesPage() {
               <p className="text-sm text-skin-sub">
                 {replays.length === 0
                   ? "暂无该账号的录像记录。"
-                  : `暂无该选手在 ${roleLabel(roleFilter)} 位置的对局。`}
+                  : heroFilterKey
+                    ? "暂无该选手使用此英雄的对局（在当前索引与位置筛选下）。"
+                    : `暂无该选手在 ${roleLabel(roleFilter)} 位置的对局。`}
               </p>
             ) : (
               <>
