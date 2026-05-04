@@ -128,7 +128,7 @@ export async function loadSlimMatchJsonForDetails(
   if (work.length === 0) return out;
 
   const needCloud: number[] = [];
-  await forEachConcurrent(work, 12, async (mid) => {
+  await forEachConcurrent(work, 20, async (mid) => {
     const local = await tryFetchLocalSlimMatchJson(mid);
     if (local) {
       putDetailCache(mid, local);

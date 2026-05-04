@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "node scripts/generate-sitemap.js && tsc -b && vite build",
     "preview": "vite preview",
-    "fetch-heroes-webp": "node scripts/fetch-hero-webp.mjs"
+    "fetch-heroes-webp": "node scripts/fetch-hero-webp.mjs",
+    "regen-item-craftable-keys": "node scripts/regen-item-craftable-keys.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.103.0",

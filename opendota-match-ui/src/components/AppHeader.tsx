@@ -2,13 +2,14 @@ import { Link } from "react-router-dom";
 import { useEffect, useState, type ReactNode } from "react";
 import { Moon, Sun } from "lucide-react";
 import { cn } from "../lib/cn";
+import { SupportUsHeaderDesktopTrigger } from "./SupportUsButton";
 
 interface AppHeaderProps {
   /** 中间区域：主页放英雄搜索 */
   center?: ReactNode;
   /** 右侧：比赛页放编号等 */
   trailing?: ReactNode;
-  /** 手机端：LOGO 下方的「支持一下」触发器（由 PageShell 在 centerSearch 时传入） */
+  /** 手机端：LOGO 下方的「支持一下」触发器（`PageShell` 始终传入） */
   supportMobileSlot?: ReactNode;
 }
 
@@ -73,6 +74,7 @@ export function AppHeader({ center, trailing, supportMobileSlot }: AppHeaderProp
           {center}
         </div>
         <div className="flex shrink-0 items-center gap-2">
+          {!center ? <SupportUsHeaderDesktopTrigger /> : null}
           {trailing}
           <button
             type="button"

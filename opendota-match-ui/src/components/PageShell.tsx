@@ -48,9 +48,7 @@ export function PageShell({
       <AppHeader
         center={center}
         trailing={trailing}
-        supportMobileSlot={
-          centerSearch ? <SupportUsHeaderMobileTrigger /> : undefined
-        }
+        supportMobileSlot={<SupportUsHeaderMobileTrigger />}
       />
       <div
         className={cn(
@@ -64,5 +62,5 @@ export function PageShell({
     </div>
   );
 
-  return centerSearch ? <SupportUsProvider>{shell}</SupportUsProvider> : shell;
+  return <SupportUsProvider>{shell}</SupportUsProvider>;
 }

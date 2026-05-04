@@ -227,7 +227,7 @@ function SupportUsModalDialog({
   );
 }
 
-/** 包住带 centerSearch 的页头，使桌面/手机两个触发器共用同一弹窗 */
+/** 包住 `PageShell` 内整页，使各页顶栏「支持一下」触发器共用同一弹窗 */
 export function SupportUsProvider({ children }: { children: ReactNode }) {
   const [open, setOpen] = useState(false);
   const close = useCallback(() => setOpen(false), []);

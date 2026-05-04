@@ -13,6 +13,7 @@ import { fetchPlanBAggregateMatchStats } from "../lib/supabasePlanB";
 import type { ReplaySummary } from "../types/replaysIndex";
 import { useEntityMaps } from "../hooks/useEntityMaps";
 import { SEOMeta } from "../components/SEOMeta";
+import { MetaGlobalItemStatsSection } from "../components/MetaGlobalItemStatsSection";
 import { MetaTopKillGamesSection } from "../components/MetaTopKillGamesSection";
 import {
   HeroWinrateMetaTable,
@@ -45,7 +46,9 @@ export function HomePage() {
   const [feedListLoading, setFeedListLoading] = useState(true);
   const [idxErr, setIdxErr] = useState<string | null>(null);
   const [roleTab, setRoleTab] = useState<"carry" | "mid" | "offlane" | "support(4)" | "support(5)">("carry");
-  const [homeView, setHomeView] = useState<"matches" | "meta" | "top">("matches");
+  const [homeView, setHomeView] = useState<"matches" | "meta" | "items" | "top">(
+    "matches"
+  );
   const [cloudAgg, setCloudAgg] = useState<{
     decidedMatches: number;
     radiantWins: number;
@@ -529,6 +532,16 @@ export function HomePage() {
                 </button>
                 <button
                   type="button"
+                  onClick={() => setHomeView("items")}
+                  className={`rounded border px-3 py-1.5 text-sm font-semibold ${homeView === "items"
+                    ? "border-amber-500/50 bg-amber-100/70 text-amber-700 dark:border-amber-500/45 dark:bg-amber-500/15 dark:text-amber-300"
+                    : "border-slate-500/35 bg-slate-200/35 text-skin-sub hover:bg-slate-300/35 dark:border-slate-500/45 dark:bg-slate-700/35 dark:hover:bg-slate-700/55"
+                    }`}
+                >
+                  Items
+                </button>
+                <button
+                  type="button"
                   onClick={() => setHomeView("top")}
                   className={`rounded border px-3 py-1.5 text-sm font-semibold ${homeView === "top"
                     ? "border-amber-500/50 bg-amber-100/70 text-amber-700 dark:border-amber-500/45 dark:bg-amber-500/15 dark:text-amber-300"
@@ -768,6 +781,9 @@ export function HomePage() {
                 )}
               </div>
             </section>
+          ) : null}
+          {homeView === "items" && !mapsLoading && maps ? (
+            <MetaGlobalItemStatsSection replays={replays} maps={maps} />
           ) : null}
           {homeView === "top" && !mapsLoading && maps ? (
             <section className="mt-6 rounded-lg border border-skin-line bg-skin-card p-3">
