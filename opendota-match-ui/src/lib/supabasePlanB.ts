@@ -346,3 +346,112 @@ export async function fetchPlanBReplayIndexPage(
   }));
   return { rows: merged, totalRows, error: null };
 }
+
+const PLAN_B_STATS_PAGE_SIZE = 500;
+const PLAN_B_STATS_MAX_PAGES = 400;
+
+function parsePlanBDurationSec(raw: unknown): number | null {
+  const n = Number(raw ?? 0);
+  if (!Number.isFinite(n) || n < 0) return null;
+  return Math.floor(n);
+}
+
+function parsePlanBRadiantWin(raw: unknown): boolean | null {
+  if (raw === null || raw === undefined) return null;
+  if (typeof raw === "boolean") return raw;
+  if (typeof raw === "number") return raw !== 0;
+  const s = String(raw).trim().toLowerCase();
+  if (s === "true" || s === "t" || s === "1") return true;
+  if (s === "false" || s === "f" || s === "0") return false;
+  return null;
+}
+
+/**
+ * 全表拉取轻列并聚合：天辉/夜魇胜场与平均时长（秒）。
+ * 分页按 match_id 排序，避免超时；仅依赖 plan_b.radiant_win / duration。
+ */
+export async function fetchPlanBAggregateMatchStats(): Promise<{
+  /** 有明确胜负（radiant_win 非空）的场数 */
+  decidedMatches: number;
+  radiantWins: number;
+  direWins: number;
+  /** 含有效 duration 的场数 */
+  durationSamples: number;
+  avgDurationSec: number;
+  error: string | null;
+}> {
+  const client = supabase;
+  if (!client) {
+    return {
+      decidedMatches: 0,
+      radiantWins: 0,
+      direWins: 0,
+      durationSamples: 0,
+      avgDurationSec: 0,
+      error: "未配置 Supabase",
+    };
+  }
+
+  let radiantWins = 0;
+  let direWins = 0;
+  let decidedMatches = 0;
+  let durationSum = 0;
+  let durationSamples = 0;
+
+  for (let page = 0; page < PLAN_B_STATS_MAX_PAGES; page++) {
+    const from = page * PLAN_B_STATS_PAGE_SIZE;
+    const to = from + PLAN_B_STATS_PAGE_SIZE - 1;
+    const { data, error } = await client
+      .from("plan_b")
+      .select("radiant_win, duration")
+      .order("match_id", { ascending: true })
+      .range(from, to);
+
+    if (error) {
+      return {
+        decidedMatches: 0,
+        radiantWins: 0,
+        direWins: 0,
+        durationSamples: 0,
+        avgDurationSec: 0,
+        error: error.message,
+      };
+    }
+
+    const rows = Array.isArray(data) ? data : [];
+    if (rows.length === 0) break;
+
+    for (const row of rows) {
+      if (!row || typeof row !== "object") continue;
+      const r = row as Record<string, unknown>;
+      const rw = parsePlanBRadiantWin(r.radiant_win);
+      if (rw === true) {
+        decidedMatches += 1;
+        radiantWins += 1;
+      } else if (rw === false) {
+        decidedMatches += 1;
+        direWins += 1;
+      }
+
+      const dur = parsePlanBDurationSec(r.duration ?? r.duration_sec);
+      if (dur !== null) {
+        durationSum += dur;
+        durationSamples += 1;
+      }
+    }
+
+    if (rows.length < PLAN_B_STATS_PAGE_SIZE) break;
+  }
+
+  const avgDurationSec =
+    durationSamples > 0 ? durationSum / durationSamples : 0;
+
+  return {
+    decidedMatches,
+    radiantWins,
+    direWins,
+    durationSamples,
+    avgDurationSec,
+    error: null,
+  };
+}

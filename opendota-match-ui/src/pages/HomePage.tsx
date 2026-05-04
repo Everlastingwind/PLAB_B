@@ -9,6 +9,7 @@ import {
   fetchCloudPubReplaySummariesPage,
   fetchReplaysForFeedSelection,
 } from "../lib/replaysApi";
+import { fetchPlanBAggregateMatchStats } from "../lib/supabasePlanB";
 import type { ReplaySummary } from "../types/replaysIndex";
 import { useEntityMaps } from "../hooks/useEntityMaps";
 import { SEOMeta } from "../components/SEOMeta";
@@ -40,6 +41,16 @@ export function HomePage() {
   const [idxErr, setIdxErr] = useState<string | null>(null);
   const [roleTab, setRoleTab] = useState<"carry" | "mid" | "offlane" | "support(4)" | "support(5)">("carry");
   const [homeView, setHomeView] = useState<"matches" | "meta" | "top">("matches");
+  const [cloudAgg, setCloudAgg] = useState<{
+    decidedMatches: number;
+    radiantWins: number;
+    direWins: number;
+    durationSamples: number;
+    avgDurationSec: number;
+  } | null>(null);
+  const [cloudAggLoading, setCloudAggLoading] = useState(false);
+  const [cloudAggErr, setCloudAggErr] = useState<string | null>(null);
+  const cloudAggFetchedOk = useRef(false);
   const scrollKey = homeScrollStorageKey(location.pathname, location.search);
   const anchorKey = homeAnchorStorageKey(location.pathname, location.search);
   const mainRef = useRef<HTMLElement | null>(null);
@@ -91,6 +102,35 @@ export function HomePage() {
       cancelled = true;
     };
   }, [feed, homeView, searchParams]);
+
+  useEffect(() => {
+    if (homeView !== "meta") return;
+    if (cloudAggFetchedOk.current) return;
+    let cancelled = false;
+    void (async () => {
+      setCloudAggLoading(true);
+      setCloudAggErr(null);
+      const pack = await fetchPlanBAggregateMatchStats();
+      if (cancelled) return;
+      if (pack.error) {
+        setCloudAggErr(pack.error);
+        setCloudAgg(null);
+      } else {
+        cloudAggFetchedOk.current = true;
+        setCloudAgg({
+          decidedMatches: pack.decidedMatches,
+          radiantWins: pack.radiantWins,
+          direWins: pack.direWins,
+          durationSamples: pack.durationSamples,
+          avgDurationSec: pack.avgDurationSec,
+        });
+      }
+      setCloudAggLoading(false);
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [homeView]);
 
   const totalPages = useMemo(() => {
     if (homeView === "matches" && feed.pub && !feed.pro && pagedTotalRows != null) {
@@ -452,6 +492,49 @@ export function HomePage() {
           ) : null}
           {homeView === "meta" && !mapsLoading && maps ? (
             <section className="mt-6 rounded-lg border border-skin-line bg-skin-card p-3">
+              <p className="meta-major-title mb-2">全站对局（Supabase）</p>
+              {cloudAggLoading ? (
+                <p className="mb-4 text-sm text-skin-sub">正在统计云库比赛数据…</p>
+              ) : null}
+              {cloudAggErr ? (
+                <p className="mb-4 text-sm text-amber-500/90">{cloudAggErr}</p>
+              ) : null}
+              {cloudAgg && !cloudAggErr ? (
+                <div className="mb-6 grid gap-3 sm:grid-cols-3">
+                  <div className="rounded border border-emerald-500/45 bg-emerald-500/[0.09] p-3 dark:border-emerald-400/40 dark:bg-emerald-500/15">
+                    <p className="text-xs font-semibold text-emerald-800/90 dark:text-emerald-300/90">
+                      天辉胜率
+                    </p>
+                    <p className="mt-1 text-lg font-bold text-emerald-950 dark:text-emerald-200">
+                      {cloudAgg.decidedMatches > 0
+                        ? `${((cloudAgg.radiantWins / cloudAgg.decidedMatches) * 100).toFixed(1)}%`
+                        : "—"}
+                    </p>
+                  </div>
+                  <div className="rounded border border-rose-500/45 bg-rose-500/[0.09] p-3 dark:border-rose-400/40 dark:bg-rose-500/15">
+                    <p className="text-xs font-semibold text-rose-800/90 dark:text-rose-300/90">
+                      夜魇胜率
+                    </p>
+                    <p className="mt-1 text-lg font-bold text-rose-950 dark:text-rose-200">
+                      {cloudAgg.decidedMatches > 0
+                        ? `${((cloudAgg.direWins / cloudAgg.decidedMatches) * 100).toFixed(1)}%`
+                        : "—"}
+                    </p>
+                  </div>
+                  <div className="rounded border border-sky-500/45 bg-sky-500/[0.09] p-3 dark:border-sky-400/40 dark:bg-sky-500/15">
+                    <p className="text-xs font-semibold text-sky-800/90 dark:text-sky-300/90">
+                      平均比赛时长
+                    </p>
+                    <p className="mt-1 text-lg font-bold text-sky-950 dark:text-sky-200">
+                      {cloudAgg.durationSamples > 0
+                        ? `${Math.floor(cloudAgg.avgDurationSec / 60)}:${String(
+                            Math.floor(cloudAgg.avgDurationSec % 60)
+                          ).padStart(2, "0")}`
+                        : "—"}
+                    </p>
+                  </div>
+                </div>
+              ) : null}
               <p className="meta-major-title mb-2">胜率统计</p>
               <p className="mb-2 text-sm font-semibold text-skin-sub">
                 分位置胜率 Top 5（出场 ≥50 局）
