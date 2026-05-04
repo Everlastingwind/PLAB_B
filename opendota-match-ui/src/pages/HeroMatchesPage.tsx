@@ -212,6 +212,29 @@ export function HeroMatchesPage() {
   }, [decoded, feed]);
 
   useEffect(() => {
+    const raw = searchParams.get("role")?.trim().toLowerCase() ?? "";
+    if (!raw) return;
+    const toFilter =
+      raw === "pos4"
+        ? "support(4)"
+        : raw === "pos5"
+          ? "support(5)"
+          : raw === "carry" || raw === "mid" || raw === "offlane"
+            ? raw
+            : raw === "support(4)" || raw === "support(5)"
+              ? raw
+              : null;
+    if (
+      toFilter &&
+      ["carry", "mid", "offlane", "support(4)", "support(5)"].includes(
+        toFilter
+      )
+    ) {
+      setRoleFilter(toFilter);
+    }
+  }, [searchParams, decoded]);
+
+  useEffect(() => {
     setPage(1);
   }, [withHeroIdParam, vsHeroIdParam]);
 

@@ -14,6 +14,13 @@ import type { ReplaySummary } from "../types/replaysIndex";
 import { useEntityMaps } from "../hooks/useEntityMaps";
 import { SEOMeta } from "../components/SEOMeta";
 import { MetaTopKillGamesSection } from "../components/MetaTopKillGamesSection";
+import {
+  HeroWinrateMetaTable,
+  isHeroMetaGlobalGamesSort,
+  isHeroMetaGlobalWinRateSort,
+  isHeroMetaRoleColumnSort,
+  type HeroWinrateMetaSortMode,
+} from "../components/HeroWinrateMetaTable";
 import { heroIconUrl, onDotaSteamAssetImgError, steamCdnImgDefer } from "../data/mockMatchPlayers";
 import {
   homeAnchorStorageKey,
@@ -21,16 +28,14 @@ import {
   readDocumentScrollY,
   scrollDocumentToY,
 } from "../lib/documentScroll";
+import {
+  gamesCountTextClass,
+  metaEmphasisTextSizeClass,
+  metaWinRateAfterGamesClass,
+} from "../lib/winRateTextClass";
 
 export function HomePage() {
   const ROLE_KEYS = ["carry", "mid", "offlane", "support(4)", "support(5)"] as const;
-  const ROLE_LABEL: Record<(typeof ROLE_KEYS)[number], string> = {
-    carry: "Carry",
-    mid: "Mid",
-    offlane: "Offlane",
-    "support(4)": "Pos4",
-    "support(5)": "Pos5",
-  };
   const { maps, loading: mapsLoading, error: mapsErr } = useEntityMaps();
   const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -51,6 +56,11 @@ export function HomePage() {
   const [cloudAggLoading, setCloudAggLoading] = useState(false);
   const [cloudAggErr, setCloudAggErr] = useState<string | null>(null);
   const cloudAggFetchedOk = useRef(false);
+  /** 全英雄表排序：总胜率/总场次（可升降序）或按分路 */
+  const [heroMetaSort, setHeroMetaSort] = useState<HeroWinrateMetaSortMode>({
+    type: "winRate",
+    order: "desc",
+  });
   const scrollKey = homeScrollStorageKey(location.pathname, location.search);
   const anchorKey = homeAnchorStorageKey(location.pathname, location.search);
   const mainRef = useRef<HTMLElement | null>(null);
@@ -321,6 +331,8 @@ export function HomePage() {
       heroId: number;
       games: number;
       winRate: number;
+      /** 按录像时间排序后，每场之后的累计胜率（%），长度与有效场次一致 */
+      cumulativeWinRateSeries: number[];
       roleWinRate: Partial<Record<(typeof ROLE_KEYS)[number], { games: number; winRate: number }>>;
     }>;
     const agg = new Map<number, {
@@ -328,7 +340,16 @@ export function HomePage() {
       wins: number;
       role: Record<(typeof ROLE_KEYS)[number], { games: number; wins: number }>;
     }>();
+    /** 每场录像一条，用于按时间累计胜率（同 match_id 取较晚入库的一条） */
+    const heroMatchBest = new Map<
+      number,
+      Map<number, { t: number; won: boolean }>
+    >();
+
     for (const r of replays) {
+      const t = Date.parse(String(r.uploaded_at ?? "")) || 0;
+      const rw = Boolean(r.radiant_win);
+      const mid = Number(r.match_id) || 0;
       for (const p of r.players || []) {
         const hid = Number(p.hero_id || 0);
         if (!Number.isFinite(hid) || hid <= 0) continue;
@@ -344,7 +365,7 @@ export function HomePage() {
           },
         };
         row.games += 1;
-        const won = Boolean(p.is_radiant) === Boolean(r.radiant_win);
+        const won = Boolean(p.is_radiant) === rw;
         if (won) row.wins += 1;
         const role = normalizeRole(p.role_early);
         if (role) {
@@ -352,14 +373,22 @@ export function HomePage() {
           if (won) row.role[role].wins += 1;
         }
         agg.set(hid, row);
+
+        let mm = heroMatchBest.get(hid);
+        if (!mm) {
+          mm = new Map();
+          heroMatchBest.set(hid, mm);
+        }
+        const prev = mm.get(mid);
+        if (!prev || t >= prev.t) {
+          mm.set(mid, { t, won });
+        }
       }
     }
+
     return Array.from(agg.entries())
-      .map(([heroId, s]) => ({
-        heroId,
-        games: s.games,
-        winRate: s.games > 0 ? (s.wins / s.games) * 100 : 0,
-        roleWinRate: ROLE_KEYS.reduce((acc, rk) => {
+      .map(([heroId, s]) => {
+        const roleWinRate = ROLE_KEYS.reduce((acc, rk) => {
           const g = s.role[rk].games;
           if (g <= 0) return acc;
           acc[rk] = {
@@ -367,11 +396,95 @@ export function HomePage() {
             winRate: (s.role[rk].wins / g) * 100,
           };
           return acc;
-        }, {} as Partial<Record<(typeof ROLE_KEYS)[number], { games: number; winRate: number }>>),
-      }))
-      .filter((x) => x.games >= 100)
-      .sort((a, b) => b.winRate - a.winRate || b.games - a.games);
+        }, {} as Partial<Record<(typeof ROLE_KEYS)[number], { games: number; winRate: number }>>);
+        const mm = heroMatchBest.get(heroId);
+        const cumulativeWinRateSeries: number[] = [];
+        if (mm && mm.size > 0) {
+          const events = Array.from(mm.entries())
+            .map(([matchId, ev]) => ({
+              matchId,
+              t: ev.t,
+              won: ev.won,
+            }))
+            .sort((a, b) => a.t - b.t || a.matchId - b.matchId);
+          let winsRun = 0;
+          for (let i = 0; i < events.length; i++) {
+            if (events[i].won) winsRun += 1;
+            cumulativeWinRateSeries.push((winsRun / (i + 1)) * 100);
+          }
+        }
+
+        const uniqueG = cumulativeWinRateSeries.length;
+        const winRateFinal =
+          uniqueG > 0
+            ? cumulativeWinRateSeries[uniqueG - 1]
+            : s.games > 0
+              ? (s.wins / s.games) * 100
+              : 0;
+
+        return {
+          heroId,
+          games: uniqueG > 0 ? uniqueG : s.games,
+          winRate: winRateFinal,
+          cumulativeWinRateSeries,
+          roleWinRate,
+        };
+      })
+      .filter((x) => x.cumulativeWinRateSeries.length >= 100);
   }, [replays, maps, normalizeRole]);
+
+  const heroMetaTableRows = useMemo(() => {
+    if (!maps) return [];
+    const list = topHeroOverall.map((row) => {
+      const hero = maps.heroes[String(row.heroId)];
+      const heroKey = hero?.key || "invoker";
+      return {
+        heroId: row.heroId,
+        heroKey,
+        name: hero?.nameCn || hero?.nameEn || heroKey,
+        winRate: row.winRate,
+        games: row.games,
+        cumulativeWinRateSeries: row.cumulativeWinRateSeries,
+        roleWinRate: row.roleWinRate,
+      };
+    });
+    const copy = [...list];
+    copy.sort((a, b) => {
+      if (isHeroMetaGlobalGamesSort(heroMetaSort)) {
+        const gCmp =
+          heroMetaSort.order === "desc"
+            ? b.games - a.games
+            : a.games - b.games;
+        if (gCmp !== 0) return gCmp;
+        return b.winRate - a.winRate;
+      }
+      if (isHeroMetaGlobalWinRateSort(heroMetaSort)) {
+        const wCmp =
+          heroMetaSort.order === "desc"
+            ? b.winRate - a.winRate
+            : a.winRate - b.winRate;
+        if (wCmp !== 0) return wCmp;
+        return b.games - a.games;
+      }
+      if (isHeroMetaRoleColumnSort(heroMetaSort)) {
+        const rk = heroMetaSort.role;
+        const ga = a.roleWinRate[rk]?.games ?? 0;
+        const gb = b.roleWinRate[rk]?.games ?? 0;
+        const wa = ga > 0 ? a.roleWinRate[rk]!.winRate : -1;
+        const wb = gb > 0 ? b.roleWinRate[rk]!.winRate : -1;
+        if (heroMetaSort.by === "winRate") {
+          if (wb !== wa) return wb - wa;
+          if (gb !== ga) return gb - ga;
+          return b.winRate - a.winRate;
+        }
+        if (gb !== ga) return gb - ga;
+        if (wb !== wa) return wb - wa;
+        return b.winRate - a.winRate;
+      }
+      return 0;
+    });
+    return copy;
+  }, [topHeroOverall, maps, heroMetaSort]);
 
   return (
     <>
@@ -569,7 +682,7 @@ export function HomePage() {
                       <Link
                         key={`${roleTab}-${row.heroId}`}
                         to={`/hero/${encodeURIComponent(heroKey)}`}
-                        className="rounded border border-slate-500/35 bg-slate-200/30 p-2 dark:border-slate-500/45 dark:bg-slate-700/30"
+                        className="rounded border border-skin-line bg-skin-inset/40 p-2 transition hover:bg-skin-inset/70"
                       >
                         <div className="flex items-center gap-2">
                           <img
@@ -580,14 +693,20 @@ export function HomePage() {
                             onError={onDotaSteamAssetImgError}
                           />
                           <div className="min-w-0">
-                            <p className="truncate text-sm font-semibold text-skin-ink">
+                            <p
+                              className={`truncate font-semibold ${metaEmphasisTextSizeClass} text-skin-ink`}
+                            >
                               {hero?.nameCn || hero?.nameEn || heroKey}
                             </p>
-                            <p className="text-xs text-skin-sub">
-                              胜率 {row.winRate.toFixed(1)}%
-                            </p>
-                            <p className="text-xs text-skin-sub">
-                              场次 {row.games}
+                            <p className="mt-0.5 whitespace-nowrap text-[11px] leading-snug">
+                              <span className={gamesCountTextClass}>
+                                {row.games}场
+                              </span>
+                              <span
+                                className={metaWinRateAfterGamesClass(row.winRate)}
+                              >
+                                （{row.winRate.toFixed(1)}%）
+                              </span>
                             </p>
                           </div>
                         </div>
@@ -601,78 +720,51 @@ export function HomePage() {
                 </p>
               )}
               <div className="mt-4 rounded border border-skin-line p-3">
-                <p className="mb-2 text-sm font-semibold text-skin-sub">
-                  全英雄总胜率（出场 ≥100 局）
+                <p className="mb-3 text-sm font-semibold text-skin-sub">
+                  全英雄总胜率（同 match 去重后 ≥100 场）
                 </p>
                 {topHeroOverall.length ? (
-                  <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-5">
-                    {topHeroOverall.map((row) => {
-                      const hero = maps.heroes[String(row.heroId)];
-                      const heroKey = hero?.key || "invoker";
-                      const roleStats = ROLE_KEYS.map((rk) => ({
-                        key: rk,
-                        label: ROLE_LABEL[rk],
-                        stat: row.roleWinRate[rk],
-                      }));
-                      const maxRoleWinRate = roleStats.reduce((acc, item) => {
-                        if (!item.stat) return acc;
-                        return Math.max(acc, item.stat.winRate);
-                      }, -1);
-                      return (
-                        <Link
-                          key={`overall-${row.heroId}`}
-                          to={`/hero/${encodeURIComponent(heroKey)}`}
-                          className="rounded border border-slate-500/35 bg-slate-200/30 p-2 dark:border-slate-500/45 dark:bg-slate-700/30"
-                        >
-                          <div className="flex items-start gap-2">
-                            <img
-                              src={heroIconUrl(heroKey)}
-                              alt={hero?.nameEn || heroKey}
-                              className="h-9 w-9 rounded object-cover"
-                              {...steamCdnImgDefer}
-                              onError={onDotaSteamAssetImgError}
-                            />
-                            <div className="min-w-0 flex-1">
-                              <p className="truncate text-sm font-semibold text-skin-ink">
-                                {hero?.nameCn || hero?.nameEn || heroKey}
-                              </p>
-                              <div className="mt-0.5 flex items-center gap-2 text-xs text-skin-sub">
-                                <span>胜率 {row.winRate.toFixed(1)}%</span>
-                                <span>场次 {row.games}</span>
-                              </div>
-                              <div className="mt-1 grid grid-cols-2 gap-1">
-                                {roleStats.map(({ key, label, stat }) => {
-                                  const isBestRole =
-                                    !!stat &&
-                                    maxRoleWinRate >= 0 &&
-                                    stat.winRate === maxRoleWinRate;
-                                  return (
-                                    <span
-                                      key={`${row.heroId}-${key}`}
-                                      className="rounded border border-slate-500/35 px-1.5 py-0.5 text-[11px] dark:border-slate-500/45"
-                                    >
-                                      <span className="text-skin-sub">{label} </span>
-                                      <span
-                                        className={
-                                          isBestRole
-                                            ? "font-semibold text-red-600 dark:text-red-400"
-                                            : "text-skin-sub"
-                                        }
-                                      >
-                                        {stat ? `${stat.winRate.toFixed(0)}%(${stat.games})` : "-"}
-                                      </span>
-                                    </span>
-                                  );
-                                })}
-                              </div>
-                            </div>
-                          </div>
-                        </Link>
-                      );
-                    })}
-                  </div>
+                  <HeroWinrateMetaTable
+                    rows={heroMetaTableRows}
+                    sortMode={heroMetaSort}
+                    onSortByWinRate={() => {
+                      setHeroMetaSort((prev) => {
+                        if (isHeroMetaGlobalWinRateSort(prev)) {
+                          return {
+                            type: "winRate",
+                            order: prev.order === "desc" ? "asc" : "desc",
+                          };
+                        }
+                        return { type: "winRate", order: "desc" };
+                      });
+                    }}
+                    onSortByGames={() => {
+                      setHeroMetaSort((prev) => {
+                        if (isHeroMetaGlobalGamesSort(prev)) {
+                          return {
+                            type: "games",
+                            order: prev.order === "desc" ? "asc" : "desc",
+                          };
+                        }
+                        return { type: "games", order: "desc" };
+                      });
+                    }}
+                    onSortByRole={(rk) => {
+                      setHeroMetaSort((prev) => {
+                        if (isHeroMetaRoleColumnSort(prev) && prev.role === rk) {
+                          return {
+                            role: rk,
+                            by: prev.by === "winRate" ? "games" : "winRate",
+                          };
+                        }
+                        return { role: rk, by: "winRate" };
+                      });
+                    }}
+                  />
                 ) : (
-                  <p className="text-sm text-skin-sub">暂无出场 ≥100 局的全英雄总胜率数据。</p>
+                  <p className="text-sm text-skin-sub">
+                    暂无去重后满 100 场以上的英雄数据。
+                  </p>
                 )}
               </div>
             </section>
