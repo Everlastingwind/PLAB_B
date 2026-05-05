@@ -6,7 +6,11 @@ import type {
 } from "../types/replaysIndex";
 import { fetchDeployedDataJson } from "./fetchStaticJson";
 import { applyProDisplayOverridesToReplaySummaries } from "./proAccountDisplayOverrides";
-import { fetchPlanBReplayIndexPage, unwrapPlanBRow } from "./supabasePlanB";
+import {
+  extractPlanBPlayersArray,
+  fetchPlanBReplayIndexPage,
+  unwrapPlanBRow,
+} from "./supabasePlanB";
 
 const PAGE_SIZE = 10;
 
@@ -15,6 +19,10 @@ export const MATCH_LIST_LOAD_STEP = 15;
 
 /** 合并同 match_id 时：时间新的优先，但若新行阵容明显不完整则保留较完整 players（避免云行覆盖静态完整索引）。 */
 const MIN_PLAYERS_FOR_ROSTER_PRESERVE = 6;
+
+function countPositiveHeroIds(r: ReplaySummary): number {
+  return (r.players ?? []).filter((p) => Number(p.hero_id) > 0).length;
+}
 
 function replaySummaryPreferNewerKeepRicherPlayers(
   existing: ReplaySummary,
@@ -27,6 +35,15 @@ function replaySummaryPreferNewerKeepRicherPlayers(
   const nNew = newer.players?.length ?? 0;
   const nOld = older.players?.length ?? 0;
   if (nOld > nNew && nOld >= MIN_PLAYERS_FOR_ROSTER_PRESERVE) {
+    return { ...newer, players: older.players! };
+  }
+  const hNew = countPositiveHeroIds(newer);
+  const hOld = countPositiveHeroIds(older);
+  if (
+    nOld === nNew &&
+    nNew >= MIN_PLAYERS_FOR_ROSTER_PRESERVE &&
+    hOld > hNew
+  ) {
     return { ...newer, players: older.players! };
   }
   return newer;
@@ -119,6 +136,83 @@ export function mergeReplaySummariesByMatchId(
   );
 }
 
+/**
+ * 从 entity_maps 按 heroKey（如 antimage）解析 npc id，供筛选兜底（部分索引里 hero_id 正确但 maps 键类型不一致）。
+ */
+export function heroNumericIdFromKey(
+  maps: EntityMapsPayload,
+  heroKey: string
+): number | null {
+  const k = heroKey.trim().toLowerCase();
+  if (!k) return null;
+  const hit = Object.entries(maps.heroes).find(
+    ([, h]) => String(h.key || "").toLowerCase() === k
+  );
+  if (!hit) return null;
+  const n = Number(hit[0]);
+  return Number.isFinite(n) && n > 0 ? n : null;
+}
+
+/** plan_b / OpenDota / slim 混用字段名，统一成列表摘要用一行 */
+function summaryPlayerFromRawObject(o: Record<string, unknown>): ReplayPlayerSummary {
+  const slot = Math.floor(
+    Number(o.player_slot ?? o.slot ?? o.player_slot_id ?? 0) || 0
+  );
+  const accountId = Math.floor(
+    Number(
+      o.account_id ??
+        o.accountid ??
+        o.accountId ??
+        o.steamid ??
+        o.steam_id ??
+        o.player_id ??
+        0
+    ) || 0
+  );
+
+  let heroId = Math.floor(Number(o.hero_id ?? o.heroId ?? 0) || 0);
+  const heroRaw = o.hero;
+  if (!heroId && heroRaw != null) {
+    if (typeof heroRaw === "number" || typeof heroRaw === "string") {
+      heroId = Math.floor(Number(heroRaw) || 0);
+    } else if (typeof heroRaw === "object" && !Array.isArray(heroRaw)) {
+      const ho = heroRaw as Record<string, unknown>;
+      heroId = Math.floor(
+        Number(ho.hero_id ?? ho.id ?? ho.heroid ?? 0) || 0
+      );
+    }
+  }
+
+  const kills = Math.floor(Number(o.kills ?? o.k ?? 0) || 0);
+  const deaths = Math.floor(Number(o.deaths ?? o.d ?? 0) || 0);
+  const assists = Math.floor(Number(o.assists ?? o.a ?? 0) || 0);
+  const proRaw = o.pro_name;
+  const proName =
+    proRaw != null && String(proRaw).trim()
+      ? String(proRaw).trim()
+      : null;
+  const pnRaw = o.personaname ?? o.name;
+  const personaname =
+    pnRaw != null && String(pnRaw).trim() ? String(pnRaw).trim() : null;
+  const roleRaw = o.role_early;
+  const roleEarly =
+    roleRaw != null && String(roleRaw).trim()
+      ? String(roleRaw).trim()
+      : null;
+  return {
+    player_slot: slot,
+    account_id: accountId,
+    hero_id: heroId,
+    pro_name: proName,
+    personaname,
+    role_early: roleEarly || undefined,
+    is_radiant: slot < 128,
+    kills,
+    deaths,
+    assists,
+  };
+}
+
 function planBRowToReplaySummary(row: Record<string, unknown>): ReplaySummary | null {
   const matchId = Number(row.match_id);
   if (!Number.isFinite(matchId) || matchId <= 0) return null;
@@ -150,50 +244,12 @@ function planBRowToReplaySummary(row: Record<string, unknown>): ReplaySummary | 
     dsRaw !== undefined && dsRaw !== null
       ? Math.floor(Number(dsRaw) || 0)
       : undefined;
-  let playersRaw: unknown = row.players;
-  if (typeof playersRaw === "string" && playersRaw.trim()) {
-    try {
-      playersRaw = JSON.parse(playersRaw) as unknown;
-    } catch {
-      return null;
-    }
-  }
-  if (!Array.isArray(playersRaw)) return null;
+  const playersRaw = extractPlanBPlayersArray(row);
+  if (!playersRaw?.length) return null;
   const players: ReplayPlayerSummary[] = [];
   for (const p of playersRaw) {
     if (!p || typeof p !== "object") continue;
-    const o = p as Record<string, unknown>;
-    const slot = Math.floor(Number(o.player_slot ?? 0) || 0);
-    const accountId = Math.floor(Number(o.account_id ?? 0) || 0);
-    const heroId = Math.floor(Number(o.hero_id ?? 0) || 0);
-    const kills = Math.floor(Number(o.kills ?? o.k ?? 0) || 0);
-    const deaths = Math.floor(Number(o.deaths ?? o.d ?? 0) || 0);
-    const assists = Math.floor(Number(o.assists ?? o.a ?? 0) || 0);
-    const proRaw = o.pro_name;
-    const proName =
-      proRaw != null && String(proRaw).trim()
-        ? String(proRaw).trim()
-        : null;
-    const pnRaw = o.personaname ?? o.name;
-    const personaname =
-      pnRaw != null && String(pnRaw).trim() ? String(pnRaw).trim() : null;
-    const roleRaw = o.role_early;
-    const roleEarly =
-      roleRaw != null && String(roleRaw).trim()
-        ? String(roleRaw).trim()
-        : null;
-    players.push({
-      player_slot: slot,
-      account_id: accountId,
-      hero_id: heroId,
-      pro_name: proName,
-      personaname,
-      role_early: roleEarly || undefined,
-      is_radiant: slot < 128,
-      kills,
-      deaths,
-      assists,
-    });
+    players.push(summaryPlayerFromRawObject(p as Record<string, unknown>));
   }
   if (players.length === 0) return null;
   return {
@@ -509,10 +565,19 @@ export function filterByHeroKey(
   maps: EntityMapsPayload
 ): ReplaySummary[] {
   const k = heroKey.toLowerCase();
+  const targetNpcId = heroNumericIdFromKey(maps, heroKey);
   return replays.filter((r) =>
     (r.players ?? []).some((p) => {
       const e = maps.heroes[String(p.hero_id)];
-      return e?.key?.toLowerCase() === k;
+      if (e?.key?.toLowerCase() === k) return true;
+      if (
+        targetNpcId != null &&
+        Number.isFinite(Number(p.hero_id)) &&
+        Number(p.hero_id) === targetNpcId
+      ) {
+        return true;
+      }
+      return false;
     })
   );
 }
@@ -535,12 +600,21 @@ export function filterReplaysByTeammateOpponentHero(
   if (!withId && !vsId) return replays;
 
   const k = pageHeroKey.toLowerCase();
+  const targetNpcId = heroNumericIdFromKey(maps, pageHeroKey);
 
   return replays.filter((r) => {
     const players = r.players ?? [];
     const self = players.find((p) => {
       const e = maps.heroes[String(p.hero_id)];
-      return e?.key?.toLowerCase() === k;
+      if (e?.key?.toLowerCase() === k) return true;
+      if (
+        targetNpcId != null &&
+        Number.isFinite(Number(p.hero_id)) &&
+        Number(p.hero_id) === targetNpcId
+      ) {
+        return true;
+      }
+      return false;
     });
     if (!self) return false;
 
@@ -573,8 +647,10 @@ export function filterByAccountId(
   replays: ReplaySummary[],
   accountId: number
 ): ReplaySummary[] {
+  const aid = Number(accountId);
+  if (!Number.isFinite(aid) || aid <= 0) return [];
   return replays.filter((r) =>
-    (r.players ?? []).some((p) => p.account_id === accountId)
+    (r.players ?? []).some((p) => Number(p.account_id ?? 0) === aid)
   );
 }
 

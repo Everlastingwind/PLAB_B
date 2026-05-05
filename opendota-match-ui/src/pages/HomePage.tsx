@@ -6,7 +6,6 @@ import { ViewportMountRow } from "../components/ViewportMountRow";
 import type { FeedSelection } from "../components/FeedModeToggle";
 import {
   MATCH_LIST_LOAD_STEP,
-  fetchCloudPubReplaySummariesPage,
   fetchReplaysForFeedSelection,
 } from "../lib/replaysApi";
 import { fetchPlanBAggregateMatchStats } from "../lib/supabasePlanB";
@@ -42,7 +41,6 @@ export function HomePage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [feed, setFeed] = useState<FeedSelection>({ pub: true, pro: false });
   const [replays, setReplays] = useState<ReplaySummary[]>([]);
-  const [pagedTotalRows, setPagedTotalRows] = useState<number | null>(null);
   const [feedListLoading, setFeedListLoading] = useState(true);
   const [idxErr, setIdxErr] = useState<string | null>(null);
   const [roleTab, setRoleTab] = useState<"carry" | "mid" | "offlane" | "support(4)" | "support(5)">("carry");
@@ -79,26 +77,10 @@ export function HomePage() {
     let cancelled = false;
     setIdxErr(null);
     setFeedListLoading(true);
-    setPagedTotalRows(null);
     void (async () => {
       try {
-        const pageRaw = Number(searchParams.get("page") || 1);
-        const currentPage =
-          Number.isFinite(pageRaw) && pageRaw > 0 ? Math.floor(pageRaw) : 1;
-        if (homeView === "matches" && feed.pub && !feed.pro) {
-          const pack = await fetchCloudPubReplaySummariesPage(
-            currentPage,
-            MATCH_LIST_LOAD_STEP
-          );
-          if (cancelled) return;
-          setReplays(pack.replays);
-          setPagedTotalRows(Math.max(0, pack.totalRows));
-          setIdxErr(pack.error);
-          setFeedListLoading(false);
-          return;
-        }
-
-        const { replays: list, cloudIndexError } = await fetchReplaysForFeedSelection(feed);
+        const { replays: list, cloudIndexError } =
+          await fetchReplaysForFeedSelection(feed);
         if (cancelled) return;
         setReplays(list);
         setIdxErr(cloudIndexError);
@@ -113,7 +95,7 @@ export function HomePage() {
     return () => {
       cancelled = true;
     };
-  }, [feed, homeView, searchParams]);
+  }, [feed, homeView]);
 
   useEffect(() => {
     if (homeView !== "meta") return;
@@ -144,12 +126,10 @@ export function HomePage() {
     };
   }, [homeView]);
 
-  const totalPages = useMemo(() => {
-    if (homeView === "matches" && feed.pub && !feed.pro && pagedTotalRows != null) {
-      return Math.max(1, Math.ceil(pagedTotalRows / MATCH_LIST_LOAD_STEP));
-    }
-    return Math.max(1, Math.ceil(replays.length / MATCH_LIST_LOAD_STEP));
-  }, [feed.pro, feed.pub, homeView, pagedTotalRows, replays.length]);
+  const totalPages = useMemo(
+    () => Math.max(1, Math.ceil(replays.length / MATCH_LIST_LOAD_STEP)),
+    [replays.length]
+  );
   const pageFromQuery = (() => {
     const n = Number(searchParams.get("page") || 1);
     return Number.isFinite(n) && n > 0 ? Math.floor(n) : 1;
@@ -157,11 +137,10 @@ export function HomePage() {
   const page = Math.max(pageFromQuery, 1);
   const pageForSlice = Math.min(page, totalPages);
   const visible = useMemo(() => {
-    if (homeView === "matches" && feed.pub && !feed.pro) return replays;
     const start = (pageForSlice - 1) * MATCH_LIST_LOAD_STEP;
     const end = start + MATCH_LIST_LOAD_STEP;
     return replays.slice(start, end);
-  }, [feed.pro, feed.pub, homeView, replays, pageForSlice]);
+  }, [replays, pageForSlice]);
 
   const shouldRestoreScroll = useMemo(() => {
     const anchorRaw = sessionStorage.getItem(anchorKey)?.trim();
@@ -629,11 +608,7 @@ export function HomePage() {
               </button>
               <p className="text-xs text-skin-sub tabular-nums">
                 第 {pageForSlice} / {totalPages} 页
-                {homeView === "matches" && feed.pub && !feed.pro && pagedTotalRows != null
-                  ? `（共 ${pagedTotalRows} 场）`
-                  : homeView === "matches"
-                    ? `（共 ${replays.length} 场）`
-                    : null}
+                {homeView === "matches" ? `（共 ${replays.length} 场）` : null}
               </p>
               <button
                 type="button"

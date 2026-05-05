@@ -25,6 +25,24 @@ function planBPlayersFieldLen(raw: unknown): number {
   return 0;
 }
 
+/** 列可能为 jsonb 对象，也可能误存为 JSON 字符串 */
+function parsePlanBJsonObject(raw: unknown): Record<string, unknown> | null {
+  if (raw && typeof raw === "object" && !Array.isArray(raw)) {
+    return raw as Record<string, unknown>;
+  }
+  if (typeof raw === "string" && raw.trim()) {
+    try {
+      const v = JSON.parse(raw) as unknown;
+      if (v && typeof v === "object" && !Array.isArray(v)) {
+        return v as Record<string, unknown>;
+      }
+    } catch {
+      return null;
+    }
+  }
+  return null;
+}
+
 /** Supabase 行可能是整局 slim 平铺，或包在 data / payload 等 jsonb 列里 */
 export function unwrapPlanBRow(row: unknown): unknown | null {
   if (!row || typeof row !== "object" || Array.isArray(row)) return null;
@@ -33,17 +51,21 @@ export function unwrapPlanBRow(row: unknown): unknown | null {
   type Cand = { obj: Record<string, unknown>; len: number };
   const cands: Cand[] = [];
 
-  const push = (obj: Record<string, unknown>) => {
+  const pushCand = (obj: Record<string, unknown>) => {
     const len = planBPlayersFieldLen(obj["players"]);
     if (len > 0) cands.push({ obj, len });
   };
 
-  push(r);
+  const consider = (obj: Record<string, unknown>) => {
+    pushCand(obj);
+    const m = parsePlanBJsonObject(obj.match);
+    if (m) pushCand(m);
+  };
+
+  consider(r);
   for (const k of ["data", "payload", "slim", "match_json", "body"]) {
-    const inner = r[k];
-    if (inner && typeof inner === "object" && !Array.isArray(inner)) {
-      push(inner as Record<string, unknown>);
-    }
+    const inner = parsePlanBJsonObject(r[k]);
+    if (inner) consider(inner);
   }
 
   if (cands.length === 0) return r;
@@ -55,6 +77,43 @@ export function unwrapPlanBRow(row: unknown): unknown | null {
   return { ...r, ...best.obj };
 }
 
+/**
+ * 列表摘要：从 plan_b 行取出选手数组（顶层或 slim/data/match 内），用于 {@link planBRowToReplaySummary}。
+ */
+export function extractPlanBPlayersArray(
+  row: Record<string, unknown>
+): unknown[] | null {
+  const lengths: { arr: unknown[]; len: number }[] = [];
+
+  const pushArr = (raw: unknown) => {
+    let v = raw;
+    if (typeof v === "string" && v.trim()) {
+      try {
+        v = JSON.parse(v) as unknown;
+      } catch {
+        return;
+      }
+    }
+    if (Array.isArray(v) && v.length) {
+      lengths.push({ arr: v, len: v.length });
+    }
+  };
+
+  pushArr(row.players);
+
+  for (const col of ["slim", "data", "payload", "match_json", "body"]) {
+    const obj = parsePlanBJsonObject(row[col]);
+    if (!obj) continue;
+    pushArr(obj.players);
+    const m = parsePlanBJsonObject(obj.match);
+    if (m) pushArr(m.players);
+  }
+
+  if (!lengths.length) return null;
+  lengths.sort((a, b) => b.len - a.len);
+  return lengths[0].arr;
+}
+
 const PLAN_B_INDEX_SELECT =
   "match_id, created_at, duration, radiant_win, radiant_score, dire_score, league_name, players";
 const PLAN_B_INDEX_LIGHT_SELECT =
@@ -64,11 +123,14 @@ const PLAN_B_INDEX_LIGHT_SELECT =
  * 详情页按需列：与列表 PLAN_B_INDEX_SELECT 对齐，并含 unwrap 可能用到的 json 包裹列。
  * 避免 `*` 把表上未来加的审计/冗余大列一并拉下；players 仍是 jsonb，体积主要在此。
  * 若库表缺某列，下方会回退 `select('*')`。
+ *
+ * **不显式包含 `data` 列**：部分自建 Supabase 仅有 `payload`/`slim`/`players`，无 `data`，
+ * 请求不存在的列会导致 PostgREST 报错且 split 兜底若仍带 `data` 会彻底失败。
+ * `unwrapPlanBRow` / `extractPlanBPlayersArray` 仍会从行对象读 `data`（若 `select('*')` 带回）。
  * 不含独立列 picks_bans：多数库未建该列；pick/ban 已在 slim / players 等 json 内。
  */
 const PLAN_B_DETAIL_SELECT = [
   ...PLAN_B_INDEX_SELECT.split(",").map((s) => s.trim()),
-  "data",
   "payload",
   "slim",
   "match_json",
@@ -76,13 +138,12 @@ const PLAN_B_DETAIL_SELECT = [
 ].join(",");
 
 /**
- * 列表分页 split 第二阶段：与轻列行合并，供 {@link unwrapPlanBRow} 读到 data/payload 内完整阵容。
- * 缺列时查询端会回退列集合。
+ * 列表分页 split 第二阶段：与轻列行合并，供 {@link unwrapPlanBRow} 读到 payload/slim 内完整阵容。
+ * 缺列时查询端会回退列集合（不含 `data`，理由见 {@link PLAN_B_DETAIL_SELECT}）。
  */
 const PLAN_B_INDEX_OVERLAY_SELECT = [
   "match_id",
   "players",
-  "data",
   "payload",
   "slim",
   "match_json",
@@ -390,25 +451,28 @@ async function fetchPlanBReplayIndexPageSplit(
   }
   if (!ids.length) return { rows: [], totalRows, error: null };
 
-  const overlayFirst = await client
-    .from("plan_b")
-    .select(PLAN_B_INDEX_OVERLAY_SELECT)
-    .in("match_id", ids);
-  let overlayData: unknown = overlayFirst.data;
-  let overlayErr = overlayFirst.error;
-  if (overlayErr) {
-    const msg = overlayErr.message || "";
-    if (/column|42703|does not exist|schema cache/i.test(msg)) {
-      const overlaySecond = await client
-        .from("plan_b")
-        .select("match_id, players, data, payload, slim")
-        .in("match_id", ids);
-      overlayData = overlaySecond.data;
-      overlayErr = overlaySecond.error;
+  const overlaySelectChain = [
+    PLAN_B_INDEX_OVERLAY_SELECT,
+    "match_id, players, payload, slim",
+    "match_id, players",
+  ] as const;
+  let overlayData: unknown;
+  let overlayErr = null as { message?: string } | null;
+  for (const sel of overlaySelectChain) {
+    const r = await client.from("plan_b").select(sel).in("match_id", ids);
+    if (!r.error) {
+      overlayData = r.data;
+      overlayErr = null;
+      break;
+    }
+    overlayErr = r.error;
+    const msg = r.error.message || "";
+    if (!/column|42703|does not exist|schema cache/i.test(msg)) {
+      break;
     }
   }
   if (overlayErr) {
-    return { rows: [], totalRows, error: overlayErr.message };
+    return { rows: [], totalRows, error: overlayErr.message ?? "overlay failed" };
   }
   const overlayRows = (Array.isArray(overlayData)
     ? overlayData
