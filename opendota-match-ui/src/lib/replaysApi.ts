@@ -427,8 +427,8 @@ function cloudPackToIndexError(pack: {
   if (!pack.error) return null;
   const timeout = /statement timeout|57014|timeout/i.test(pack.error);
   return timeout
-    ? `云索引（Supabase）不可用：${pack.error}。已对单次拉取条数自动降级；若仍出现请在数据库为 plan_b.created_at 建索引（见 src/lib/supabasePlanB.ts 顶部注释）。`
-    : `云索引（Supabase）不可用：${pack.error}。${CLOUD_INDEX_FAIL_HINT}`;
+    ? `数据库不可用：${pack.error}。已对单次拉取条数自动降级；若仍出现请在数据库为 plan_b.created_at 建索引。`
+    : `数据库不可用：${pack.error}。${CLOUD_INDEX_FAIL_HINT}`;
 }
 
 /** 仅静态索引（与云合并前的快照） */
