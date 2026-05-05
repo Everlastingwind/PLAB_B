@@ -12,20 +12,47 @@ import { supabase } from "./supabaseClient.js";
  * 3) 建索引后执行：analyze public.plan_b;
  */
 
+function planBPlayersFieldLen(raw: unknown): number {
+  if (Array.isArray(raw)) return raw.length;
+  if (typeof raw === "string" && raw.trim()) {
+    try {
+      const p = JSON.parse(raw) as unknown;
+      return Array.isArray(p) ? p.length : 0;
+    } catch {
+      return 0;
+    }
+  }
+  return 0;
+}
+
 /** Supabase 行可能是整局 slim 平铺，或包在 data / payload 等 jsonb 列里 */
 export function unwrapPlanBRow(row: unknown): unknown | null {
   if (!row || typeof row !== "object" || Array.isArray(row)) return null;
   const r = row as Record<string, unknown>;
-  const topPlayers = r["players"];
-  if (Array.isArray(topPlayers) && topPlayers.length > 0) return r;
+
+  type Cand = { obj: Record<string, unknown>; len: number };
+  const cands: Cand[] = [];
+
+  const push = (obj: Record<string, unknown>) => {
+    const len = planBPlayersFieldLen(obj["players"]);
+    if (len > 0) cands.push({ obj, len });
+  };
+
+  push(r);
   for (const k of ["data", "payload", "slim", "match_json", "body"]) {
     const inner = r[k];
     if (inner && typeof inner === "object" && !Array.isArray(inner)) {
-      const o = inner as Record<string, unknown>;
-      if (Array.isArray(o.players) && o.players.length > 0) return o;
+      push(inner as Record<string, unknown>);
     }
   }
-  return r;
+
+  if (cands.length === 0) return r;
+
+  cands.sort((a, b) => b.len - a.len);
+  const best = cands[0];
+  if (best.obj === r) return r;
+
+  return { ...r, ...best.obj };
 }
 
 const PLAN_B_INDEX_SELECT =
@@ -41,6 +68,20 @@ const PLAN_B_INDEX_LIGHT_SELECT =
  */
 const PLAN_B_DETAIL_SELECT = [
   ...PLAN_B_INDEX_SELECT.split(",").map((s) => s.trim()),
+  "data",
+  "payload",
+  "slim",
+  "match_json",
+  "body",
+].join(",");
+
+/**
+ * 列表分页 split 第二阶段：与轻列行合并，供 {@link unwrapPlanBRow} 读到 data/payload 内完整阵容。
+ * 缺列时查询端会回退列集合。
+ */
+const PLAN_B_INDEX_OVERLAY_SELECT = [
+  "match_id",
+  "players",
   "data",
   "payload",
   "slim",
@@ -211,10 +252,20 @@ async function fetchPlanBReplayIndexRowsTwoPhase(
   const full: Record<string, unknown>[] = [];
   for (let i = 0; i < uniqueIdOrder.length; i += PLAN_B_IN_CHUNK) {
     const chunk = uniqueIdOrder.slice(i, i + PLAN_B_IN_CHUNK);
-    const { data: part, error: e2 } = await client
+    let { data: part, error: e2 } = await client
       .from("plan_b")
-      .select(PLAN_B_INDEX_SELECT)
+      .select(PLAN_B_DETAIL_SELECT)
       .in("match_id", chunk);
+
+    if (e2) {
+      const msg = e2.message || "";
+      if (/column|42703|does not exist|schema cache/i.test(msg)) {
+        ({ data: part, error: e2 } = await client
+          .from("plan_b")
+          .select("*")
+          .in("match_id", chunk));
+      }
+    }
 
     if (e2) {
       return { rows: [], error: e2.message };
@@ -256,15 +307,28 @@ export async function fetchPlanBReplayIndexRows(): Promise<{
   let lastError: string | null = two.error;
   for (let i = 0; i < PLAN_B_SINGLE_QUERY_LIMITS.length; i++) {
     const lim = PLAN_B_SINGLE_QUERY_LIMITS[i];
-    const { data, error } = await client
+    let { data, error } = await client
       .from("plan_b")
-      .select(PLAN_B_INDEX_SELECT)
+      .select(PLAN_B_DETAIL_SELECT)
       .order("created_at", { ascending: false })
       .limit(lim);
 
+    if (error) {
+      const msg = error.message || "";
+      if (/column|42703|does not exist|schema cache/i.test(msg)) {
+        ({ data, error } = await client
+          .from("plan_b")
+          .select("*")
+          .order("created_at", { ascending: false })
+          .limit(lim));
+      }
+    }
+
     if (!error) {
       return {
-        rows: Array.isArray(data) ? (data as Record<string, unknown>[]) : [],
+        rows: Array.isArray(data)
+          ? (data as unknown as Record<string, unknown>[])
+          : [],
         error: null,
       };
     }
@@ -326,25 +390,38 @@ async function fetchPlanBReplayIndexPageSplit(
   }
   if (!ids.length) return { rows: [], totalRows, error: null };
 
-  const playersReq = await client
+  const overlayFirst = await client
     .from("plan_b")
-    .select("match_id, players")
+    .select(PLAN_B_INDEX_OVERLAY_SELECT)
     .in("match_id", ids);
-  if (playersReq.error) {
-    return { rows: [], totalRows, error: playersReq.error.message };
+  let overlayData: unknown = overlayFirst.data;
+  let overlayErr = overlayFirst.error;
+  if (overlayErr) {
+    const msg = overlayErr.message || "";
+    if (/column|42703|does not exist|schema cache/i.test(msg)) {
+      const overlaySecond = await client
+        .from("plan_b")
+        .select("match_id, players, data, payload, slim")
+        .in("match_id", ids);
+      overlayData = overlaySecond.data;
+      overlayErr = overlaySecond.error;
+    }
   }
-  const playersRows = (Array.isArray(playersReq.data) ? playersReq.data : []) as Record<
-    string,
-    unknown
-  >[];
-  const playersById = new Map<string, unknown>();
-  for (const row of playersRows) {
-    playersById.set(String(row.match_id), row.players);
+  if (overlayErr) {
+    return { rows: [], totalRows, error: overlayErr.message };
   }
-  const merged = lightRows.map((row) => ({
-    ...row,
-    players: playersById.get(String(row.match_id)),
-  }));
+  const overlayRows = (Array.isArray(overlayData)
+    ? overlayData
+    : []) as Record<string, unknown>[];
+  const overlayById = new Map<string, Record<string, unknown>>();
+  for (const row of overlayRows) {
+    overlayById.set(String(row.match_id), row);
+  }
+  const merged = lightRows.map((row) => {
+    const ov = overlayById.get(String(row.match_id));
+    if (!ov) return row;
+    return { ...row, ...ov };
+  });
   return { rows: merged, totalRows, error: null };
 }
 
@@ -374,7 +451,7 @@ export async function fetchPlanBReplayIndexPage(
       .order("created_at", { ascending: false })
       .range(from, to);
 
-  let { data, error, count } = await runSelect(PLAN_B_INDEX_SELECT);
+  let { data, error, count } = await runSelect(PLAN_B_DETAIL_SELECT);
   if (error) {
     const msg = error.message || "";
     if (/column|42703|does not exist|schema cache/i.test(msg)) {

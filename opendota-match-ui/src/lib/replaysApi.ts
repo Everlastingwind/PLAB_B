@@ -13,6 +13,25 @@ const PAGE_SIZE = 10;
 /** 英雄页 / 选手页 / 首页对局列表：首屏与「加载更多」步长 */
 export const MATCH_LIST_LOAD_STEP = 15;
 
+/** 合并同 match_id 时：时间新的优先，但若新行阵容明显不完整则保留较完整 players（避免云行覆盖静态完整索引）。 */
+const MIN_PLAYERS_FOR_ROSTER_PRESERVE = 6;
+
+function replaySummaryPreferNewerKeepRicherPlayers(
+  existing: ReplaySummary,
+  incoming: ReplaySummary
+): ReplaySummary {
+  const t1 = new Date(existing.uploaded_at).getTime();
+  const t2 = new Date(incoming.uploaded_at).getTime();
+  const newer = t2 >= t1 ? incoming : existing;
+  const older = t2 >= t1 ? existing : incoming;
+  const nNew = newer.players?.length ?? 0;
+  const nOld = older.players?.length ?? 0;
+  if (nOld > nNew && nOld >= MIN_PLAYERS_FOR_ROSTER_PRESERVE) {
+    return { ...newer, players: older.players! };
+  }
+  return newer;
+}
+
 function normalizeReplaySource(
   row: ReplaySummary,
   fallback: "pub" | "pro"
@@ -68,9 +87,7 @@ export function mergePubProReplays(
       byId.set(row.match_id, row);
       return;
     }
-    const t1 = new Date(ex.uploaded_at).getTime();
-    const t2 = new Date(row.uploaded_at).getTime();
-    if (t2 >= t1) byId.set(row.match_id, row);
+    byId.set(row.match_id, replaySummaryPreferNewerKeepRicherPlayers(ex, row));
   };
   for (const r of pubRows) upsert(r, "pub");
   for (const r of proRows) upsert(r, "pro");
@@ -92,9 +109,7 @@ export function mergeReplaySummariesByMatchId(
       byId.set(r.match_id, r);
       return;
     }
-    const t1 = new Date(ex.uploaded_at).getTime();
-    const t2 = new Date(r.uploaded_at).getTime();
-    if (t2 >= t1) byId.set(r.match_id, r);
+    byId.set(r.match_id, replaySummaryPreferNewerKeepRicherPlayers(ex, r));
   };
   for (const r of primary) upsert(r);
   for (const r of secondary) upsert(r);
@@ -135,7 +150,14 @@ function planBRowToReplaySummary(row: Record<string, unknown>): ReplaySummary | 
     dsRaw !== undefined && dsRaw !== null
       ? Math.floor(Number(dsRaw) || 0)
       : undefined;
-  const playersRaw = row.players;
+  let playersRaw: unknown = row.players;
+  if (typeof playersRaw === "string" && playersRaw.trim()) {
+    try {
+      playersRaw = JSON.parse(playersRaw) as unknown;
+    } catch {
+      return null;
+    }
+  }
   if (!Array.isArray(playersRaw)) return null;
   const players: ReplayPlayerSummary[] = [];
   for (const p of playersRaw) {
@@ -205,12 +227,45 @@ const cloudPubPageCache = new Map<
 >();
 
 /**
- * 与云库合并时仅取 plan_b **第一页**（每行已含 `players` jsonb，无需再按场 N+1）。
- * 禁止再全表两阶段拉取，避免 100+ 次 Supabase 往返。
+ * 与静态 replays_index 合并时：分页拉取 plan_b **全部行**（在 {@link CLOUD_FEED_MERGE_MAX_ROWS} 内），
+ * 再按 match_id 合并。若只拉第一页，英雄/选手页按 hero/account 筛选时会漏掉仅存在于云库后排的场次。
+ *
+ * 首页「仅云」列表仍用 {@link fetchCloudPubReplaySummariesPage} 单页 + URL 分页，不经过此函数。
  */
+const CLOUD_FEED_MERGE_PAGE_SIZE = 100;
+const CLOUD_FEED_MERGE_MAX_ROWS = 20_000;
+const CLOUD_FEED_MERGE_PARALLEL = 6;
+
 export async function fetchCloudPubReplaySummaries(): Promise<CloudPubReplayPack> {
-  const pack = await fetchCloudPubReplaySummariesPage(1, MATCH_LIST_LOAD_STEP);
-  return { replays: [...pack.replays], error: pack.error };
+  const pageSize = CLOUD_FEED_MERGE_PAGE_SIZE;
+  const first = await fetchCloudPubReplaySummariesPage(1, pageSize);
+  const replays: ReplaySummary[] = [...first.replays];
+  if (first.error) {
+    return { replays, error: first.error };
+  }
+
+  const cappedTotal = Math.min(first.totalRows, CLOUD_FEED_MERGE_MAX_ROWS);
+  const totalPages = Math.max(1, Math.ceil(cappedTotal / pageSize));
+  if (totalPages <= 1) {
+    return { replays, error: null };
+  }
+
+  for (let start = 2; start <= totalPages; start += CLOUD_FEED_MERGE_PARALLEL) {
+    const end = Math.min(start + CLOUD_FEED_MERGE_PARALLEL - 1, totalPages);
+    const packs = await Promise.all(
+      Array.from({ length: end - start + 1 }, (_, i) =>
+        fetchCloudPubReplaySummariesPage(start + i, pageSize)
+      )
+    );
+    for (const pack of packs) {
+      if (pack.error) {
+        return { replays, error: pack.error };
+      }
+      replays.push(...pack.replays);
+    }
+  }
+
+  return { replays, error: null };
 }
 
 export async function fetchCloudPubReplaySummariesPage(
