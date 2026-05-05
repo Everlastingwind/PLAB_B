@@ -96,12 +96,22 @@ function putDetailCache(matchId: number, value: SlimMatchJson | null): void {
   });
 }
 
+export type LoadSlimMatchDetailsOptions = {
+  /**
+   * 列表 / 聚合页用：不要对每局请求 `/data/matches/{id}.json`（大量 404 与体积），
+   * 直接走 `plan_b` 批量查询。单场详情仍用 `loadSlimMatchJsonForDetail` 的本地优先逻辑。
+   */
+  preferCloud?: boolean;
+};
+
 /**
- * 列表页一次拉多局：先读缓存/进行中的单局 Promise，再并行试本地 JSON，最后一批查 Supabase。
+ * 多局 slim：先读内存缓存与单局 in-flight，再按策略补全（默认可选本地 JSON，再 Supabase 批量）。
  */
 export async function loadSlimMatchJsonForDetails(
-  matchIds: readonly number[]
+  matchIds: readonly number[],
+  options?: LoadSlimMatchDetailsOptions
 ): Promise<Record<number, SlimMatchJson | null>> {
+  const preferCloud = Boolean(options?.preferCloud);
   const out: Record<number, SlimMatchJson | null> = {};
   const now = Date.now();
   const unique = [
@@ -128,15 +138,22 @@ export async function loadSlimMatchJsonForDetails(
   if (work.length === 0) return out;
 
   const needCloud: number[] = [];
-  await forEachConcurrent(work, 20, async (mid) => {
-    const local = await tryFetchLocalSlimMatchJson(mid);
-    if (local) {
-      putDetailCache(mid, local);
-      out[mid] = local;
-    } else {
+
+  if (preferCloud) {
+    for (const mid of work) {
       needCloud.push(mid);
     }
-  });
+  } else {
+    await forEachConcurrent(work, 20, async (mid) => {
+      const local = await tryFetchLocalSlimMatchJson(mid);
+      if (local) {
+        putDetailCache(mid, local);
+        out[mid] = local;
+      } else {
+        needCloud.push(mid);
+      }
+    });
+  }
 
   if (needCloud.length === 0) return out;
 

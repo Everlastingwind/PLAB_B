@@ -5,7 +5,7 @@ import { ReplayCard } from "../components/ReplayCard";
 import { ViewportMountRow } from "../components/ViewportMountRow";
 import type { FeedSelection } from "../components/FeedModeToggle";
 import {
-  PAGE_SIZE,
+  MATCH_LIST_LOAD_STEP,
   fetchCloudPubReplaySummariesPage,
   fetchReplaysForFeedSelection,
 } from "../lib/replaysApi";
@@ -86,16 +86,15 @@ export function HomePage() {
         const currentPage =
           Number.isFinite(pageRaw) && pageRaw > 0 ? Math.floor(pageRaw) : 1;
         if (homeView === "matches" && feed.pub && !feed.pro) {
-          const pack = await fetchCloudPubReplaySummariesPage(currentPage, PAGE_SIZE);
+          const pack = await fetchCloudPubReplaySummariesPage(
+            currentPage,
+            MATCH_LIST_LOAD_STEP
+          );
           if (cancelled) return;
           setReplays(pack.replays);
           setPagedTotalRows(Math.max(0, pack.totalRows));
           setIdxErr(pack.error);
           setFeedListLoading(false);
-          const nextPage = currentPage + 1;
-          if (nextPage * PAGE_SIZE - PAGE_SIZE < pack.totalRows) {
-            void fetchCloudPubReplaySummariesPage(nextPage, PAGE_SIZE);
-          }
           return;
         }
 
@@ -147,9 +146,9 @@ export function HomePage() {
 
   const totalPages = useMemo(() => {
     if (homeView === "matches" && feed.pub && !feed.pro && pagedTotalRows != null) {
-      return Math.max(1, Math.ceil(pagedTotalRows / PAGE_SIZE));
+      return Math.max(1, Math.ceil(pagedTotalRows / MATCH_LIST_LOAD_STEP));
     }
-    return Math.max(1, Math.ceil(replays.length / PAGE_SIZE));
+    return Math.max(1, Math.ceil(replays.length / MATCH_LIST_LOAD_STEP));
   }, [feed.pro, feed.pub, homeView, pagedTotalRows, replays.length]);
   const pageFromQuery = (() => {
     const n = Number(searchParams.get("page") || 1);
@@ -159,10 +158,11 @@ export function HomePage() {
   const pageForSlice = Math.min(page, totalPages);
   const visible = useMemo(() => {
     if (homeView === "matches" && feed.pub && !feed.pro) return replays;
-    const start = (pageForSlice - 1) * PAGE_SIZE;
-    const end = start + PAGE_SIZE;
+    const start = (pageForSlice - 1) * MATCH_LIST_LOAD_STEP;
+    const end = start + MATCH_LIST_LOAD_STEP;
     return replays.slice(start, end);
   }, [feed.pro, feed.pub, homeView, replays, pageForSlice]);
+
   const shouldRestoreScroll = useMemo(() => {
     const anchorRaw = sessionStorage.getItem(anchorKey)?.trim();
     if (anchorRaw) return true;
@@ -214,7 +214,14 @@ export function HomePage() {
     return () => {
       for (const id of timers) window.clearTimeout(id);
     };
-  }, [scrollKey, visible.length, mapsLoading, maps, restoreHomeListScroll, shouldRestoreScroll]);
+  }, [
+    scrollKey,
+    visible.length,
+    mapsLoading,
+    maps,
+    restoreHomeListScroll,
+    shouldRestoreScroll,
+  ]);
 
   /** Edge 等：最大化后布局/视口变化会把滚动打回顶部，内容高度变化时再跑一次 */
   useEffect(() => {
@@ -253,7 +260,13 @@ export function HomePage() {
       ro.disconnect();
       window.removeEventListener("resize", schedule);
     };
-  }, [mapsLoading, maps, restoreHomeListScroll, visible.length, shouldRestoreScroll]);
+  }, [
+    mapsLoading,
+    maps,
+    restoreHomeListScroll,
+    visible.length,
+    shouldRestoreScroll,
+  ]);
 
   useEffect(() => {
     let ticking = false;
@@ -291,6 +304,12 @@ export function HomePage() {
   }, [scrollKey]);
 
   const feedKey = `${feed.pub ? "p" : ""}${feed.pro ? "r" : ""}`;
+
+  /** Items 页全局出装统计：限制样本量，避免对数百 match 发起 slim 拉取 */
+  const replaysSampleForItemMeta = useMemo(
+    () => replays.slice(0, 48),
+    [replays]
+  );
 
   const normalizeRole = useCallback((raw: unknown): "carry" | "mid" | "offlane" | "support(4)" | "support(5)" | null => {
     const s = String(raw ?? "").trim().toLowerCase();
@@ -553,7 +572,18 @@ export function HomePage() {
               </div>
               {homeView === "matches" ? (
                 feedListLoading ? (
-                  <p className="text-sm text-skin-sub">加载录像列表…</p>
+                  <div
+                    className="flex flex-col gap-2 sm:gap-3"
+                    aria-busy="true"
+                    aria-label="对局列表加载中"
+                  >
+                    {Array.from({ length: 5 }).map((_, s) => (
+                      <div
+                        key={`sk-${s}`}
+                        className="min-h-[5.25rem] animate-pulse rounded-xl border border-skin-line bg-slate-200/50 dark:bg-slate-800/50 sm:min-h-[6.25rem]"
+                      />
+                    ))}
+                  </div>
                 ) : (
                   <div className="flex flex-col gap-2 sm:gap-3">
                     {visible.map((r, i) => (
@@ -597,8 +627,13 @@ export function HomePage() {
               >
                 上一页
               </button>
-              <p className="text-xs text-skin-sub">
+              <p className="text-xs text-skin-sub tabular-nums">
                 第 {pageForSlice} / {totalPages} 页
+                {homeView === "matches" && feed.pub && !feed.pro && pagedTotalRows != null
+                  ? `（共 ${pagedTotalRows} 场）`
+                  : homeView === "matches"
+                    ? `（共 ${replays.length} 场）`
+                    : null}
               </p>
               <button
                 type="button"
@@ -783,7 +818,10 @@ export function HomePage() {
             </section>
           ) : null}
           {homeView === "items" && !mapsLoading && maps ? (
-            <MetaGlobalItemStatsSection replays={replays} maps={maps} />
+            <MetaGlobalItemStatsSection
+              replays={replaysSampleForItemMeta}
+              maps={maps}
+            />
           ) : null}
           {homeView === "top" && !mapsLoading && maps ? (
             <section className="mt-6 rounded-lg border border-skin-line bg-skin-card p-3">

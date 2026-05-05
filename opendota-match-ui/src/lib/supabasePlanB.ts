@@ -283,18 +283,19 @@ export async function fetchPlanBReplayIndexRows(): Promise<{
   return { rows: [], error: lastError };
 }
 
-export async function fetchPlanBReplayIndexPage(
-  page: number,
-  pageSize: number
+/**
+ * 列表分页（兜底）：count 一次 + 轻列 range + players in —— 共 3 次往返；
+ * 大 `players` json 与排序同 SQL 易超时，作为 {@link fetchPlanBReplayIndexPage} 的回退。
+ */
+async function fetchPlanBReplayIndexPageSplit(
+  client: NonNullable<typeof supabase>,
+  safePage: number,
+  safePageSize: number
 ): Promise<{
   rows: Record<string, unknown>[];
   totalRows: number;
   error: string | null;
 }> {
-  const client = supabase;
-  if (!client) return { rows: [], totalRows: 0, error: null };
-  const safePage = Math.max(1, Math.floor(page || 1));
-  const safePageSize = Math.max(1, Math.min(100, Math.floor(pageSize || 10)));
   const from = (safePage - 1) * safePageSize;
   const to = from + safePageSize - 1;
 
@@ -345,6 +346,59 @@ export async function fetchPlanBReplayIndexPage(
     players: playersById.get(String(row.match_id)),
   }));
   return { rows: merged, totalRows, error: null };
+}
+
+/**
+ * plan_b 列表分页：优先 **单次** `select(索引列含 players) + count + range`，
+ * 失败或超时时回退为 split 查询。
+ */
+export async function fetchPlanBReplayIndexPage(
+  page: number,
+  pageSize: number
+): Promise<{
+  rows: Record<string, unknown>[];
+  totalRows: number;
+  error: string | null;
+}> {
+  const client = supabase;
+  if (!client) return { rows: [], totalRows: 0, error: null };
+  const safePage = Math.max(1, Math.floor(page || 1));
+  const safePageSize = Math.max(1, Math.min(100, Math.floor(pageSize || 10)));
+  const from = (safePage - 1) * safePageSize;
+  const to = from + safePageSize - 1;
+
+  const runSelect = async (sel: string) =>
+    client
+      .from("plan_b")
+      .select(sel, { count: "exact" })
+      .order("created_at", { ascending: false })
+      .range(from, to);
+
+  let { data, error, count } = await runSelect(PLAN_B_INDEX_SELECT);
+  if (error) {
+    const msg = error.message || "";
+    if (/column|42703|does not exist|schema cache/i.test(msg)) {
+      ({ data, error, count } = await runSelect("*"));
+    }
+  }
+
+  if (
+    error &&
+    (looksLikeStatementTimeout(error.message || "") ||
+      /timeout|57014|canceling/i.test(error.message || ""))
+  ) {
+    return fetchPlanBReplayIndexPageSplit(client, safePage, safePageSize);
+  }
+
+  if (error) {
+    return { rows: [], totalRows: 0, error: error.message };
+  }
+
+  const rows = Array.isArray(data)
+    ? (data as unknown as Record<string, unknown>[])
+    : [];
+  const totalRows = Math.max(0, Number(count ?? 0));
+  return { rows, totalRows, error: null };
 }
 
 const PLAN_B_STATS_PAGE_SIZE = 500;

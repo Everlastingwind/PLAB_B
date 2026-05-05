@@ -27,11 +27,14 @@ function HeroCells({
   maps,
   side,
   heroImgProps,
+  eagerPortraits,
 }: {
   players: ReplayPlayerSummary[];
   maps: EntityMapsPayload;
   side: "radiant" | "dire";
   heroImgProps: typeof steamCdnImgDefer | typeof steamCdnImgHero;
+  /** 首条卡片等首屏：eager；其余强制 lazy */
+  eagerPortraits: boolean;
 }) {
   const sorted = useMemo(
     () => [...players].sort(compareByPlayerSlot),
@@ -67,8 +70,9 @@ function HeroCells({
               <img
                 src={heroIconUrl(key === "unknown" ? "invoker" : key)}
                 alt=""
-                className="h-7 w-7 rounded-sm object-cover sm:h-10 sm:w-10 lg:h-11 lg:w-11"
+                className="h-7 w-7 rounded-sm object-cover sm:h-10 sm:w-10 lg:h-11 lg:w-11 bg-slate-200 dark:bg-slate-800"
                 {...heroImgProps}
+                loading={eagerPortraits ? "eager" : "lazy"}
                 onError={onDotaSteamAssetImgError}
               />
             </Link>
@@ -187,7 +191,13 @@ const ReplayCardImpl = ({
       </div>
       <div className="relative z-10 flex max-sm:min-h-[3.25rem] flex-nowrap items-stretch gap-0.5 pointer-events-none max-sm:px-0 sm:gap-3">
         <div className="flex min-w-0 max-sm:flex-1 max-sm:justify-end sm:flex-1 items-center justify-end sm:justify-center">
-          <HeroCells players={rad} maps={maps} side="radiant" heroImgProps={heroImgProps} />
+          <HeroCells
+            players={rad}
+            maps={maps}
+            side="radiant"
+            heroImgProps={heroImgProps}
+            eagerPortraits={eagerHeroPortraits}
+          />
         </div>
 
         <div
@@ -225,7 +235,13 @@ const ReplayCardImpl = ({
         </div>
 
         <div className="flex min-w-0 max-sm:flex-1 max-sm:justify-start sm:flex-1 items-center justify-start sm:justify-center">
-          <HeroCells players={dire} maps={maps} side="dire" heroImgProps={heroImgProps} />
+          <HeroCells
+            players={dire}
+            maps={maps}
+            side="dire"
+            heroImgProps={heroImgProps}
+            eagerPortraits={eagerHeroPortraits}
+          />
         </div>
       </div>
     </article>

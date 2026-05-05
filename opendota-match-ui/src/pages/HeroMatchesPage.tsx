@@ -3,7 +3,7 @@ import { useParams, Link, useNavigate, useSearchParams } from "react-router-dom"
 import { PageShell } from "../components/PageShell";
 import type { FeedSelection } from "../components/FeedModeToggle";
 import {
-  PAGE_SIZE,
+  MATCH_LIST_LOAD_STEP,
   fetchReplaysForFeedSelection,
   filterByHeroKey,
   filterReplaysByTeammateOpponentHero,
@@ -36,8 +36,6 @@ import { SEOMeta } from "../components/SEOMeta";
 import { ViewportMountRow } from "../components/ViewportMountRow";
 import { loadSlimMatchJsonForDetails } from "../lib/loadSlimMatchJson";
 import { HeroBuildOverviewCard } from "../components/HeroBuildOverviewCard";
-
-const DETAIL_FAST_FIRST = 4;
 
 function toTalentTreeUi(raw: SlimPlayer["talent_tree"]): TalentTreeUi | null {
   if (!raw || !Array.isArray(raw.tiers)) return null;
@@ -146,7 +144,7 @@ export function HeroMatchesPage() {
   const [detailByMatch, setDetailByMatch] = useState<Record<number, SlimMatchJson>>(
     {}
   );
-  const [page, setPage] = useState(1);
+  const [listPage, setListPage] = useState(1);
 
   const withHeroIdParam = useMemo(() => {
     const raw = searchParams.get("with_hero_id");
@@ -207,7 +205,7 @@ export function HeroMatchesPage() {
   }, [decoded, setSearchParams]);
 
   useEffect(() => {
-    setPage(1);
+    setListPage(1);
     setRoleFilter("all");
   }, [decoded, feed]);
 
@@ -235,7 +233,7 @@ export function HeroMatchesPage() {
   }, [searchParams, decoded]);
 
   useEffect(() => {
-    setPage(1);
+    setListPage(1);
   }, [withHeroIdParam, vsHeroIdParam]);
 
   useEffect(() => {
@@ -337,97 +335,74 @@ export function HeroMatchesPage() {
     return out;
   }, [replaysSynergy, replayRole]);
 
-  const totalPages = useMemo(
-    () => Math.max(1, Math.ceil(filteredReplays.length / PAGE_SIZE)),
+  const filteredReplayIdsSignature = useMemo(
+    () => filteredReplays.map((r) => String(r.match_id)).join(","),
+    [filteredReplays]
+  );
+
+  const totalListPages = useMemo(
+    () =>
+      Math.max(
+        1,
+        Math.ceil(filteredReplays.length / MATCH_LIST_LOAD_STEP)
+      ),
     [filteredReplays.length]
   );
-  const pageForSlice = Math.min(page, totalPages);
-  const visible = useMemo(() => {
-    const start = (pageForSlice - 1) * PAGE_SIZE;
-    const end = start + PAGE_SIZE;
-    return filteredReplays.slice(start, end);
-  }, [filteredReplays, pageForSlice]);
+
+  const pageForList = Math.min(listPage, totalListPages);
+
+  const displayedReplays = useMemo(
+    () =>
+      filteredReplays.slice(
+        (pageForList - 1) * MATCH_LIST_LOAD_STEP,
+        pageForList * MATCH_LIST_LOAD_STEP
+      ),
+    [filteredReplays, pageForList]
+  );
+
+  const visibleMatchIdsKey = useMemo(
+    () => displayedReplays.map((r) => r.match_id).join(","),
+    [displayedReplays]
+  );
 
   useEffect(() => {
-    if (page > totalPages) setPage(totalPages);
-  }, [page, totalPages]);
+    setListPage(1);
+  }, [filteredReplayIdsSignature]);
+
+  useEffect(() => {
+    if (listPage > totalListPages) setListPage(totalListPages);
+  }, [listPage, totalListPages]);
 
   useEffect(() => {
     let cancelled = false;
-    if (!maps) return;
-    const need = visible
-      .map((r) => r.match_id)
-      .filter((mid) => !detailByMatch[mid]);
-    if (!need.length) return;
-
-    const picksFromBatch = (
-      ids: number[],
-      batch: Record<number, SlimMatchJson | null>
-    ): Record<number, SlimMatchJson> => {
-      const updates: Record<number, SlimMatchJson> = {};
-      for (const mid of ids) {
-        const j = batch[mid];
-        if (j) updates[mid] = j;
-      }
-      return updates;
-    };
-
-    (async () => {
-      const fast = need.slice(0, DETAIL_FAST_FIRST);
-      const rest = need.slice(DETAIL_FAST_FIRST);
-      if (fast.length) {
-        try {
-          const first = await loadSlimMatchJsonForDetails(fast);
-          if (cancelled) return;
-          const u = picksFromBatch(fast, first);
-          if (Object.keys(u).length) {
-            setDetailByMatch((prev) => ({ ...prev, ...u }));
-          }
-        } catch {
-          /* ignore */
-        }
-      }
-      if (cancelled || !rest.length) return;
-      try {
-        const second = await loadSlimMatchJsonForDetails(rest);
-        if (cancelled) return;
-        const u = picksFromBatch(rest, second);
-        if (Object.keys(u).length) {
-          setDetailByMatch((prev) => ({ ...prev, ...u }));
-        }
-      } catch {
-        /* ignore */
-      }
-    })();
-    return () => {
-      cancelled = true;
-    };
-  }, [visible, detailByMatch, maps]);
-
-  useEffect(() => {
-    if (!maps) return;
-    let cancelled = false;
-    const nextStart = pageForSlice * PAGE_SIZE;
-    const nextEnd = nextStart + PAGE_SIZE;
-    const nextPageRows = filteredReplays.slice(nextStart, nextEnd);
-    if (!nextPageRows.length) return;
-    const needIds = nextPageRows
-      .map((r) => r.match_id)
-      .filter((mid) => !detailByMatch[mid]);
-    if (!needIds.length) return;
-
+    if (!maps || !visibleMatchIdsKey) return;
+    const ids = visibleMatchIdsKey
+      .split(",")
+      .map((s) => Number(s))
+      .filter((id) => Number.isFinite(id) && id > 0);
+    if (ids.length === 0) return;
     void (async () => {
-      if (cancelled) return;
       try {
-        await loadSlimMatchJsonForDetails(needIds);
+        const batch = await loadSlimMatchJsonForDetails(ids, {
+          preferCloud: true,
+        });
+        if (cancelled) return;
+        setDetailByMatch((prev) => {
+          const next = { ...prev };
+          for (const mid of ids) {
+            const j = batch[mid];
+            if (j) next[mid] = j;
+          }
+          return next;
+        });
       } catch {
-        /* prefetch best-effort */
+        /* 列表页摘要失败时保留索引行展示，不阻塞页面 */
       }
     })();
     return () => {
       cancelled = true;
     };
-  }, [pageForSlice, filteredReplays, detailByMatch, maps]);
+  }, [visibleMatchIdsKey, maps]);
 
   const heroEntry = useMemo(() => {
     if (!maps?.heroes) return null;
@@ -522,7 +497,7 @@ export function HeroMatchesPage() {
                     <div className="text-center">结果</div>
                     <div className="flex items-center justify-center">比赛编号</div>
                   </div>
-                  {visible.map((r, vIdx) => {
+                  {displayedReplays.map((r, vIdx) => {
                     const p = r.players.find(
                       (x) => heroKeyFromId(x.hero_id, maps) === decoded
                     );
@@ -602,7 +577,7 @@ export function HeroMatchesPage() {
                         <div
                           className={cn(
                             "grid w-full cursor-pointer grid-cols-[minmax(170px,1.08fr)_minmax(120px,0.92fr)_82px_84px_minmax(220px,1.2fr)_minmax(240px,1.45fr)_72px_72px_136px] gap-2 border-b border-slate-500/55 px-3 py-2 text-sm transition-colors hover:bg-slate-100/60 dark:border-slate-700/80 dark:hover:bg-slate-800/40",
-                            vIdx === visible.length - 1 && "border-b-0"
+                            vIdx === displayedReplays.length - 1 && "border-b-0"
                           )}
                           title={`查看比赛 ${r.match_id}`}
                           role="button"
@@ -619,8 +594,9 @@ export function HeroMatchesPage() {
                           <img
                             src={heroIconUrl(decoded === "unknown" ? "invoker" : decoded)}
                             alt=""
-                            className="h-10 w-10 rounded object-cover"
+                            className="h-10 w-10 rounded object-cover bg-slate-200 dark:bg-slate-800"
                             {...(vIdx < 2 ? steamCdnImgHero : steamCdnImgDefer)}
+                            loading="lazy"
                             onError={onDotaSteamAssetImgError}
                           />
                           <div className="min-w-0">
@@ -674,7 +650,7 @@ export function HeroMatchesPage() {
                                       )
                                     }
                                     alt=""
-                                    className="h-8 w-8 rounded object-cover"
+                                    className="h-8 w-8 rounded object-cover bg-slate-200 dark:bg-slate-800"
                                     loading="lazy"
                                     decoding="async"
                                     referrerPolicy="no-referrer"
@@ -698,7 +674,7 @@ export function HeroMatchesPage() {
                                   key={`${r.match_id}-sb-${idx}`}
                                   src={src}
                                   alt=""
-                                  className="h-6 w-6 rounded object-cover"
+                                  className="h-6 w-6 rounded object-cover bg-slate-200 dark:bg-slate-800"
                                   loading="lazy"
                                   decoding="async"
                                   referrerPolicy="no-referrer"
@@ -744,27 +720,36 @@ export function HeroMatchesPage() {
                     );
                   })}
                 </div>
-                <div className="mt-4 flex items-center justify-center gap-3">
-                  <button
-                    type="button"
-                    className="rounded border border-skin-line bg-skin-inset px-3 py-1.5 text-sm text-skin-ink disabled:cursor-not-allowed disabled:opacity-40"
-                    disabled={pageForSlice <= 1}
-                    onClick={() => setPage((p) => Math.max(1, p - 1))}
-                  >
-                    上一页
-                  </button>
-                  <p className="text-xs text-skin-sub">
-                    第 {pageForSlice} / {totalPages} 页
-                  </p>
-                  <button
-                    type="button"
-                    className="rounded border border-skin-line bg-skin-inset px-3 py-1.5 text-sm text-skin-ink disabled:cursor-not-allowed disabled:opacity-40"
-                    disabled={pageForSlice >= totalPages}
-                    onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-                  >
-                    下一页
-                  </button>
-                </div>
+                {filteredReplays.length > 0 ? (
+                  <div className="mt-4 flex flex-wrap items-center justify-center gap-3">
+                    <button
+                      type="button"
+                      className="rounded border border-skin-line bg-skin-inset px-3 py-1.5 text-sm text-skin-ink disabled:cursor-not-allowed disabled:opacity-40"
+                      disabled={pageForList <= 1}
+                      onClick={() =>
+                        setListPage((p) => Math.max(1, p - 1))
+                      }
+                    >
+                      上一页
+                    </button>
+                    <p className="text-xs text-skin-sub tabular-nums">
+                      第 {pageForList} / {totalListPages} 页（共{" "}
+                      {filteredReplays.length} 场）
+                    </p>
+                    <button
+                      type="button"
+                      className="rounded border border-skin-line bg-skin-inset px-3 py-1.5 text-sm text-skin-ink disabled:cursor-not-allowed disabled:opacity-40"
+                      disabled={pageForList >= totalListPages}
+                      onClick={() =>
+                        setListPage((p) =>
+                          Math.min(totalListPages, p + 1)
+                        )
+                      }
+                    >
+                      下一页
+                    </button>
+                  </div>
+                ) : null}
               </>
             )
           ) : (

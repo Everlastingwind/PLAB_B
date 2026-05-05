@@ -191,12 +191,14 @@ export function ItemDetailPage() {
     }
     let cancelled = false;
     setSlimLoading(true);
-    void loadSlimMatchJsonForDetails(matchIds).then((m) => {
-      if (!cancelled) {
-        setSlimByMatchId(m);
-        setSlimLoading(false);
+    void loadSlimMatchJsonForDetails(matchIds, { preferCloud: true }).then(
+      (m) => {
+        if (!cancelled) {
+          setSlimByMatchId(m);
+          setSlimLoading(false);
+        }
       }
-    });
+    );
     return () => {
       cancelled = true;
     };

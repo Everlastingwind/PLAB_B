@@ -7,7 +7,7 @@ import {
   onDotaSteamAssetImgError,
   steamCdnImgDefer,
 } from "../data/mockMatchPlayers";
-import { loadSlimMatchJsonForDetail } from "../lib/loadSlimMatchJson";
+import { loadSlimMatchJsonForDetails } from "../lib/loadSlimMatchJson";
 import { replayIndexPlayerDisplayLabel } from "../lib/playerDisplay";
 import { fetchProReplaysIndex } from "../lib/replaysApi";
 import { ReplayCard } from "./ReplayCard";
@@ -198,13 +198,32 @@ export function MetaTopKillGamesSection(props: Props) {
       .filter((n) => Number.isFinite(n) && n > 0);
     if (!ids.length) return;
     let cancelled = false;
+    for (const mid of ids) {
+      setSlimByMatch((prev) => ({ ...prev, [mid]: prev[mid] ?? "loading" }));
+    }
     void (async () => {
-      for (const mid of ids) {
+      try {
+        const batch = await loadSlimMatchJsonForDetails(ids, {
+          preferCloud: true,
+        });
         if (cancelled) return;
-        setSlimByMatch((prev) => ({ ...prev, [mid]: prev[mid] ?? "loading" }));
-        const slim = await loadSlimMatchJsonForDetail(mid);
-        if (cancelled) return;
-        setSlimByMatch((prev) => ({ ...prev, [mid]: slim }));
+        setSlimByMatch((prev) => {
+          const next = { ...prev };
+          for (const mid of ids) {
+            next[mid] = batch[mid] ?? null;
+          }
+          return next;
+        });
+      } catch {
+        if (!cancelled) {
+          setSlimByMatch((prev) => {
+            const next = { ...prev };
+            for (const mid of ids) {
+              if (next[mid] === "loading") next[mid] = null;
+            }
+            return next;
+          });
+        }
       }
     })();
     return () => {

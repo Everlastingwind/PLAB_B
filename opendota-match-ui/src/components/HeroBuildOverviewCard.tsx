@@ -9,8 +9,7 @@ import {
   steamCdnImgDefer,
   steamCdnImgHero,
 } from "../data/mockMatchPlayers";
-import { loadSlimMatchJsonForDetail } from "../lib/loadSlimMatchJson";
-import { forEachConcurrent } from "../lib/fetchConcurrent";
+import { loadSlimMatchJsonForDetails } from "../lib/loadSlimMatchJson";
 import { HeroPickerPopover } from "./HeroPickerPopover";
 
 type Props = {
@@ -41,10 +40,9 @@ type OverviewData = {
   goodAgainst: Array<{ heroId: number; winRate: number; games: number }>;
 };
 
-const INSIGHT_CONCURRENCY = 4;
 const MAX_MATCHES_FOR_INSIGHT = 180;
-const FAST_FIRST_BATCH_SIZE = 80;
-const INCREMENTAL_BATCH_SIZE = 60;
+/** 与 `fetchPlanBSlimPayloadBatch` chunk 对齐，减少 Supabase 往返 */
+const SLIM_BATCH_SIZE = 40;
 const VERSUS_MIN_GAMES = 20;
 const OVERVIEW_DAILY_CACHE_PREFIX = "plab_hero_overview_daily_v1";
 type HeroPlayerLite = {
@@ -52,7 +50,6 @@ type HeroPlayerLite = {
   purchase_history?: Array<{ time?: number; item?: string; item_key?: string }>;
   talent_tree?: { tiers?: Array<{ hero_level?: number; selected?: string }> };
 };
-const HERO_PLAYER_CACHE = new Map<string, Promise<HeroPlayerLite | undefined>>();
 const HERO_OVERVIEW_CACHE = new Map<string, OverviewData>();
 const COMPOSED_ITEM_KEYS = new Set<string>([
   "abyssal_blade","aeon_disk","aether_lens","ancient_janggo","angels_demise","arcane_blink","arcane_boots","armlet","assault","basher","bfury","black_king_bar","blade_mail","bloodstone","bloodthorn","boots_of_bearing","bracer","buckler","butterfly","consecrated_wraps","crellas_crozier","crimson_guard","cyclone","dagon","desolator","devastator","diffusal_blade","diffusal_blade_2","disperser","dragon_lance","echo_sabre","essence_distiller","eternal_shroud","ethereal_blade","falcon_blade","force_staff","glimmer_cape","great_famango","greater_crit","greater_famango","guardian_greaves","gungir","hand_of_midas","harpoon","headdress","heart","heavens_halberd","helm_of_the_dominator","helm_of_the_overlord","holy_locket","hurricane_pike","hydras_breath","invis_sword","iron_talon","kaya","kaya_and_sange","lesser_crit","lotus_orb","maelstrom","mage_slayer","magic_wand","manta","mask_of_madness","medallion_of_courage","mekansm","meteor_hammer","mjollnir","monkey_king_bar","moon_shard","necronomicon","necronomicon_2","necronomicon_3","null_talisman","nullifier","oblivion_staff","octarine_core","orb_of_corrosion","orchid","overwhelming_blink","pavise","pers","phase_boots","phylactery","pipe","power_treads","radiance","rapier","refresher","revenants_brooch","ring_of_basilius","rod_of_atos","sange","sange_and_yasha","satanic","sheepstick","shivas_guard","silver_edge","skadi","solar_crest","soul_booster","soul_ring","specialists_array","sphere","spirit_vessel","swift_blink","tranquil_boots","travel_boots","travel_boots_2","trident","ultimate_scepter","ultimate_scepter_2","urn_of_shadows","vanguard","veil_of_discord","vladmir","ward_dispenser","wind_waker","witch_blade","wraith_band","wraith_pact","yasha","yasha_and_kaya",
@@ -192,21 +189,6 @@ export function HeroBuildOverviewCard(props: Props) {
     [heroId, replayIdsKey]
   );
 
-  async function loadHeroPlayerWithPurchaseHistory(matchId: number) {
-    const cacheKey = `${heroId}:${matchId}`;
-    const hit = HERO_PLAYER_CACHE.get(cacheKey);
-    if (hit) return hit;
-    const task = (async () => {
-      const localSlim = await loadSlimMatchJsonForDetail(matchId);
-      const localPlayer = (localSlim?.players || []).find(
-        (p) => Number(p.hero_id || 0) === heroId
-      );
-      return localPlayer as HeroPlayerLite | undefined;
-    })();
-    HERO_PLAYER_CACHE.set(cacheKey, task);
-    return task;
-  }
-
   useEffect(() => {
     if (!enabled) {
       setLoading(false);
@@ -256,8 +238,13 @@ export function HeroBuildOverviewCard(props: Props) {
     void (async () => {
       const acc = createOverviewAccum();
 
-      const consumeRow = async (r: ReplaySummary) => {
-        const pHero = (r.players || []).find((p) => Number(p.hero_id || 0) === heroId);
+      const applyRow = (
+        r: ReplaySummary,
+        heroPlayer: HeroPlayerLite | undefined
+      ) => {
+        const pHero = (r.players || []).find(
+          (p) => Number(p.hero_id || 0) === heroId
+        );
         if (!pHero) return;
         acc.totalMatches += 1;
         const heroWon = Boolean(pHero.is_radiant) === Boolean(r.radiant_win);
@@ -273,7 +260,6 @@ export function HeroBuildOverviewCard(props: Props) {
           acc.versus.set(hid, cur);
         }
 
-        const heroPlayer = await loadHeroPlayerWithPurchaseHistory(r.match_id);
         if (!heroPlayer) return;
 
         const tt = heroPlayer.talent_tree;
@@ -289,13 +275,23 @@ export function HeroBuildOverviewCard(props: Props) {
           }
         }
 
-        const hist = (heroPlayer as { purchase_history?: Array<{ time?: number; item?: string; item_key?: string }> }).purchase_history;
+        const hist = (
+          heroPlayer as {
+            purchase_history?: Array<{
+              time?: number;
+              item?: string;
+              item_key?: string;
+            }>;
+          }
+        ).purchase_history;
         if (!Array.isArray(hist) || hist.length === 0) return;
         const earliestByItem = new Map<string, number>();
         for (const row of hist) {
           const sec = Number(row?.time ?? -1);
           if (!Number.isFinite(sec) || sec < 0) continue;
-          const keyRaw = String(row?.item_key || row?.item || "").trim().replace(/^item_/, "");
+          const keyRaw = String(row?.item_key || row?.item || "")
+            .trim()
+            .replace(/^item_/, "");
           if (!keyRaw) continue;
           const m = Math.floor(sec / 60);
           const ex = earliestByItem.get(keyRaw);
@@ -310,18 +306,29 @@ export function HeroBuildOverviewCard(props: Props) {
         }
       };
 
-      const fastRows = rows.slice(0, FAST_FIRST_BATCH_SIZE);
-      await forEachConcurrent(fastRows, INSIGHT_CONCURRENCY, consumeRow);
-      if (cancelled) return;
-      setData(buildOverviewData(acc));
-      // Show first-batch result immediately; continue refining in background.
-      setLoading(false);
+      if (rows.length === 0) {
+        setLoading(false);
+        return;
+      }
 
-      for (let i = FAST_FIRST_BATCH_SIZE; i < rows.length; i += INCREMENTAL_BATCH_SIZE) {
-        const batch = rows.slice(i, i + INCREMENTAL_BATCH_SIZE);
-        await forEachConcurrent(batch, INSIGHT_CONCURRENCY, consumeRow);
+      for (let i = 0; i < rows.length; i += SLIM_BATCH_SIZE) {
+        const slice = rows.slice(i, i + SLIM_BATCH_SIZE);
+        const ids = slice.map((r) => r.match_id);
+        const slimMap = await loadSlimMatchJsonForDetails(ids, {
+          preferCloud: true,
+        });
         if (cancelled) return;
+        for (const r of slice) {
+          const slim = slimMap[r.match_id];
+          const heroPlayer = slim
+            ? ((slim.players || []).find(
+                (p) => Number(p.hero_id || 0) === heroId
+              ) as HeroPlayerLite | undefined)
+            : undefined;
+          applyRow(r, heroPlayer);
+        }
         setData(buildOverviewData(acc));
+        if (i === 0) setLoading(false);
         await new Promise((resolve) => window.setTimeout(resolve, 0));
       }
 

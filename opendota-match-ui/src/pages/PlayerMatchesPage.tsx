@@ -3,7 +3,7 @@ import { useParams, Link, useSearchParams } from "react-router-dom";
 import { PageShell } from "../components/PageShell";
 import type { FeedSelection } from "../components/FeedModeToggle";
 import {
-  PAGE_SIZE,
+  MATCH_LIST_LOAD_STEP,
   fetchReplaysForFeedSelection,
   filterByAccountId,
 } from "../lib/replaysApi";
@@ -78,15 +78,15 @@ export function PlayerMatchesPage() {
   const [detailByMatch, setDetailByMatch] = useState<Record<number, SlimPlayer>>(
     {}
   );
-  const [page, setPage] = useState(1);
+  const [listPage, setListPage] = useState(1);
 
   useEffect(() => {
-    setPage(1);
+    setListPage(1);
     setRoleFilter("all");
   }, [aid, feed]);
 
   useEffect(() => {
-    setPage(1);
+    setListPage(1);
   }, [heroFilterKey]);
 
   useEffect(() => {
@@ -175,33 +175,60 @@ export function PlayerMatchesPage() {
     return out;
   }, [replays, replayRole]);
 
-  const totalPages = useMemo(
-    () => Math.max(1, Math.ceil(filteredReplays.length / PAGE_SIZE)),
+  const filteredReplayIdsSignature = useMemo(
+    () => filteredReplays.map((r) => String(r.match_id)).join(","),
+    [filteredReplays]
+  );
+
+  const totalListPages = useMemo(
+    () =>
+      Math.max(
+        1,
+        Math.ceil(filteredReplays.length / MATCH_LIST_LOAD_STEP)
+      ),
     [filteredReplays.length]
   );
-  const pageForSlice = Math.min(page, totalPages);
-  const visible = useMemo(() => {
-    const start = (pageForSlice - 1) * PAGE_SIZE;
-    const end = start + PAGE_SIZE;
-    return filteredReplays.slice(start, end);
-  }, [filteredReplays, pageForSlice]);
+
+  const pageForList = Math.min(listPage, totalListPages);
+
+  const displayedReplays = useMemo(
+    () =>
+      filteredReplays.slice(
+        (pageForList - 1) * MATCH_LIST_LOAD_STEP,
+        pageForList * MATCH_LIST_LOAD_STEP
+      ),
+    [filteredReplays, pageForList]
+  );
+
+  const visibleMatchIdsKey = useMemo(
+    () => displayedReplays.map((r) => r.match_id).join(","),
+    [displayedReplays]
+  );
 
   useEffect(() => {
-    if (page > totalPages) setPage(totalPages);
-  }, [page, totalPages]);
+    setListPage(1);
+  }, [filteredReplayIdsSignature]);
+
+  useEffect(() => {
+    if (listPage > totalListPages) setListPage(totalListPages);
+  }, [listPage, totalListPages]);
 
   useEffect(() => {
     let cancelled = false;
-    const need = visible
-      .map((r) => r.match_id)
-      .filter((mid) => !detailByMatch[mid]);
-    if (!need.length || aid <= 0) return;
-    (async () => {
+    if (aid <= 0 || !visibleMatchIdsKey) return;
+    const ids = visibleMatchIdsKey
+      .split(",")
+      .map((s) => Number(s))
+      .filter((id) => Number.isFinite(id) && id > 0);
+    if (ids.length === 0) return;
+    void (async () => {
       try {
-        const batch = await loadSlimMatchJsonForDetails(need);
+        const batch = await loadSlimMatchJsonForDetails(ids, {
+          preferCloud: true,
+        });
         if (cancelled) return;
         const updates: Record<number, SlimPlayer> = {};
-        for (const mid of need) {
+        for (const mid of ids) {
           const j = batch[mid];
           if (!j) continue;
           const p = (j.players || []).find(
@@ -219,7 +246,7 @@ export function PlayerMatchesPage() {
     return () => {
       cancelled = true;
     };
-  }, [visible, aid, detailByMatch]);
+  }, [visibleMatchIdsKey, aid]);
 
   const titleName = useMemo(() => {
     let bestPro: string | null = null;
@@ -348,7 +375,7 @@ export function PlayerMatchesPage() {
                           h.key === "unknown" ? "invoker" : h.key
                         )}
                         alt=""
-                        className="h-8 w-8 rounded-[2px] object-cover"
+                        className="h-8 w-8 rounded-[2px] object-cover bg-slate-200 dark:bg-slate-800"
                         loading="lazy"
                         decoding="async"
                         referrerPolicy="no-referrer"
@@ -395,7 +422,7 @@ export function PlayerMatchesPage() {
                     <div className="text-center">结果</div>
                     <div className="flex items-center justify-center">比赛编号</div>
                   </div>
-                  {visible.map((r, vIdx) => {
+                  {displayedReplays.map((r, vIdx) => {
                     const row = detailByMatch[r.match_id];
                     const p = r.players.find((x) => x.account_id === aid);
                     const isWin =
@@ -423,7 +450,7 @@ export function PlayerMatchesPage() {
                       <div
                         className={cn(
                           "grid w-full grid-cols-[minmax(190px,1.15fr)_84px_84px_minmax(220px,1.2fr)_minmax(250px,1.45fr)_72px_72px_136px] gap-2 border-b border-skin-line/70 px-3 py-2 text-xs",
-                          vIdx === visible.length - 1 && "border-b-0"
+                          vIdx === displayedReplays.length - 1 && "border-b-0"
                         )}
                       >
                         <Link
@@ -434,8 +461,9 @@ export function PlayerMatchesPage() {
                           <img
                             src={heroIconUrl(key === "unknown" ? "invoker" : key)}
                             alt=""
-                            className="h-10 w-10 rounded object-cover"
+                            className="h-10 w-10 rounded object-cover bg-slate-200 dark:bg-slate-800"
                             {...(vIdx < 2 ? steamCdnImgHero : steamCdnImgDefer)}
+                            loading="lazy"
                             onError={onDotaSteamAssetImgError}
                           />
                           <div className="min-w-0">
@@ -470,7 +498,7 @@ export function PlayerMatchesPage() {
                                       )
                                     }
                                     alt=""
-                                    className="h-8 w-8 rounded object-cover"
+                                    className="h-8 w-8 rounded object-cover bg-slate-200 dark:bg-slate-800"
                                     loading="lazy"
                                     decoding="async"
                                     referrerPolicy="no-referrer"
@@ -494,7 +522,7 @@ export function PlayerMatchesPage() {
                                     key={`${r.match_id}-sb-${idx}`}
                                     src={src}
                                     alt=""
-                                    className="h-6 w-6 rounded object-cover"
+                                    className="h-6 w-6 rounded object-cover bg-slate-200 dark:bg-slate-800"
                                     loading="lazy"
                                     decoding="async"
                                     referrerPolicy="no-referrer"
@@ -544,27 +572,36 @@ export function PlayerMatchesPage() {
                     );
                   })}
                 </div>
-                <div className="mt-4 flex items-center justify-center gap-3">
-                  <button
-                    type="button"
-                    className="rounded border border-skin-line bg-skin-inset px-3 py-1.5 text-sm text-skin-ink disabled:cursor-not-allowed disabled:opacity-40"
-                    disabled={pageForSlice <= 1}
-                    onClick={() => setPage((p) => Math.max(1, p - 1))}
-                  >
-                    上一页
-                  </button>
-                  <p className="text-xs text-skin-sub">
-                    第 {pageForSlice} / {totalPages} 页
-                  </p>
-                  <button
-                    type="button"
-                    className="rounded border border-skin-line bg-skin-inset px-3 py-1.5 text-sm text-skin-ink disabled:cursor-not-allowed disabled:opacity-40"
-                    disabled={pageForSlice >= totalPages}
-                    onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-                  >
-                    下一页
-                  </button>
-                </div>
+                {filteredReplays.length > 0 ? (
+                  <div className="mt-4 flex flex-wrap items-center justify-center gap-3">
+                    <button
+                      type="button"
+                      className="rounded border border-skin-line bg-skin-inset px-3 py-1.5 text-sm text-skin-ink disabled:cursor-not-allowed disabled:opacity-40"
+                      disabled={pageForList <= 1}
+                      onClick={() =>
+                        setListPage((p) => Math.max(1, p - 1))
+                      }
+                    >
+                      上一页
+                    </button>
+                    <p className="text-xs text-skin-sub tabular-nums">
+                      第 {pageForList} / {totalListPages} 页（共{" "}
+                      {filteredReplays.length} 场）
+                    </p>
+                    <button
+                      type="button"
+                      className="rounded border border-skin-line bg-skin-inset px-3 py-1.5 text-sm text-skin-ink disabled:cursor-not-allowed disabled:opacity-40"
+                      disabled={pageForList >= totalListPages}
+                      onClick={() =>
+                        setListPage((p) =>
+                          Math.min(totalListPages, p + 1)
+                        )
+                      }
+                    >
+                      下一页
+                    </button>
+                  </div>
+                ) : null}
               </>
             )
           ) : (

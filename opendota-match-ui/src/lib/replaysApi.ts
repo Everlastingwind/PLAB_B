@@ -6,13 +6,12 @@ import type {
 } from "../types/replaysIndex";
 import { fetchDeployedDataJson } from "./fetchStaticJson";
 import { applyProDisplayOverridesToReplaySummaries } from "./proAccountDisplayOverrides";
-import {
-  fetchPlanBReplayIndexPage,
-  fetchPlanBReplayIndexRows,
-  unwrapPlanBRow,
-} from "./supabasePlanB";
+import { fetchPlanBReplayIndexPage, unwrapPlanBRow } from "./supabasePlanB";
 
 const PAGE_SIZE = 10;
+
+/** 英雄页 / 选手页 / 首页对局列表：首屏与「加载更多」步长 */
+export const MATCH_LIST_LOAD_STEP = 15;
 
 function normalizeReplaySource(
   row: ReplaySummary,
@@ -199,71 +198,19 @@ type CloudPubReplayPagePack = {
   error: string | null;
 };
 
-/** 多处在同一时刻拉云索引时共用一次 in-flight，减轻海外链路重复请求 */
-let cloudPubReplayInflight: Promise<CloudPubReplayPack> | null = null;
-
-/**
- * 首页已拉过云索引后，搜索栏 idle/定时仍会再调本函数；短期缓存避免再打一轮两阶段 Supabase。
- * 成功结果多留一会；失败缩短 TTL 便于恢复后尽快重试。
- */
-let cloudPubReplayCache: { pack: CloudPubReplayPack; expiresAt: number } | null =
-  null;
-const CLOUD_PUB_CACHE_TTL_OK_MS = 60_000;
-const CLOUD_PUB_CACHE_TTL_ERR_MS = 12_000;
 const CLOUD_PUB_PAGE_CACHE_TTL_MS = 60_000;
 const cloudPubPageCache = new Map<
   string,
   { pack: CloudPubReplayPagePack; expiresAt: number }
 >();
 
-function cloneCloudPubPack(pack: CloudPubReplayPack): CloudPubReplayPack {
-  return { replays: [...pack.replays], error: pack.error };
-}
-
-/** Supabase plan_b → 与 replays_index 同形的摘要行（标记为 pub） */
+/**
+ * 与云库合并时仅取 plan_b **第一页**（每行已含 `players` jsonb，无需再按场 N+1）。
+ * 禁止再全表两阶段拉取，避免 100+ 次 Supabase 往返。
+ */
 export async function fetchCloudPubReplaySummaries(): Promise<CloudPubReplayPack> {
-  const now = Date.now();
-  const hit = cloudPubReplayCache;
-  if (hit && hit.expiresAt > now) {
-    return cloneCloudPubPack(hit.pack);
-  }
-
-  if (cloudPubReplayInflight) return cloudPubReplayInflight;
-
-  const p = (async () => {
-    const { rows, error } = await fetchPlanBReplayIndexRows();
-    const out: ReplaySummary[] = [];
-    for (const row of rows) {
-      // plan_b 行可能是顶层 slim，也可能包在 payload/data 等字段里。
-      // 列表聚合阶段也要解包，否则会把可用行误判为无效。
-      const unwrapped = unwrapPlanBRow(row);
-      const raw =
-        unwrapped && typeof unwrapped === "object" && !Array.isArray(unwrapped)
-          ? (unwrapped as Record<string, unknown>)
-          : row;
-      const mergedRow: Record<string, unknown> = {
-        ...row,
-        ...raw,
-        // 以顶层 created_at 作为索引时间主值，保证与 DB 倒序一致。
-        created_at: row.created_at ?? raw.created_at,
-      };
-      const r = planBRowToReplaySummary(mergedRow);
-      if (r) out.push(r);
-    }
-    return { replays: out, error };
-  })();
-  cloudPubReplayInflight = p;
-  void p
-    .then((pack) => {
-      const ttl = pack.error
-        ? CLOUD_PUB_CACHE_TTL_ERR_MS
-        : CLOUD_PUB_CACHE_TTL_OK_MS;
-      cloudPubReplayCache = { pack, expiresAt: Date.now() + ttl };
-    })
-    .finally(() => {
-      if (cloudPubReplayInflight === p) cloudPubReplayInflight = null;
-    });
-  return p;
+  const pack = await fetchCloudPubReplaySummariesPage(1, MATCH_LIST_LOAD_STEP);
+  return { replays: [...pack.replays], error: pack.error };
 }
 
 export async function fetchCloudPubReplaySummariesPage(
@@ -313,7 +260,7 @@ export async function fetchAllReplaySummariesForSearch(): Promise<
   const [pubRes, proRes, cloudRes] = await Promise.allSettled([
     fetchReplaysIndex(),
     fetchProReplaysIndex(),
-    fetchCloudPubReplaySummaries(),
+    fetchCloudPubReplaySummariesPage(1, 50),
   ]);
   const pubIdx =
     pubRes.status === "fulfilled"
@@ -326,7 +273,11 @@ export async function fetchAllReplaySummariesForSearch(): Promise<
   const cloudPack =
     cloudRes.status === "fulfilled"
       ? cloudRes.value
-      : ({ replays: [] as ReplaySummary[], error: "cloud-fetch-failed" } as const);
+      : ({
+          replays: [] as ReplaySummary[],
+          totalRows: 0,
+          error: "cloud-fetch-failed",
+        } as const);
   const cloud = cloudPack.replays;
   if (cloudPack.error || cloudRes.status === "rejected") {
     const msg =

@@ -111,7 +111,9 @@ export function MetaGlobalItemStatsSection(props: Props) {
       try {
         const craftableKeys = await loadCraftableItemKeySet();
         if (cancelled) return;
-        const slimMap = await loadSlimMatchJsonForDetails(matchIds);
+        const slimMap = await loadSlimMatchJsonForDetails(matchIds, {
+          preferCloud: true,
+        });
         if (cancelled) return;
         const pack = aggregateMetaGlobalItemStats(
           replays,
