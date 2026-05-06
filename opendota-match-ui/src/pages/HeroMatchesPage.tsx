@@ -148,7 +148,6 @@ export function HeroMatchesPage() {
     {}
   );
   /** 唯一批量 slim/plan_b 拉取由本页 effect 负责；子组件禁止自建请求 */
-  const [slimLoading, setSlimLoading] = useState(false);
   const [listPage, setListPage] = useState(1);
 
   const withHeroIdParam = useMemo(() => {
@@ -371,7 +370,7 @@ export function HeroMatchesPage() {
     [filteredReplays, pageForList]
   );
 
-  /** Overview（最多 CAP 场）与当前列表页合并去重，一次 loadSlimMatchJsonForDetails → 至多 2 段 HTTP chunk */
+  /** Overview（最多 CAP 场）与当前列表页合并去重；仅对尚未写入 detailByMatch 的 id 请求 plan_b */
   const mergedSlimMatchIds = useMemo(() => {
     const idSet = new Set<number>();
     for (const r of overviewReplays.slice(0, HERO_OVERVIEW_INSIGHT_CAP)) {
@@ -385,7 +384,11 @@ export function HeroMatchesPage() {
     return [...idSet].sort((a, b) => a - b);
   }, [overviewReplays, displayedReplays]);
 
-  const mergedSlimMatchIdsKey = mergedSlimMatchIds.join(",");
+  const slimIdsToFetch = useMemo(
+    () => mergedSlimMatchIds.filter((id) => !(id in detailByMatch)),
+    [mergedSlimMatchIds, detailByMatch]
+  );
+  const slimIdsToFetchKey = slimIdsToFetch.join(",");
 
   useEffect(() => {
     setListPage(1);
@@ -397,35 +400,24 @@ export function HeroMatchesPage() {
 
   useEffect(() => {
     let cancelled = false;
-    if (!maps) {
-      setSlimLoading(false);
-      return;
-    }
-    if (mergedSlimMatchIds.length === 0) {
-      setSlimLoading(false);
-      return;
-    }
-    setSlimLoading(true);
-    void loadSlimMatchJsonForDetails(mergedSlimMatchIds, { preferCloud: true })
+    if (!maps || slimIdsToFetch.length === 0) return;
+    void loadSlimMatchJsonForDetails(slimIdsToFetch, { preferCloud: true })
       .then((batch) => {
         if (cancelled) return;
         setDetailByMatch((prev) => {
           const next = { ...prev };
-          for (const mid of mergedSlimMatchIds) {
+          for (const mid of slimIdsToFetch) {
             const j = batch[mid];
             if (j) next[mid] = j;
           }
           return next;
         });
-        setSlimLoading(false);
       })
-      .catch(() => {
-        if (!cancelled) setSlimLoading(false);
-      });
+      .catch(() => {});
     return () => {
       cancelled = true;
     };
-  }, [mergedSlimMatchIdsKey, maps]);
+  }, [slimIdsToFetchKey, maps]);
 
   const heroEntry = useMemo(() => {
     if (!maps?.heroes) return null;
@@ -488,7 +480,6 @@ export function HeroMatchesPage() {
               replays={overviewReplays}
               maps={maps}
               slimByMatchId={detailByMatch}
-              slimLoading={slimLoading}
               enabled={!feedListLoading && replays.length > 0}
               withHeroId={withHeroIdParam}
               vsHeroId={vsHeroIdParam}

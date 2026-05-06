@@ -28,8 +28,6 @@ type Props = {
   slimByMatchId: Readonly<
     Record<number, SlimMatchJson | null | undefined>
   >;
-  /** 父页面正在拉取 slim（plan_b） */
-  slimLoading?: boolean;
   enabled?: boolean;
   /** URL ?with_hero_id / ?vs_hero_id 联动：组合筛选队友 / 对手 */
   withHeroId?: number | null;
@@ -175,7 +173,6 @@ export function HeroBuildOverviewCard(props: Props) {
     replays,
     maps,
     slimByMatchId,
-    slimLoading = false,
     enabled = true,
     withHeroId = null,
     vsHeroId = null,
@@ -305,8 +302,6 @@ export function HeroBuildOverviewCard(props: Props) {
     return built;
   }, [enabled, rows, slimByMatchId, heroId, overviewCacheKey]);
 
-  const loading = slimLoading;
-
   const heroNameEn = useMemo(() => {
     return maps.heroes[String(heroId)]?.nameEn || heroKey;
   }, [maps, heroId, heroKey]);
@@ -325,10 +320,8 @@ export function HeroBuildOverviewCard(props: Props) {
           <div>
             <h2 className="text-base font-bold text-skin-ink">{heroName}</h2>
             <p className="text-xs text-skin-sub">
-              {heroNameEn} ·{" "}
-              {loading
-                ? "加载明细…"
-                : `${indexHeadline.matches} matches · ${indexHeadline.winRate.toFixed(1)}% winrate`}
+              {heroNameEn} · {indexHeadline.matches} matches ·{" "}
+              {indexHeadline.winRate.toFixed(1)}% winrate
             </p>
           </div>
         </div>
@@ -341,9 +334,6 @@ export function HeroBuildOverviewCard(props: Props) {
         </button>
       </div>
 
-      {expanded && loading && rows.length > 0 ? (
-        <p className="text-xs text-skin-sub">父页面正在批量加载本场 slim（plan_b）…</p>
-      ) : null}
       {expanded && data ? (
         <div className="grid gap-3 lg:grid-cols-[1fr_300px]">
           <div className="space-y-3">
