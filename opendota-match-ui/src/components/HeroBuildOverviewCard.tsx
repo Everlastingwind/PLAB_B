@@ -64,10 +64,31 @@ const COMPOSED_ITEM_KEYS = new Set<string>([
   "abyssal_blade","aeon_disk","aether_lens","ancient_janggo","angels_demise","arcane_blink","arcane_boots","armlet","assault","basher","bfury","black_king_bar","blade_mail","bloodstone","bloodthorn","boots_of_bearing","bracer","buckler","butterfly","consecrated_wraps","crellas_crozier","crimson_guard","cyclone","dagon","desolator","devastator","diffusal_blade","diffusal_blade_2","disperser","dragon_lance","echo_sabre","essence_distiller","eternal_shroud","ethereal_blade","falcon_blade","force_staff","glimmer_cape","great_famango","greater_crit","greater_famango","guardian_greaves","gungir","hand_of_midas","harpoon","headdress","heart","heavens_halberd","helm_of_the_dominator","helm_of_the_overlord","holy_locket","hurricane_pike","hydras_breath","invis_sword","iron_talon","kaya","kaya_and_sange","lesser_crit","lotus_orb","maelstrom","mage_slayer","magic_wand","manta","mask_of_madness","medallion_of_courage","mekansm","meteor_hammer","mjollnir","monkey_king_bar","moon_shard","necronomicon","necronomicon_2","necronomicon_3","null_talisman","nullifier","oblivion_staff","octarine_core","orb_of_corrosion","orchid","overwhelming_blink","pavise","pers","phase_boots","phylactery","pipe","power_treads","radiance","rapier","refresher","revenants_brooch","ring_of_basilius","rod_of_atos","sange","sange_and_yasha","satanic","sheepstick","shivas_guard","silver_edge","skadi","solar_crest","soul_booster","soul_ring","specialists_array","sphere","spirit_vessel","swift_blink","tranquil_boots","travel_boots","travel_boots_2","trident","ultimate_scepter","ultimate_scepter_2","urn_of_shadows","vanguard","veil_of_discord","vladmir","ward_dispenser","wind_waker","witch_blade","wraith_band","wraith_pact","yasha","yasha_and_kaya",
 ]);
 
+/** 跳刀 / 魔晶：购买日志里有，但不在上列合成装名单；纳入核心出装统计 */
+const CORE_OVERVIEW_EXTRA_KEYS = new Set<string>([
+  "blink",
+  "aghanims_shard",
+]);
+
+/** 魔晶常于前中期后购买，平均分钟易超过 60；单独放宽展示上限 */
+const CORE_OVERVIEW_MAX_AVG_MINUTE: Record<string, number> = {
+  aghanims_shard: 75,
+};
+
+function normalizeOverviewItemKey(itemKey: string): string {
+  return String(itemKey || "").trim().replace(/^item_/i, "").toLowerCase();
+}
+
 function isComposedCoreItem(itemKey: string): boolean {
-  const k = String(itemKey || "").trim().replace(/^item_/, "");
+  const k = normalizeOverviewItemKey(itemKey);
   if (!k) return false;
+  if (CORE_OVERVIEW_EXTRA_KEYS.has(k)) return true;
   return COMPOSED_ITEM_KEYS.has(k);
+}
+
+function coreOverviewMaxAvgMinute(itemKey: string): number {
+  const k = normalizeOverviewItemKey(itemKey);
+  return CORE_OVERVIEW_MAX_AVG_MINUTE[k] ?? 60;
 }
 
 function pct(num: number, den: number): number {
@@ -115,7 +136,7 @@ function buildOverviewData(acc: OverviewAccum): OverviewData {
       return { itemKey, avgMinute: t / Math.max(c, 1), pct: pct(c, acc.totalMatches) };
     })
     .filter((x) => isComposedCoreItem(x.itemKey))
-    .filter((x) => x.avgMinute <= 60)
+    .filter((x) => x.avgMinute <= coreOverviewMaxAvgMinute(x.itemKey))
     .sort((a, b) => a.avgMinute - b.avgMinute || b.pct - a.pct);
 
   const itemMatches: OverviewData["itemMatches"] = {};
