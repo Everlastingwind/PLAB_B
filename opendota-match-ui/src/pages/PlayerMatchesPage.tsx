@@ -4,8 +4,7 @@ import { PageShell } from "../components/PageShell";
 import type { FeedSelection } from "../components/FeedModeToggle";
 import {
   MATCH_LIST_LOAD_STEP,
-  fetchReplaysForFeedSelection,
-  filterByAccountId,
+  fetchReplaysForPlayerProfile,
 } from "../lib/replaysApi";
 import type { ReplaySummary } from "../types/replaysIndex";
 import { useEntityMaps } from "../hooks/useEntityMaps";
@@ -93,11 +92,11 @@ export function PlayerMatchesPage() {
     let cancelled = false;
     setFeedListLoading(true);
     setReplays([]);
-    void fetchReplaysForFeedSelection(feed)
+    void fetchReplaysForPlayerProfile(feed, aid)
       .then(({ replays: rows, cloudIndexError }) => {
         if (!cancelled) {
           if (cloudIndexError) console.warn(cloudIndexError);
-          setReplays(filterByAccountId(rows, aid));
+          setReplays(rows);
           setDetailByMatch({});
           setFeedListLoading(false);
         }
@@ -128,17 +127,15 @@ export function PlayerMatchesPage() {
     return role;
   };
 
-  const replayRole = useCallback(
+  /** 筛选/统计仅用索引行 role_early，避免 slim 回填后列表签名变化触发二次 plan_b 请求 */
+  const replayRoleIndexOnly = useCallback(
     (r: ReplaySummary): string => {
       const ps = (r.players || []).find((x) => Number(x.account_id || 0) === aid) as
         | ({ role_early?: unknown } & typeof r.players[number])
         | undefined;
-      const fromSummary = normalizeRole(ps?.role_early);
-      if (fromSummary) return fromSummary;
-      const row = detailByMatch[r.match_id];
-      return normalizeRole((row as { role_early?: unknown } | undefined)?.role_early);
+      return normalizeRole(ps?.role_early);
     },
-    [aid, detailByMatch]
+    [aid]
   );
 
   const roleOptions = useMemo(
@@ -148,8 +145,8 @@ export function PlayerMatchesPage() {
 
   const roleFilteredReplays = useMemo(() => {
     if (roleFilter === "all") return replays;
-    return replays.filter((r) => replayRole(r) === roleFilter);
-  }, [replays, replayRole, roleFilter]);
+    return replays.filter((r) => replayRoleIndexOnly(r) === roleFilter);
+  }, [replays, replayRoleIndexOnly, roleFilter]);
 
   const filteredReplays = useMemo(() => {
     if (!heroFilterKey || !maps) return roleFilteredReplays;
@@ -169,11 +166,11 @@ export function PlayerMatchesPage() {
       "support(5)": 0,
     };
     for (const r of replays) {
-      const rr = replayRole(r);
+      const rr = replayRoleIndexOnly(r);
       if (rr in out) out[rr] += 1;
     }
     return out;
-  }, [replays, replayRole]);
+  }, [replays, replayRoleIndexOnly]);
 
   const filteredReplayIdsSignature = useMemo(
     () => filteredReplays.map((r) => String(r.match_id)).join(","),
@@ -443,6 +440,7 @@ export function PlayerMatchesPage() {
                       <ViewportMountRow
                         key={`${r.match_id}-${r.uploaded_at}`}
                         index={vIdx}
+                        rootMargin="40px 0px"
                         skeleton={
                           <div className="grid w-full grid-cols-[minmax(190px,1.15fr)_84px_84px_minmax(220px,1.2fr)_minmax(250px,1.45fr)_72px_72px_136px] gap-2 border-b border-skin-line/70 px-3 py-3 min-h-[52px] bg-skin-inset/30" />
                         }

@@ -1,10 +1,14 @@
-import { lazy, Suspense, useCallback, useEffect, useState } from "react";
+import { lazy, Suspense, useCallback, useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import { Copy } from "lucide-react";
-import { useMatchData } from "../hooks/useMatchData";
 import { PageShell } from "../components/PageShell";
 import { cn } from "../lib/cn";
 import { SEO } from "../components/SEO";
+import type { MatchHeaderData } from "../data/mockMatch";
+import { mockMatchHeader } from "../data/mockMatch";
+import { mockTeamDire, mockTeamRadiant } from "../data/mockMatchPlayers";
+import type { TeamTableMock } from "../data/mockMatchPlayers";
+import { loadMatchBoardFromRouteMatchId } from "../lib/matchPageBoardLoad";
 
 const MatchVerticalBoard = lazy(() =>
   import("../components/MatchVerticalBoard").then((m) => ({
@@ -14,7 +18,34 @@ const MatchVerticalBoard = lazy(() =>
 
 export function MatchPage() {
   const { matchId = "" } = useParams<{ matchId: string }>();
-  const { loading, error, header, radiant, dire } = useMatchData(matchId);
+  const loadGeneration = useRef(0);
+
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [header, setHeader] = useState<MatchHeaderData>(mockMatchHeader);
+  const [radiant, setRadiant] = useState<TeamTableMock>(mockTeamRadiant);
+  const [dire, setDire] = useState<TeamTableMock>(mockTeamDire);
+
+  useEffect(() => {
+    const gen = ++loadGeneration.current;
+    setLoading(true);
+    setError(null);
+    void loadMatchBoardFromRouteMatchId(matchId).then((res) => {
+      if (loadGeneration.current !== gen) return;
+      if (res.ok) {
+        setHeader(res.data.header);
+        setRadiant(res.data.radiant);
+        setDire(res.data.dire);
+        setError(null);
+      } else {
+        setError(res.error);
+        setHeader(mockMatchHeader);
+        setRadiant(mockTeamRadiant);
+        setDire(mockTeamDire);
+      }
+      setLoading(false);
+    });
+  }, [matchId]);
 
   const handleCopyId = useCallback(() => {
     void navigator.clipboard.writeText(header.matchId);
@@ -73,7 +104,7 @@ export function MatchPage() {
           </div>
         )}
         <main className="min-w-0 overflow-x-hidden px-3 py-2 sm:px-4 lg:px-6">
-          <div className="mx-auto w-full max-w-[1920px] flex flex-col">
+          <div className="mx-auto flex w-full max-w-[1920px] flex-col">
             {loading ? (
               <div
                 className={cn(

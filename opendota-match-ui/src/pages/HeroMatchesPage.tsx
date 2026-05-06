@@ -4,8 +4,7 @@ import { PageShell } from "../components/PageShell";
 import type { FeedSelection } from "../components/FeedModeToggle";
 import {
   MATCH_LIST_LOAD_STEP,
-  fetchReplaysForFeedSelection,
-  filterByHeroKey,
+  fetchReplaysForHeroProfile,
   filterReplaysByTeammateOpponentHero,
   heroKeyFromId,
 } from "../lib/replaysApi";
@@ -35,7 +34,10 @@ import type { TalentPickUi, TalentTreeUi } from "../data/mockMatchPlayers";
 import { SEOMeta } from "../components/SEOMeta";
 import { ViewportMountRow } from "../components/ViewportMountRow";
 import { loadSlimMatchJsonForDetails } from "../lib/loadSlimMatchJson";
-import { HeroBuildOverviewCard } from "../components/HeroBuildOverviewCard";
+import {
+  HeroBuildOverviewCard,
+  HERO_OVERVIEW_INSIGHT_CAP,
+} from "../components/HeroBuildOverviewCard";
 
 function toTalentTreeUi(raw: SlimPlayer["talent_tree"]): TalentTreeUi | null {
   if (!raw || !Array.isArray(raw.tiers)) return null;
@@ -144,6 +146,8 @@ export function HeroMatchesPage() {
   const [detailByMatch, setDetailByMatch] = useState<Record<number, SlimMatchJson>>(
     {}
   );
+  /** 唯一批量 slim/plan_b 拉取由本页 effect 负责；子组件禁止自建请求 */
+  const [slimLoading, setSlimLoading] = useState(false);
   const [listPage, setListPage] = useState(1);
 
   const withHeroIdParam = useMemo(() => {
@@ -243,10 +247,14 @@ export function HeroMatchesPage() {
     setReplays([]);
     void (async () => {
       try {
-        const { replays: rows, cloudIndexError } = await fetchReplaysForFeedSelection(feed);
+        const { replays: rows, cloudIndexError } = await fetchReplaysForHeroProfile(
+          feed,
+          decoded,
+          maps
+        );
         if (cancelled) return;
         if (cloudIndexError) console.warn(cloudIndexError);
-        setReplays(filterByHeroKey(rows, decoded, maps));
+        setReplays(rows);
         setDetailByMatch({});
         setFeedListLoading(false);
       } catch {
@@ -277,20 +285,15 @@ export function HeroMatchesPage() {
     return role;
   };
 
-  const replayRole = useCallback(
+  /** 筛选/统计仅用索引摘要；明细 role 仍在表格单元格用 detailByMatch 展示 */
+  const replayRoleIndexOnly = useCallback(
     (r: ReplaySummary): string => {
       const p0 = (r.players || []).find(
         (x) => heroKeyFromId(x.hero_id, maps!) === decoded
       );
-      const fromSummary = normalizeRole((p0 as { role_early?: unknown } | undefined)?.role_early);
-      if (fromSummary) return fromSummary;
-      const detail = detailByMatch[r.match_id];
-      const row = (detail?.players || []).find(
-        (x) => heroKeyFromId(Number(x.hero_id || 0), maps!) === decoded
-      );
-      return normalizeRole((row as { role_early?: unknown } | undefined)?.role_early);
+      return normalizeRole((p0 as { role_early?: unknown } | undefined)?.role_early);
     },
-    [decoded, detailByMatch, maps]
+    [decoded, maps]
   );
 
   const roleOptions = useMemo(
@@ -308,16 +311,16 @@ export function HeroMatchesPage() {
 
   const filteredReplays = useMemo(() => {
     if (roleFilter === "all") return replaysSynergy;
-    return replaysSynergy.filter((r) => replayRole(r) === roleFilter);
-  }, [replaysSynergy, replayRole, roleFilter]);
+    return replaysSynergy.filter((r) => replayRoleIndexOnly(r) === roleFilter);
+  }, [replaysSynergy, replayRoleIndexOnly, roleFilter]);
 
   const overviewReplays = useMemo(() => {
     if (roleFilter === "all") return replaysSynergy;
     return replaysSynergy.filter((r) => {
-      const rr = replayRole(r);
+      const rr = replayRoleIndexOnly(r);
       return rr === roleFilter || rr === "unknown";
     });
-  }, [replaysSynergy, replayRole, roleFilter]);
+  }, [replaysSynergy, replayRoleIndexOnly, roleFilter]);
 
   const roleCounts = useMemo(() => {
     const out: Record<string, number> = {
@@ -329,11 +332,11 @@ export function HeroMatchesPage() {
       unknown: 0,
     };
     for (const r of replaysSynergy) {
-      const rr = replayRole(r);
+      const rr = replayRoleIndexOnly(r);
       if (rr in out) out[rr] += 1;
     }
     return out;
-  }, [replaysSynergy, replayRole]);
+  }, [replaysSynergy, replayRoleIndexOnly]);
 
   const filteredReplayIdsSignature = useMemo(
     () => filteredReplays.map((r) => String(r.match_id)).join(","),
@@ -360,10 +363,21 @@ export function HeroMatchesPage() {
     [filteredReplays, pageForList]
   );
 
-  const visibleMatchIdsKey = useMemo(
-    () => displayedReplays.map((r) => r.match_id).join(","),
-    [displayedReplays]
-  );
+  /** Overview（最多 CAP 场）与当前列表页合并去重，一次 loadSlimMatchJsonForDetails → 至多 2 段 HTTP chunk */
+  const mergedSlimMatchIds = useMemo(() => {
+    const idSet = new Set<number>();
+    for (const r of overviewReplays.slice(0, HERO_OVERVIEW_INSIGHT_CAP)) {
+      const mid = Number(r.match_id);
+      if (Number.isFinite(mid) && mid > 0) idSet.add(mid);
+    }
+    for (const r of displayedReplays) {
+      const mid = Number(r.match_id);
+      if (Number.isFinite(mid) && mid > 0) idSet.add(mid);
+    }
+    return [...idSet].sort((a, b) => a - b);
+  }, [overviewReplays, displayedReplays]);
+
+  const mergedSlimMatchIdsKey = mergedSlimMatchIds.join(",");
 
   useEffect(() => {
     setListPage(1);
@@ -375,34 +389,35 @@ export function HeroMatchesPage() {
 
   useEffect(() => {
     let cancelled = false;
-    if (!maps || !visibleMatchIdsKey) return;
-    const ids = visibleMatchIdsKey
-      .split(",")
-      .map((s) => Number(s))
-      .filter((id) => Number.isFinite(id) && id > 0);
-    if (ids.length === 0) return;
-    void (async () => {
-      try {
-        const batch = await loadSlimMatchJsonForDetails(ids, {
-          preferCloud: true,
-        });
+    if (!maps) {
+      setSlimLoading(false);
+      return;
+    }
+    if (mergedSlimMatchIds.length === 0) {
+      setSlimLoading(false);
+      return;
+    }
+    setSlimLoading(true);
+    void loadSlimMatchJsonForDetails(mergedSlimMatchIds, { preferCloud: true })
+      .then((batch) => {
         if (cancelled) return;
         setDetailByMatch((prev) => {
           const next = { ...prev };
-          for (const mid of ids) {
+          for (const mid of mergedSlimMatchIds) {
             const j = batch[mid];
             if (j) next[mid] = j;
           }
           return next;
         });
-      } catch {
-        /* 列表页摘要失败时保留索引行展示，不阻塞页面 */
-      }
-    })();
+        setSlimLoading(false);
+      })
+      .catch(() => {
+        if (!cancelled) setSlimLoading(false);
+      });
     return () => {
       cancelled = true;
     };
-  }, [visibleMatchIdsKey, maps]);
+  }, [mergedSlimMatchIdsKey, maps]);
 
   const heroEntry = useMemo(() => {
     if (!maps?.heroes) return null;
@@ -464,6 +479,8 @@ export function HeroMatchesPage() {
               heroName={heroLabel?.nameCn || heroLabel?.nameEn || decoded}
               replays={overviewReplays}
               maps={maps}
+              slimByMatchId={detailByMatch}
+              slimLoading={slimLoading}
               enabled={!feedListLoading && replays.length > 0}
               withHeroId={withHeroIdParam}
               vsHeroId={vsHeroIdParam}
@@ -570,6 +587,7 @@ export function HeroMatchesPage() {
                       <ViewportMountRow
                         key={`${r.match_id}-${r.uploaded_at}`}
                         index={vIdx}
+                        rootMargin="40px 0px"
                         skeleton={
                           <div className="grid w-full grid-cols-[minmax(170px,1.08fr)_minmax(120px,0.92fr)_82px_84px_minmax(220px,1.2fr)_minmax(240px,1.45fr)_72px_72px_136px] gap-2 border-b border-slate-500/55 px-3 py-3 min-h-[52px] bg-slate-100/25 dark:bg-slate-900/30" />
                         }

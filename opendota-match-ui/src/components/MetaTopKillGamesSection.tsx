@@ -7,7 +7,6 @@ import {
   onDotaSteamAssetImgError,
   steamCdnImgDefer,
 } from "../data/mockMatchPlayers";
-import { loadSlimMatchJsonForDetails } from "../lib/loadSlimMatchJson";
 import { replayIndexPlayerDisplayLabel } from "../lib/playerDisplay";
 import { fetchProReplaysIndex } from "../lib/replaysApi";
 import { ReplayCard } from "./ReplayCard";
@@ -19,6 +18,9 @@ type Props = {
   replays: ReplaySummary[];
   maps: EntityMapsPayload | null;
   listLoading: boolean;
+  /** 首页父组件批量拉取的 plan_b/slim；禁止在本组件内请求 plan_b */
+  slimByMatchId: Readonly<Record<number, SlimMatchJson | null | undefined>>;
+  slimLoading?: boolean;
 };
 
 // 手动迁移到 PRO：这些对局不应出现在 PUB 榜单
@@ -114,7 +116,7 @@ function totalKillsByReplay(replay: ReplaySummary): number {
 }
 
 export function MetaTopKillGamesSection(props: Props) {
-  const { replays, maps, listLoading } = props;
+  const { replays, maps, listLoading, slimByMatchId, slimLoading = false } = props;
   const [proIndexMatchIds, setProIndexMatchIds] = useState<Set<number> | null>(null);
 
   const topRows = useMemo(() => {
@@ -182,55 +184,6 @@ export function MetaTopKillGamesSection(props: Props) {
     return scored.slice(0, 5);
   }, [proIndexMatchIds, replays]);
 
-  const idsKey = useMemo(
-    () => topRows.map((r) => r.replay.match_id).join(","),
-    [topRows]
-  );
-  const [slimByMatch, setSlimByMatch] = useState<
-    Record<number, SlimMatchJson | null | "loading">
-  >({});
-
-  useEffect(() => {
-    if (!maps || !idsKey) return;
-    const ids = idsKey
-      .split(",")
-      .map((s) => Number(s))
-      .filter((n) => Number.isFinite(n) && n > 0);
-    if (!ids.length) return;
-    let cancelled = false;
-    for (const mid of ids) {
-      setSlimByMatch((prev) => ({ ...prev, [mid]: prev[mid] ?? "loading" }));
-    }
-    void (async () => {
-      try {
-        const batch = await loadSlimMatchJsonForDetails(ids, {
-          preferCloud: true,
-        });
-        if (cancelled) return;
-        setSlimByMatch((prev) => {
-          const next = { ...prev };
-          for (const mid of ids) {
-            next[mid] = batch[mid] ?? null;
-          }
-          return next;
-        });
-      } catch {
-        if (!cancelled) {
-          setSlimByMatch((prev) => {
-            const next = { ...prev };
-            for (const mid of ids) {
-              if (next[mid] === "loading") next[mid] = null;
-            }
-            return next;
-          });
-        }
-      }
-    })();
-    return () => {
-      cancelled = true;
-    };
-  }, [maps, idsKey]);
-
   useEffect(() => {
     let cancelled = false;
     void fetchProReplaysIndex()
@@ -266,11 +219,8 @@ export function MetaTopKillGamesSection(props: Props) {
           {topRows.map(({ replay, player }) => {
             const hero = maps.heroes[String(player.hero_id)];
             const heroKey = hero?.key || "invoker";
-            const slimRaw = slimByMatch[replay.match_id];
-            const sp =
-              slimRaw && slimRaw !== "loading"
-                ? pickSlimPlayer(slimRaw, player)
-                : null;
+            const slimRaw = slimByMatchId[replay.match_id];
+            const sp = slimRaw ? pickSlimPlayer(slimRaw, player) : null;
             const k = player.kills ?? 0;
             const d = player.deaths ?? 0;
             const a = player.assists ?? 0;
@@ -282,9 +232,8 @@ export function MetaTopKillGamesSection(props: Props) {
             const won = didPlayerWin(player, replay);
             const items =
               sp && maps ? itemIconsForPlayer(sp, maps) : [];
-            const slimState = slimByMatch[replay.match_id];
             const loadingItems =
-              slimState === undefined || slimState === "loading";
+              slimLoading && !slimByMatchId[replay.match_id];
 
             return (
               <Link

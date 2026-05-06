@@ -1,3 +1,4 @@
+import { forEachConcurrent } from "./fetchConcurrent";
 import { supabase } from "./supabaseClient.js";
 
 /**
@@ -43,6 +44,41 @@ function parsePlanBJsonObject(raw: unknown): Record<string, unknown> | null {
   return null;
 }
 
+/**
+ * `plan_b` 顶层 `players` 常为列表摘要；`slim`/`payload` 内常为完整 DEM/OpenDota 行。
+ * 两者人数常相同，仅靠人数会误选顶层 → 出装/天赋流水缺失。按 richness 打破平局。
+ */
+function planBPlayersRichness(obj: Record<string, unknown>): number {
+  const pl = obj["players"];
+  if (!Array.isArray(pl)) return 0;
+  let score = 0;
+  for (const p of pl) {
+    if (!p || typeof p !== "object") continue;
+    const pr = p as Record<string, unknown>;
+    const ph = pr["purchase_history"];
+    if (Array.isArray(ph) && ph.length > 0) {
+      score += 400 + Math.min(ph.length, 400);
+    }
+    const plog = pr["purchase_log"];
+    if (Array.isArray(plog) && plog.length > 0) {
+      score += 350 + Math.min(plog.length, 400);
+    }
+    const tt = pr["talent_tree"];
+    if (tt && typeof tt === "object") {
+      const tiers = (tt as { tiers?: unknown }).tiers;
+      if (Array.isArray(tiers) && tiers.length > 0) score += 120;
+    }
+    if (Array.isArray(pr["talent_picks"]) && pr["talent_picks"].length > 0) {
+      score += 100;
+    }
+    const sb = pr["skill_build"];
+    const au = pr["ability_upgrades_arr"];
+    if (Array.isArray(sb) && sb.length > 0) score += 40;
+    if (Array.isArray(au) && au.length > 0) score += 40;
+  }
+  return score;
+}
+
 /** Supabase 行可能是整局 slim 平铺，或包在 data / payload 等 jsonb 列里 */
 export function unwrapPlanBRow(row: unknown): unknown | null {
   if (!row || typeof row !== "object" || Array.isArray(row)) return null;
@@ -70,7 +106,11 @@ export function unwrapPlanBRow(row: unknown): unknown | null {
 
   if (cands.length === 0) return r;
 
-  cands.sort((a, b) => b.len - a.len);
+  cands.sort((a, b) => {
+    const ld = b.len - a.len;
+    if (ld !== 0) return ld;
+    return planBPlayersRichness(b.obj) - planBPlayersRichness(a.obj);
+  });
   const best = cands[0];
   if (best.obj === r) return r;
 
@@ -114,6 +154,68 @@ export function extractPlanBPlayersArray(
   return lengths[0].arr;
 }
 
+/** 与 {@link summaryPlayerFromRawObject} 对齐：从选手对象解析 npc hero_id */
+function playerObjectHeroNpcId(o: Record<string, unknown>): number {
+  let heroId = Math.floor(Number(o.hero_id ?? o.heroId ?? 0) || 0);
+  const heroRaw = o.hero;
+  if (!heroId && heroRaw != null) {
+    if (typeof heroRaw === "number" || typeof heroRaw === "string") {
+      heroId = Math.floor(Number(heroRaw) || 0);
+    } else if (typeof heroRaw === "object" && !Array.isArray(heroRaw)) {
+      const ho = heroRaw as Record<string, unknown>;
+      heroId = Math.floor(
+        Number(ho.hero_id ?? ho.id ?? ho.heroid ?? 0) || 0
+      );
+    }
+  }
+  return heroId;
+}
+
+function playerObjectAccountId(o: Record<string, unknown>): number {
+  return Math.floor(
+    Number(
+      o.account_id ??
+        o.accountid ??
+        o.accountId ??
+        o.steamid ??
+        o.steam_id ??
+        o.player_id ??
+        0
+    ) || 0
+  );
+}
+
+/** 行内是否含该英雄（读顶层/slim/payload 内 players，与列表摘要逻辑一致） */
+export function planBRowIncludesHeroNpc(
+  row: Record<string, unknown>,
+  heroNpcId: number
+): boolean {
+  const players = extractPlanBPlayersArray(row);
+  if (!players?.length) return false;
+  for (const p of players) {
+    if (!p || typeof p !== "object") continue;
+    if (playerObjectHeroNpcId(p as Record<string, unknown>) === heroNpcId) {
+      return true;
+    }
+  }
+  return false;
+}
+
+export function planBRowIncludesAccountId(
+  row: Record<string, unknown>,
+  accountId: number
+): boolean {
+  const players = extractPlanBPlayersArray(row);
+  if (!players?.length) return false;
+  for (const p of players) {
+    if (!p || typeof p !== "object") continue;
+    if (playerObjectAccountId(p as Record<string, unknown>) === accountId) {
+      return true;
+    }
+  }
+  return false;
+}
+
 const PLAN_B_INDEX_SELECT =
   "match_id, created_at, duration, radiant_win, radiant_score, dire_score, league_name, players";
 const PLAN_B_INDEX_LIGHT_SELECT =
@@ -122,11 +224,11 @@ const PLAN_B_INDEX_LIGHT_SELECT =
 /**
  * 详情页按需列：与列表 PLAN_B_INDEX_SELECT 对齐，并含 unwrap 可能用到的 json 包裹列。
  * 避免 `*` 把表上未来加的审计/冗余大列一并拉下；players 仍是 jsonb，体积主要在此。
- * 若库表缺某列，下方会回退 `select('*')`。
+ * 若库表缺某列，下方会按链依次尝试更窄的显式列集合（**不用 `*`**）。
  *
  * **不显式包含 `data` 列**：部分自建 Supabase 仅有 `payload`/`slim`/`players`，无 `data`，
  * 请求不存在的列会导致 PostgREST 报错且 split 兜底若仍带 `data` 会彻底失败。
- * `unwrapPlanBRow` / `extractPlanBPlayersArray` 仍会从行对象读 `data`（若 `select('*')` 带回）。
+ * `unwrapPlanBRow` / `extractPlanBPlayersArray` 仍会从行对象读 `data`（若某次查询带回）。
  * 不含独立列 picks_bans：多数库未建该列；pick/ban 已在 slim / players 等 json 内。
  */
 const PLAN_B_DETAIL_SELECT = [
@@ -150,6 +252,25 @@ const PLAN_B_INDEX_OVERLAY_SELECT = [
   "body",
 ].join(",");
 
+const PLAN_B_DETAIL_SELECT_FALLBACKS = [
+  PLAN_B_DETAIL_SELECT,
+  PLAN_B_INDEX_SELECT,
+  "match_id, players, payload, slim, match_json, body",
+  "match_id, players, slim, payload",
+  "match_id, players",
+] as const;
+
+/**
+ * 批量 `.in()` **仅 4 组窄列**：切勿再把整条 {@link PLAN_B_DETAIL_SELECT_FALLBACKS} 拼进来——
+ * 失败时会对「每个 chunk」串行尝试 9+ 次 select，总耗时可比「直接拆批」慢一个数量级。
+ */
+const PLAN_B_BATCH_IN_SELECT_FALLBACKS: readonly string[] = [
+  "match_id, slim, payload, players",
+  PLAN_B_INDEX_SELECT,
+  "match_id, players, slim, payload",
+  "match_id, players",
+];
+
 /** 按 match_id 取整局数据（供详情页 / 选手页详情等） */
 export async function fetchPlanBSlimPayload(
   matchId: number
@@ -162,19 +283,23 @@ export async function fetchPlanBSlimPayload(
     client.from("plan_b").select(sel).eq("match_id", id).limit(1);
 
   const fetchRow = async (id: number | string) => {
-    let { data, error } = await run(id, PLAN_B_DETAIL_SELECT);
-    if (error) {
+    let lastErr: { message?: string } | null = null;
+    for (const sel of PLAN_B_DETAIL_SELECT_FALLBACKS) {
+      const { data, error } = await run(id, sel);
+      if (!error) {
+        return Array.isArray(data) && data.length > 0 ? data[0] : null;
+      }
+      lastErr = error;
       const msg = error.message || "";
-      if (/column|42703|does not exist|schema cache/i.test(msg)) {
-        console.warn(
-          "[plan_b] 显式列查询失败，回退 select('*'):",
-          msg.slice(0, 200)
-        );
-        ({ data, error } = await run(id, "*"));
+      if (!/column|42703|does not exist|schema cache/i.test(msg)) {
+        throw new Error(msg || "Supabase 查询失败");
       }
     }
-    if (error) throw new Error(error.message || "Supabase 查询失败");
-    return Array.isArray(data) && data.length > 0 ? data[0] : null;
+    console.warn(
+      "[plan_b] 详情列链均失败:",
+      lastErr?.message?.slice(0, 200)
+    );
+    throw new Error(lastErr?.message || "Supabase 查询失败");
   };
 
   let row = await fetchRow(matchId);
@@ -184,7 +309,89 @@ export async function fetchPlanBSlimPayload(
   return unwrapPlanBRow(row);
 }
 
-const PLAN_B_DETAIL_CHUNK = 40;
+/**
+ * 单次 `.in(match_id, …)` 上限：PostgREST GET 查询串过长时易 400，继而触发切片递归，
+ * 在最坏情况下会退化成「每场一次 eq」（表现为几百次 plan_b）。保持较小 chunk。
+ */
+const PLAN_B_DETAIL_CHUNK = 16;
+/** 批量仍失败时先拆成更细的 `.in()`，最后再逐 id（上限避免一场一页打爆请求） */
+const PLAN_B_DETAIL_MICRO_CHUNK = 8;
+
+/**
+ * 对一批 match_id 尝试列链 + `.in()`；仅在整块失败时二分递归或单条 eq，
+ * **禁止**对整块内每个 id 各发一次请求（ former N+1 源头）。
+ */
+async function fetchPlanBSlimPayloadBatchSlice(
+  client: NonNullable<typeof supabase>,
+  chunkIn: readonly number[]
+): Promise<Map<number, unknown>> {
+  const out = new Map<number, unknown>();
+  const uniq = [
+    ...new Set(
+      chunkIn.filter((id) => Number.isFinite(id) && (id as number) > 0)
+    ),
+  ] as number[];
+  if (uniq.length === 0) return out;
+
+  for (const sel of PLAN_B_BATCH_IN_SELECT_FALLBACKS) {
+    const { data, error } = await client
+      .from("plan_b")
+      .select(sel)
+      .in("match_id", uniq);
+    if (!error) {
+      const rows = Array.isArray(data) ? data : [];
+      for (const row of rows) {
+        if (!row || typeof row !== "object") continue;
+        const rec = row as Record<string, unknown>;
+        const mid = Number(rec.match_id);
+        if (!Number.isFinite(mid) || mid <= 0) continue;
+        const unwrapped = unwrapPlanBRow(row);
+        if (unwrapped) out.set(mid, unwrapped);
+      }
+      return out;
+    }
+    const msg = error.message || "";
+    // 勿在「非缺列」时中断整条链：宽列 400/414 后窄列仍可能成功
+    if (!/column|42703|does not exist|schema cache/i.test(msg)) {
+      console.warn(
+        "[plan_b] batch in(match_id) 本组 select 失败，尝试下一窄列:",
+        msg.slice(0, 140)
+      );
+    }
+  }
+
+  if (uniq.length === 1) {
+    try {
+      const one = await fetchPlanBSlimPayload(uniq[0]);
+      if (one) out.set(uniq[0], one);
+    } catch {
+      /* skip */
+    }
+    return out;
+  }
+
+  // 线性拆成更小的 `.in()`，避免深度二分在失败链路上退化成「每场一次请求」
+  if (uniq.length <= PLAN_B_DETAIL_MICRO_CHUNK) {
+    for (const id of uniq) {
+      try {
+        const one = await fetchPlanBSlimPayload(id);
+        if (one) out.set(id, one);
+      } catch {
+        /* skip */
+      }
+    }
+    return out;
+  }
+
+  for (let i = 0; i < uniq.length; i += PLAN_B_DETAIL_MICRO_CHUNK) {
+    const part = await fetchPlanBSlimPayloadBatchSlice(
+      client,
+      uniq.slice(i, i + PLAN_B_DETAIL_MICRO_CHUNK)
+    );
+    for (const [k, v] of part) out.set(k, v);
+  }
+  return out;
+}
 
 /**
  * 按多 match_id 批量取 slim（英雄/选手列表页用），显著减少 Supabase 往返与 OPTIONS 预检次数。
@@ -203,40 +410,20 @@ export async function fetchPlanBSlimPayloadBatch(
   ] as number[];
   if (ids.length === 0) return out;
 
-  const runChunk = async (chunk: number[], sel: string) =>
-    client.from("plan_b").select(sel).in("match_id", chunk);
-
+  const chunks: number[][] = [];
   for (let i = 0; i < ids.length; i += PLAN_B_DETAIL_CHUNK) {
-    const chunk = ids.slice(i, i + PLAN_B_DETAIL_CHUNK);
-    let { data, error } = await runChunk(chunk, PLAN_B_DETAIL_SELECT);
-    if (error) {
-      const msg = error.message || "";
-      if (/column|42703|does not exist|schema cache/i.test(msg)) {
-        ({ data, error } = await runChunk(chunk, "*"));
-      }
+    chunks.push(ids.slice(i, i + PLAN_B_DETAIL_CHUNK));
+  }
+  const parts: Map<number, unknown>[] = new Array(chunks.length);
+  await forEachConcurrent(
+    chunks.map((chunk, i) => ({ chunk, i })),
+    4,
+    async ({ chunk, i }) => {
+      parts[i] = await fetchPlanBSlimPayloadBatchSlice(client, chunk);
     }
-    if (error) {
-      console.warn("[plan_b] batch 查询失败，逐条回退:", error.message?.slice(0, 200));
-      for (const id of chunk) {
-        try {
-          const one = await fetchPlanBSlimPayload(id);
-          const u = one as unknown;
-          if (u) out.set(id, u);
-        } catch {
-          /* skip */
-        }
-      }
-      continue;
-    }
-    const rows = Array.isArray(data) ? data : [];
-    for (const row of rows) {
-      if (!row || typeof row !== "object") continue;
-      const r = row as Record<string, unknown>;
-      const mid = Number(r.match_id);
-      if (!Number.isFinite(mid) || mid <= 0) continue;
-      const unwrapped = unwrapPlanBRow(row);
-      if (unwrapped) out.set(mid, unwrapped);
-    }
+  );
+  for (const part of parts) {
+    for (const [k, v] of part) out.set(k, v);
   }
 
   return out;
@@ -244,7 +431,8 @@ export async function fetchPlanBSlimPayloadBatch(
 
 /** 两阶段：分页轻列取 id，再 in(match_id) 拉完整行，避免「排序 + 大 json」同一条 SQL 爆超时 */
 const PLAN_B_TWO_PHASE_PAGE_SIZE = 120;
-const PLAN_B_TWO_PHASE_MAX_PAGES = 50;
+/** 大表上多页轻扫仍会拖垮库；仅保留少量页作遗留兜底 */
+const PLAN_B_TWO_PHASE_MAX_PAGES = 8;
 const PLAN_B_IN_CHUNK = 40;
 
 /** 单查询兜底：仍失败时递减 limit */
@@ -313,23 +501,26 @@ async function fetchPlanBReplayIndexRowsTwoPhase(
   const full: Record<string, unknown>[] = [];
   for (let i = 0; i < uniqueIdOrder.length; i += PLAN_B_IN_CHUNK) {
     const chunk = uniqueIdOrder.slice(i, i + PLAN_B_IN_CHUNK);
-    let { data: part, error: e2 } = await client
-      .from("plan_b")
-      .select(PLAN_B_DETAIL_SELECT)
-      .in("match_id", chunk);
-
-    if (e2) {
-      const msg = e2.message || "";
-      if (/column|42703|does not exist|schema cache/i.test(msg)) {
-        ({ data: part, error: e2 } = await client
-          .from("plan_b")
-          .select("*")
-          .in("match_id", chunk));
+    let part: unknown;
+    let e2: { message?: string } | null = null;
+    const selectFallbacks = [
+      PLAN_B_INDEX_SELECT,
+      ...PLAN_B_DETAIL_SELECT_FALLBACKS.filter((s) => s !== PLAN_B_INDEX_SELECT),
+    ] as readonly string[];
+    for (const sel of selectFallbacks) {
+      const r = await client.from("plan_b").select(sel).in("match_id", chunk);
+      if (!r.error) {
+        part = r.data;
+        e2 = null;
+        break;
       }
+      e2 = r.error;
+      const msg = r.error.message || "";
+      if (!/column|42703|does not exist|schema cache/i.test(msg)) break;
     }
 
     if (e2) {
-      return { rows: [], error: e2.message };
+      return { rows: [], error: e2.message ?? "plan_b in-chunk select failed" };
     }
     if (Array.isArray(part)) {
       for (const row of part) {
@@ -370,18 +561,29 @@ export async function fetchPlanBReplayIndexRows(): Promise<{
     const lim = PLAN_B_SINGLE_QUERY_LIMITS[i];
     let { data, error } = await client
       .from("plan_b")
-      .select(PLAN_B_DETAIL_SELECT)
+      .select(PLAN_B_INDEX_SELECT)
       .order("created_at", { ascending: false })
       .limit(lim);
 
     if (error) {
       const msg = error.message || "";
       if (/column|42703|does not exist|schema cache/i.test(msg)) {
-        ({ data, error } = await client
-          .from("plan_b")
-          .select("*")
-          .order("created_at", { ascending: false })
-          .limit(lim));
+        const split = await fetchPlanBReplayIndexPageSplit(client, 1, lim);
+        if (!split.error) {
+          return { rows: split.rows, error: null };
+        }
+        lastError = split.error;
+        console.warn(
+          `[plan_b] 列兼容 split 兜底失败 (limit=${lim}):`,
+          split.error
+        );
+        const retry =
+          i + 1 < PLAN_B_SINGLE_QUERY_LIMITS.length &&
+          looksLikeStatementTimeout(split.error);
+        if (!retry) {
+          return { rows: [], error: lastError };
+        }
+        continue;
       }
     }
 
@@ -424,9 +626,10 @@ async function fetchPlanBReplayIndexPageSplit(
   const from = (safePage - 1) * safePageSize;
   const to = from + safePageSize - 1;
 
+  /** `exact` 全表 COUNT 在大表上极易超时；分页总数用统计估算即可 */
   const countReq = await client
     .from("plan_b")
-    .select("match_id", { count: "exact", head: true });
+    .select("match_id", { count: "estimated", head: true });
   if (countReq.error) {
     return { rows: [], totalRows: 0, error: countReq.error.message };
   }
@@ -492,6 +695,10 @@ async function fetchPlanBReplayIndexPageSplit(
 /**
  * plan_b 列表分页：优先 **单次** `select(索引列含 players) + count + range`，
  * 失败或超时时回退为 split 查询。
+ *
+ * **仅用 {@link PLAN_B_INDEX_SELECT}，不用 {@link PLAN_B_DETAIL_SELECT}：**
+ * 列表只需顶层 `players` 等与摘要展示；附带 payload/slim/body 等大 jsonb 会成倍放大单次扫描，
+ * 易触发 PostgreSQL `statement_timeout`（canceling statement due to statement timeout）。
  */
 export async function fetchPlanBReplayIndexPage(
   page: number,
@@ -508,18 +715,19 @@ export async function fetchPlanBReplayIndexPage(
   const from = (safePage - 1) * safePageSize;
   const to = from + safePageSize - 1;
 
+  /** `exact` count 与 range 同请求时会多做昂贵 COUNT(*)；列表总条数用 estimated 即可 */
   const runSelect = async (sel: string) =>
     client
       .from("plan_b")
-      .select(sel, { count: "exact" })
+      .select(sel, { count: "estimated" })
       .order("created_at", { ascending: false })
       .range(from, to);
 
-  let { data, error, count } = await runSelect(PLAN_B_DETAIL_SELECT);
+  let { data, error, count } = await runSelect(PLAN_B_INDEX_SELECT);
   if (error) {
     const msg = error.message || "";
     if (/column|42703|does not exist|schema cache/i.test(msg)) {
-      ({ data, error, count } = await runSelect("*"));
+      return fetchPlanBReplayIndexPageSplit(client, safePage, safePageSize);
     }
   }
 
@@ -542,8 +750,265 @@ export async function fetchPlanBReplayIndexPage(
   return { rows, totalRows, error: null };
 }
 
-const PLAN_B_STATS_PAGE_SIZE = 500;
-const PLAN_B_STATS_MAX_PAGES = 400;
+/** 英雄/选手页：合并结果上限（单次扫描过大仍可能触发超时） */
+export const PLAN_B_PROFILE_QUERY_LIMIT = 2500;
+
+const PLAN_B_INDEX_SELECT_NO_LEAGUE =
+  "match_id, created_at, duration, radiant_win, radiant_score, dire_score, players";
+
+/** 分页扫描：与 {@link extractPlanBPlayersArray} 列集合对齐 */
+const PLAN_B_PROFILE_WIDE_SELECT =
+  "match_id, created_at, duration, radiant_win, radiant_score, dire_score, league_name, players, slim, payload, data, match_json, body";
+
+function isPlanBProfileSchemaError(message: string): boolean {
+  return /column|42703|does not exist|schema cache/i.test(message);
+}
+
+type PlanBJsonColumn = "players" | "slim" | "payload" | "data";
+
+async function planBContainsRows(
+  client: NonNullable<typeof supabase>,
+  column: PlanBJsonColumn,
+  /** PostgREST `.contains`：players 为数组探测；slim/payload 多为对象探测 */
+  operand: unknown
+): Promise<Record<string, unknown>[]> {
+  const selectors = [
+    PLAN_B_INDEX_SELECT_NO_LEAGUE,
+    PLAN_B_INDEX_SELECT,
+    PLAN_B_PROFILE_WIDE_SELECT,
+  ] as const;
+
+  for (const sel of selectors) {
+    const { data, error } = await client
+      .from("plan_b")
+      .select(sel)
+      .contains(column, operand as never)
+      .order("created_at", { ascending: false })
+      .limit(PLAN_B_PROFILE_QUERY_LIMIT);
+
+    if (!error) {
+      return Array.isArray(data)
+        ? (data as unknown as Record<string, unknown>[])
+        : [];
+    }
+    if (!isPlanBProfileSchemaError(error.message || "")) {
+      console.warn(
+        `[plan_b] profile contains ${column}:`,
+        error.message?.slice(0, 180)
+      );
+      return [];
+    }
+  }
+  return [];
+}
+
+async function fetchPlanBWideReplayIndexPage(
+  page: number,
+  pageSize: number
+): Promise<{ rows: Record<string, unknown>[]; error: string | null }> {
+  const client = supabase;
+  if (!client) return { rows: [], error: null };
+  const safePage = Math.max(1, Math.floor(page || 1));
+  const safeSize = Math.max(1, Math.min(80, Math.floor(pageSize || 40)));
+  const from = (safePage - 1) * safeSize;
+  const to = from + safeSize - 1;
+
+  const selectors = [
+    PLAN_B_INDEX_SELECT_NO_LEAGUE,
+    PLAN_B_INDEX_SELECT,
+    PLAN_B_PROFILE_WIDE_SELECT,
+  ] as const;
+
+  for (const sel of selectors) {
+    const { data, error } = await client
+      .from("plan_b")
+      .select(sel)
+      .order("created_at", { ascending: false })
+      .range(from, to);
+
+    if (!error) {
+      return {
+        rows: Array.isArray(data)
+          ? (data as unknown as Record<string, unknown>[])
+          : [],
+        error: null,
+      };
+    }
+    if (!isPlanBProfileSchemaError(error.message || "")) {
+      return { rows: [], error: error.message };
+    }
+  }
+  return { rows: [], error: null };
+}
+
+function mergeProfileRowsByMatchId(
+  rows: Record<string, unknown>[],
+  byMid: Map<number, Record<string, unknown>>
+): void {
+  for (const r of rows) {
+    const mid = Number(r.match_id);
+    if (!Number.isFinite(mid) || mid <= 0) continue;
+    if (!byMid.has(mid)) byMid.set(mid, r);
+  }
+}
+
+/**
+ * 英雄页云库：阵容可能在顶层 `players`，也可能仅在 `slim`/`payload`（与 Python unwrap 一致）。
+ * 先多路 `.contains`，再无结果时用宽列分页 + 客户端 {@link planBRowIncludesHeroNpc} 兜底。
+ */
+export async function fetchPlanBReplayIndexRowsForHero(
+  heroNpcId: number
+): Promise<{ rows: Record<string, unknown>[]; error: string | null }> {
+  const client = supabase;
+  if (!client) return { rows: [], error: null };
+  if (!Number.isFinite(heroNpcId) || heroNpcId <= 0) {
+    return { rows: [], error: null };
+  }
+
+  const byMid = new Map<number, Record<string, unknown>>();
+  let wideFallbackError: string | null = null;
+
+  const absorbVerified = (
+    batch: Record<string, unknown>[],
+    verify: (row: Record<string, unknown>) => boolean
+  ) => {
+    for (const r of batch) {
+      if (!verify(r)) continue;
+      const mid = Number(r.match_id);
+      if (!Number.isFinite(mid) || mid <= 0) continue;
+      if (!byMid.has(mid)) byMid.set(mid, r);
+    }
+  };
+
+  const slimProbeNum = { players: [{ hero_id: heroNpcId }] };
+  const slimProbeStr = { players: [{ hero_id: String(heroNpcId) }] };
+  const nestCols = ["slim", "payload", "data"] as const;
+
+  // A+B 并行：原先串行 8 次 contains，RTT 叠加可达数秒；并行不改变语义（最终仍 merge + 校验）。
+  const probeBatches = await Promise.all([
+    planBContainsRows(client, "players", [{ hero_id: heroNpcId }]),
+    planBContainsRows(client, "players", [{ hero_id: String(heroNpcId) }]),
+    ...nestCols.flatMap((col) => [
+      planBContainsRows(client, col, slimProbeNum),
+      planBContainsRows(client, col, slimProbeStr),
+    ]),
+  ]);
+  for (const batch of probeBatches) {
+    absorbVerified(batch, () => true);
+  }
+
+  // C) 校验 contains 命中（避免 JSON 形态差异）；并剔除伪命中
+  const verified = new Map<number, Record<string, unknown>>();
+  for (const [mid, r] of byMid) {
+    if (planBRowIncludesHeroNpc(r, heroNpcId)) verified.set(mid, r);
+  }
+  byMid.clear();
+  for (const [mid, r] of verified) byMid.set(mid, r);
+
+  // D) 仍为空或不完整时：按时间分页扫宽列，用 extractPlanBPlayersArray 识别英雄
+  const runWideFallback = byMid.size === 0;
+  const PROFILE_FALLBACK_PAGE_SIZE = 45;
+  /** contains 全空时按时间扫表：页数过多会刷爆 plan_b；仅保留少量页作兜底 */
+  const PROFILE_FALLBACK_MAX_PAGES = runWideFallback ? 4 : 0;
+
+  for (let page = 1; page <= PROFILE_FALLBACK_MAX_PAGES; page++) {
+    const pack = await fetchPlanBWideReplayIndexPage(page, PROFILE_FALLBACK_PAGE_SIZE);
+    if (pack.error) {
+      wideFallbackError = pack.error;
+      break;
+    }
+    for (const r of pack.rows) {
+      if (!planBRowIncludesHeroNpc(r, heroNpcId)) continue;
+      const mid = Number(r.match_id);
+      if (!Number.isFinite(mid) || mid <= 0) continue;
+      if (!byMid.has(mid)) byMid.set(mid, r);
+    }
+    if (byMid.size >= PLAN_B_PROFILE_QUERY_LIMIT) break;
+    if (pack.rows.length < PROFILE_FALLBACK_PAGE_SIZE) break;
+  }
+
+  const rows = [...byMid.values()].sort((a, b) =>
+    String(b.created_at ?? "").localeCompare(String(a.created_at ?? ""))
+  );
+  return {
+    rows: rows.slice(0, PLAN_B_PROFILE_QUERY_LIMIT),
+    error:
+      rows.length === 0 && wideFallbackError ? wideFallbackError : null,
+  };
+}
+
+/**
+ * 选手页云库：account_id 可能在顶层 players，也可能仅在 slim/payload。
+ */
+export async function fetchPlanBReplayIndexRowsForAccount(
+  accountId: number
+): Promise<{ rows: Record<string, unknown>[]; error: string | null }> {
+  const client = supabase;
+  if (!client) return { rows: [], error: null };
+  if (!Number.isFinite(accountId) || accountId <= 0) {
+    return { rows: [], error: null };
+  }
+
+  const byMid = new Map<number, Record<string, unknown>>();
+  let wideFallbackError: string | null = null;
+
+  const nestNum = { players: [{ account_id: accountId }] };
+  const nestStr = { players: [{ account_id: String(accountId) }] };
+  const nestCols = ["slim", "payload", "data"] as const;
+
+  const probeBatches = await Promise.all([
+    planBContainsRows(client, "players", [{ account_id: accountId }]),
+    planBContainsRows(client, "players", [{ account_id: String(accountId) }]),
+    ...nestCols.flatMap((col) => [
+      planBContainsRows(client, col, nestNum),
+      planBContainsRows(client, col, nestStr),
+    ]),
+  ]);
+  for (const batch of probeBatches) {
+    mergeProfileRowsByMatchId(batch, byMid);
+  }
+
+  const verified = new Map<number, Record<string, unknown>>();
+  for (const [mid, r] of byMid) {
+    if (planBRowIncludesAccountId(r, accountId)) verified.set(mid, r);
+  }
+  byMid.clear();
+  for (const [mid, r] of verified) byMid.set(mid, r);
+
+  const runWideFallback = byMid.size === 0;
+  const PROFILE_FALLBACK_PAGE_SIZE = 45;
+  const PROFILE_FALLBACK_MAX_PAGES = runWideFallback ? 4 : 0;
+
+  for (let page = 1; page <= PROFILE_FALLBACK_MAX_PAGES; page++) {
+    const pack = await fetchPlanBWideReplayIndexPage(page, PROFILE_FALLBACK_PAGE_SIZE);
+    if (pack.error) {
+      wideFallbackError = pack.error;
+      break;
+    }
+    for (const r of pack.rows) {
+      if (!planBRowIncludesAccountId(r, accountId)) continue;
+      const mid = Number(r.match_id);
+      if (!Number.isFinite(mid) || mid <= 0) continue;
+      if (!byMid.has(mid)) byMid.set(mid, r);
+    }
+    if (byMid.size >= PLAN_B_PROFILE_QUERY_LIMIT) break;
+    if (pack.rows.length < PROFILE_FALLBACK_PAGE_SIZE) break;
+  }
+
+  const rows = [...byMid.values()].sort((a, b) =>
+    String(b.created_at ?? "").localeCompare(String(a.created_at ?? ""))
+  );
+  return {
+    rows: rows.slice(0, PLAN_B_PROFILE_QUERY_LIMIT),
+    error:
+      rows.length === 0 && wideFallbackError ? wideFallbackError : null,
+  };
+}
+
+/** 单次查询最多 20 行（与 PostgREST Range 一致），避免宽扫描拖垮库 */
+const PLAN_B_STATS_PAGE_SIZE = 20;
+/** 聚合为采样近似：最多抓若干页后停止 */
+const PLAN_B_STATS_MAX_PAGES = 24;
 
 function parsePlanBDurationSec(raw: unknown): number | null {
   const n = Number(raw ?? 0);
@@ -600,6 +1065,7 @@ export async function fetchPlanBAggregateMatchStats(): Promise<{
       .from("plan_b")
       .select("radiant_win, duration")
       .order("match_id", { ascending: true })
+      /** 每请求最多 20 行（含）：与 {@link PLAN_B_STATS_PAGE_SIZE} 一致 */
       .range(from, to);
 
     if (error) {

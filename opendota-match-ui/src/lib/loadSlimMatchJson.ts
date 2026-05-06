@@ -18,6 +18,13 @@ type DetailCacheEntry = {
 const detailCache = new Map<number, DetailCacheEntry>();
 const detailInflight = new Map<number, Promise<SlimMatchJson | null>>();
 
+/** 仅合并「同一批 needCloud → fetchPlanBSlimPayloadBatch」的并发，避免重复打 plan_b */
+const planBBatchInflight = new Map<string, Promise<Map<number, unknown>>>();
+
+function cloudBatchKey(needCloud: readonly number[]): string {
+  return [...new Set(needCloud)].sort((a, b) => a - b).join(",");
+}
+
 /** 判断是否为「可用来渲染出装/加点/天赋」的整局 slim，避免把 SPA 占位页当 JSON 用 */
 function slimMatchDetailLooksUsable(s: SlimMatchJson): boolean {
   const pl = s.players ?? [];
@@ -157,7 +164,19 @@ export async function loadSlimMatchJsonForDetails(
 
   if (needCloud.length === 0) return out;
 
-  const rawMap = await fetchPlanBSlimPayloadBatch(needCloud);
+  const ck = cloudBatchKey(needCloud);
+  let batchPromise = planBBatchInflight.get(ck);
+  if (!batchPromise) {
+    batchPromise = fetchPlanBSlimPayloadBatch(needCloud);
+    planBBatchInflight.set(ck, batchPromise);
+    batchPromise.finally(() => {
+      if (planBBatchInflight.get(ck) === batchPromise) {
+        planBBatchInflight.delete(ck);
+      }
+    });
+  }
+  const rawMap = await batchPromise;
+
   for (const mid of needCloud) {
     const raw = rawMap.get(mid);
     let cand: SlimMatchJson | null = null;

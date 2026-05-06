@@ -40,6 +40,20 @@ export function collectPurchaseEvents(
     }
   }
 
+  const prAny = p as Record<string, unknown>;
+  const purchaseLog = prAny["purchase_log"];
+  if (Array.isArray(purchaseLog)) {
+    for (const row of purchaseLog) {
+      if (!row || typeof row !== "object") continue;
+      const o = row as Record<string, unknown>;
+      const t = Number(o.time);
+      const raw = String(o.key ?? "").trim();
+      const itemKey = normalizeMetaItemKey(raw);
+      if (!Number.isFinite(t) || t < 0 || !itemKey) continue;
+      out.push({ time: Math.floor(t), itemKey, slot });
+    }
+  }
+
   const starts = p.starting_items;
   if (Array.isArray(starts)) {
     for (const it of starts) {

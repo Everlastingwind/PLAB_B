@@ -6,10 +6,16 @@ import { ViewportMountRow } from "../components/ViewportMountRow";
 import type { FeedSelection } from "../components/FeedModeToggle";
 import {
   MATCH_LIST_LOAD_STEP,
+  cloudPackToIndexError,
+  fetchCloudPubReplaySummariesPage,
   fetchReplaysForFeedSelection,
+  fetchStaticFeedOnly,
 } from "../lib/replaysApi";
 import { fetchPlanBAggregateMatchStats } from "../lib/supabasePlanB";
+import { loadSlimMatchJsonForDetails } from "../lib/loadSlimMatchJson";
+import { topKillMatchIdsForSlim } from "../lib/topKillMatchIds";
 import type { ReplaySummary } from "../types/replaysIndex";
+import type { SlimMatchJson } from "../types/slimMatch";
 import { useEntityMaps } from "../hooks/useEntityMaps";
 import { SEOMeta } from "../components/SEOMeta";
 import { MetaGlobalItemStatsSection } from "../components/MetaGlobalItemStatsSection";
@@ -39,10 +45,18 @@ export function HomePage() {
   const { maps, loading: mapsLoading, error: mapsErr } = useEntityMaps();
   const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
+  /** 只用字符串参与 effect 依赖，避免 `URLSearchParams` 引用变化触发无限重新请求 */
+  const pageQueryParam = searchParams.get("page") ?? "1";
   const [feed, setFeed] = useState<FeedSelection>({ pub: true, pro: false });
   const [replays, setReplays] = useState<ReplaySummary[]>([]);
   const [feedListLoading, setFeedListLoading] = useState(true);
   const [idxErr, setIdxErr] = useState<string | null>(null);
+  /** 服务端分页时 Supabase 返回的总行数（仅 Matches + 仅 PUB） */
+  const [pagedTotalRows, setPagedTotalRows] = useState<number | null>(null);
+  /** Meta / Items / TOP：仅用静态 JSON，避免依赖对局列表那条（可能仅 15 条） */
+  const [analyticsReplays, setAnalyticsReplays] = useState<
+    ReplaySummary[]
+  >([]);
   const [roleTab, setRoleTab] = useState<"carry" | "mid" | "offlane" | "support(4)" | "support(5)">("carry");
   const [homeView, setHomeView] = useState<"matches" | "meta" | "items" | "top">(
     "matches"
@@ -57,6 +71,11 @@ export function HomePage() {
   const [cloudAggLoading, setCloudAggLoading] = useState(false);
   const [cloudAggErr, setCloudAggErr] = useState<string | null>(null);
   const cloudAggFetchedOk = useRef(false);
+  /** Items / TOP 子区块用：由本页统一批量拉 plan_b/slim，禁止在子组件内再请求 */
+  const [homeMetaSlimByMatch, setHomeMetaSlimByMatch] = useState<
+    Record<number, SlimMatchJson | undefined>
+  >({});
+  const [homeMetaSlimLoading, setHomeMetaSlimLoading] = useState(false);
   /** 全英雄表排序：总胜率/总场次（可升降序）或按分路 */
   const [heroMetaSort, setHeroMetaSort] = useState<HeroWinrateMetaSortMode>({
     type: "winRate",
@@ -75,10 +94,47 @@ export function HomePage() {
 
   useEffect(() => {
     let cancelled = false;
+    void fetchStaticFeedOnly(feed).then((snap) => {
+      if (!cancelled) setAnalyticsReplays(snap.replays);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [feed]);
+
+  useEffect(() => {
+    let cancelled = false;
     setIdxErr(null);
     setFeedListLoading(true);
+    const pubOnlyMatches =
+      homeView === "matches" && feed.pub && !feed.pro;
+
     void (async () => {
       try {
+        if (pubOnlyMatches) {
+          const pageRaw = Number(pageQueryParam || 1);
+          const currentPage =
+            Number.isFinite(pageRaw) && pageRaw > 0 ? Math.floor(pageRaw) : 1;
+          const pack = await fetchCloudPubReplaySummariesPage(
+            currentPage,
+            MATCH_LIST_LOAD_STEP
+          );
+          if (cancelled) return;
+          setReplays(pack.replays);
+          setPagedTotalRows(Math.max(0, pack.totalRows));
+          setIdxErr(
+            pack.error
+              ? cloudPackToIndexError({
+                  replays: pack.replays,
+                  error: pack.error,
+                })
+              : null
+          );
+          setFeedListLoading(false);
+          return;
+        }
+
+        setPagedTotalRows(null);
         const { replays: list, cloudIndexError } =
           await fetchReplaysForFeedSelection(feed);
         if (cancelled) return;
@@ -95,7 +151,7 @@ export function HomePage() {
     return () => {
       cancelled = true;
     };
-  }, [feed, homeView]);
+  }, [feed, homeView, pageQueryParam]);
 
   useEffect(() => {
     if (homeView !== "meta") return;
@@ -126,10 +182,26 @@ export function HomePage() {
     };
   }, [homeView]);
 
-  const totalPages = useMemo(
-    () => Math.max(1, Math.ceil(replays.length / MATCH_LIST_LOAD_STEP)),
-    [replays.length]
-  );
+  const totalPages = useMemo(() => {
+    if (
+      homeView === "matches" &&
+      feed.pub &&
+      !feed.pro &&
+      pagedTotalRows != null
+    ) {
+      return Math.max(
+        1,
+        Math.ceil(pagedTotalRows / MATCH_LIST_LOAD_STEP)
+      );
+    }
+    return Math.max(1, Math.ceil(replays.length / MATCH_LIST_LOAD_STEP));
+  }, [
+    homeView,
+    feed.pub,
+    feed.pro,
+    pagedTotalRows,
+    replays.length,
+  ]);
   const pageFromQuery = (() => {
     const n = Number(searchParams.get("page") || 1);
     return Number.isFinite(n) && n > 0 ? Math.floor(n) : 1;
@@ -137,10 +209,13 @@ export function HomePage() {
   const page = Math.max(pageFromQuery, 1);
   const pageForSlice = Math.min(page, totalPages);
   const visible = useMemo(() => {
+    if (homeView === "matches" && feed.pub && !feed.pro) {
+      return replays;
+    }
     const start = (pageForSlice - 1) * MATCH_LIST_LOAD_STEP;
     const end = start + MATCH_LIST_LOAD_STEP;
     return replays.slice(start, end);
-  }, [replays, pageForSlice]);
+  }, [homeView, feed.pub, feed.pro, replays, pageForSlice]);
 
   const shouldRestoreScroll = useMemo(() => {
     const anchorRaw = sessionStorage.getItem(anchorKey)?.trim();
@@ -286,9 +361,52 @@ export function HomePage() {
 
   /** Items 页全局出装统计：限制样本量，避免对数百 match 发起 slim 拉取 */
   const replaysSampleForItemMeta = useMemo(
-    () => replays.slice(0, 48),
-    [replays]
+    () => analyticsReplays.slice(0, 48),
+    [analyticsReplays]
   );
+
+  const metaTabSlimIds = useMemo((): number[] => {
+    if (homeView === "items") {
+      const raw = replaysSampleForItemMeta
+        .map((r) => Number(r.match_id))
+        .filter((id) => Number.isFinite(id) && id > 0);
+      return [...new Set(raw)].sort((a, b) => a - b);
+    }
+    if (homeView === "top") {
+      return topKillMatchIdsForSlim(analyticsReplays, 5);
+    }
+    return [];
+  }, [homeView, replaysSampleForItemMeta, analyticsReplays]);
+
+  const metaTabSlimIdsKey = metaTabSlimIds.join(",");
+
+  useEffect(() => {
+    let cancelled = false;
+    if (!maps || metaTabSlimIds.length === 0) {
+      setHomeMetaSlimLoading(false);
+      return;
+    }
+    setHomeMetaSlimLoading(true);
+    void loadSlimMatchJsonForDetails(metaTabSlimIds, { preferCloud: true })
+      .then((batch) => {
+        if (cancelled) return;
+        setHomeMetaSlimByMatch((prev) => {
+          const next = { ...prev };
+          for (const mid of metaTabSlimIds) {
+            const j = batch[mid];
+            if (j) next[mid] = j;
+          }
+          return next;
+        });
+        setHomeMetaSlimLoading(false);
+      })
+      .catch(() => {
+        if (!cancelled) setHomeMetaSlimLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [metaTabSlimIdsKey, maps]);
 
   const normalizeRole = useCallback((raw: unknown): "carry" | "mid" | "offlane" | "support(4)" | "support(5)" | null => {
     const s = String(raw ?? "").trim().toLowerCase();
@@ -303,7 +421,7 @@ export function HomePage() {
   const topHeroByRole = useMemo(() => {
     if (!maps) return [] as Array<{ heroId: number; games: number; winRate: number }>;
     const agg = new Map<number, { games: number; wins: number }>();
-    for (const r of replays) {
+    for (const r of analyticsReplays) {
       for (const p of r.players || []) {
         const role = normalizeRole(p.role_early);
         if (role !== roleTab) continue;
@@ -325,7 +443,7 @@ export function HomePage() {
       .filter((x) => x.games >= 50)
       .sort((a, b) => b.winRate - a.winRate || b.games - a.games)
       .slice(0, 5);
-  }, [replays, roleTab, maps, normalizeRole]);
+  }, [analyticsReplays, roleTab, maps, normalizeRole]);
 
   const topHeroOverall = useMemo(() => {
     if (!maps) return [] as Array<{
@@ -347,7 +465,7 @@ export function HomePage() {
       Map<number, { t: number; won: boolean }>
     >();
 
-    for (const r of replays) {
+    for (const r of analyticsReplays) {
       const t = Date.parse(String(r.uploaded_at ?? "")) || 0;
       const rw = Boolean(r.radiant_win);
       const mid = Number(r.match_id) || 0;
@@ -432,7 +550,7 @@ export function HomePage() {
         };
       })
       .filter((x) => x.cumulativeWinRateSeries.length >= 100);
-  }, [replays, maps, normalizeRole]);
+  }, [analyticsReplays, maps, normalizeRole]);
 
   const heroMetaTableRows = useMemo(() => {
     if (!maps) return [];
@@ -569,6 +687,8 @@ export function HomePage() {
                       <ViewportMountRow
                         key={`${feedKey}-${r.match_id}-${r.uploaded_at}-${r.source ?? ""}`}
                         index={i}
+                        forceMountCount={1}
+                        rootMargin="48px 0px"
                         skeleton={
                           <div
                             aria-hidden
@@ -608,7 +728,11 @@ export function HomePage() {
               </button>
               <p className="text-xs text-skin-sub tabular-nums">
                 第 {pageForSlice} / {totalPages} 页
-                {homeView === "matches" ? `（共 ${replays.length} 场）` : null}
+                {homeView === "matches" && feed.pub && !feed.pro && pagedTotalRows != null
+                  ? `（共 ${pagedTotalRows} 场）`
+                  : homeView === "matches"
+                    ? `（共 ${replays.length} 场）`
+                    : null}
               </p>
               <button
                 type="button"
@@ -796,14 +920,18 @@ export function HomePage() {
             <MetaGlobalItemStatsSection
               replays={replaysSampleForItemMeta}
               maps={maps}
+              slimByMatchId={homeMetaSlimByMatch}
+              slimLoading={homeMetaSlimLoading}
             />
           ) : null}
           {homeView === "top" && !mapsLoading && maps ? (
             <section className="mt-6 rounded-lg border border-skin-line bg-skin-card p-3">
               <MetaTopKillGamesSection
-                replays={replays}
+                replays={analyticsReplays}
                 maps={maps}
                 listLoading={feedListLoading}
+                slimByMatchId={homeMetaSlimByMatch}
+                slimLoading={homeMetaSlimLoading}
               />
             </section>
           ) : null}

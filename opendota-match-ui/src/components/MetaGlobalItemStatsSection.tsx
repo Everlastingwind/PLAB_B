@@ -2,12 +2,12 @@ import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import type { EntityMapsPayload } from "../types/entityMaps";
 import type { ReplaySummary } from "../types/replaysIndex";
+import type { SlimMatchJson } from "../types/slimMatch";
 import {
   aggregateMetaGlobalItemStats,
   formatGameClockMmSs,
   normalizeMetaItemKey,
 } from "../lib/metaGlobalItemStats";
-import { loadSlimMatchJsonForDetails } from "../lib/loadSlimMatchJson";
 import {
   itemIconUrl,
   onDotaSteamAssetImgError,
@@ -19,6 +19,10 @@ import { loadCraftableItemKeySet } from "../lib/itemCraftableKeys";
 type Props = {
   replays: readonly ReplaySummary[];
   maps: EntityMapsPayload;
+  /** 父页面统一批量拉取 plan_b/slim；本组件禁止发起 loadSlimMatchJson* */
+  slimByMatchId: Readonly<Record<number, SlimMatchJson | null | undefined>>;
+  /** 父页面首次批量请求 plan_b 进行中 */
+  slimLoading?: boolean;
 };
 
 type MetaItemSortColumn =
@@ -68,17 +72,15 @@ function compareMetaItemRows(
 }
 
 export function MetaGlobalItemStatsSection(props: Props) {
-  const { replays, maps } = props;
+  const { replays, maps, slimByMatchId, slimLoading = false } = props;
   const [itemSort, setItemSort] = useState<MetaItemSortState>({
     column: "purchaseRate",
     order: "desc",
   });
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [matchesAnalyzed, setMatchesAnalyzed] = useState(0);
-  const [rows, setRows] = useState<
-    ReturnType<typeof aggregateMetaGlobalItemStats>["rows"]
-  >([]);
+  const [craftableKeys, setCraftableKeys] = useState<ReadonlySet<string> | null>(
+    null
+  );
+  const [craftableError, setCraftableError] = useState<string | null>(null);
 
   const matchIds = useMemo(
     () =>
@@ -98,44 +100,45 @@ export function MetaGlobalItemStatsSection(props: Props) {
   }, [maps]);
 
   useEffect(() => {
-    if (matchIds.length === 0) {
-      setRows([]);
-      setMatchesAnalyzed(0);
-      setError(null);
-      return;
-    }
     let cancelled = false;
-    setLoading(true);
-    setError(null);
-    void (async () => {
-      try {
-        const craftableKeys = await loadCraftableItemKeySet();
-        if (cancelled) return;
-        const slimMap = await loadSlimMatchJsonForDetails(matchIds, {
-          preferCloud: true,
-        });
-        if (cancelled) return;
-        const pack = aggregateMetaGlobalItemStats(
-          replays,
-          slimMap,
-          craftableKeys
-        );
-        setMatchesAnalyzed(pack.matchesAnalyzed);
-        setRows(pack.rows);
-      } catch (e) {
+    void loadCraftableItemKeySet()
+      .then((set) => {
         if (!cancelled) {
-          setError(e instanceof Error ? e.message : "加载失败");
-          setRows([]);
-          setMatchesAnalyzed(0);
+          setCraftableKeys(set);
+          setCraftableError(null);
         }
-      } finally {
-        if (!cancelled) setLoading(false);
-      }
-    })();
+      })
+      .catch((e) => {
+        if (!cancelled) {
+          setCraftableKeys(new Set());
+          setCraftableError(e instanceof Error ? e.message : "合成装名单加载失败");
+        }
+      });
     return () => {
       cancelled = true;
     };
-  }, [replays, matchIds]);
+  }, []);
+
+  const slimRecordForAgg = useMemo((): Record<number, SlimMatchJson | null> => {
+    const out: Record<number, SlimMatchJson | null> = {};
+    for (const id of matchIds) {
+      const v = slimByMatchId[id];
+      out[id] = v === undefined || v === null ? null : v;
+    }
+    return out;
+  }, [matchIds, slimByMatchId]);
+
+  const matchIdsKey = matchIds.join(",");
+
+  const aggPack = useMemo(() => {
+    if (!craftableKeys || matchIds.length === 0) return null;
+    return aggregateMetaGlobalItemStats(replays, slimRecordForAgg, craftableKeys);
+  }, [craftableKeys, matchIdsKey, replays, slimRecordForAgg]);
+
+  const rows = aggPack?.rows ?? [];
+  const matchesAnalyzed = aggPack?.matchesAnalyzed ?? 0;
+  const loading = craftableKeys === null || slimLoading;
+  const error = craftableError;
 
   const sortedRows = useMemo(() => {
     if (rows.length === 0) return rows;

@@ -1,7 +1,6 @@
 import type { ReactNode } from "react";
 import { useState } from "react";
 import { AppHeader } from "./AppHeader";
-import { SiteAnnouncementBanner } from "./SiteAnnouncementBanner";
 import { HeroSearch } from "./HeroSearch";
 import { cn } from "../lib/cn";
 import type { FeedSelection } from "./FeedModeToggle";
@@ -46,7 +45,6 @@ export function PageShell({
 
   const shell = (
     <div className="min-h-screen bg-skin-page text-skin-ink antialiased transition-colors">
-      <SiteAnnouncementBanner />
       <AppHeader
         center={center}
         trailing={trailing}

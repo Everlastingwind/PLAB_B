@@ -9,6 +9,8 @@ import { applyProDisplayOverridesToReplaySummaries } from "./proAccountDisplayOv
 import {
   extractPlanBPlayersArray,
   fetchPlanBReplayIndexPage,
+  fetchPlanBReplayIndexRowsForAccount,
+  fetchPlanBReplayIndexRowsForHero,
   unwrapPlanBRow,
 } from "./supabasePlanB";
 
@@ -266,6 +268,27 @@ function planBRowToReplaySummary(row: Record<string, unknown>): ReplaySummary | 
   };
 }
 
+function replaySummariesFromPlanBRows(
+  rows: Record<string, unknown>[]
+): ReplaySummary[] {
+  const out: ReplaySummary[] = [];
+  for (const row of rows) {
+    const unwrapped = unwrapPlanBRow(row);
+    const raw =
+      unwrapped && typeof unwrapped === "object" && !Array.isArray(unwrapped)
+        ? (unwrapped as Record<string, unknown>)
+        : row;
+    const mergedRow: Record<string, unknown> = {
+      ...row,
+      ...raw,
+      created_at: row.created_at ?? raw.created_at,
+    };
+    const r = planBRowToReplaySummary(mergedRow);
+    if (r) out.push(r);
+  }
+  return out;
+}
+
 type CloudPubReplayPack = {
   replays: ReplaySummary[];
   error: string | null;
@@ -282,46 +305,33 @@ const cloudPubPageCache = new Map<
   { pack: CloudPubReplayPagePack; expiresAt: number }
 >();
 
+/** 英雄/选手页云索引：Strict Mode 双挂载或快速往返时避免重复扫 plan_b */
+const CLOUD_PROFILE_PACK_CACHE_TTL_MS = 60_000;
+const cloudHeroProfilePackCache = new Map<
+  number,
+  { pack: CloudPubReplayPack; expiresAt: number }
+>();
+const cloudAccountProfilePackCache = new Map<
+  number,
+  { pack: CloudPubReplayPack; expiresAt: number }
+>();
+const cloudHeroProfileInflight = new Map<number, Promise<CloudPubReplayPack>>();
+const cloudAccountProfileInflight = new Map<
+  number,
+  Promise<CloudPubReplayPack>
+>();
+
 /**
- * 与静态 replays_index 合并时：分页拉取 plan_b **全部行**（在 {@link CLOUD_FEED_MERGE_MAX_ROWS} 内），
- * 再按 match_id 合并。若只拉第一页，英雄/选手页按 hero/account 筛选时会漏掉仅存在于云库后排的场次。
- *
- * 首页「仅云」列表仍用 {@link fetchCloudPubReplaySummariesPage} 单页 + URL 分页，不经过此函数。
+ * 与静态索引合并时**仅拉取云库第一页**（{@link MATCH_LIST_LOAD_STEP} 条），避免 plan_b 大表全表/多页扫描拖垮数据库。
+ * 首页 Matches 列表请直接使用 {@link fetchCloudPubReplaySummariesPage} + URL 分页，不经此函数。
  */
-const CLOUD_FEED_MERGE_PAGE_SIZE = 100;
-const CLOUD_FEED_MERGE_MAX_ROWS = 20_000;
-const CLOUD_FEED_MERGE_PARALLEL = 6;
-
 export async function fetchCloudPubReplaySummaries(): Promise<CloudPubReplayPack> {
-  const pageSize = CLOUD_FEED_MERGE_PAGE_SIZE;
-  const first = await fetchCloudPubReplaySummariesPage(1, pageSize);
-  const replays: ReplaySummary[] = [...first.replays];
-  if (first.error) {
-    return { replays, error: first.error };
-  }
-
-  const cappedTotal = Math.min(first.totalRows, CLOUD_FEED_MERGE_MAX_ROWS);
-  const totalPages = Math.max(1, Math.ceil(cappedTotal / pageSize));
-  if (totalPages <= 1) {
-    return { replays, error: null };
-  }
-
-  for (let start = 2; start <= totalPages; start += CLOUD_FEED_MERGE_PARALLEL) {
-    const end = Math.min(start + CLOUD_FEED_MERGE_PARALLEL - 1, totalPages);
-    const packs = await Promise.all(
-      Array.from({ length: end - start + 1 }, (_, i) =>
-        fetchCloudPubReplaySummariesPage(start + i, pageSize)
-      )
-    );
-    for (const pack of packs) {
-      if (pack.error) {
-        return { replays, error: pack.error };
-      }
-      replays.push(...pack.replays);
-    }
-  }
-
-  return { replays, error: null };
+  return fetchCloudPubReplaySummariesPage(1, MATCH_LIST_LOAD_STEP).then(
+    (p) => ({
+      replays: [...p.replays],
+      error: p.error,
+    })
+  );
 }
 
 export async function fetchCloudPubReplaySummariesPage(
@@ -341,21 +351,7 @@ export async function fetchCloudPubReplaySummariesPage(
     safePage,
     safePageSize
   );
-  const out: ReplaySummary[] = [];
-  for (const row of rows) {
-    const unwrapped = unwrapPlanBRow(row);
-    const raw =
-      unwrapped && typeof unwrapped === "object" && !Array.isArray(unwrapped)
-        ? (unwrapped as Record<string, unknown>)
-        : row;
-    const mergedRow: Record<string, unknown> = {
-      ...row,
-      ...raw,
-      created_at: row.created_at ?? raw.created_at,
-    };
-    const r = planBRowToReplaySummary(mergedRow);
-    if (r) out.push(r);
-  }
+  const out = replaySummariesFromPlanBRows(rows);
   const pack: CloudPubReplayPagePack = { replays: out, totalRows, error };
   cloudPubPageCache.set(cacheKey, {
     pack,
@@ -420,15 +416,162 @@ const feedIndexInflight = new Map<string, Promise<FeedReplayIndexResult>>();
 const CLOUD_INDEX_FAIL_HINT =
   "仅显示已部署的静态列表，与桌面不一致时请检查：① Supabase 控制台是否允许当前站点域名（须同时包含 dota2planb.com 与 www.dota2planb.com）；② 手机是否使用 https://www.dota2planb.com 打开。";
 
-function cloudPackToIndexError(pack: {
+/** 供首页等直接调用 {@link fetchCloudPubReplaySummariesPage} 时展示错误文案 */
+export function cloudPackToIndexError(pack: {
   replays: ReplaySummary[];
   error: string | null;
 }): string | null {
   if (!pack.error) return null;
-  const timeout = /statement timeout|57014|timeout/i.test(pack.error);
-  return timeout
-    ? `数据库不可用：${pack.error}。已对单次拉取条数自动降级；若仍出现请在数据库为 plan_b.created_at 建索引。`
-    : `数据库不可用：${pack.error}。${CLOUD_INDEX_FAIL_HINT}`;
+  const isTimeout = /statement timeout|57014|timeout/i.test(pack.error);
+  const base = `数据库不可用：${pack.error}。`;
+  if (isTimeout) return base;
+  return `${base}${CLOUD_INDEX_FAIL_HINT}`;
+}
+
+/** 云库中该英雄参与的对局（不等同于首页「最新一页」合并） */
+export async function fetchCloudPubReplaySummariesForHero(
+  heroNpcId: number
+): Promise<CloudPubReplayPack> {
+  const id = Math.floor(Number(heroNpcId));
+  if (!Number.isFinite(id) || id <= 0) {
+    return { replays: [], error: null };
+  }
+  const now = Date.now();
+  const cached = cloudHeroProfilePackCache.get(id);
+  if (cached && cached.expiresAt > now) {
+    return {
+      ...cached.pack,
+      replays: [...cached.pack.replays],
+    };
+  }
+  const inflight = cloudHeroProfileInflight.get(id);
+  if (inflight) {
+    const got = await inflight;
+    return { ...got, replays: [...got.replays] };
+  }
+
+  const task = (async (): Promise<CloudPubReplayPack> => {
+    const { rows, error } = await fetchPlanBReplayIndexRowsForHero(id);
+    const pack: CloudPubReplayPack = error
+      ? { replays: [], error }
+      : { replays: replaySummariesFromPlanBRows(rows), error: null };
+    cloudHeroProfilePackCache.set(id, {
+      pack: { ...pack, replays: [...pack.replays] },
+      expiresAt: Date.now() + CLOUD_PROFILE_PACK_CACHE_TTL_MS,
+    });
+    return { ...pack, replays: [...pack.replays] };
+  })();
+
+  cloudHeroProfileInflight.set(id, task);
+  try {
+    const got = await task;
+    return { ...got, replays: [...got.replays] };
+  } finally {
+    if (cloudHeroProfileInflight.get(id) === task) {
+      cloudHeroProfileInflight.delete(id);
+    }
+  }
+}
+
+/** 云库中该账号参与的对局 */
+export async function fetchCloudPubReplaySummariesForAccount(
+  accountId: number
+): Promise<CloudPubReplayPack> {
+  const aid = Math.floor(Number(accountId));
+  if (!Number.isFinite(aid) || aid <= 0) {
+    return { replays: [], error: null };
+  }
+  const now = Date.now();
+  const cached = cloudAccountProfilePackCache.get(aid);
+  if (cached && cached.expiresAt > now) {
+    return {
+      ...cached.pack,
+      replays: [...cached.pack.replays],
+    };
+  }
+  const inflight = cloudAccountProfileInflight.get(aid);
+  if (inflight) {
+    const got = await inflight;
+    return { ...got, replays: [...got.replays] };
+  }
+
+  const task = (async (): Promise<CloudPubReplayPack> => {
+    const { rows, error } = await fetchPlanBReplayIndexRowsForAccount(aid);
+    const pack: CloudPubReplayPack = error
+      ? { replays: [], error }
+      : { replays: replaySummariesFromPlanBRows(rows), error: null };
+    cloudAccountProfilePackCache.set(aid, {
+      pack: { ...pack, replays: [...pack.replays] },
+      expiresAt: Date.now() + CLOUD_PROFILE_PACK_CACHE_TTL_MS,
+    });
+    return { ...pack, replays: [...pack.replays] };
+  })();
+
+  cloudAccountProfileInflight.set(aid, task);
+  try {
+    const got = await task;
+    return { ...got, replays: [...got.replays] };
+  } finally {
+    if (cloudAccountProfileInflight.get(aid) === task) {
+      cloudAccountProfileInflight.delete(aid);
+    }
+  }
+}
+
+/**
+ * 英雄页列表：静态索引（含 PRO）中与云库「含该英雄」的 plan_b 行合并，
+ * 避免沿用 {@link fetchReplaysForFeedSelection} 时云侧只有首页那一窄条而导致缺赛。
+ */
+export async function fetchReplaysForHeroProfile(
+  sel: FeedSelection,
+  heroKey: string,
+  maps: EntityMapsPayload
+): Promise<FeedReplayIndexResult> {
+  const targetNpcId = heroNumericIdFromKey(maps, heroKey);
+  if (targetNpcId == null) {
+    return { replays: [], cloudIndexError: null };
+  }
+
+  const snap = await fetchStaticFeedOnly(sel);
+  const staticHero = filterByHeroKey(snap.replays, heroKey, maps);
+
+  let cloudIndexError: string | null = null;
+  let cloudHero: ReplaySummary[] = [];
+  if (sel.pub) {
+    const pack = await fetchCloudPubReplaySummariesForHero(targetNpcId);
+    cloudHero = pack.replays;
+    cloudIndexError = cloudPackToIndexError(pack);
+  }
+
+  const merged = mergeReplaySummariesByMatchId(staticHero, cloudHero);
+  const replays = await applyProDisplayOverridesToReplaySummaries(merged);
+  return { replays, cloudIndexError };
+}
+
+/** 选手页列表：静态索引与云库「含该 account_id」行合并 */
+export async function fetchReplaysForPlayerProfile(
+  sel: FeedSelection,
+  accountId: number
+): Promise<FeedReplayIndexResult> {
+  const aid = Number(accountId);
+  if (!Number.isFinite(aid) || aid <= 0) {
+    return { replays: [], cloudIndexError: null };
+  }
+
+  const snap = await fetchStaticFeedOnly(sel);
+  const staticPlayer = filterByAccountId(snap.replays, aid);
+
+  let cloudIndexError: string | null = null;
+  let cloudRows: ReplaySummary[] = [];
+  if (sel.pub) {
+    const pack = await fetchCloudPubReplaySummariesForAccount(aid);
+    cloudRows = pack.replays;
+    cloudIndexError = cloudPackToIndexError(pack);
+  }
+
+  const merged = mergeReplaySummariesByMatchId(staticPlayer, cloudRows);
+  const replays = await applyProDisplayOverridesToReplaySummaries(merged);
+  return { replays, cloudIndexError };
 }
 
 /** 仅静态索引（与云合并前的快照） */

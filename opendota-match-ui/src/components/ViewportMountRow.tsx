@@ -15,12 +15,15 @@ type Props = {
 
 /**
  * 仅当行进入视口（±rootMargin）后才挂载子节点，减轻首屏大量 <img> 与浏览器 lazy 干预。
+ * rootMargin 不宜过大：否则首屏外很多行被算作「即将可见」，仍会挂载整卡英雄头像。
  * 已进入过视口的行会保持挂载，避免来回滚动时闪烁。
  */
 export function ViewportMountRow({
   index,
-  forceMountCount = 2,
-  rootMargin = "280px 0px",
+  /** 仅首行默认立即挂载，避免首屏瞬间拉起数十张英雄图（首页一行≈10 张 webp） */
+  forceMountCount = 1,
+  /** 过大 rootMargin 会让大量列表项在未滚动时已Intersect→挂载→并发请求，Finish 时间暴涨 */
+  rootMargin = "96px 0px",
   className,
   skeleton,
   children,

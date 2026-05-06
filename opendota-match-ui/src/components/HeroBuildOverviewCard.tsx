@@ -1,7 +1,8 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import type { ReplaySummary } from "../types/replaysIndex";
 import type { EntityMapsPayload } from "../types/entityMaps";
+import type { SlimMatchJson } from "../types/slimMatch";
 import {
   heroIconUrl,
   itemIconUrl,
@@ -9,8 +10,12 @@ import {
   steamCdnImgDefer,
   steamCdnImgHero,
 } from "../data/mockMatchPlayers";
-import { loadSlimMatchJsonForDetails } from "../lib/loadSlimMatchJson";
 import { HeroPickerPopover } from "./HeroPickerPopover";
+import type { SlimPlayer } from "../types/slimMatch";
+import { collectPurchaseEvents } from "../lib/metaGlobalItemStats";
+
+/** 与下方 rows 切片上限一致；父组件合并 plan_b 请求时用 */
+export const HERO_OVERVIEW_INSIGHT_CAP = 180;
 
 type Props = {
   heroId: number;
@@ -18,6 +23,12 @@ type Props = {
   heroName: string;
   replays: ReplaySummary[];
   maps: EntityMapsPayload;
+  /** 父页面批量请求 plan_b/slim 的结果；禁止在本组件内发起任何 Supabase 请求 */
+  slimByMatchId: Readonly<
+    Record<number, SlimMatchJson | null | undefined>
+  >;
+  /** 父页面正在拉取 slim（plan_b） */
+  slimLoading?: boolean;
   enabled?: boolean;
   /** URL ?with_hero_id / ?vs_hero_id 联动：组合筛选队友 / 对手 */
   withHeroId?: number | null;
@@ -40,11 +51,8 @@ type OverviewData = {
   goodAgainst: Array<{ heroId: number; winRate: number; games: number }>;
 };
 
-const MAX_MATCHES_FOR_INSIGHT = 180;
-/** 与 `fetchPlanBSlimPayloadBatch` chunk 对齐，减少 Supabase 往返 */
-const SLIM_BATCH_SIZE = 40;
+const MAX_MATCHES_FOR_INSIGHT = HERO_OVERVIEW_INSIGHT_CAP;
 const VERSUS_MIN_GAMES = 20;
-const OVERVIEW_DAILY_CACHE_PREFIX = "plab_hero_overview_daily_v1";
 type HeroPlayerLite = {
   hero_id: number;
   purchase_history?: Array<{ time?: number; item?: string; item_key?: string }>;
@@ -64,23 +72,6 @@ function isComposedCoreItem(itemKey: string): boolean {
 function pct(num: number, den: number): number {
   if (!Number.isFinite(num) || !Number.isFinite(den) || den <= 0) return 0;
   return (num / den) * 100;
-}
-
-function todayKeyLocal(): string {
-  const d = new Date();
-  const y = d.getFullYear();
-  const m = String(d.getMonth() + 1).padStart(2, "0");
-  const day = String(d.getDate()).padStart(2, "0");
-  return `${y}-${m}-${day}`;
-}
-
-function tinyHash(input: string): string {
-  let h = 2166136261;
-  for (let i = 0; i < input.length; i += 1) {
-    h ^= input.charCodeAt(i);
-    h = Math.imul(h, 16777619);
-  }
-  return String(h >>> 0);
 }
 
 type OverviewAccum = {
@@ -161,15 +152,14 @@ export function HeroBuildOverviewCard(props: Props) {
     heroName,
     replays,
     maps,
+    slimByMatchId,
+    slimLoading = false,
     enabled = true,
     withHeroId = null,
     vsHeroId = null,
     onWithHeroChange,
     onVsHeroChange,
   } = props;
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [data, setData] = useState<OverviewData | null>(null);
   const [selectedItemKey, setSelectedItemKey] = useState<string | null>(null);
   const [expanded, setExpanded] = useState(true);
   const rows = useMemo(
@@ -180,176 +170,97 @@ export function HeroBuildOverviewCard(props: Props) {
     () => rows.map((r) => r.match_id).join(","),
     [rows]
   );
+  /** 否则 slim 异步到达前会把「无购买样本」写进模块缓存，slim 就绪后仍命中旧结果 */
+  const slimPresenceKey = useMemo(
+    () =>
+      rows
+        .map((r) => `${r.match_id}:${slimByMatchId[r.match_id] ? 1 : 0}`)
+        .join("|"),
+    [rows, slimByMatchId]
+  );
   const overviewCacheKey = useMemo(
-    () => `${heroId}:${replayIdsKey}`,
-    [heroId, replayIdsKey]
-  );
-  const overviewDailyCacheKey = useMemo(
-    () => `${OVERVIEW_DAILY_CACHE_PREFIX}:${todayKeyLocal()}:${heroId}:${tinyHash(replayIdsKey)}`,
-    [heroId, replayIdsKey]
+    () => `${heroId}:${replayIdsKey}:${slimPresenceKey}`,
+    [heroId, replayIdsKey, slimPresenceKey]
   );
 
-  useEffect(() => {
-    if (!enabled) {
-      setLoading(false);
-      setError(null);
-      setData(null);
-      return;
-    }
-    let cancelled = false;
-    const cached = HERO_OVERVIEW_CACHE.get(overviewCacheKey);
-    if (cached) {
-      setLoading(false);
-      setError(null);
-      setData(cached);
-      return () => {
-        cancelled = true;
-      };
-    }
-    try {
-      const raw = localStorage.getItem(overviewDailyCacheKey);
-      if (raw) {
-        const parsed = JSON.parse(raw) as OverviewData;
-        if (
-          parsed &&
-          typeof parsed.totalMatches === "number" &&
-          typeof parsed.winRate === "number" &&
-          Array.isArray(parsed.talentRows) &&
-          Array.isArray(parsed.itemTop) &&
-          parsed.itemMatches &&
-          Array.isArray(parsed.counteredBy) &&
-          Array.isArray(parsed.goodAgainst)
-        ) {
-          HERO_OVERVIEW_CACHE.set(overviewCacheKey, parsed);
-          setLoading(false);
-          setError(null);
-          setData(parsed);
-          return () => {
-            cancelled = true;
-          };
-        }
+  const data = useMemo((): OverviewData | null => {
+    if (!enabled || rows.length === 0) return null;
+    const mem = HERO_OVERVIEW_CACHE.get(overviewCacheKey);
+    if (mem) return mem;
+
+    const acc = createOverviewAccum();
+
+    const applyRow = (
+      r: ReplaySummary,
+      heroPlayer: HeroPlayerLite | undefined
+    ) => {
+      const pHero = (r.players || []).find(
+        (p) => Number(p.hero_id || 0) === heroId
+      );
+      if (!pHero) return;
+      acc.totalMatches += 1;
+      const heroWon = Boolean(pHero.is_radiant) === Boolean(r.radiant_win);
+      if (heroWon) acc.wins += 1;
+      for (const p of r.players || []) {
+        if (Number(p.hero_id || 0) === heroId) continue;
+        if (Boolean(p.is_radiant) === Boolean(pHero.is_radiant)) continue;
+        const hid = Number(p.hero_id || 0);
+        if (hid <= 0) continue;
+        const cur = acc.versus.get(hid) || { games: 0, wins: 0 };
+        cur.games += 1;
+        if (heroWon) cur.wins += 1;
+        acc.versus.set(hid, cur);
       }
-    } catch {
-      // ignore broken local cache entry
-    }
-    setLoading(true);
-    setError(null);
-    setData(null);
-    void (async () => {
-      const acc = createOverviewAccum();
 
-      const applyRow = (
-        r: ReplaySummary,
-        heroPlayer: HeroPlayerLite | undefined
-      ) => {
-        const pHero = (r.players || []).find(
-          (p) => Number(p.hero_id || 0) === heroId
-        );
-        if (!pHero) return;
-        acc.totalMatches += 1;
-        const heroWon = Boolean(pHero.is_radiant) === Boolean(r.radiant_win);
-        if (heroWon) acc.wins += 1;
-        for (const p of r.players || []) {
-          if (Number(p.hero_id || 0) === heroId) continue;
-          if (Boolean(p.is_radiant) === Boolean(pHero.is_radiant)) continue;
-          const hid = Number(p.hero_id || 0);
-          if (hid <= 0) continue;
-          const cur = acc.versus.get(hid) || { games: 0, wins: 0 };
-          cur.games += 1;
-          if (heroWon) cur.wins += 1;
-          acc.versus.set(hid, cur);
-        }
+      if (!heroPlayer) return;
 
-        if (!heroPlayer) return;
-
-        const tt = heroPlayer.talent_tree;
-        if (tt && Array.isArray(tt.tiers)) {
-          for (const row of tt.tiers) {
-            const lv = Number(row.hero_level || 0) as 10 | 15 | 20 | 25;
-            if (!(lv in acc.talentCount)) continue;
-            const sel = String(row.selected || "").toLowerCase();
-            if (sel === "left" || sel === "right") {
-              acc.talentCount[lv].total += 1;
-              acc.talentCount[lv][sel] += 1;
-            }
+      const tt = heroPlayer.talent_tree;
+      if (tt && Array.isArray(tt.tiers)) {
+        for (const row of tt.tiers) {
+          const lv = Number(row.hero_level || 0) as 10 | 15 | 20 | 25;
+          if (!(lv in acc.talentCount)) continue;
+          const sel = String(row.selected || "").toLowerCase();
+          if (sel === "left" || sel === "right") {
+            acc.talentCount[lv].total += 1;
+            acc.talentCount[lv][sel] += 1;
           }
         }
-
-        const hist = (
-          heroPlayer as {
-            purchase_history?: Array<{
-              time?: number;
-              item?: string;
-              item_key?: string;
-            }>;
-          }
-        ).purchase_history;
-        if (!Array.isArray(hist) || hist.length === 0) return;
-        const earliestByItem = new Map<string, number>();
-        for (const row of hist) {
-          const sec = Number(row?.time ?? -1);
-          if (!Number.isFinite(sec) || sec < 0) continue;
-          const keyRaw = String(row?.item_key || row?.item || "")
-            .trim()
-            .replace(/^item_/, "");
-          if (!keyRaw) continue;
-          const m = Math.floor(sec / 60);
-          const ex = earliestByItem.get(keyRaw);
-          if (ex === undefined || m < ex) earliestByItem.set(keyRaw, m);
-        }
-        for (const [ik, m] of earliestByItem.entries()) {
-          acc.itemMatchCount.set(ik, (acc.itemMatchCount.get(ik) || 0) + 1);
-          acc.itemMinuteSum.set(ik, (acc.itemMinuteSum.get(ik) || 0) + m);
-          const rowsByItem = acc.itemMatchRows.get(ik) || [];
-          rowsByItem.push({ matchId: r.match_id, minute: m, won: heroWon });
-          acc.itemMatchRows.set(ik, rowsByItem);
-        }
-      };
-
-      if (rows.length === 0) {
-        setLoading(false);
-        return;
       }
 
-      for (let i = 0; i < rows.length; i += SLIM_BATCH_SIZE) {
-        const slice = rows.slice(i, i + SLIM_BATCH_SIZE);
-        const ids = slice.map((r) => r.match_id);
-        const slimMap = await loadSlimMatchJsonForDetails(ids, {
-          preferCloud: true,
-        });
-        if (cancelled) return;
-        for (const r of slice) {
-          const slim = slimMap[r.match_id];
-          const heroPlayer = slim
-            ? ((slim.players || []).find(
-                (p) => Number(p.hero_id || 0) === heroId
-              ) as HeroPlayerLite | undefined)
-            : undefined;
-          applyRow(r, heroPlayer);
-        }
-        setData(buildOverviewData(acc));
-        if (i === 0) setLoading(false);
-        await new Promise((resolve) => window.setTimeout(resolve, 0));
+      const purchaseEvents = collectPurchaseEvents(heroPlayer as SlimPlayer);
+      if (purchaseEvents.length === 0) return;
+      const earliestByItem = new Map<string, number>();
+      for (const ev of purchaseEvents) {
+        const m = Math.floor(ev.time / 60);
+        const keyRaw = ev.itemKey;
+        const ex = earliestByItem.get(keyRaw);
+        if (ex === undefined || m < ex) earliestByItem.set(keyRaw, m);
       }
-
-      const finalData = buildOverviewData(acc);
-      HERO_OVERVIEW_CACHE.set(overviewCacheKey, finalData);
-      try {
-        localStorage.setItem(overviewDailyCacheKey, JSON.stringify(finalData));
-      } catch {
-        // ignore storage quota / privacy mode failures
+      for (const [ik, m] of earliestByItem.entries()) {
+        acc.itemMatchCount.set(ik, (acc.itemMatchCount.get(ik) || 0) + 1);
+        acc.itemMinuteSum.set(ik, (acc.itemMinuteSum.get(ik) || 0) + m);
+        const rowsByItem = acc.itemMatchRows.get(ik) || [];
+        rowsByItem.push({ matchId: r.match_id, minute: m, won: heroWon });
+        acc.itemMatchRows.set(ik, rowsByItem);
       }
-      setData(finalData);
-      setLoading(false);
-    })().catch((e) => {
-      if (cancelled) return;
-      setError(e instanceof Error ? e.message : "聚合失败");
-      setLoading(false);
-    });
-    return () => {
-      cancelled = true;
     };
-  }, [heroId, overviewCacheKey, overviewDailyCacheKey, rows, enabled]);
+
+    for (const r of rows) {
+      const slim = slimByMatchId[r.match_id];
+      const heroPlayer = slim
+        ? ((slim.players || []).find(
+            (p) => Number(p.hero_id || 0) === heroId
+          ) as HeroPlayerLite | undefined)
+        : undefined;
+      applyRow(r, heroPlayer);
+    }
+
+    const built = buildOverviewData(acc);
+    HERO_OVERVIEW_CACHE.set(overviewCacheKey, built);
+    return built;
+  }, [enabled, rows, slimByMatchId, heroId, overviewCacheKey]);
+
+  const loading = slimLoading;
 
   const heroNameEn = useMemo(() => {
     return maps.heroes[String(heroId)]?.nameEn || heroKey;
@@ -369,7 +280,10 @@ export function HeroBuildOverviewCard(props: Props) {
           <div>
             <h2 className="text-base font-bold text-skin-ink">{heroName}</h2>
             <p className="text-xs text-skin-sub">
-              {heroNameEn} · {loading ? "聚合中…" : `${data?.totalMatches || 0} matches · ${data?.winRate.toFixed(1) || "0.0"}% winrate`}
+              {heroNameEn} ·{" "}
+              {loading
+                ? "加载明细…"
+                : `${data?.totalMatches ?? 0} matches · ${data != null && Number.isFinite(data.winRate) ? data.winRate.toFixed(1) : "0.0"}% winrate`}
             </p>
           </div>
         </div>
@@ -382,10 +296,10 @@ export function HeroBuildOverviewCard(props: Props) {
         </button>
       </div>
 
-      {expanded && loading && !data ? <p className="text-sm text-skin-sub">正在计算天赋/出装与对位胜率…</p> : null}
-      {expanded && loading && data ? <p className="text-xs text-skin-sub">正在补充更多样本，数据会持续更新…</p> : null}
-      {expanded && error ? <p className="text-sm text-rose-400">聚合失败：{error}</p> : null}
-      {expanded && !error && data ? (
+      {expanded && loading && rows.length > 0 ? (
+        <p className="text-xs text-skin-sub">父页面正在批量加载本场 slim（plan_b）…</p>
+      ) : null}
+      {expanded && data ? (
         <div className="grid gap-3 lg:grid-cols-[1fr_300px]">
           <div className="space-y-3">
             <div className="rounded border border-skin-line p-3">
