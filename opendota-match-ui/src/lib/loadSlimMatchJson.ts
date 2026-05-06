@@ -4,7 +4,7 @@ import {
   fetchPlanBSlimPayload,
   fetchPlanBSlimPayloadBatch,
 } from "./supabasePlanB";
-import { staticDataSearchParam } from "./staticDataVersion";
+import { resolvePublicDataFetchUrl } from "./fetchStaticJson";
 import { forEachConcurrent } from "./fetchConcurrent";
 
 const DETAIL_CACHE_TTL_OK_MS = 5 * 60 * 1000;
@@ -83,11 +83,13 @@ const LOCAL_MATCH_JSON_CACHE: RequestCache = import.meta.env.DEV
 async function tryFetchLocalSlimMatchJson(
   matchId: number
 ): Promise<SlimMatchJson | null> {
-  const q = staticDataSearchParam();
   try {
-    const res = await fetch(`/data/matches/${matchId}.json${q}`, {
-      cache: LOCAL_MATCH_JSON_CACHE,
-    });
+    const res = await fetch(
+      resolvePublicDataFetchUrl(`/data/matches/${matchId}.json`),
+      {
+        cache: LOCAL_MATCH_JSON_CACHE,
+      }
+    );
     if (!res.ok) return null;
     const text = await res.text();
     const head = text.trimStart();

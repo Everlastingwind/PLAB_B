@@ -1,12 +1,14 @@
 /**
  * 每日任务（建议本地 12:00）：从 Supabase 拉全站 plan_b，合并静态索引，
- * 写入 `public/data/meta_site_snapshot.json`（version 2：Meta + Items + TOP）。
+ * 将快照上传到 Storage `planb-static-data`（version 2：Meta + Items + TOP）。
  *
- * 运行：`npm run build:meta-snapshot`（需 `.env.local` 中 VITE_SUPABASE_*）
+ * 运行：`npm run build:meta-snapshot`（需 `.env.local` 中 VITE_SUPABASE_*；
+ * Storage 上传建议使用 `SUPABASE_SERVICE_ROLE_KEY`，否则可能因策略被拒绝）
  */
 import { config } from "dotenv";
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
-import { readFileSync, writeFileSync } from "fs";
+import { readFileSync } from "fs";
+// import { writeFileSync } from "fs";
 import { dirname, join } from "path";
 import { fileURLToPath } from "url";
 import type { EntityMapsPayload } from "../src/types/entityMaps";
@@ -36,8 +38,14 @@ config({ path: join(UI_ROOT, "..", ".env.local") });
 const PLAN_B_INDEX_SELECT =
   "match_id, created_at, duration, radiant_win, radiant_score, dire_score, league_name, players";
 
-const ANALYTICS_PAGE_SIZE = 100;
-const ANALYTICS_MAX_PAGES = 2000;
+/** 单次 range 行数减小，降低大 json `players` 触发表超时概率 */
+const ANALYTICS_PAGE_SIZE = 40;
+/** 与历史上 2000×100 一致的总行上限，避免仅缩小分页却少拉数据 */
+const ANALYTICS_ROW_CAP = 2000 * 100;
+const ANALYTICS_MAX_PAGES = Math.ceil(ANALYTICS_ROW_CAP / ANALYTICS_PAGE_SIZE);
+
+const PLAN_B_PAGE_MAX_RETRIES = 5;
+const PLAN_B_PAGE_BASE_DELAY_MS = 1500;
 const PLAN_B_DURATION_BATCH = 500;
 const ITEMS_TAB_SLIM_SAMPLE_CAP = 200;
 
@@ -84,6 +92,18 @@ function parsePlanBDurationSec(raw: unknown): number | null {
   return Math.floor(n);
 }
 
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+/** 语句超时、连接抖动等可退避重试；权限/语法错误不重试 */
+function isRetriablePlanBQueryError(message: string): boolean {
+  const m = message.toLowerCase();
+  return /timeout|57014|statement timeout|canceling statement|too many connections|econnreset|socket|fetch failed|network|502|503|504|524/i.test(
+    m
+  );
+}
+
 function loadSupabaseFromEnv(): SupabaseClient {
   const url = String(
     process.env.VITE_SUPABASE_URL ||
@@ -107,6 +127,46 @@ function loadSupabaseFromEnv(): SupabaseClient {
     },
   });
 }
+
+/** Storage 上传：优先 Service Role（绕过 bucket 写策略）；否则退回 anon（可能上传失败） */
+function loadSupabaseStorageUploaderFromEnv(): SupabaseClient {
+  const url = String(
+    process.env.VITE_SUPABASE_URL ||
+      process.env.NEXT_PUBLIC_SUPABASE_URL ||
+      ""
+  ).trim();
+  const serviceKey = String(
+    process.env.SUPABASE_SERVICE_ROLE_KEY ||
+      process.env.VITE_SUPABASE_SERVICE_ROLE_KEY ||
+      ""
+  ).trim();
+  const anonKey = String(
+    process.env.VITE_SUPABASE_ANON_KEY ||
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
+      ""
+  ).trim();
+  const key = serviceKey || anonKey;
+  if (!/^https?:\/\//i.test(url) || !key) {
+    throw new Error(
+      "缺少 Supabase：上传需要 URL + SUPABASE_SERVICE_ROLE_KEY（推荐）或 ANON_KEY"
+    );
+  }
+  if (!serviceKey) {
+    console.warn(
+      "[build-meta-site-snapshot] 未设置 SUPABASE_SERVICE_ROLE_KEY，使用 anon key 上传可能因 Storage 策略失败。"
+    );
+  }
+  return createClient(url, key, {
+    global: {
+      fetch: (input, init) =>
+        fetch(input, { ...init, cache: "no-store" }),
+    },
+  });
+}
+
+const PLANB_STATIC_BUCKET = "planb-static-data";
+/** 桶内对象路径（与原先 `public/data/` 下文件名对应，便于前端迁移 CDN 基地址） */
+const META_SNAPSHOT_STORAGE_PATH = "public/data/meta_site_snapshot.json";
 
 function readIndex(pathFromUiRoot: string): ReplaysIndexPayload {
   const p = join(UI_ROOT, pathFromUiRoot);
@@ -202,23 +262,61 @@ async function fetchPlanBAggregateMatchStats(client: SupabaseClient): Promise<
   };
 }
 
-async function fetchAllPlanBReplayRows(
-  client: SupabaseClient
+async function fetchPlanBReplayRowsPageWithRetry(
+  client: SupabaseClient,
+  pageIndexZeroBased: number,
+  pageSize: number
 ): Promise<Record<string, unknown>[]> {
-  const merged: Record<string, unknown>[] = [];
-  for (let page = 1; page <= ANALYTICS_MAX_PAGES; page++) {
-    const from = (page - 1) * ANALYTICS_PAGE_SIZE;
-    const to = from + ANALYTICS_PAGE_SIZE - 1;
+  const from = pageIndexZeroBased * pageSize;
+  const to = from + pageSize - 1;
+  let lastMsg = "";
+
+  for (let attempt = 0; attempt < PLAN_B_PAGE_MAX_RETRIES; attempt++) {
     const { data, error } = await client
       .from("plan_b")
       .select(PLAN_B_INDEX_SELECT)
       .order("created_at", { ascending: false })
       .range(from, to);
-    if (error) throw new Error(error.message);
-    const rows = Array.isArray(data) ? data : [];
+
+    if (!error) {
+      return Array.isArray(data)
+        ? (data as Record<string, unknown>[])
+        : [];
+    }
+
+    lastMsg = error.message || String(error);
+    const canRetry =
+      attempt < PLAN_B_PAGE_MAX_RETRIES - 1 &&
+      isRetriablePlanBQueryError(lastMsg);
+    if (!canRetry) {
+      throw new Error(lastMsg);
+    }
+
+    const delayMs = PLAN_B_PAGE_BASE_DELAY_MS * 2 ** attempt;
+    console.warn(
+      `[fetchAllPlanBReplayRows] page offset ${from}–${to} attempt ${attempt + 1}/${PLAN_B_PAGE_MAX_RETRIES} failed: ${lastMsg} → retry in ${delayMs}ms`
+    );
+    await sleep(delayMs);
+  }
+
+  throw new Error(lastMsg || "plan_b page fetch failed");
+}
+
+async function fetchAllPlanBReplayRows(
+  client: SupabaseClient
+): Promise<Record<string, unknown>[]> {
+  const merged: Record<string, unknown>[] = [];
+  const pageSize = ANALYTICS_PAGE_SIZE;
+
+  for (let page = 1; page <= ANALYTICS_MAX_PAGES; page++) {
+    const rows = await fetchPlanBReplayRowsPageWithRetry(
+      client,
+      page - 1,
+      pageSize
+    );
     if (rows.length === 0) break;
-    merged.push(...(rows as Record<string, unknown>[]));
-    if (rows.length < ANALYTICS_PAGE_SIZE) break;
+    merged.push(...rows);
+    if (rows.length < pageSize) break;
   }
   return merged;
 }
@@ -308,11 +406,28 @@ async function main(): Promise<void> {
     topSection,
   });
 
-  const outPath = join(UI_ROOT, "public/data/meta_site_snapshot.json");
-  writeFileSync(outPath, `${JSON.stringify(payload)}\n`, "utf8");
+  const jsonText = `${JSON.stringify(payload)}\n`;
+
+  // const outPath = join(UI_ROOT, "public/data/meta_site_snapshot.json");
+  // writeFileSync(outPath, jsonText, "utf8");
+
+  const uploadClient = loadSupabaseStorageUploaderFromEnv();
+  const body = Buffer.from(jsonText, "utf8");
+  const { error: uploadError } = await uploadClient.storage
+    .from(PLANB_STATIC_BUCKET)
+    .upload(META_SNAPSHOT_STORAGE_PATH, body, {
+      contentType: "application/json; charset=utf-8",
+      upsert: true,
+    });
+  if (uploadError) {
+    throw new Error(
+      `Storage 上传失败 (${PLANB_STATIC_BUCKET}/${META_SNAPSHOT_STORAGE_PATH}): ${uploadError.message}`
+    );
+  }
+
   console.log(
-    "Wrote",
-    outPath,
+    "Uploaded",
+    `${PLANB_STATIC_BUCKET}/${META_SNAPSHOT_STORAGE_PATH}`,
     "replays:",
     analyticsReplays.length,
     "snapshot v",

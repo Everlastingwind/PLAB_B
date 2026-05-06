@@ -1,4 +1,4 @@
-import { staticDataSearchParam } from "./staticDataVersion";
+import { resolvePublicDataFetchUrl } from "./fetchStaticJson";
 import { normalizeMetaItemKey } from "./metaGlobalItemStats";
 
 let cache: ReadonlySet<string> | null = null;
@@ -14,10 +14,12 @@ const ITEM_STATS_EXTRA_KEYS: readonly string[] = ["blink"];
  */
 export async function loadCraftableItemKeySet(): Promise<ReadonlySet<string>> {
   if (cache) return cache;
-  const q = staticDataSearchParam();
-  const res = await fetch(`/data/item_craftable_keys.json${q}`, {
-    cache: import.meta.env.DEV ? "no-store" : "default",
-  });
+  const res = await fetch(
+    resolvePublicDataFetchUrl("/data/item_craftable_keys.json"),
+    {
+      cache: import.meta.env.DEV ? "no-store" : "default",
+    }
+  );
   if (!res.ok) {
     throw new Error(`无法加载 item_craftable_keys.json（${res.status}）`);
   }

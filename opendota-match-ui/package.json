@@ -9,7 +9,7 @@
     "preview": "vite preview",
     "fetch-heroes-webp": "node scripts/fetch-hero-webp.mjs",
     "regen-item-craftable-keys": "node scripts/regen-item-craftable-keys.mjs",
-    "build:meta-snapshot": "dotenv -e .env.local -- tsx scripts/build-meta-site-snapshot.ts"
+    "build:meta-snapshot": "dotenv -e ../.env.local -e .env.local -- tsx scripts/build-meta-site-snapshot.ts"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.103.0",

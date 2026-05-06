@@ -6,23 +6,16 @@ import { ViewportMountRow } from "../components/ViewportMountRow";
 import type { FeedSelection } from "../components/FeedModeToggle";
 import {
   MATCH_LIST_LOAD_STEP,
-  cloudPackToIndexError,
-  fetchCloudPubReplaySummariesForAnalyticsMerge,
-  fetchCloudPubReplaySummariesPage,
-  fetchReplaysForFeedSelection,
   fetchStaticFeedOnly,
-  mergeCloudIntoStaticFeed,
   mergeReplaySummariesByMatchId,
 } from "../lib/replaysApi";
-import { fetchPlanBAggregateMatchStats } from "../lib/supabasePlanB";
+import { applyProDisplayOverridesToReplaySummaries } from "../lib/proAccountDisplayOverrides";
 import { fetchDeployedDataJson } from "../lib/fetchStaticJson";
 import {
   buildTopHeroByRole,
   buildTopHeroOverall,
   type MetaSiteSnapshotPayload,
 } from "../lib/metaSiteAggregate";
-import { loadSlimMatchJsonForDetails } from "../lib/loadSlimMatchJson";
-import { topKillMatchIdsForSlim } from "../lib/topKillMatchIds";
 import type { ReplaySummary } from "../types/replaysIndex";
 import type { SlimMatchJson } from "../types/slimMatch";
 import { useEntityMaps } from "../hooks/useEntityMaps";
@@ -82,9 +75,7 @@ export function HomePage() {
     durationSamples: number;
     avgDurationSec: number;
   } | null>(null);
-  const [cloudAggLoading, setCloudAggLoading] = useState(false);
   const [cloudAggErr, setCloudAggErr] = useState<string | null>(null);
-  const cloudAggFetchedOk = useRef(false);
   const [snapshotFetchDone, setSnapshotFetchDone] = useState(false);
   const [metaSnapshot, setMetaSnapshot] = useState<MetaSiteSnapshotPayload | null>(
     null
@@ -100,11 +91,9 @@ export function HomePage() {
       metaSnapshot.itemsMeta &&
       metaSnapshot.topSection
   );
-  /** Items / TOP 子区块用：由本页统一批量拉 plan_b/slim，禁止在子组件内再请求 */
-  const [homeMetaSlimByMatch, setHomeMetaSlimByMatch] = useState<
-    Record<number, SlimMatchJson | undefined>
-  >({});
-  const [homeMetaSlimLoading, setHomeMetaSlimLoading] = useState(false);
+  /** Items/TOP 依赖每日快照 v2；不再在前端批量请求 plan_b slim */
+  const homeMetaSlimByMatch: Record<number, SlimMatchJson | undefined> = {};
+  const homeMetaSlimLoading = false;
   /** 全英雄表排序：总胜率/总场次（可升降序）或按分路 */
   const [heroMetaSort, setHeroMetaSort] = useState<HeroWinrateMetaSortMode>({
     type: "winRate",
@@ -155,42 +144,20 @@ export function HomePage() {
     let cancelled = false;
     void (async () => {
       if (!snapshotFetchDone) return;
-      if (!feed.pub) {
-        const snap = await fetchStaticFeedOnly(feed);
-        if (!cancelled) {
-          setAnalyticsReplays(mergeReplaySummariesByMatchId(snap.replays, []));
-        }
-        return;
-      }
-      if (metaSnapshot && metaSnapshot.version >= 1) {
-        const snap = await fetchStaticFeedOnly(feed);
-        if (!cancelled) {
-          setAnalyticsReplays(mergeReplaySummariesByMatchId(snap.replays, []));
-        }
-        return;
-      }
-      const [snap, cloudPack] = await Promise.all([
-        fetchStaticFeedOnly(feed),
-        fetchCloudPubReplaySummariesForAnalyticsMerge(),
-      ]);
+      const snap = await fetchStaticFeedOnly(feed);
       if (cancelled) return;
-      const merged = mergeCloudIntoStaticFeed(snap, cloudPack);
-      setAnalyticsReplays(mergeReplaySummariesByMatchId(merged.replays, []));
+      setAnalyticsReplays(mergeReplaySummariesByMatchId(snap.replays, []));
     })();
     return () => {
       cancelled = true;
     };
-  }, [feed, snapshotFetchDone, metaSnapshot]);
+  }, [feed, snapshotFetchDone]);
 
   useEffect(() => {
     const snapOk = Boolean(feed.pub && metaSnapshot && metaSnapshot.version >= 1);
     if (snapOk && metaSnapshot) {
       setCloudAgg(metaSnapshot.cloudAgg);
       setCloudAggErr(null);
-      cloudAggFetchedOk.current = true;
-      setCloudAggLoading(false);
-    } else if (!snapOk) {
-      cloudAggFetchedOk.current = false;
     }
   }, [feed.pub, metaSnapshot]);
 
@@ -203,35 +170,24 @@ export function HomePage() {
 
     void (async () => {
       try {
+        const snap = await fetchStaticFeedOnly(feed);
+        const list = await applyProDisplayOverridesToReplaySummaries(
+          snap.replays
+        );
+        if (cancelled) return;
+
         if (pubOnlyMatches) {
           const pageRaw = Number(pageQueryParam || 1);
           const currentPage =
             Number.isFinite(pageRaw) && pageRaw > 0 ? Math.floor(pageRaw) : 1;
-          const pack = await fetchCloudPubReplaySummariesPage(
-            currentPage,
-            MATCH_LIST_LOAD_STEP
-          );
-          if (cancelled) return;
-          setReplays(pack.replays);
-          setPagedTotalRows(Math.max(0, pack.totalRows));
-          setIdxErr(
-            pack.error
-              ? cloudPackToIndexError({
-                  replays: pack.replays,
-                  error: pack.error,
-                })
-              : null
-          );
-          setFeedListLoading(false);
-          return;
+          const total = list.length;
+          setPagedTotalRows(total);
+          const start = (currentPage - 1) * MATCH_LIST_LOAD_STEP;
+          setReplays(list.slice(start, start + MATCH_LIST_LOAD_STEP));
+        } else {
+          setPagedTotalRows(null);
+          setReplays(list);
         }
-
-        setPagedTotalRows(null);
-        const { replays: list, cloudIndexError } =
-          await fetchReplaysForFeedSelection(feed);
-        if (cancelled) return;
-        setReplays(list);
-        setIdxErr(cloudIndexError);
         setFeedListLoading(false);
       } catch (e) {
         if (!cancelled) {
@@ -244,36 +200,6 @@ export function HomePage() {
       cancelled = true;
     };
   }, [feed, homeView, pageQueryParam]);
-
-  useEffect(() => {
-    if (homeView !== "meta") return;
-    if (feed.pub && metaSnapshot && metaSnapshot.version >= 1) return;
-    if (cloudAggFetchedOk.current) return;
-    let cancelled = false;
-    void (async () => {
-      setCloudAggLoading(true);
-      setCloudAggErr(null);
-      const pack = await fetchPlanBAggregateMatchStats();
-      if (cancelled) return;
-      if (pack.error) {
-        setCloudAggErr(pack.error);
-        setCloudAgg(null);
-      } else {
-        cloudAggFetchedOk.current = true;
-        setCloudAgg({
-          decidedMatches: pack.decidedMatches,
-          radiantWins: pack.radiantWins,
-          direWins: pack.direWins,
-          durationSamples: pack.durationSamples,
-          avgDurationSec: pack.avgDurationSec,
-        });
-      }
-      setCloudAggLoading(false);
-    })();
-    return () => {
-      cancelled = true;
-    };
-  }, [homeView, feed.pub, metaSnapshot]);
 
   const totalPages = useMemo(() => {
     if (
@@ -457,50 +383,6 @@ export function HomePage() {
     [analyticsReplays]
   );
 
-  const metaTabSlimIds = useMemo((): number[] => {
-    if (useFullSnapshot) return [];
-    if (homeView === "items") {
-      const raw = replaysSampleForItemMeta
-        .map((r) => Number(r.match_id))
-        .filter((id) => Number.isFinite(id) && id > 0);
-      return [...new Set(raw)].sort((a, b) => a - b);
-    }
-    if (homeView === "top") {
-      return topKillMatchIdsForSlim(analyticsReplays, 5);
-    }
-    return [];
-  }, [homeView, replaysSampleForItemMeta, analyticsReplays, useFullSnapshot]);
-
-  const metaTabSlimIdsKey = metaTabSlimIds.join(",");
-
-  useEffect(() => {
-    let cancelled = false;
-    if (!maps || metaTabSlimIds.length === 0) {
-      setHomeMetaSlimLoading(false);
-      return;
-    }
-    setHomeMetaSlimLoading(true);
-    void loadSlimMatchJsonForDetails(metaTabSlimIds, { preferCloud: true })
-      .then((batch) => {
-        if (cancelled) return;
-        setHomeMetaSlimByMatch((prev) => {
-          const next = { ...prev };
-          for (const mid of metaTabSlimIds) {
-            const j = batch[mid];
-            if (j) next[mid] = j;
-          }
-          return next;
-        });
-        setHomeMetaSlimLoading(false);
-      })
-      .catch(() => {
-        if (!cancelled) setHomeMetaSlimLoading(false);
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, [metaTabSlimIdsKey, maps]);
-
   const topHeroByRoleLive = useMemo(
     () => buildTopHeroByRole(analyticsReplays, roleTab),
     [analyticsReplays, roleTab]
@@ -617,7 +499,7 @@ export function HomePage() {
                 </button>
                 <button
                   type="button"
-                  title="全站：静态索引与云库 plan_b 多页合并后的对局集合（非 Matches 当前页）"
+                  title="全站：静态索引 JSON（与每日 meta_site_snapshot 同源合并逻辑）"
                   onClick={() => setHomeView("meta")}
                   className={`rounded border px-3 py-1.5 text-sm font-semibold ${homeView === "meta"
                     ? "border-amber-500/50 bg-amber-100/70 text-amber-700 dark:border-amber-500/45 dark:bg-amber-500/15 dark:text-amber-300"
@@ -639,7 +521,7 @@ export function HomePage() {
                 </button>
                 <button
                   type="button"
-                  title="全站：静态 + 云库合并索引上的榜单（单人击杀 / 总击杀 / 职业浓度等）"
+                  title="全站：每日快照 meta_site_snapshot.json 中的 TOP 榜单"
                   onClick={() => setHomeView("top")}
                   className={`rounded border px-3 py-1.5 text-sm font-semibold ${homeView === "top"
                     ? "border-amber-500/50 bg-amber-100/70 text-amber-700 dark:border-amber-500/45 dark:bg-amber-500/15 dark:text-amber-300"
@@ -736,9 +618,6 @@ export function HomePage() {
           {homeView === "meta" && !mapsLoading && maps ? (
             <section className="mt-6 rounded-lg border border-skin-line bg-skin-card p-3">
               <p className="meta-major-title mb-2">全站对局</p>
-              {cloudAggLoading ? (
-                <p className="mb-4 text-sm text-skin-sub">正在统计云库比赛数据…</p>
-              ) : null}
               {cloudAggErr ? (
                 <p className="mb-4 text-sm text-amber-500/90">{cloudAggErr}</p>
               ) : null}
