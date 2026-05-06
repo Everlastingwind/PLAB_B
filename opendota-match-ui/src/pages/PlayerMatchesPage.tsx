@@ -74,9 +74,9 @@ export function PlayerMatchesPage() {
   const [replays, setReplays] = useState<ReplaySummary[]>([]);
   const [feedListLoading, setFeedListLoading] = useState(true);
   const [roleFilter, setRoleFilter] = useState<string>("all");
-  const [detailByMatch, setDetailByMatch] = useState<Record<number, SlimPlayer>>(
-    {}
-  );
+  const [detailByMatch, setDetailByMatch] = useState<
+    Record<number, SlimPlayer | null>
+  >({});
   const [listPage, setListPage] = useState(1);
 
   useEffect(() => {
@@ -202,6 +202,22 @@ export function PlayerMatchesPage() {
     [displayedReplays]
   );
 
+  const visibleMatchIds = useMemo(
+    () =>
+      visibleMatchIdsKey
+        .split(",")
+        .map((s) => Number(s))
+        .filter((id) => Number.isFinite(id) && id > 0),
+    [visibleMatchIdsKey]
+  );
+
+  const playerSlimIdsToFetch = useMemo(
+    () =>
+      visibleMatchIds.filter((id) => detailByMatch[id] === undefined),
+    [visibleMatchIds, detailByMatch]
+  );
+  const playerSlimIdsToFetchKey = playerSlimIdsToFetch.join(",");
+
   useEffect(() => {
     setListPage(1);
   }, [filteredReplayIdsSignature]);
@@ -212,38 +228,41 @@ export function PlayerMatchesPage() {
 
   useEffect(() => {
     let cancelled = false;
-    if (aid <= 0 || !visibleMatchIdsKey) return;
-    const ids = visibleMatchIdsKey
-      .split(",")
-      .map((s) => Number(s))
-      .filter((id) => Number.isFinite(id) && id > 0);
-    if (ids.length === 0) return;
+    if (aid <= 0 || playerSlimIdsToFetch.length === 0) return;
     void (async () => {
       try {
-        const batch = await loadSlimMatchJsonForDetails(ids, {
+        const batch = await loadSlimMatchJsonForDetails(playerSlimIdsToFetch, {
           preferCloud: true,
         });
         if (cancelled) return;
-        const updates: Record<number, SlimPlayer> = {};
-        for (const mid of ids) {
-          const j = batch[mid];
-          if (!j) continue;
-          const p = (j.players || []).find(
-            (x) => Number(x.account_id || 0) === aid
-          );
-          if (p) updates[mid] = p;
-        }
-        if (Object.keys(updates).length) {
-          setDetailByMatch((prev) => ({ ...prev, ...updates }));
-        }
+        setDetailByMatch((prev) => {
+          const next = { ...prev };
+          for (const mid of playerSlimIdsToFetch) {
+            const j = batch[mid];
+            if (!j) {
+              next[mid] = null;
+              continue;
+            }
+            const p = (j.players || []).find(
+              (x) => Number(x.account_id || 0) === aid
+            );
+            next[mid] = p ?? null;
+          }
+          return next;
+        });
       } catch {
-        /* ignore detail fetch failures */
+        if (cancelled) return;
+        setDetailByMatch((prev) => {
+          const next = { ...prev };
+          for (const mid of playerSlimIdsToFetch) next[mid] = null;
+          return next;
+        });
       }
     })();
     return () => {
       cancelled = true;
     };
-  }, [visibleMatchIdsKey, aid]);
+  }, [playerSlimIdsToFetchKey, aid]);
 
   const titleName = useMemo(() => {
     let bestPro: string | null = null;

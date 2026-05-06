@@ -144,9 +144,9 @@ export function HeroMatchesPage() {
   const [replays, setReplays] = useState<ReplaySummary[]>([]);
   const [feedListLoading, setFeedListLoading] = useState(true);
   const [roleFilter, setRoleFilter] = useState<string>("all");
-  const [detailByMatch, setDetailByMatch] = useState<Record<number, SlimMatchJson>>(
-    {}
-  );
+  const [detailByMatch, setDetailByMatch] = useState<
+    Record<number, SlimMatchJson | null>
+  >({});
   /** 唯一批量 slim/plan_b 拉取由本页 effect 负责；子组件禁止自建请求 */
   const [listPage, setListPage] = useState(1);
 
@@ -385,7 +385,8 @@ export function HeroMatchesPage() {
   }, [overviewReplays, displayedReplays]);
 
   const slimIdsToFetch = useMemo(
-    () => mergedSlimMatchIds.filter((id) => !(id in detailByMatch)),
+    () =>
+      mergedSlimMatchIds.filter((id) => detailByMatch[id] === undefined),
     [mergedSlimMatchIds, detailByMatch]
   );
   const slimIdsToFetchKey = slimIdsToFetch.join(",");
@@ -407,13 +408,19 @@ export function HeroMatchesPage() {
         setDetailByMatch((prev) => {
           const next = { ...prev };
           for (const mid of slimIdsToFetch) {
-            const j = batch[mid];
-            if (j) next[mid] = j;
+            next[mid] = batch[mid] ?? null;
           }
           return next;
         });
       })
-      .catch(() => {});
+      .catch(() => {
+        if (cancelled) return;
+        setDetailByMatch((prev) => {
+          const next = { ...prev };
+          for (const mid of slimIdsToFetch) next[mid] = null;
+          return next;
+        });
+      });
     return () => {
       cancelled = true;
     };

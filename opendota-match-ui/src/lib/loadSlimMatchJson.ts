@@ -58,8 +58,20 @@ function playerRowLooksUsable(p: SlimPlayer): boolean {
     Boolean(p.talent_tree?.tiers?.length) ||
     (Array.isArray(p.talent_picks) && p.talent_picks.length > 0);
   const hasRole = String(p.role_early ?? "").trim().length > 0;
+  const hasPurchaseHistory =
+    Array.isArray(pr["purchase_history"]) &&
+    (pr["purchase_history"] as unknown[]).length > 0;
+  const hasPurchaseLog =
+    Array.isArray(pr["purchase_log"]) &&
+    (pr["purchase_log"] as unknown[]).length > 0;
   return Boolean(
-    hasItemScalars || hasItemSlot || hasSkill || hasTalent || hasRole
+    hasItemScalars ||
+      hasItemSlot ||
+      hasSkill ||
+      hasTalent ||
+      hasRole ||
+      hasPurchaseHistory ||
+      hasPurchaseLog
   );
 }
 
@@ -184,8 +196,22 @@ export async function loadSlimMatchJsonForDetails(
       const p = purifyMatchJsonForSlim(raw) as SlimMatchJson;
       cand = slimMatchDetailLooksUsable(p) ? p : null;
     }
-    putDetailCache(mid, cand);
     out[mid] = cand;
+  }
+
+  /** 列表页 preferCloud：索引可能来自静态 JSON，plan_b 暂无该行时仍可从本站 `/data/matches/` 命中 */
+  if (preferCloud) {
+    const needLocal = needCloud.filter((mid) => out[mid] === null);
+    if (needLocal.length > 0) {
+      await forEachConcurrent(needLocal, 20, async (mid) => {
+        const local = await tryFetchLocalSlimMatchJson(mid);
+        if (local) out[mid] = local;
+      });
+    }
+  }
+
+  for (const mid of needCloud) {
+    putDetailCache(mid, out[mid] ?? null);
   }
   return out;
 }
