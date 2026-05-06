@@ -135,70 +135,18 @@ def _summarize_players_for_index(players: List[Any]) -> List[Dict[str, Any]]:
     return out
 
 
-def _uploaded_at_timestamp(path: Path, data: Dict[str, Any]) -> float:
-    meta = data.get("_meta") if isinstance(data.get("_meta"), dict) else {}
-    u = (meta or {}).get("uploaded_at") or data.get("uploaded_at")
-    if isinstance(u, str) and u.strip():
-        try:
-            s = u.strip().replace("Z", "+00:00")
-            return datetime.fromisoformat(s).timestamp()
-        except ValueError:
-            pass
-    return path.stat().st_mtime
-
-
 def rebuild_replays_index() -> int:
     """
-    扫描 ``public/data/matches/*.json``，按 ``_meta.uploaded_at``（缺省则文件 mtime）
-    **从新到旧** 排序，写入 ``replays_index.json``（首页列表顺序与此一致）。
+    从 Supabase ``plan_b`` 拉取全量赛事行（按 ``created_at`` 降序，``match_id`` 去重），
+    写入 ``replays_index.json``。需要环境变量 ``VITE_SUPABASE_URL``（或等价）与
+    ``SUPABASE_SERVICE_ROLE_KEY``。
+
+    已不再扫描 ``public/data/matches/*.json``。
     """
-    FRONTEND_MATCHES_DIR.mkdir(parents=True, exist_ok=True)
-    files = [f for f in FRONTEND_MATCHES_DIR.glob("*.json") if f.is_file()]
-    loaded: List[tuple[float, Path, Dict[str, Any]]] = []
-    for f in files:
-        try:
-            data = json.loads(f.read_text(encoding="utf-8"))
-        except json.JSONDecodeError:
-            continue
-        if not isinstance(data, dict):
-            continue
-        ts = _uploaded_at_timestamp(f, data)
-        loaded.append((ts, f, data))
-    loaded.sort(key=lambda x: x[0], reverse=True)
+    from backend.replays_index_plan_b import build_replays_list_from_plan_b
 
-    replays: List[Dict[str, Any]] = []
-    for _ts, _f, data in loaded:
-        mid = int(data.get("match_id") or 0)
-        if mid <= 0:
-            continue
-        meta = data.get("_meta") if isinstance(data.get("_meta"), dict) else {}
-        uploaded = (meta or {}).get("uploaded_at") or data.get("uploaded_at")
-        if not isinstance(uploaded, str) or not uploaded.strip():
-            uploaded = datetime.fromtimestamp(_f.stat().st_mtime, tz=timezone.utc).strftime(
-                "%Y-%m-%dT%H:%M:%SZ"
-            )
-        tier = str(data.get("match_tier") or "").strip().lower()
-        if tier not in ("pub", "pro"):
-            meta = data.get("_meta") if isinstance(data.get("_meta"), dict) else {}
-            src = str((meta or {}).get("source") or "").strip()
-            tier = "pub" if src == "dem_result_json" else "pro"
-
-        replays.append(
-            {
-                "match_id": mid,
-                "uploaded_at": uploaded.strip()
-                if str(uploaded).endswith("Z")
-                else str(uploaded),
-                "duration_sec": int(data.get("duration") or data.get("duration_sec") or 0),
-                "radiant_win": bool(data.get("radiant_win")),
-                "league_name": str(data.get("league_name") or "—"),
-                "radiant_score": int(data.get("radiant_score") or 0),
-                "dire_score": int(data.get("dire_score") or 0),
-                "match_tier": tier,
-                "players": _summarize_players_for_index(data.get("players") or []),
-            }
-        )
-
+    replays = build_replays_list_from_plan_b()
+    REPLAYS_INDEX_PATH.parent.mkdir(parents=True, exist_ok=True)
     REPLAYS_INDEX_PATH.write_text(
         json.dumps({"version": 1, "replays": replays}, ensure_ascii=False, indent=2),
         encoding="utf-8",
