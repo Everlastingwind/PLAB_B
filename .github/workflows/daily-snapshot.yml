@@ -1,0 +1,42 @@
+# 每日生成 meta_site_snapshot.json 并上传到 Supabase Storage（北京时间 12:00）
+name: Daily meta snapshot
+
+on:
+  schedule:
+    # GitHub cron 为 UTC：北京时间 12:00 = UTC 当日 04:00
+    - cron: "0 4 * * *"
+  workflow_dispatch:
+
+jobs:
+  snapshot:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: opendota-match-ui
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: opendota-match-ui/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      # npm script 使用 dotenv -e ../.env.local -e .env.local；CI 无密钥文件时 touch 占位即可，密钥由下一步 env 注入
+      - name: Prepare dotenv placeholders
+        run: |
+          touch ../.env.local
+          touch .env.local
+
+      - name: Run build:meta-snapshot
+        env:
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: npm run build:meta-snapshot
