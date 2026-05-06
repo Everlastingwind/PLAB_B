@@ -8,7 +8,8 @@
     "build": "node scripts/generate-sitemap.js && tsc -b && vite build",
     "preview": "vite preview",
     "fetch-heroes-webp": "node scripts/fetch-hero-webp.mjs",
-    "regen-item-craftable-keys": "node scripts/regen-item-craftable-keys.mjs"
+    "regen-item-craftable-keys": "node scripts/regen-item-craftable-keys.mjs",
+    "build:meta-snapshot": "dotenv -e .env.local -- tsx scripts/build-meta-site-snapshot.ts"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.103.0",
@@ -25,8 +26,11 @@
     "@vitejs/plugin-react": "^4.3.4",
     "autoprefixer": "^10.4.20",
     "postcss": "^8.4.49",
+    "dotenv": "^16.4.5",
+    "dotenv-cli": "^8.0.0",
     "sharp": "^0.33.5",
     "tailwindcss": "^3.4.15",
+    "tsx": "^4.19.2",
     "typescript": "~5.6.2",
     "vite": "^6.0.3"
   }

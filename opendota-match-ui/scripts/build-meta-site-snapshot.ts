@@ -1,0 +1,326 @@
+/**
+ * 每日任务（建议本地 12:00）：从 Supabase 拉全站 plan_b，合并静态索引，
+ * 写入 `public/data/meta_site_snapshot.json`（version 2：Meta + Items + TOP）。
+ *
+ * 运行：`npm run build:meta-snapshot`（需 `.env.local` 中 VITE_SUPABASE_*）
+ */
+import { config } from "dotenv";
+import { createClient, type SupabaseClient } from "@supabase/supabase-js";
+import { readFileSync, writeFileSync } from "fs";
+import { dirname, join } from "path";
+import { fileURLToPath } from "url";
+import type { EntityMapsPayload } from "../src/types/entityMaps";
+import type { ReplaySummary, ReplaysIndexPayload } from "../src/types/replaysIndex";
+import type { SlimMatchJson } from "../src/types/slimMatch";
+import { buildTopSectionSnapshotPayload } from "../src/lib/homeTopSnapshot";
+import {
+  aggregateMetaGlobalItemStats,
+  normalizeMetaItemKey,
+} from "../src/lib/metaGlobalItemStats";
+import { buildMetaSiteSnapshotPayload } from "../src/lib/metaSiteAggregate";
+import { purifyMatchJsonForSlim } from "../src/lib/purifyRawMatchJson";
+import { fetchPlanBSlimPayloadBatchWithClient } from "../src/lib/supabasePlanB";
+import {
+  mergePubProReplays,
+  mergeReplaySummariesByMatchId,
+  normalizeReplaySource,
+  replaySummariesFromPlanBRows,
+} from "../src/lib/replaysApi";
+import { topKillMatchIdsForSlim } from "../src/lib/topKillMatchIds";
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const UI_ROOT = join(__dirname, "..");
+config({ path: join(UI_ROOT, ".env.local") });
+config({ path: join(UI_ROOT, "..", ".env.local") });
+
+const PLAN_B_INDEX_SELECT =
+  "match_id, created_at, duration, radiant_win, radiant_score, dire_score, league_name, players";
+
+const ANALYTICS_PAGE_SIZE = 100;
+const ANALYTICS_MAX_PAGES = 2000;
+const PLAN_B_DURATION_BATCH = 500;
+const ITEMS_TAB_SLIM_SAMPLE_CAP = 200;
+
+function loadCraftableItemKeysFromDisk(root: string): Set<string> {
+  const p = join(root, "public/data/item_craftable_keys.json");
+  const raw = JSON.parse(readFileSync(p, "utf8")) as unknown;
+  const set = new Set<string>();
+  if (Array.isArray(raw)) {
+    for (const x of raw) {
+      if (typeof x === "string" && x.trim()) set.add(normalizeMetaItemKey(x));
+    }
+  }
+  for (const k of ["blink"] as const) {
+    set.add(normalizeMetaItemKey(k));
+  }
+  return set;
+}
+
+async function slimMapForMatchIds(
+  client: SupabaseClient,
+  matchIds: readonly number[]
+): Promise<Map<number, SlimMatchJson | null>> {
+  const uniq = [
+    ...new Set(matchIds.filter((id) => Number.isFinite(id) && id > 0)),
+  ] as number[];
+  const rawMap = await fetchPlanBSlimPayloadBatchWithClient(client, uniq);
+  const out = new Map<number, SlimMatchJson | null>();
+  for (const id of uniq) {
+    const raw = rawMap.get(id);
+    if (!raw) {
+      out.set(id, null);
+      continue;
+    }
+    const cand = purifyMatchJsonForSlim(raw) as SlimMatchJson;
+    const ok = Array.isArray(cand.players) && cand.players.length >= 2;
+    out.set(id, ok ? cand : null);
+  }
+  return out;
+}
+
+function parsePlanBDurationSec(raw: unknown): number | null {
+  const n = Number(raw ?? 0);
+  if (!Number.isFinite(n) || n < 0) return null;
+  return Math.floor(n);
+}
+
+function loadSupabaseFromEnv(): SupabaseClient {
+  const url = String(
+    process.env.VITE_SUPABASE_URL ||
+      process.env.NEXT_PUBLIC_SUPABASE_URL ||
+      ""
+  ).trim();
+  const key = String(
+    process.env.VITE_SUPABASE_ANON_KEY ||
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
+      ""
+  ).trim();
+  if (!/^https?:\/\//i.test(url) || !key) {
+    throw new Error(
+      "缺少 Supabase：请在 .env.local 设置 VITE_SUPABASE_URL 与 VITE_SUPABASE_ANON_KEY"
+    );
+  }
+  return createClient(url, key, {
+    global: {
+      fetch: (input, init) =>
+        fetch(input, { ...init, cache: "no-store" }),
+    },
+  });
+}
+
+function readIndex(pathFromUiRoot: string): ReplaysIndexPayload {
+  const p = join(UI_ROOT, pathFromUiRoot);
+  const raw = JSON.parse(readFileSync(p, "utf8")) as ReplaysIndexPayload;
+  return {
+    ...raw,
+    replays: (raw.replays || []).map((r) => ({
+      ...r,
+      source: normalizeReplaySource(r, "pub"),
+    })),
+  };
+}
+
+function readProIndex(): ReplaysIndexPayload {
+  const p = join(UI_ROOT, "public/data/pro_replays_index.json");
+  const raw = JSON.parse(readFileSync(p, "utf8")) as ReplaysIndexPayload;
+  return {
+    ...raw,
+    replays: (raw.replays || []).map((r) => ({
+      ...r,
+      source: normalizeReplaySource(r, "pro"),
+    })),
+  };
+}
+
+async function fetchPlanBAggregateMatchStats(client: SupabaseClient): Promise<
+  | {
+      decidedMatches: number;
+      radiantWins: number;
+      direWins: number;
+      durationSamples: number;
+      avgDurationSec: number;
+      error: null;
+    }
+  | { error: string }
+> {
+  const [rwRes, dwRes] = await Promise.all([
+    client
+      .from("plan_b")
+      .select("*", { count: "exact", head: true })
+      .eq("radiant_win", true),
+    client
+      .from("plan_b")
+      .select("*", { count: "exact", head: true })
+      .eq("radiant_win", false),
+  ]);
+  const countErr = rwRes.error?.message || dwRes.error?.message;
+  if (countErr) return { error: countErr };
+
+  const radiantWins = rwRes.count ?? 0;
+  const direWins = dwRes.count ?? 0;
+  const decidedMatches = radiantWins + direWins;
+
+  let durationSum = 0;
+  let durationSamples = 0;
+
+  for (let from = 0; ; from += PLAN_B_DURATION_BATCH) {
+    const to = from + PLAN_B_DURATION_BATCH - 1;
+    const { data, error } = await client
+      .from("plan_b")
+      .select("duration")
+      .order("match_id", { ascending: true })
+      .range(from, to);
+
+    if (error) return { error: error.message };
+
+    const rows = Array.isArray(data) ? data : [];
+    if (rows.length === 0) break;
+
+    for (const row of rows) {
+      if (!row || typeof row !== "object") continue;
+      const r = row as Record<string, unknown>;
+      const dur = parsePlanBDurationSec(r.duration ?? r.duration_sec);
+      if (dur !== null) {
+        durationSum += dur;
+        durationSamples += 1;
+      }
+    }
+
+    if (rows.length < PLAN_B_DURATION_BATCH) break;
+  }
+
+  const avgDurationSec =
+    durationSamples > 0 ? durationSum / durationSamples : 0;
+
+  return {
+    decidedMatches,
+    radiantWins,
+    direWins,
+    durationSamples,
+    avgDurationSec,
+    error: null,
+  };
+}
+
+async function fetchAllPlanBReplayRows(
+  client: SupabaseClient
+): Promise<Record<string, unknown>[]> {
+  const merged: Record<string, unknown>[] = [];
+  for (let page = 1; page <= ANALYTICS_MAX_PAGES; page++) {
+    const from = (page - 1) * ANALYTICS_PAGE_SIZE;
+    const to = from + ANALYTICS_PAGE_SIZE - 1;
+    const { data, error } = await client
+      .from("plan_b")
+      .select(PLAN_B_INDEX_SELECT)
+      .order("created_at", { ascending: false })
+      .range(from, to);
+    if (error) throw new Error(error.message);
+    const rows = Array.isArray(data) ? data : [];
+    if (rows.length === 0) break;
+    merged.push(...(rows as Record<string, unknown>[]));
+    if (rows.length < ANALYTICS_PAGE_SIZE) break;
+  }
+  return merged;
+}
+
+function mergeAnalyticsLikeHomePage(
+  pubRows: ReplaySummary[],
+  proRows: ReplaySummary[],
+  cloudRows: ReplaySummary[]
+): ReplaySummary[] {
+  const mergedPub = mergeReplaySummariesByMatchId(pubRows, cloudRows);
+  return mergePubProReplays(mergedPub, proRows);
+}
+
+async function main(): Promise<void> {
+  const pubIdx = readIndex("public/data/replays_index.json");
+  const proIdx = readProIndex();
+  const pubRows = pubIdx.replays;
+  const proRows = proIdx.replays;
+
+  const client = loadSupabaseFromEnv();
+  const [aggPack, planRows] = await Promise.all([
+    fetchPlanBAggregateMatchStats(client),
+    fetchAllPlanBReplayRows(client),
+  ]);
+
+  if ("error" in aggPack && aggPack.error) {
+    throw new Error(`聚合统计失败：${aggPack.error}`);
+  }
+  const cloudAgg = {
+    decidedMatches: aggPack.decidedMatches,
+    radiantWins: aggPack.radiantWins,
+    direWins: aggPack.direWins,
+    durationSamples: aggPack.durationSamples,
+    avgDurationSec: aggPack.avgDurationSec,
+  };
+
+  const cloudReplays = replaySummariesFromPlanBRows(planRows);
+  const analyticsReplays = mergeAnalyticsLikeHomePage(
+    pubRows,
+    proRows,
+    cloudReplays
+  );
+
+  const sampleReplays = analyticsReplays.slice(0, ITEMS_TAB_SLIM_SAMPLE_CAP);
+  const topKillIds = topKillMatchIdsForSlim(analyticsReplays, 5);
+  const needSlimIds = [
+    ...new Set([
+      ...sampleReplays.map((r) => r.match_id),
+      ...topKillIds,
+    ]),
+  ];
+
+  const mapsPath = join(UI_ROOT, "public/data/entity_maps.json");
+  const entityMaps = JSON.parse(
+    readFileSync(mapsPath, "utf8")
+  ) as EntityMapsPayload;
+
+  const slimMap = await slimMapForMatchIds(client, needSlimIds);
+  const slimRecord: Record<number, SlimMatchJson | null> = {};
+  for (const id of needSlimIds) {
+    slimRecord[id] = slimMap.get(id) ?? null;
+  }
+
+  const craftableKeys = loadCraftableItemKeysFromDisk(UI_ROOT);
+  const itemsAggResult = aggregateMetaGlobalItemStats(
+    sampleReplays,
+    slimRecord,
+    craftableKeys
+  );
+  const itemsMeta = {
+    rows: itemsAggResult.rows,
+    matchesAnalyzed: itemsAggResult.matchesAnalyzed,
+    totalHeroPlayerSlots: itemsAggResult.totalHeroPlayerSlots,
+    totalListed: sampleReplays.length,
+  };
+
+  const proIndexMatchIds = proIdx.replays.map((r) => r.match_id);
+  const topSection = buildTopSectionSnapshotPayload(
+    analyticsReplays,
+    proIndexMatchIds,
+    slimMap,
+    entityMaps
+  );
+
+  const payload = buildMetaSiteSnapshotPayload(analyticsReplays, cloudAgg, {
+    itemsMeta,
+    topSection,
+  });
+
+  const outPath = join(UI_ROOT, "public/data/meta_site_snapshot.json");
+  writeFileSync(outPath, `${JSON.stringify(payload)}\n`, "utf8");
+  console.log(
+    "Wrote",
+    outPath,
+    "replays:",
+    analyticsReplays.length,
+    "snapshot v",
+    payload.version
+  );
+}
+
+main().catch((e) => {
+  console.error(e);
+  process.exit(1);
+});

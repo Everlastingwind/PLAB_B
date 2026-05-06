@@ -1,3 +1,4 @@
+import type { SupabaseClient } from "@supabase/supabase-js";
 import { forEachConcurrent } from "./fetchConcurrent";
 import { supabase } from "./supabaseClient.js";
 
@@ -271,13 +272,11 @@ const PLAN_B_BATCH_IN_SELECT_FALLBACKS: readonly string[] = [
   "match_id, players",
 ];
 
-/** 按 match_id 取整局数据（供详情页 / 选手页详情等） */
-export async function fetchPlanBSlimPayload(
+export async function fetchPlanBSlimPayloadWithClient(
+  client: SupabaseClient,
   matchId: number
 ): Promise<unknown | null> {
   if (!Number.isFinite(matchId) || matchId <= 0) return null;
-  const client = supabase;
-  if (!client) return null;
 
   const run = async (id: number | string, sel: string) =>
     client.from("plan_b").select(sel).eq("match_id", id).limit(1);
@@ -309,6 +308,15 @@ export async function fetchPlanBSlimPayload(
   return unwrapPlanBRow(row);
 }
 
+/** 按 match_id 取整局数据（供详情页 / 选手页详情等） */
+export async function fetchPlanBSlimPayload(
+  matchId: number
+): Promise<unknown | null> {
+  const client = supabase;
+  if (!client) return null;
+  return fetchPlanBSlimPayloadWithClient(client, matchId);
+}
+
 /**
  * 单次 `.in(match_id, …)` 上限：PostgREST GET 查询串过长时易 400，继而触发切片递归，
  * 在最坏情况下会退化成「每场一次 eq」（表现为几百次 plan_b）。保持较小 chunk。
@@ -322,7 +330,7 @@ const PLAN_B_DETAIL_MICRO_CHUNK = 8;
  * **禁止**对整块内每个 id 各发一次请求（ former N+1 源头）。
  */
 async function fetchPlanBSlimPayloadBatchSlice(
-  client: NonNullable<typeof supabase>,
+  client: SupabaseClient,
   chunkIn: readonly number[]
 ): Promise<Map<number, unknown>> {
   const out = new Map<number, unknown>();
@@ -362,7 +370,7 @@ async function fetchPlanBSlimPayloadBatchSlice(
 
   if (uniq.length === 1) {
     try {
-      const one = await fetchPlanBSlimPayload(uniq[0]);
+      const one = await fetchPlanBSlimPayloadWithClient(client, uniq[0]);
       if (one) out.set(uniq[0], one);
     } catch {
       /* skip */
@@ -374,7 +382,7 @@ async function fetchPlanBSlimPayloadBatchSlice(
   if (uniq.length <= PLAN_B_DETAIL_MICRO_CHUNK) {
     for (const id of uniq) {
       try {
-        const one = await fetchPlanBSlimPayload(id);
+        const one = await fetchPlanBSlimPayloadWithClient(client, id);
         if (one) out.set(id, one);
       } catch {
         /* skip */
@@ -396,13 +404,11 @@ async function fetchPlanBSlimPayloadBatchSlice(
 /**
  * 按多 match_id 批量取 slim（英雄/选手列表页用），显著减少 Supabase 往返与 OPTIONS 预检次数。
  */
-export async function fetchPlanBSlimPayloadBatch(
+export async function fetchPlanBSlimPayloadBatchWithClient(
+  client: SupabaseClient,
   matchIds: readonly number[]
 ): Promise<Map<number, unknown>> {
   const out = new Map<number, unknown>();
-  const client = supabase;
-  if (!client) return out;
-
   const ids = [
     ...new Set(
       matchIds.filter((id) => Number.isFinite(id) && (id as number) > 0)
@@ -427,6 +433,14 @@ export async function fetchPlanBSlimPayloadBatch(
   }
 
   return out;
+}
+
+export async function fetchPlanBSlimPayloadBatch(
+  matchIds: readonly number[]
+): Promise<Map<number, unknown>> {
+  const client = supabase;
+  if (!client) return new Map();
+  return fetchPlanBSlimPayloadBatchWithClient(client, matchIds);
 }
 
 /** 两阶段：分页轻列取 id，再 in(match_id) 拉完整行，避免「排序 + 大 json」同一条 SQL 爆超时 */
@@ -1005,10 +1019,8 @@ export async function fetchPlanBReplayIndexRowsForAccount(
   };
 }
 
-/** 单次查询最多 20 行（与 PostgREST Range 一致），避免宽扫描拖垮库 */
-const PLAN_B_STATS_PAGE_SIZE = 20;
-/** 聚合为采样近似：最多抓若干页后停止 */
-const PLAN_B_STATS_MAX_PAGES = 24;
+/** 平均时长：按 match_id 分批拉取 duration */
+const PLAN_B_DURATION_BATCH = 500;
 
 function parsePlanBDurationSec(raw: unknown): number | null {
   const n = Number(raw ?? 0);
@@ -1016,19 +1028,8 @@ function parsePlanBDurationSec(raw: unknown): number | null {
   return Math.floor(n);
 }
 
-function parsePlanBRadiantWin(raw: unknown): boolean | null {
-  if (raw === null || raw === undefined) return null;
-  if (typeof raw === "boolean") return raw;
-  if (typeof raw === "number") return raw !== 0;
-  const s = String(raw).trim().toLowerCase();
-  if (s === "true" || s === "t" || s === "1") return true;
-  if (s === "false" || s === "f" || s === "0") return false;
-  return null;
-}
-
 /**
- * 全表拉取轻列并聚合：天辉/夜魇胜场与平均时长（秒）。
- * 分页按 match_id 排序，避免超时；仅依赖 plan_b.radiant_win / duration。
+ * 全库聚合：胜场用 PostgREST exact count；平均时长为全表有效 duration 的算术平均。
  */
 export async function fetchPlanBAggregateMatchStats(): Promise<{
   /** 有明确胜负（radiant_win 非空）的场数 */
@@ -1052,27 +1053,49 @@ export async function fetchPlanBAggregateMatchStats(): Promise<{
     };
   }
 
-  let radiantWins = 0;
-  let direWins = 0;
-  let decidedMatches = 0;
+  const [rwRes, dwRes] = await Promise.all([
+    client
+      .from("plan_b")
+      .select("*", { count: "exact", head: true })
+      .eq("radiant_win", true),
+    client
+      .from("plan_b")
+      .select("*", { count: "exact", head: true })
+      .eq("radiant_win", false),
+  ]);
+
+  const countErr = rwRes.error?.message || dwRes.error?.message;
+  if (countErr) {
+    return {
+      decidedMatches: 0,
+      radiantWins: 0,
+      direWins: 0,
+      durationSamples: 0,
+      avgDurationSec: 0,
+      error: countErr,
+    };
+  }
+
+  const radiantWins = rwRes.count ?? 0;
+  const direWins = dwRes.count ?? 0;
+  const decidedMatches = radiantWins + direWins;
+
   let durationSum = 0;
   let durationSamples = 0;
 
-  for (let page = 0; page < PLAN_B_STATS_MAX_PAGES; page++) {
-    const from = page * PLAN_B_STATS_PAGE_SIZE;
-    const to = from + PLAN_B_STATS_PAGE_SIZE - 1;
+  for (let from = 0; ; from += PLAN_B_DURATION_BATCH) {
+    const to = from + PLAN_B_DURATION_BATCH - 1;
     const { data, error } = await client
       .from("plan_b")
-      .select("radiant_win, duration")
+      .select("duration")
       .order("match_id", { ascending: true })
-      /** 每请求最多 20 行（含）：与 {@link PLAN_B_STATS_PAGE_SIZE} 一致 */
       .range(from, to);
 
     if (error) {
       return {
-        decidedMatches: 0,
-        radiantWins: 0,
-        direWins: 0,
+        decidedMatches,
+        radiantWins,
+        direWins,
         durationSamples: 0,
         avgDurationSec: 0,
         error: error.message,
@@ -1085,15 +1108,6 @@ export async function fetchPlanBAggregateMatchStats(): Promise<{
     for (const row of rows) {
       if (!row || typeof row !== "object") continue;
       const r = row as Record<string, unknown>;
-      const rw = parsePlanBRadiantWin(r.radiant_win);
-      if (rw === true) {
-        decidedMatches += 1;
-        radiantWins += 1;
-      } else if (rw === false) {
-        decidedMatches += 1;
-        direWins += 1;
-      }
-
       const dur = parsePlanBDurationSec(r.duration ?? r.duration_sec);
       if (dur !== null) {
         durationSum += dur;
@@ -1101,7 +1115,7 @@ export async function fetchPlanBAggregateMatchStats(): Promise<{
       }
     }
 
-    if (rows.length < PLAN_B_STATS_PAGE_SIZE) break;
+    if (rows.length < PLAN_B_DURATION_BATCH) break;
   }
 
   const avgDurationSec =

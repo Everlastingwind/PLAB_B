@@ -13,6 +13,7 @@ import {
   fetchPlanBReplayIndexRowsForHero,
   unwrapPlanBRow,
 } from "./supabasePlanB";
+import { isRadiantFromPlayer } from "./matchGrouping";
 
 const PAGE_SIZE = 10;
 
@@ -51,7 +52,7 @@ function replaySummaryPreferNewerKeepRicherPlayers(
   return newer;
 }
 
-function normalizeReplaySource(
+export function normalizeReplaySource(
   row: ReplaySummary,
   fallback: "pub" | "pro"
 ): "pub" | "pro" {
@@ -155,6 +156,19 @@ export function heroNumericIdFromKey(
   return Number.isFinite(n) && n > 0 ? n : null;
 }
 
+/** 顶层 role_early 缺失时尝试 lane_role 等嵌套字段（云库 slim 摘要常见） */
+function roleEarlyFromPlanBPlayer(o: Record<string, unknown>): string | null {
+  const direct = o.role_early;
+  if (direct != null && String(direct).trim()) return String(direct).trim();
+  const lr = o.lane_role;
+  if (lr && typeof lr === "object" && !Array.isArray(lr)) {
+    const lo = lr as Record<string, unknown>;
+    const nested = lo.role_early ?? lo.role;
+    if (nested != null && String(nested).trim()) return String(nested).trim();
+  }
+  return null;
+}
+
 /** plan_b / OpenDota / slim 混用字段名，统一成列表摘要用一行 */
 function summaryPlayerFromRawObject(o: Record<string, unknown>): ReplayPlayerSummary {
   const slot = Math.floor(
@@ -196,11 +210,18 @@ function summaryPlayerFromRawObject(o: Record<string, unknown>): ReplayPlayerSum
   const pnRaw = o.personaname ?? o.name;
   const personaname =
     pnRaw != null && String(pnRaw).trim() ? String(pnRaw).trim() : null;
-  const roleRaw = o.role_early;
+  const roleEarlyRaw = roleEarlyFromPlanBPlayer(o);
   const roleEarly =
-    roleRaw != null && String(roleRaw).trim()
-      ? String(roleRaw).trim()
+    roleEarlyRaw != null && String(roleEarlyRaw).trim()
+      ? String(roleEarlyRaw).trim()
       : null;
+  const teamProbe: Record<string, unknown> = {
+    player_slot: slot,
+    is_radiant: o.is_radiant,
+    isRadiant: o.isRadiant,
+  };
+  const nw = Number(o.net_worth ?? o.networth ?? o.total_gold ?? NaN);
+  const gpm = Number(o.gold_per_min ?? o.gpm ?? NaN);
   return {
     player_slot: slot,
     account_id: accountId,
@@ -208,10 +229,12 @@ function summaryPlayerFromRawObject(o: Record<string, unknown>): ReplayPlayerSum
     pro_name: proName,
     personaname,
     role_early: roleEarly || undefined,
-    is_radiant: slot < 128,
+    is_radiant: isRadiantFromPlayer(teamProbe),
     kills,
     deaths,
     assists,
+    ...(Number.isFinite(nw) ? { net_worth: Math.floor(nw) } : {}),
+    ...(Number.isFinite(gpm) ? { gold_per_min: Math.floor(gpm) } : {}),
   };
 }
 
@@ -268,7 +291,7 @@ function planBRowToReplaySummary(row: Record<string, unknown>): ReplaySummary | 
   };
 }
 
-function replaySummariesFromPlanBRows(
+export function replaySummariesFromPlanBRows(
   rows: Record<string, unknown>[]
 ): ReplaySummary[] {
   const out: ReplaySummary[] = [];
@@ -332,6 +355,39 @@ export async function fetchCloudPubReplaySummaries(): Promise<CloudPubReplayPack
       error: p.error,
     })
   );
+}
+
+const ANALYTICS_CLOUD_PAGE_SIZE = 100;
+/** 安全上限：防止 estimate 异常时死循环（约 20 万场） */
+const ANALYTICS_CLOUD_MAX_PAGES = 2000;
+
+/**
+ * 拉取 plan_b **全部**列表页并与静态合并（首页 Meta / Items / TOP）。
+ * 按 `created_at desc` 分页直到末页或合并条数 ≥ PostgREST 返回的 estimated `totalRows`。
+ */
+export async function fetchCloudPubReplaySummariesForAnalyticsMerge(): Promise<{
+  replays: ReplaySummary[];
+  error: string | null;
+}> {
+  const merged: ReplaySummary[] = [];
+  let lastError: string | null = null;
+
+  for (let page = 1; page <= ANALYTICS_CLOUD_MAX_PAGES; page++) {
+    const pack = await fetchCloudPubReplaySummariesPage(
+      page,
+      ANALYTICS_CLOUD_PAGE_SIZE
+    );
+    if (pack.error) {
+      lastError = pack.error;
+      break;
+    }
+    merged.push(...pack.replays);
+    if (pack.replays.length === 0) break;
+    /** 末页条数不足一页；勿用 estimated totalRows 提前结束（estimate 偏低会丢后半库） */
+    if (pack.replays.length < ANALYTICS_CLOUD_PAGE_SIZE) break;
+  }
+
+  return { replays: merged, error: lastError };
 }
 
 export async function fetchCloudPubReplaySummariesPage(

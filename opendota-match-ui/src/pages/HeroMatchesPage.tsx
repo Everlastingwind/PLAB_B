@@ -8,6 +8,7 @@ import {
   filterReplaysByTeammateOpponentHero,
   heroKeyFromId,
 } from "../lib/replaysApi";
+import { slotToRoleEarlyFallbackMap } from "../lib/metaRoleFallback";
 import type { ReplaySummary } from "../types/replaysIndex";
 import { useEntityMaps } from "../hooks/useEntityMaps";
 import {
@@ -285,13 +286,20 @@ export function HeroMatchesPage() {
     return role;
   };
 
-  /** 筛选/统计仅用索引摘要；明细 role 仍在表格单元格用 detailByMatch 展示 */
-  const replayRoleIndexOnly = useCallback(
+  /** 索引 role_early + 与 Meta 一致的队内经济排序兜底，避免「未标注」与列表场次割裂 */
+  const replayRoleEffective = useCallback(
     (r: ReplaySummary): string => {
+      if (!maps) return "unknown";
       const p0 = (r.players || []).find(
-        (x) => heroKeyFromId(x.hero_id, maps!) === decoded
+        (x) => heroKeyFromId(x.hero_id, maps) === decoded
       );
-      return normalizeRole((p0 as { role_early?: unknown } | undefined)?.role_early);
+      if (!p0) return "unknown";
+      const direct = normalizeRole(
+        (p0 as { role_early?: unknown } | undefined)?.role_early
+      );
+      if (direct !== "unknown") return direct;
+      const fb = slotToRoleEarlyFallbackMap(r);
+      return fb.get(Number(p0.player_slot)) ?? "unknown";
     },
     [decoded, maps]
   );
@@ -311,16 +319,16 @@ export function HeroMatchesPage() {
 
   const filteredReplays = useMemo(() => {
     if (roleFilter === "all") return replaysSynergy;
-    return replaysSynergy.filter((r) => replayRoleIndexOnly(r) === roleFilter);
-  }, [replaysSynergy, replayRoleIndexOnly, roleFilter]);
+    return replaysSynergy.filter((r) => replayRoleEffective(r) === roleFilter);
+  }, [replaysSynergy, replayRoleEffective, roleFilter]);
 
   const overviewReplays = useMemo(() => {
     if (roleFilter === "all") return replaysSynergy;
     return replaysSynergy.filter((r) => {
-      const rr = replayRoleIndexOnly(r);
+      const rr = replayRoleEffective(r);
       return rr === roleFilter || rr === "unknown";
     });
-  }, [replaysSynergy, replayRoleIndexOnly, roleFilter]);
+  }, [replaysSynergy, replayRoleEffective, roleFilter]);
 
   const roleCounts = useMemo(() => {
     const out: Record<string, number> = {
@@ -332,11 +340,11 @@ export function HeroMatchesPage() {
       unknown: 0,
     };
     for (const r of replaysSynergy) {
-      const rr = replayRoleIndexOnly(r);
+      const rr = replayRoleEffective(r);
       if (rr in out) out[rr] += 1;
     }
     return out;
-  }, [replaysSynergy, replayRoleIndexOnly]);
+  }, [replaysSynergy, replayRoleEffective]);
 
   const filteredReplayIdsSignature = useMemo(
     () => filteredReplays.map((r) => String(r.match_id)).join(","),

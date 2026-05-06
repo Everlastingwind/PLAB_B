@@ -7,11 +7,20 @@ import type { FeedSelection } from "../components/FeedModeToggle";
 import {
   MATCH_LIST_LOAD_STEP,
   cloudPackToIndexError,
+  fetchCloudPubReplaySummariesForAnalyticsMerge,
   fetchCloudPubReplaySummariesPage,
   fetchReplaysForFeedSelection,
   fetchStaticFeedOnly,
+  mergeCloudIntoStaticFeed,
+  mergeReplaySummariesByMatchId,
 } from "../lib/replaysApi";
 import { fetchPlanBAggregateMatchStats } from "../lib/supabasePlanB";
+import { fetchDeployedDataJson } from "../lib/fetchStaticJson";
+import {
+  buildTopHeroByRole,
+  buildTopHeroOverall,
+  type MetaSiteSnapshotPayload,
+} from "../lib/metaSiteAggregate";
 import { loadSlimMatchJsonForDetails } from "../lib/loadSlimMatchJson";
 import { topKillMatchIdsForSlim } from "../lib/topKillMatchIds";
 import type { ReplaySummary } from "../types/replaysIndex";
@@ -40,8 +49,10 @@ import {
   metaWinRateAfterGamesClass,
 } from "../lib/winRateTextClass";
 
+/** Items 出装聚合：合并索引全站来源，但单场须拉 slim，此处为单场数量上限 */
+const ITEMS_TAB_SLIM_SAMPLE_CAP = 200;
+
 export function HomePage() {
-  const ROLE_KEYS = ["carry", "mid", "offlane", "support(4)", "support(5)"] as const;
   const { maps, loading: mapsLoading, error: mapsErr } = useEntityMaps();
   const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -53,7 +64,10 @@ export function HomePage() {
   const [idxErr, setIdxErr] = useState<string | null>(null);
   /** 服务端分页时 Supabase 返回的总行数（仅 Matches + 仅 PUB） */
   const [pagedTotalRows, setPagedTotalRows] = useState<number | null>(null);
-  /** Meta / Items / TOP：仅用静态 JSON，避免依赖对局列表那条（可能仅 15 条） */
+  /**
+   * Meta / TOP：遍历「全站」合并索引（静态 pub/pro JSON + 云库 plan_b 多页合并后按 match 去重）。
+   * 与 Matches 列表分页那条无关。出装(Items)需 slim，样本上限见模块常量 ITEMS_TAB_SLIM_SAMPLE_CAP。
+   */
   const [analyticsReplays, setAnalyticsReplays] = useState<
     ReplaySummary[]
   >([]);
@@ -71,6 +85,21 @@ export function HomePage() {
   const [cloudAggLoading, setCloudAggLoading] = useState(false);
   const [cloudAggErr, setCloudAggErr] = useState<string | null>(null);
   const cloudAggFetchedOk = useRef(false);
+  const [snapshotFetchDone, setSnapshotFetchDone] = useState(false);
+  const [metaSnapshot, setMetaSnapshot] = useState<MetaSiteSnapshotPayload | null>(
+    null
+  );
+  const useMetaSnapshot = Boolean(
+    feed.pub && metaSnapshot && metaSnapshot.version >= 1
+  );
+  /** Meta + Items + TOP 均读 `meta_site_snapshot.json`（version 2） */
+  const useFullSnapshot = Boolean(
+    feed.pub &&
+      metaSnapshot &&
+      metaSnapshot.version >= 2 &&
+      metaSnapshot.itemsMeta &&
+      metaSnapshot.topSection
+  );
   /** Items / TOP 子区块用：由本页统一批量拉 plan_b/slim，禁止在子组件内再请求 */
   const [homeMetaSlimByMatch, setHomeMetaSlimByMatch] = useState<
     Record<number, SlimMatchJson | undefined>
@@ -94,13 +123,76 @@ export function HomePage() {
 
   useEffect(() => {
     let cancelled = false;
-    void fetchStaticFeedOnly(feed).then((snap) => {
-      if (!cancelled) setAnalyticsReplays(snap.replays);
-    });
+    void (async () => {
+      try {
+        const raw = await fetchDeployedDataJson<unknown>(
+          "/data/meta_site_snapshot.json"
+        );
+        if (cancelled || !raw || typeof raw !== "object") return;
+        const d = raw as MetaSiteSnapshotPayload;
+        if (d.version !== 1 && d.version !== 2) return;
+        if (
+          !d.cloudAgg ||
+          !d.topHeroByRole ||
+          !d.heroOverall ||
+          typeof d.cloudAgg.decidedMatches !== "number"
+        )
+          return;
+        if (d.version === 2 && (!d.itemsMeta || !d.topSection)) return;
+        setMetaSnapshot(d);
+      } catch {
+        /* 可选静态文件 */
+      } finally {
+        if (!cancelled) setSnapshotFetchDone(true);
+      }
+    })();
     return () => {
       cancelled = true;
     };
-  }, [feed]);
+  }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+    void (async () => {
+      if (!snapshotFetchDone) return;
+      if (!feed.pub) {
+        const snap = await fetchStaticFeedOnly(feed);
+        if (!cancelled) {
+          setAnalyticsReplays(mergeReplaySummariesByMatchId(snap.replays, []));
+        }
+        return;
+      }
+      if (metaSnapshot && metaSnapshot.version >= 1) {
+        const snap = await fetchStaticFeedOnly(feed);
+        if (!cancelled) {
+          setAnalyticsReplays(mergeReplaySummariesByMatchId(snap.replays, []));
+        }
+        return;
+      }
+      const [snap, cloudPack] = await Promise.all([
+        fetchStaticFeedOnly(feed),
+        fetchCloudPubReplaySummariesForAnalyticsMerge(),
+      ]);
+      if (cancelled) return;
+      const merged = mergeCloudIntoStaticFeed(snap, cloudPack);
+      setAnalyticsReplays(mergeReplaySummariesByMatchId(merged.replays, []));
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [feed, snapshotFetchDone, metaSnapshot]);
+
+  useEffect(() => {
+    const snapOk = Boolean(feed.pub && metaSnapshot && metaSnapshot.version >= 1);
+    if (snapOk && metaSnapshot) {
+      setCloudAgg(metaSnapshot.cloudAgg);
+      setCloudAggErr(null);
+      cloudAggFetchedOk.current = true;
+      setCloudAggLoading(false);
+    } else if (!snapOk) {
+      cloudAggFetchedOk.current = false;
+    }
+  }, [feed.pub, metaSnapshot]);
 
   useEffect(() => {
     let cancelled = false;
@@ -155,6 +247,7 @@ export function HomePage() {
 
   useEffect(() => {
     if (homeView !== "meta") return;
+    if (feed.pub && metaSnapshot && metaSnapshot.version >= 1) return;
     if (cloudAggFetchedOk.current) return;
     let cancelled = false;
     void (async () => {
@@ -180,7 +273,7 @@ export function HomePage() {
     return () => {
       cancelled = true;
     };
-  }, [homeView]);
+  }, [homeView, feed.pub, metaSnapshot]);
 
   const totalPages = useMemo(() => {
     if (
@@ -359,13 +452,13 @@ export function HomePage() {
 
   const feedKey = `${feed.pub ? "p" : ""}${feed.pro ? "r" : ""}`;
 
-  /** Items 页全局出装统计：限制样本量，避免对数百 match 发起 slim 拉取 */
   const replaysSampleForItemMeta = useMemo(
-    () => analyticsReplays.slice(0, 48),
+    () => analyticsReplays.slice(0, ITEMS_TAB_SLIM_SAMPLE_CAP),
     [analyticsReplays]
   );
 
   const metaTabSlimIds = useMemo((): number[] => {
+    if (useFullSnapshot) return [];
     if (homeView === "items") {
       const raw = replaysSampleForItemMeta
         .map((r) => Number(r.match_id))
@@ -376,7 +469,7 @@ export function HomePage() {
       return topKillMatchIdsForSlim(analyticsReplays, 5);
     }
     return [];
-  }, [homeView, replaysSampleForItemMeta, analyticsReplays]);
+  }, [homeView, replaysSampleForItemMeta, analyticsReplays, useFullSnapshot]);
 
   const metaTabSlimIdsKey = metaTabSlimIds.join(",");
 
@@ -408,149 +501,34 @@ export function HomePage() {
     };
   }, [metaTabSlimIdsKey, maps]);
 
-  const normalizeRole = useCallback((raw: unknown): "carry" | "mid" | "offlane" | "support(4)" | "support(5)" | null => {
-    const s = String(raw ?? "").trim().toLowerCase();
-    if (s === "carry") return "carry";
-    if (s === "mid") return "mid";
-    if (s === "offlane") return "offlane";
-    if (s === "support4" || s === "support 4" || s === "support(4)") return "support(4)";
-    if (s === "support5" || s === "support 5" || s === "support(5)") return "support(5)";
-    return null;
-  }, []);
+  const topHeroByRoleLive = useMemo(
+    () => buildTopHeroByRole(analyticsReplays, roleTab),
+    [analyticsReplays, roleTab]
+  );
+
+  const topHeroOverallLive = useMemo(
+    () => buildTopHeroOverall(analyticsReplays),
+    [analyticsReplays]
+  );
 
   const topHeroByRole = useMemo(() => {
-    if (!maps) return [] as Array<{ heroId: number; games: number; winRate: number }>;
-    const agg = new Map<number, { games: number; wins: number }>();
-    for (const r of analyticsReplays) {
-      for (const p of r.players || []) {
-        const role = normalizeRole(p.role_early);
-        if (role !== roleTab) continue;
-        const hid = Number(p.hero_id || 0);
-        if (!Number.isFinite(hid) || hid <= 0) continue;
-        const row = agg.get(hid) || { games: 0, wins: 0 };
-        row.games += 1;
-        const won = Boolean(p.is_radiant) === Boolean(r.radiant_win);
-        if (won) row.wins += 1;
-        agg.set(hid, row);
-      }
-    }
-    return Array.from(agg.entries())
-      .map(([heroId, s]) => ({
-        heroId,
-        games: s.games,
-        winRate: s.games > 0 ? (s.wins / s.games) * 100 : 0,
-      }))
-      .filter((x) => x.games >= 50)
-      .sort((a, b) => b.winRate - a.winRate || b.games - a.games)
-      .slice(0, 5);
-  }, [analyticsReplays, roleTab, maps, normalizeRole]);
+    if (!maps) return [];
+    if (useMetaSnapshot && metaSnapshot)
+      return metaSnapshot.topHeroByRole[roleTab];
+    return topHeroByRoleLive;
+  }, [
+    maps,
+    useMetaSnapshot,
+    metaSnapshot,
+    roleTab,
+    topHeroByRoleLive,
+  ]);
 
   const topHeroOverall = useMemo(() => {
-    if (!maps) return [] as Array<{
-      heroId: number;
-      games: number;
-      winRate: number;
-      /** 按录像时间排序后，每场之后的累计胜率（%），长度与有效场次一致 */
-      cumulativeWinRateSeries: number[];
-      roleWinRate: Partial<Record<(typeof ROLE_KEYS)[number], { games: number; winRate: number }>>;
-    }>;
-    const agg = new Map<number, {
-      games: number;
-      wins: number;
-      role: Record<(typeof ROLE_KEYS)[number], { games: number; wins: number }>;
-    }>();
-    /** 每场录像一条，用于按时间累计胜率（同 match_id 取较晚入库的一条） */
-    const heroMatchBest = new Map<
-      number,
-      Map<number, { t: number; won: boolean }>
-    >();
-
-    for (const r of analyticsReplays) {
-      const t = Date.parse(String(r.uploaded_at ?? "")) || 0;
-      const rw = Boolean(r.radiant_win);
-      const mid = Number(r.match_id) || 0;
-      for (const p of r.players || []) {
-        const hid = Number(p.hero_id || 0);
-        if (!Number.isFinite(hid) || hid <= 0) continue;
-        const row = agg.get(hid) || {
-          games: 0,
-          wins: 0,
-          role: {
-            carry: { games: 0, wins: 0 },
-            mid: { games: 0, wins: 0 },
-            offlane: { games: 0, wins: 0 },
-            "support(4)": { games: 0, wins: 0 },
-            "support(5)": { games: 0, wins: 0 },
-          },
-        };
-        row.games += 1;
-        const won = Boolean(p.is_radiant) === rw;
-        if (won) row.wins += 1;
-        const role = normalizeRole(p.role_early);
-        if (role) {
-          row.role[role].games += 1;
-          if (won) row.role[role].wins += 1;
-        }
-        agg.set(hid, row);
-
-        let mm = heroMatchBest.get(hid);
-        if (!mm) {
-          mm = new Map();
-          heroMatchBest.set(hid, mm);
-        }
-        const prev = mm.get(mid);
-        if (!prev || t >= prev.t) {
-          mm.set(mid, { t, won });
-        }
-      }
-    }
-
-    return Array.from(agg.entries())
-      .map(([heroId, s]) => {
-        const roleWinRate = ROLE_KEYS.reduce((acc, rk) => {
-          const g = s.role[rk].games;
-          if (g <= 0) return acc;
-          acc[rk] = {
-            games: g,
-            winRate: (s.role[rk].wins / g) * 100,
-          };
-          return acc;
-        }, {} as Partial<Record<(typeof ROLE_KEYS)[number], { games: number; winRate: number }>>);
-        const mm = heroMatchBest.get(heroId);
-        const cumulativeWinRateSeries: number[] = [];
-        if (mm && mm.size > 0) {
-          const events = Array.from(mm.entries())
-            .map(([matchId, ev]) => ({
-              matchId,
-              t: ev.t,
-              won: ev.won,
-            }))
-            .sort((a, b) => a.t - b.t || a.matchId - b.matchId);
-          let winsRun = 0;
-          for (let i = 0; i < events.length; i++) {
-            if (events[i].won) winsRun += 1;
-            cumulativeWinRateSeries.push((winsRun / (i + 1)) * 100);
-          }
-        }
-
-        const uniqueG = cumulativeWinRateSeries.length;
-        const winRateFinal =
-          uniqueG > 0
-            ? cumulativeWinRateSeries[uniqueG - 1]
-            : s.games > 0
-              ? (s.wins / s.games) * 100
-              : 0;
-
-        return {
-          heroId,
-          games: uniqueG > 0 ? uniqueG : s.games,
-          winRate: winRateFinal,
-          cumulativeWinRateSeries,
-          roleWinRate,
-        };
-      })
-      .filter((x) => x.cumulativeWinRateSeries.length >= 100);
-  }, [analyticsReplays, maps, normalizeRole]);
+    if (!maps) return [];
+    if (useMetaSnapshot && metaSnapshot) return metaSnapshot.heroOverall;
+    return topHeroOverallLive;
+  }, [maps, useMetaSnapshot, metaSnapshot, topHeroOverallLive]);
 
   const heroMetaTableRows = useMemo(() => {
     if (!maps) return [];
@@ -625,7 +603,8 @@ export function HomePage() {
           ) : null}
           {!mapsLoading && maps ? (
             <>
-              <div className="mb-4 flex items-center gap-2">
+              <div className="mb-4 flex flex-col gap-2">
+                <div className="flex flex-wrap items-center gap-2">
                 <button
                   type="button"
                   onClick={() => setHomeView("matches")}
@@ -638,6 +617,7 @@ export function HomePage() {
                 </button>
                 <button
                   type="button"
+                  title="全站：静态索引与云库 plan_b 多页合并后的对局集合（非 Matches 当前页）"
                   onClick={() => setHomeView("meta")}
                   className={`rounded border px-3 py-1.5 text-sm font-semibold ${homeView === "meta"
                     ? "border-amber-500/50 bg-amber-100/70 text-amber-700 dark:border-amber-500/45 dark:bg-amber-500/15 dark:text-amber-300"
@@ -648,6 +628,7 @@ export function HomePage() {
                 </button>
                 <button
                   type="button"
+                  title={`全站合并索引；出装统计依赖每场 slim，默认最多分析 ${ITEMS_TAB_SLIM_SAMPLE_CAP} 场`}
                   onClick={() => setHomeView("items")}
                   className={`rounded border px-3 py-1.5 text-sm font-semibold ${homeView === "items"
                     ? "border-amber-500/50 bg-amber-100/70 text-amber-700 dark:border-amber-500/45 dark:bg-amber-500/15 dark:text-amber-300"
@@ -658,6 +639,7 @@ export function HomePage() {
                 </button>
                 <button
                   type="button"
+                  title="全站：静态 + 云库合并索引上的榜单（单人击杀 / 总击杀 / 职业浓度等）"
                   onClick={() => setHomeView("top")}
                   className={`rounded border px-3 py-1.5 text-sm font-semibold ${homeView === "top"
                     ? "border-amber-500/50 bg-amber-100/70 text-amber-700 dark:border-amber-500/45 dark:bg-amber-500/15 dark:text-amber-300"
@@ -666,6 +648,7 @@ export function HomePage() {
                 >
                   TOP
                 </button>
+                </div>
               </div>
               {homeView === "matches" ? (
                 feedListLoading ? (
@@ -752,7 +735,7 @@ export function HomePage() {
           ) : null}
           {homeView === "meta" && !mapsLoading && maps ? (
             <section className="mt-6 rounded-lg border border-skin-line bg-skin-card p-3">
-              <p className="meta-major-title mb-2">全站对局（Supabase）</p>
+              <p className="meta-major-title mb-2">全站对局</p>
               {cloudAggLoading ? (
                 <p className="mb-4 text-sm text-skin-sub">正在统计云库比赛数据…</p>
               ) : null}
@@ -797,7 +780,7 @@ export function HomePage() {
               ) : null}
               <p className="meta-major-title mb-2">胜率统计</p>
               <p className="mb-2 text-sm font-semibold text-skin-sub">
-                分位置胜率 Top 5（出场 ≥50 局）
+                分位置胜率 Top 5
               </p>
               <div className="mb-3 flex flex-wrap items-center gap-1.5">
                 {([
@@ -868,7 +851,7 @@ export function HomePage() {
               )}
               <div className="mt-4 rounded border border-skin-line p-3">
                 <p className="mb-3 text-sm font-semibold text-skin-sub">
-                  全英雄总胜率（同 match 去重后 ≥100 场）
+                  全英雄总胜率
                 </p>
                 {topHeroOverall.length ? (
                   <HeroWinrateMetaTable
@@ -918,20 +901,30 @@ export function HomePage() {
           ) : null}
           {homeView === "items" && !mapsLoading && maps ? (
             <MetaGlobalItemStatsSection
-              replays={replaysSampleForItemMeta}
+              replays={useFullSnapshot ? [] : replaysSampleForItemMeta}
               maps={maps}
               slimByMatchId={homeMetaSlimByMatch}
               slimLoading={homeMetaSlimLoading}
+              precomputedItemAgg={
+                useFullSnapshot && metaSnapshot
+                  ? metaSnapshot.itemsMeta
+                  : undefined
+              }
             />
           ) : null}
           {homeView === "top" && !mapsLoading && maps ? (
             <section className="mt-6 rounded-lg border border-skin-line bg-skin-card p-3">
               <MetaTopKillGamesSection
-                replays={analyticsReplays}
+                replays={useFullSnapshot ? [] : analyticsReplays}
                 maps={maps}
-                listLoading={feedListLoading}
+                listLoading={useFullSnapshot ? false : feedListLoading}
                 slimByMatchId={homeMetaSlimByMatch}
                 slimLoading={homeMetaSlimLoading}
+                snapshotTop={
+                  useFullSnapshot && metaSnapshot
+                    ? metaSnapshot.topSection
+                    : undefined
+                }
               />
             </section>
           ) : null}

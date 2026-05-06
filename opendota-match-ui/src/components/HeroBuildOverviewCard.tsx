@@ -13,6 +13,7 @@ import {
 import { HeroPickerPopover } from "./HeroPickerPopover";
 import type { SlimPlayer } from "../types/slimMatch";
 import { collectPurchaseEvents } from "../lib/metaGlobalItemStats";
+import { isRadiantFromPlayer } from "../lib/matchGrouping";
 
 /** 与下方 rows 切片上限一致；父组件合并 plan_b 请求时用 */
 export const HERO_OVERVIEW_INSIGHT_CAP = 180;
@@ -183,6 +184,29 @@ export function HeroBuildOverviewCard(props: Props) {
     [heroId, replayIdsKey, slimPresenceKey]
   );
 
+  /** 与列表「all (N)」一致：按完整索引行统计场次/胜率，不依赖 slim 与前 180 场切片 */
+  const indexHeadline = useMemo(() => {
+    let wins = 0;
+    let n = 0;
+    for (const r of replays) {
+      const pHero = (r.players || []).find(
+        (p) => Number(p.hero_id || 0) === heroId
+      );
+      if (!pHero) continue;
+      n += 1;
+      if (
+        isRadiantFromPlayer(pHero as unknown as Record<string, unknown>) ===
+        Boolean(r.radiant_win)
+      ) {
+        wins += 1;
+      }
+    }
+    return {
+      matches: n,
+      winRate: n > 0 ? (wins / n) * 100 : 0,
+    };
+  }, [replays, heroId]);
+
   const data = useMemo((): OverviewData | null => {
     if (!enabled || rows.length === 0) return null;
     const mem = HERO_OVERVIEW_CACHE.get(overviewCacheKey);
@@ -283,7 +307,7 @@ export function HeroBuildOverviewCard(props: Props) {
               {heroNameEn} ·{" "}
               {loading
                 ? "加载明细…"
-                : `${data?.totalMatches ?? 0} matches · ${data != null && Number.isFinite(data.winRate) ? data.winRate.toFixed(1) : "0.0"}% winrate`}
+                : `${indexHeadline.matches} matches · ${indexHeadline.winRate.toFixed(1)}% winrate`}
             </p>
           </div>
         </div>

@@ -13,6 +13,9 @@ export interface ReplayPlayerSummary {
   kills: number;
   deaths: number;
   assists: number;
+  /** 终局经济；缺失 role_early 时用于队内排序近似分路（与 backfill 脚本一致） */
+  net_worth?: number;
+  gold_per_min?: number;
 }
 
 export interface ReplaySummary {

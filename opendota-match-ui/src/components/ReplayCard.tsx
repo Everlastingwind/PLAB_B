@@ -121,12 +121,14 @@ const ReplayCardImpl = ({
   const direKills = sumKills(dire);
   const rawRs = replay.radiant_score;
   const rawDs = replay.dire_score;
-  // 主页索引里偶发写成 0:0（占位）；此时回退到玩家击杀汇总，避免长期显示假比分。
-  const hasValidIndexedScore =
-    (rawRs !== undefined && rawRs !== null && rawRs > 0) ||
-    (rawDs !== undefined && rawDs !== null && rawDs > 0);
-  const rs = hasValidIndexedScore ? (rawRs ?? radKills) : radKills;
-  const ds = hasValidIndexedScore ? (rawDs ?? direKills) : direKills;
+  const playerTotal = radKills + direKills;
+  const hasIndexedNonZero =
+    (rawRs !== undefined && rawRs !== null && Number(rawRs) > 0) ||
+    (rawDs !== undefined && rawDs !== null && Number(rawDs) > 0);
+  // 与左右分队一致：有选手击杀时用分队之和；索引比分若与天辉/夜魇列错位会出现「胜者击杀更少」的假显示。
+  const useIndexedFallback = hasIndexedNonZero && playerTotal <= 0;
+  const rs = useIndexedFallback ? Math.floor(Number(rawRs ?? 0) || 0) : radKills;
+  const ds = useIndexedFallback ? Math.floor(Number(rawDs ?? 0) || 0) : direKills;
 
   const matchPath = `/match/${replay.match_id}`;
   const isProSource =

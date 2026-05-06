@@ -1,13 +1,17 @@
 import { createClient } from "@supabase/supabase-js";
 
+const proc =
+  typeof process !== "undefined" && process.env ? process.env : {};
+const viteEnv = import.meta.env ?? {};
+const env = { ...proc, ...viteEnv };
 const url = String(
-  import.meta.env.VITE_SUPABASE_URL ||
-    import.meta.env.NEXT_PUBLIC_SUPABASE_URL ||
+  env.VITE_SUPABASE_URL ||
+    env.NEXT_PUBLIC_SUPABASE_URL ||
     ""
 ).trim();
 const anonKey = String(
-  import.meta.env.VITE_SUPABASE_ANON_KEY ||
-    import.meta.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
+  env.VITE_SUPABASE_ANON_KEY ||
+    env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
     ""
 ).trim();
 

@@ -7,6 +7,7 @@ import {
   aggregateMetaGlobalItemStats,
   formatGameClockMmSs,
   normalizeMetaItemKey,
+  type MetaGlobalItemAggRow,
 } from "../lib/metaGlobalItemStats";
 import {
   itemIconUrl,
@@ -23,6 +24,13 @@ type Props = {
   slimByMatchId: Readonly<Record<number, SlimMatchJson | null | undefined>>;
   /** 父页面首次批量请求 plan_b 进行中 */
   slimLoading?: boolean;
+  /** 每日快照预聚合（读 `/data/meta_site_snapshot.json`），不再现场扫 slim */
+  precomputedItemAgg?: {
+    rows: MetaGlobalItemAggRow[];
+    matchesAnalyzed: number;
+    totalHeroPlayerSlots: number;
+    totalListed: number;
+  };
 };
 
 type MetaItemSortColumn =
@@ -72,7 +80,13 @@ function compareMetaItemRows(
 }
 
 export function MetaGlobalItemStatsSection(props: Props) {
-  const { replays, maps, slimByMatchId, slimLoading = false } = props;
+  const {
+    replays,
+    maps,
+    slimByMatchId,
+    slimLoading = false,
+    precomputedItemAgg,
+  } = props;
   const [itemSort, setItemSort] = useState<MetaItemSortState>({
     column: "purchaseRate",
     order: "desc",
@@ -100,6 +114,11 @@ export function MetaGlobalItemStatsSection(props: Props) {
   }, [maps]);
 
   useEffect(() => {
+    if (precomputedItemAgg) {
+      setCraftableKeys(new Set());
+      setCraftableError(null);
+      return;
+    }
     let cancelled = false;
     void loadCraftableItemKeySet()
       .then((set) => {
@@ -117,7 +136,7 @@ export function MetaGlobalItemStatsSection(props: Props) {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [precomputedItemAgg]);
 
   const slimRecordForAgg = useMemo((): Record<number, SlimMatchJson | null> => {
     const out: Record<number, SlimMatchJson | null> = {};
@@ -131,14 +150,29 @@ export function MetaGlobalItemStatsSection(props: Props) {
   const matchIdsKey = matchIds.join(",");
 
   const aggPack = useMemo(() => {
+    if (precomputedItemAgg) {
+      return {
+        matchesAnalyzed: precomputedItemAgg.matchesAnalyzed,
+        totalHeroPlayerSlots: precomputedItemAgg.totalHeroPlayerSlots,
+        rows: precomputedItemAgg.rows,
+      };
+    }
     if (!craftableKeys || matchIds.length === 0) return null;
     return aggregateMetaGlobalItemStats(replays, slimRecordForAgg, craftableKeys);
-  }, [craftableKeys, matchIdsKey, replays, slimRecordForAgg]);
+  }, [
+    craftableKeys,
+    matchIdsKey,
+    precomputedItemAgg,
+    replays,
+    slimRecordForAgg,
+  ]);
 
   const rows = aggPack?.rows ?? [];
   const matchesAnalyzed = aggPack?.matchesAnalyzed ?? 0;
-  const loading = craftableKeys === null || slimLoading;
-  const error = craftableError;
+  const loading = precomputedItemAgg
+    ? false
+    : craftableKeys === null || slimLoading;
+  const error = precomputedItemAgg ? null : craftableError;
 
   const sortedRows = useMemo(() => {
     if (rows.length === 0) return rows;
@@ -149,7 +183,7 @@ export function MetaGlobalItemStatsSection(props: Props) {
     return copy;
   }, [rows, itemSort.column, itemSort.order]);
 
-  const totalListed = replays.length;
+  const totalListed = precomputedItemAgg?.totalListed ?? replays.length;
 
   const thBtn =
     "rounded px-1 py-0.5 font-semibold transition hover:bg-skin-inset/80";
