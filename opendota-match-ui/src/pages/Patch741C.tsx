@@ -200,16 +200,6 @@ export function Patch741CPage() {
               <h2 className="text-lg font-semibold text-skin-ink sm:text-xl">
                 {row.title}
               </h2>
-              {row.url ? (
-                <a
-                  href={row.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="mt-2 inline-block text-sm text-accent-cyan hover:underline"
-                >
-                  数据来源链接
-                </a>
-              ) : null}
               {bodyRender.kind === "datafeed" ? (
                 <PatchNotesDatafeedView
                   content={bodyRender.json}
