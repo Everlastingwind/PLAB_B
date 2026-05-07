@@ -31,6 +31,12 @@ export default defineConfig(({ mode }) => {
           target: "http://127.0.0.1:8000",
           changeOrigin: true,
         },
+        "/dota2-api": {
+          target: "https://www.dota2.com",
+          changeOrigin: true,
+          secure: false,
+          rewrite: (p) => p.replace(/^\/dota2-api/, ""),
+        },
       },
     },
   };

@@ -530,6 +530,12 @@ export function HomePage() {
                 >
                   TOP
                 </button>
+                <Link
+                  to="/patches/7.41c"
+                  className="inline-flex rounded border border-slate-500/35 bg-slate-200/35 px-3 py-1.5 text-sm font-semibold text-skin-sub hover:bg-slate-300/35 dark:border-slate-500/45 dark:bg-slate-700/35 dark:hover:bg-slate-700/55"
+                >
+                  7.41C
+                </Link>
                 </div>
               </div>
               {homeView === "matches" ? (

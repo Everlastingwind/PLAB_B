@@ -32,6 +32,9 @@ const HighMmrMatchesPage = lazy(() =>
 const ItemDetailPage = lazy(() =>
   import("./pages/ItemDetailPage").then((m) => ({ default: m.ItemDetailPage }))
 );
+const Patch741CPage = lazy(() =>
+  import("./pages/Patch741C").then((m) => ({ default: m.Patch741CPage }))
+);
 
 const routeFallback = (
   <p className="p-6 text-sm text-skin-ink">页面加载中…</p>
@@ -49,6 +52,7 @@ export default function App() {
           <Route path="/pros" element={<ProPlayersPage />} />
           <Route path="/high-mmr-matches" element={<HighMmrMatchesPage />} />
           <Route path="/item/:itemKey" element={<ItemDetailPage />} />
+          <Route path="/patches/7.41c" element={<Patch741CPage />} />
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </Suspense>
