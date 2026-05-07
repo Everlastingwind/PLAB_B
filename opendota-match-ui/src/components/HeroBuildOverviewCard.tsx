@@ -34,6 +34,8 @@ type Props = {
   vsHeroId?: number | null;
   onWithHeroChange?: (heroId: number | null) => void;
   onVsHeroChange?: (heroId: number | null) => void;
+  /** 父页与录像列表并行拉取；null 为加载中 */
+  latestHeroPatch?: { version: string; lines: string[] } | null;
 };
 
 type OverviewData = {
@@ -178,6 +180,7 @@ export function HeroBuildOverviewCard(props: Props) {
     vsHeroId = null,
     onWithHeroChange,
     onVsHeroChange,
+    latestHeroPatch,
   } = props;
   const [selectedItemKey, setSelectedItemKey] = useState<string | null>(null);
   const [expanded, setExpanded] = useState(true);
@@ -333,6 +336,31 @@ export function HeroBuildOverviewCard(props: Props) {
           {expanded ? "收起" : "展开"}
         </button>
       </div>
+
+      {latestHeroPatch !== undefined ? (
+        <div className="mb-3 rounded border border-skin-line p-3">
+          <p className="mb-2 text-xs font-semibold text-skin-sub">
+            {latestHeroPatch === null
+              ? "最新改动"
+              : `最新改动${
+                  latestHeroPatch.version
+                    ? ` (${latestHeroPatch.version})`
+                    : ""
+                }`}
+          </p>
+          {latestHeroPatch === null ? (
+            <p className="text-center text-sm text-skin-sub">加载中…</p>
+          ) : latestHeroPatch.lines.length ? (
+            <ul className="list-disc space-y-1.5 pl-5 text-sm leading-relaxed text-skin-ink dark:text-zinc-200">
+              {latestHeroPatch.lines.map((line, i) => (
+                <li key={`hero-patch-${i}`}>{line}</li>
+              ))}
+            </ul>
+          ) : (
+            <p className="text-center text-sm text-skin-sub">无</p>
+          )}
+        </div>
+      ) : null}
 
       {expanded && data ? (
         <div className="grid gap-3 lg:grid-cols-[1fr_300px]">

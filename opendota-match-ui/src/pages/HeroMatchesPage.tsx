@@ -7,6 +7,7 @@ import {
   fetchReplaysForHeroProfile,
   filterReplaysByTeammateOpponentHero,
   heroKeyFromId,
+  type FeedReplayIndexResult,
 } from "../lib/replaysApi";
 import { slotToRoleEarlyFallbackMap } from "../lib/metaRoleFallback";
 import type { ReplaySummary } from "../types/replaysIndex";
@@ -39,6 +40,12 @@ import {
   HeroBuildOverviewCard,
   HERO_OVERVIEW_INSIGHT_CAP,
 } from "../components/HeroBuildOverviewCard";
+import { supabase } from "../lib/supabaseClient.js";
+import {
+  extractHeroPatchNotesFromUpdateContent,
+  extractVersionFromPatchJsonContent,
+} from "../lib/heroPatchFromUpdate";
+import { translatePatch741cNote } from "../utils/patch741c_translations";
 
 function toTalentTreeUi(raw: SlimPlayer["talent_tree"]): TalentTreeUi | null {
   if (!raw || !Array.isArray(raw.tiers)) return null;
@@ -149,6 +156,11 @@ export function HeroMatchesPage() {
   >({});
   /** 唯一批量 slim/plan_b 拉取由本页 effect 负责；子组件禁止自建请求 */
   const [listPage, setListPage] = useState(1);
+  /** 与录像列表并行拉取的最新补丁；null 表示加载中 */
+  const [latestHeroPatch, setLatestHeroPatch] = useState<{
+    version: string;
+    lines: string[];
+  } | null>(null);
 
   const withHeroIdParam = useMemo(() => {
     const raw = searchParams.get("with_hero_id");
@@ -245,22 +257,92 @@ export function HeroMatchesPage() {
     let cancelled = false;
     setFeedListLoading(true);
     setReplays([]);
+    setLatestHeroPatch(null);
     void (async () => {
       try {
-        const { replays: rows, cloudIndexError } = await fetchReplaysForHeroProfile(
-          feed,
-          decoded,
-          maps
-        );
+        async function fetchLatestPatchRow(): Promise<{
+          version: string | null;
+          content: string | null;
+        } | null> {
+          if (!supabase) return null;
+          const { data, error } = await supabase
+            .from("dota2_updates")
+            .select("version, content")
+            .order("release_date", { ascending: false })
+            .limit(1)
+            .maybeSingle();
+          if (error) {
+            console.warn(error);
+            return null;
+          }
+          if (!data) return null;
+          return {
+            version: data.version ?? null,
+            content: data.content ?? null,
+          };
+        }
+
+        const [replayResult, patchRow] = await Promise.all([
+          fetchReplaysForHeroProfile(feed, decoded, maps).catch(
+            (): FeedReplayIndexResult => ({
+              replays: [],
+              cloudIndexError: null,
+            })
+          ),
+          fetchLatestPatchRow(),
+        ]);
+
         if (cancelled) return;
-        if (cloudIndexError) console.warn(cloudIndexError);
-        setReplays(rows);
+        if (replayResult.cloudIndexError)
+          console.warn(replayResult.cloudIndexError);
+        setReplays(replayResult.replays);
+
+        let hid = 0;
+        let nameEn = decoded;
+        for (const [sid, h] of Object.entries(maps.heroes || {})) {
+          if (h.key === decoded) {
+            hid = Number(sid) || 0;
+            nameEn = h.nameEn || decoded;
+            break;
+          }
+        }
+
+        let patchBlock: { version: string; lines: string[] } = {
+          version: "",
+          lines: [],
+        };
+        if (hid > 0 && patchRow?.content) {
+          const raw = extractHeroPatchNotesFromUpdateContent(
+            patchRow.content,
+            hid,
+            nameEn
+          );
+          const version =
+            (patchRow.version && String(patchRow.version).trim()) ||
+            extractVersionFromPatchJsonContent(patchRow.content) ||
+            "";
+          patchBlock = {
+            version,
+            lines: raw.map((t) => translatePatch741cNote(t, "zh")),
+          };
+        } else if (patchRow) {
+          patchBlock = {
+            version:
+              (patchRow.version && String(patchRow.version).trim()) ||
+              extractVersionFromPatchJsonContent(patchRow.content || "") ||
+              "",
+            lines: [],
+          };
+        }
+
+        setLatestHeroPatch(patchBlock);
         setDetailByMatch({});
         setFeedListLoading(false);
       } catch {
         if (!cancelled) {
           setFeedListLoading(false);
           setReplays([]);
+          setLatestHeroPatch({ version: "", lines: [] });
         }
       }
     })();
@@ -492,6 +574,7 @@ export function HeroMatchesPage() {
               vsHeroId={vsHeroIdParam}
               onWithHeroChange={setWithHeroIdParam}
               onVsHeroChange={setVsHeroIdParam}
+              latestHeroPatch={latestHeroPatch}
             />
           ) : null}
           {!mapsLoading && maps ? (
