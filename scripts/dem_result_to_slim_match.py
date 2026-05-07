@@ -4311,7 +4311,7 @@ def main() -> None:
         from supabase import create_client
 
         supabase_url = "https://wmshhvmqenjxypcmpewl.supabase.co"
-        supabase_key = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indtc2hodm1xZW5qeHlwY21wZXdsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYwOTMzNzgsImV4cCI6MjA5MTY2OTM3OH0.oQwdBj-PQP1O8nQAJytmYa2d9YKV6Iq9TgxxDktT644"
+        supabase_key = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indtc2hodm1xZW5qeHlwY21wZXdsIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3NjA5MzM3OCwiZXhwIjoyMDkxNjY5Mzc4fQ.2QkgIqlr2tl6t-pEQ-Lz4hzXO5l27jAwC38laCslUxw"
         supabase = create_client(supabase_url, supabase_key)
         _ = supabase.table("plan_b").upsert(upload_data).execute()
         print("Supabase upsert 成功: match_id=", upload_data.get("match_id"))
