@@ -6,6 +6,7 @@
 from __future__ import annotations
 
 import json
+import os
 import urllib.request
 from datetime import datetime, timezone
 from pathlib import Path
@@ -152,6 +153,61 @@ def rebuild_replays_index() -> int:
         encoding="utf-8",
     )
     return len(replays)
+
+
+def sync_replays_index_to_cloud_after_plan_b_ingest(
+    *, load_env: bool = True
+) -> int:
+    """
+    在 ``plan_b`` 写入成功后调用：从数据库重建 ``replays_index.json``，
+    并在配置了 Storage 凭据时上传到桶 ``planb-static-data``（覆盖
+    ``public/data/replays_index.json``）。
+
+    依赖：与 ``backend/replays_index_plan_b`` 相同的环境变量
+    （``VITE_SUPABASE_URL`` 或等价项 + ``SUPABASE_SERVICE_ROLE_KEY``）。
+    Storage 上传额外要求同上 URL + ``SUPABASE_SERVICE_ROLE_KEY``。
+    """
+    if load_env:
+        try:
+            from scripts.upload_planb_static_file import load_dotenv_local
+
+            load_dotenv_local(_ROOT)
+        except Exception:
+            pass
+
+    n = rebuild_replays_index()
+
+    url_ok = (
+        os.environ.get("VITE_SUPABASE_URL", "").strip()
+        or os.environ.get("NEXT_PUBLIC_SUPABASE_URL", "").strip()
+    )
+    key_ok = os.environ.get("SUPABASE_SERVICE_ROLE_KEY", "").strip()
+    if url_ok and key_ok:
+        try:
+            from scripts.upload_planb_static_file import upload_planb_static_object
+
+            upload_planb_static_object(
+                REPLAYS_INDEX_PATH,
+                object_key="public/data/replays_index.json",
+                content_type="application/json; charset=utf-8",
+            )
+            print(
+                f"[sync_replays_index] Storage 已更新 public/data/replays_index.json "
+                f"（{n} 条）",
+                flush=True,
+            )
+        except Exception as e:
+            print(
+                f"[sync_replays_index] Storage 上传失败（本地 replays_index.json 已写入）: {e}",
+                flush=True,
+            )
+    else:
+        print(
+            "[sync_replays_index] 跳过 Storage：请配置 VITE_SUPABASE_URL 与 "
+            "SUPABASE_SERVICE_ROLE_KEY",
+            flush=True,
+        )
+    return n
 
 
 def save_uploaded_match_slim(

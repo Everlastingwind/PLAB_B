@@ -4315,6 +4315,23 @@ def main() -> None:
         supabase = create_client(supabase_url, supabase_key)
         _ = supabase.table("plan_b").upsert(upload_data).execute()
         print("Supabase upsert 成功: match_id=", upload_data.get("match_id"))
+        try:
+            from backend.match_service import (  # noqa: E402
+                sync_replays_index_to_cloud_after_plan_b_ingest,
+            )
+
+            sync_replays_index_to_cloud_after_plan_b_ingest()
+        except Exception as sync_exc:
+            try:
+                smsg = str(sync_exc).encode("utf-8", "backslashreplace").decode(
+                    "utf-8"
+                )
+            except Exception:
+                smsg = repr(sync_exc)
+            print(
+                "replays_index 重建或云端同步失败（可稍后执行 python scripts/build_replays_index.py）:",
+                smsg,
+            )
     except Exception as exc:
         try:
             emsg = str(exc).encode("utf-8", "backslashreplace").decode("utf-8")
