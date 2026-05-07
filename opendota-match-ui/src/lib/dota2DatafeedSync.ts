@@ -9,8 +9,13 @@ export type Dota2UpdateRow = {
   url: string;
 };
 
-const PATH_ZH = "/datafeed/patchnotes?version=7.41c&language=schinese";
-const PATH_EN = "/datafeed/patchnotes?version=7.41c&language=english";
+function patchNotesPaths(version: string): { zh: string; en: string } {
+  const v = encodeURIComponent(version.trim());
+  return {
+    zh: `/datafeed/patchnotes?version=${v}&language=schinese`,
+    en: `/datafeed/patchnotes?version=${v}&language=english`,
+  };
+}
 
 function patchNotesUrl(path: string): string {
   if (import.meta.env.DEV) {
@@ -43,12 +48,15 @@ export async function upsertDota2Update(
   if (error) throw error;
 }
 
-function patchTitleFromJson(data: Record<string, unknown>): string {
+function patchTitleFromJson(
+  data: Record<string, unknown>,
+  fallbackVersion: string
+): string {
   const name = data.patch_name;
   if (typeof name === "string" && name.trim()) {
     return `Dota 2 更新说明 — ${name}`;
   }
-  return "Dota 2 更新说明 — 7.41c";
+  return `Dota 2 更新说明 — ${fallbackVersion}`;
 }
 
 function releaseIsoFromJson(data: Record<string, unknown>): string {
@@ -92,24 +100,34 @@ async function fetchPatchObject(
   return data;
 }
 
-export async function syncPatch741cFromDota2Datafeed(
-  client: SupabaseClient
+export async function syncPatchFromDota2Datafeed(
+  client: SupabaseClient,
+  targetVersion: string
 ): Promise<Dota2UpdateRow> {
-  const zhData = await fetchPatchObject(PATH_ZH, "中文");
-  const enData = await fetchPatchObject(PATH_EN, "English");
+  const ver = targetVersion.trim();
+  const paths = patchNotesPaths(ver);
+  const zhData = await fetchPatchObject(paths.zh, "中文");
+  const enData = await fetchPatchObject(paths.en, "English");
 
   const merged = { zh: zhData, en: enData };
   const content = JSON.stringify(merged);
 
   const row: Dota2UpdateRow = {
-    gid: "patch_7.41c",
-    title: patchTitleFromJson(zhData),
+    gid: `patch_${ver}`,
+    title: patchTitleFromJson(zhData, ver),
     content,
-    version: "7.41c",
+    version: ver,
     release_date: releaseIsoFromJson(zhData),
-    url: `${patchNotesUrl(PATH_ZH)} | ${patchNotesUrl(PATH_EN)}`,
+    url: `${patchNotesUrl(paths.zh)} | ${patchNotesUrl(paths.en)}`,
   };
 
   await upsertDota2Update(client, row);
   return row;
+}
+
+/** @deprecated 使用 {@link syncPatchFromDota2Datafeed} */
+export async function syncPatch741cFromDota2Datafeed(
+  client: SupabaseClient
+): Promise<Dota2UpdateRow> {
+  return syncPatchFromDota2Datafeed(client, "7.41c");
 }
