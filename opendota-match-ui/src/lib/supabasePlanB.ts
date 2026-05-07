@@ -1,6 +1,10 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { forEachConcurrent } from "./fetchConcurrent";
 import { supabase } from "./supabaseClient.js";
+import { ensureSitePatchLoaded } from "./sitePatchStore";
+
+/** plan_b 列表 / 聚合：仅当前补丁；选手跨版本历史见 site_settings 衍生列表 */
+export type PlanBPatchScope = "latest" | "player";
 
 /**
  * 列表查询易触发 `statement timeout`（`order by created_at` + 每行 `players` json 很大时，
@@ -479,6 +483,7 @@ function orderFullRowsByIdList(
 async function fetchPlanBReplayIndexRowsTwoPhase(
   client: NonNullable<typeof supabase>
 ): Promise<{ rows: Record<string, unknown>[]; error: string | null }> {
+  const { currentPatch } = await ensureSitePatchLoaded();
   const idOrder: (string | number)[] = [];
   for (let page = 0; page < PLAN_B_TWO_PHASE_MAX_PAGES; page++) {
     const from = page * PLAN_B_TWO_PHASE_PAGE_SIZE;
@@ -486,6 +491,7 @@ async function fetchPlanBReplayIndexRowsTwoPhase(
     const { data: thin, error: e1 } = await client
       .from("plan_b")
       .select("match_id, created_at")
+      .eq("patch_version", currentPatch)
       .order("created_at", { ascending: false })
       .range(from, to);
     if (e1) {
@@ -522,7 +528,11 @@ async function fetchPlanBReplayIndexRowsTwoPhase(
       ...PLAN_B_DETAIL_SELECT_FALLBACKS.filter((s) => s !== PLAN_B_INDEX_SELECT),
     ] as readonly string[];
     for (const sel of selectFallbacks) {
-      const r = await client.from("plan_b").select(sel).in("match_id", chunk);
+      const r = await client
+        .from("plan_b")
+        .select(sel)
+        .eq("patch_version", currentPatch)
+        .in("match_id", chunk);
       if (!r.error) {
         part = r.data;
         e2 = null;
@@ -558,6 +568,7 @@ export async function fetchPlanBReplayIndexRows(): Promise<{
 }> {
   const client = supabase;
   if (!client) return { rows: [], error: null };
+  const { currentPatch } = await ensureSitePatchLoaded();
 
   const two = await fetchPlanBReplayIndexRowsTwoPhase(client);
   if (!two.error) {
@@ -576,6 +587,7 @@ export async function fetchPlanBReplayIndexRows(): Promise<{
     let { data, error } = await client
       .from("plan_b")
       .select(PLAN_B_INDEX_SELECT)
+      .eq("patch_version", currentPatch)
       .order("created_at", { ascending: false })
       .limit(lim);
 
@@ -637,13 +649,15 @@ async function fetchPlanBReplayIndexPageSplit(
   totalRows: number;
   error: string | null;
 }> {
+  const { currentPatch } = await ensureSitePatchLoaded();
   const from = (safePage - 1) * safePageSize;
   const to = from + safePageSize - 1;
 
   /** `exact` 全表 COUNT 在大表上极易超时；分页总数用统计估算即可 */
   const countReq = await client
     .from("plan_b")
-    .select("match_id", { count: "estimated", head: true });
+    .select("match_id", { count: "estimated", head: true })
+    .eq("patch_version", currentPatch);
   if (countReq.error) {
     return { rows: [], totalRows: 0, error: countReq.error.message };
   }
@@ -652,6 +666,7 @@ async function fetchPlanBReplayIndexPageSplit(
   const pageReq = await client
     .from("plan_b")
     .select(PLAN_B_INDEX_LIGHT_SELECT)
+    .eq("patch_version", currentPatch)
     .order("created_at", { ascending: false })
     .range(from, to);
   if (pageReq.error) {
@@ -676,7 +691,11 @@ async function fetchPlanBReplayIndexPageSplit(
   let overlayData: unknown;
   let overlayErr = null as { message?: string } | null;
   for (const sel of overlaySelectChain) {
-    const r = await client.from("plan_b").select(sel).in("match_id", ids);
+    const r = await client
+      .from("plan_b")
+      .select(sel)
+      .eq("patch_version", currentPatch)
+      .in("match_id", ids);
     if (!r.error) {
       overlayData = r.data;
       overlayErr = null;
@@ -724,6 +743,7 @@ export async function fetchPlanBReplayIndexPage(
 }> {
   const client = supabase;
   if (!client) return { rows: [], totalRows: 0, error: null };
+  const { currentPatch } = await ensureSitePatchLoaded();
   const safePage = Math.max(1, Math.floor(page || 1));
   const safePageSize = Math.max(1, Math.min(100, Math.floor(pageSize || 10)));
   const from = (safePage - 1) * safePageSize;
@@ -734,6 +754,7 @@ export async function fetchPlanBReplayIndexPage(
     client
       .from("plan_b")
       .select(sel, { count: "estimated" })
+      .eq("patch_version", currentPatch)
       .order("created_at", { ascending: false })
       .range(from, to);
 
@@ -784,7 +805,10 @@ async function planBContainsRows(
   client: NonNullable<typeof supabase>,
   column: PlanBJsonColumn,
   /** PostgREST `.contains`：players 为数组探测；slim/payload 多为对象探测 */
-  operand: unknown
+  operand: unknown,
+  patchScope: PlanBPatchScope,
+  currentPatch: string,
+  historyPatches: readonly string[]
 ): Promise<Record<string, unknown>[]> {
   const selectors = [
     PLAN_B_INDEX_SELECT_NO_LEAGUE,
@@ -793,9 +817,14 @@ async function planBContainsRows(
   ] as const;
 
   for (const sel of selectors) {
-    const { data, error } = await client
-      .from("plan_b")
-      .select(sel)
+    const scoped =
+      patchScope === "latest"
+        ? client.from("plan_b").select(sel).eq("patch_version", currentPatch)
+        : client
+            .from("plan_b")
+            .select(sel)
+            .in("patch_version", [...historyPatches]);
+    const { data, error } = await scoped
       .contains(column, operand as never)
       .order("created_at", { ascending: false })
       .limit(PLAN_B_PROFILE_QUERY_LIMIT);
@@ -818,7 +847,10 @@ async function planBContainsRows(
 
 async function fetchPlanBWideReplayIndexPage(
   page: number,
-  pageSize: number
+  pageSize: number,
+  patchScope: PlanBPatchScope,
+  currentPatch: string,
+  historyPatches: readonly string[]
 ): Promise<{ rows: Record<string, unknown>[]; error: string | null }> {
   const client = supabase;
   if (!client) return { rows: [], error: null };
@@ -834,9 +866,12 @@ async function fetchPlanBWideReplayIndexPage(
   ] as const;
 
   for (const sel of selectors) {
-    const { data, error } = await client
-      .from("plan_b")
-      .select(sel)
+    const base = client.from("plan_b").select(sel);
+    const scoped =
+      patchScope === "latest"
+        ? base.eq("patch_version", currentPatch)
+        : base.in("patch_version", [...historyPatches]);
+    const { data, error } = await scoped
       .order("created_at", { ascending: false })
       .range(from, to);
 
@@ -879,6 +914,9 @@ export async function fetchPlanBReplayIndexRowsForHero(
     return { rows: [], error: null };
   }
 
+  const { currentPatch, playerHistoryPatchVersions } =
+    await ensureSitePatchLoaded();
+
   const byMid = new Map<number, Record<string, unknown>>();
   let wideFallbackError: string | null = null;
 
@@ -900,11 +938,39 @@ export async function fetchPlanBReplayIndexRowsForHero(
 
   // A+B 并行：原先串行 8 次 contains，RTT 叠加可达数秒；并行不改变语义（最终仍 merge + 校验）。
   const probeBatches = await Promise.all([
-    planBContainsRows(client, "players", [{ hero_id: heroNpcId }]),
-    planBContainsRows(client, "players", [{ hero_id: String(heroNpcId) }]),
+    planBContainsRows(
+      client,
+      "players",
+      [{ hero_id: heroNpcId }],
+      "latest",
+      currentPatch,
+      playerHistoryPatchVersions
+    ),
+    planBContainsRows(
+      client,
+      "players",
+      [{ hero_id: String(heroNpcId) }],
+      "latest",
+      currentPatch,
+      playerHistoryPatchVersions
+    ),
     ...nestCols.flatMap((col) => [
-      planBContainsRows(client, col, slimProbeNum),
-      planBContainsRows(client, col, slimProbeStr),
+      planBContainsRows(
+        client,
+        col,
+        slimProbeNum,
+        "latest",
+        currentPatch,
+        playerHistoryPatchVersions
+      ),
+      planBContainsRows(
+        client,
+        col,
+        slimProbeStr,
+        "latest",
+        currentPatch,
+        playerHistoryPatchVersions
+      ),
     ]),
   ]);
   for (const batch of probeBatches) {
@@ -926,7 +992,13 @@ export async function fetchPlanBReplayIndexRowsForHero(
   const PROFILE_FALLBACK_MAX_PAGES = runWideFallback ? 4 : 0;
 
   for (let page = 1; page <= PROFILE_FALLBACK_MAX_PAGES; page++) {
-    const pack = await fetchPlanBWideReplayIndexPage(page, PROFILE_FALLBACK_PAGE_SIZE);
+    const pack = await fetchPlanBWideReplayIndexPage(
+      page,
+      PROFILE_FALLBACK_PAGE_SIZE,
+      "latest",
+      currentPatch,
+      playerHistoryPatchVersions
+    );
     if (pack.error) {
       wideFallbackError = pack.error;
       break;
@@ -963,6 +1035,9 @@ export async function fetchPlanBReplayIndexRowsForAccount(
     return { rows: [], error: null };
   }
 
+  const { currentPatch, playerHistoryPatchVersions } =
+    await ensureSitePatchLoaded();
+
   const byMid = new Map<number, Record<string, unknown>>();
   let wideFallbackError: string | null = null;
 
@@ -971,11 +1046,39 @@ export async function fetchPlanBReplayIndexRowsForAccount(
   const nestCols = ["slim", "payload", "data"] as const;
 
   const probeBatches = await Promise.all([
-    planBContainsRows(client, "players", [{ account_id: accountId }]),
-    planBContainsRows(client, "players", [{ account_id: String(accountId) }]),
+    planBContainsRows(
+      client,
+      "players",
+      [{ account_id: accountId }],
+      "player",
+      currentPatch,
+      playerHistoryPatchVersions
+    ),
+    planBContainsRows(
+      client,
+      "players",
+      [{ account_id: String(accountId) }],
+      "player",
+      currentPatch,
+      playerHistoryPatchVersions
+    ),
     ...nestCols.flatMap((col) => [
-      planBContainsRows(client, col, nestNum),
-      planBContainsRows(client, col, nestStr),
+      planBContainsRows(
+        client,
+        col,
+        nestNum,
+        "player",
+        currentPatch,
+        playerHistoryPatchVersions
+      ),
+      planBContainsRows(
+        client,
+        col,
+        nestStr,
+        "player",
+        currentPatch,
+        playerHistoryPatchVersions
+      ),
     ]),
   ]);
   for (const batch of probeBatches) {
@@ -994,7 +1097,13 @@ export async function fetchPlanBReplayIndexRowsForAccount(
   const PROFILE_FALLBACK_MAX_PAGES = runWideFallback ? 4 : 0;
 
   for (let page = 1; page <= PROFILE_FALLBACK_MAX_PAGES; page++) {
-    const pack = await fetchPlanBWideReplayIndexPage(page, PROFILE_FALLBACK_PAGE_SIZE);
+    const pack = await fetchPlanBWideReplayIndexPage(
+      page,
+      PROFILE_FALLBACK_PAGE_SIZE,
+      "player",
+      currentPatch,
+      playerHistoryPatchVersions
+    );
     if (pack.error) {
       wideFallbackError = pack.error;
       break;
@@ -1053,14 +1162,18 @@ export async function fetchPlanBAggregateMatchStats(): Promise<{
     };
   }
 
+  const { currentPatch } = await ensureSitePatchLoaded();
+
   const [rwRes, dwRes] = await Promise.all([
     client
       .from("plan_b")
       .select("*", { count: "exact", head: true })
+      .eq("patch_version", currentPatch)
       .eq("radiant_win", true),
     client
       .from("plan_b")
       .select("*", { count: "exact", head: true })
+      .eq("patch_version", currentPatch)
       .eq("radiant_win", false),
   ]);
 
@@ -1088,6 +1201,7 @@ export async function fetchPlanBAggregateMatchStats(): Promise<{
     const { data, error } = await client
       .from("plan_b")
       .select("duration")
+      .eq("patch_version", currentPatch)
       .order("match_id", { ascending: true })
       .range(from, to);
 

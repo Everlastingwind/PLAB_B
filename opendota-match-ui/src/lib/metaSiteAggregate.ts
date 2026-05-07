@@ -3,6 +3,8 @@ import type { MetaGlobalItemAggRow } from "./metaGlobalItemStats";
 import type { TopSectionSnapshotPayload } from "./homeTopSnapshot";
 import { isRadiantFromPlayer } from "./matchGrouping";
 import { slotToRoleEarlyFallbackMap } from "./metaRoleFallback";
+import { replayMatchesLatestPatch } from "./replaysApi";
+import { stitchHeroTrendCumulativeSeries } from "./heroTrendSeries";
 
 export const META_ROLE_KEYS = [
   "carry",
@@ -39,19 +41,77 @@ export type HeroOverallAggRow = {
   games: number;
   winRate: number;
   cumulativeWinRateSeries: number[];
+  /** 与 cumulativeWinRateSeries 等长；首点可为上一版本末期基线（用于 Tooltip） */
+  cumulativeSeriesIsBaseline?: boolean[];
   roleWinRate: Partial<
     Record<MetaRoleTab, { games: number; winRate: number }>
   >;
 };
 
+function matchesPatchKey(r: ReplaySummary, patch: string): boolean {
+  return String(r.patch_version ?? "").trim() === patch;
+}
+
+/** 按补丁筛选后的各英雄各场胜负时间线（match_id 去重保留最新时间） */
+function collectHeroMatchMaps(
+  replays: readonly ReplaySummary[],
+  patchPredicate: (r: ReplaySummary) => boolean
+): Map<number, Map<number, { t: number; won: boolean }>> {
+  const out = new Map<number, Map<number, { t: number; won: boolean }>>();
+  for (const r of replays) {
+    if (!patchPredicate(r)) continue;
+    const t = Date.parse(String(r.uploaded_at ?? "")) || 0;
+    const rw = Boolean(r.radiant_win);
+    const mid = Number(r.match_id) || 0;
+    for (const p of r.players || []) {
+      const hid = Number(p.hero_id || 0);
+      if (!Number.isFinite(hid) || hid <= 0) continue;
+      let mm = out.get(hid);
+      if (!mm) {
+        mm = new Map();
+        out.set(hid, mm);
+      }
+      const won =
+        isRadiantFromPlayer(p as unknown as Record<string, unknown>) === rw;
+      const prev = mm.get(mid);
+      if (!prev || t >= prev.t) {
+        mm.set(mid, { t, won });
+      }
+    }
+  }
+  return out;
+}
+
+function cumulativeWinRateSeriesFromMatchMap(
+  mm: Map<number, { t: number; won: boolean }> | undefined
+): number[] {
+  if (!mm || mm.size === 0) return [];
+  const events = Array.from(mm.entries())
+    .map(([matchId, ev]) => ({
+      matchId,
+      t: ev.t,
+      won: ev.won,
+    }))
+    .sort((a, b) => a.t - b.t || a.matchId - b.matchId);
+  let winsRun = 0;
+  const series: number[] = [];
+  for (let i = 0; i < events.length; i++) {
+    if (events[i].won) winsRun += 1;
+    series.push((winsRun / (i + 1)) * 100);
+  }
+  return series;
+}
+
 /** 分路 Top：出场 ≥ minGames */
 export function buildTopHeroByRole(
   analyticsReplays: readonly ReplaySummary[],
   roleTab: MetaRoleTab,
-  minGames = 50
+  minGames = 50,
+  currentPatch: string
 ): TopHeroRoleRow[] {
   const agg = new Map<number, { games: number; wins: number }>();
   for (const r of analyticsReplays) {
+    if (!replayMatchesLatestPatch(r, currentPatch)) continue;
     const slotRole = slotToRoleEarlyFallbackMap(r);
     for (const p of r.players || []) {
       const role =
@@ -82,8 +142,20 @@ export function buildTopHeroByRole(
 /** 全英雄表：去重后 ≥ minUniqueMatches */
 export function buildTopHeroOverall(
   analyticsReplays: readonly ReplaySummary[],
-  minUniqueMatches = 100
+  minUniqueMatches = 100,
+  currentPatch: string,
+  previousPatch: string
 ): HeroOverallAggRow[] {
+  const headlineReplays = analyticsReplays.filter((r) =>
+    replayMatchesLatestPatch(r, currentPatch)
+  );
+  const heroLatestMaps = collectHeroMatchMaps(analyticsReplays, (r) =>
+    replayMatchesLatestPatch(r, currentPatch)
+  );
+  const heroPrevMaps = collectHeroMatchMaps(analyticsReplays, (r) =>
+    matchesPatchKey(r, previousPatch)
+  );
+
   const agg = new Map<
     number,
     {
@@ -92,15 +164,9 @@ export function buildTopHeroOverall(
       role: Record<MetaRoleTab, { games: number; wins: number }>;
     }
   >();
-  const heroMatchBest = new Map<
-    number,
-    Map<number, { t: number; won: boolean }>
-  >();
 
-  for (const r of analyticsReplays) {
-    const t = Date.parse(String(r.uploaded_at ?? "")) || 0;
+  for (const r of headlineReplays) {
     const rw = Boolean(r.radiant_win);
-    const mid = Number(r.match_id) || 0;
     const slotRole = slotToRoleEarlyFallbackMap(r);
     for (const p of r.players || []) {
       const hid = Number(p.hero_id || 0);
@@ -127,21 +193,11 @@ export function buildTopHeroOverall(
         if (won) row.role[role].wins += 1;
       }
       agg.set(hid, row);
-
-      let mm = heroMatchBest.get(hid);
-      if (!mm) {
-        mm = new Map();
-        heroMatchBest.set(hid, mm);
-      }
-      const prev = mm.get(mid);
-      if (!prev || t >= prev.t) {
-        mm.set(mid, { t, won });
-      }
     }
   }
 
-  return Array.from(agg.entries())
-    .map(([heroId, s]) => {
+  const primaryRows: HeroOverallAggRow[] = Array.from(agg.entries()).map(
+    ([heroId, s]) => {
       const roleWinRate = META_ROLE_KEYS.reduce(
         (acc, rk) => {
           const g = s.role[rk].games;
@@ -154,40 +210,78 @@ export function buildTopHeroOverall(
         },
         {} as Partial<Record<MetaRoleTab, { games: number; winRate: number }>>
       );
-      const mm = heroMatchBest.get(heroId);
-      const cumulativeWinRateSeries: number[] = [];
-      if (mm && mm.size > 0) {
-        const events = Array.from(mm.entries())
-          .map(([matchId, ev]) => ({
-            matchId,
-            t: ev.t,
-            won: ev.won,
-          }))
-          .sort((a, b) => a.t - b.t || a.matchId - b.matchId);
-        let winsRun = 0;
-        for (let i = 0; i < events.length; i++) {
-          if (events[i].won) winsRun += 1;
-          cumulativeWinRateSeries.push((winsRun / (i + 1)) * 100);
-        }
-      }
 
-      const uniqueG = cumulativeWinRateSeries.length;
+      const currSeries = cumulativeWinRateSeriesFromMatchMap(
+        heroLatestMaps.get(heroId)
+      );
+      const prevSeries = cumulativeWinRateSeriesFromMatchMap(
+        heroPrevMaps.get(heroId)
+      );
+
+      const stitched = stitchHeroTrendCumulativeSeries(currSeries, prevSeries);
+
+      const cumulativeWinRateSeries = stitched.rates;
+      const cumulativeSeriesIsBaseline = stitched.isBaseline.some((b) => b)
+        ? stitched.isBaseline
+        : undefined;
+
+      const uniqueG = currSeries.length;
       const winRateFinal =
         uniqueG > 0
-          ? cumulativeWinRateSeries[uniqueG - 1]
+          ? currSeries[uniqueG - 1]
           : s.games > 0
             ? (s.wins / s.games) * 100
             : 0;
 
-      return {
+      const row: HeroOverallAggRow = {
         heroId,
         games: uniqueG > 0 ? uniqueG : s.games,
         winRate: winRateFinal,
         cumulativeWinRateSeries,
         roleWinRate,
       };
-    })
-    .filter((x) => x.cumulativeWinRateSeries.length >= minUniqueMatches);
+      if (cumulativeSeriesIsBaseline) {
+        row.cumulativeSeriesIsBaseline = cumulativeSeriesIsBaseline;
+      }
+      return row;
+    }
+  );
+
+  const seenHero = new Set(primaryRows.map((r) => r.heroId));
+  const orphanRows: HeroOverallAggRow[] = [];
+  for (const hid of heroPrevMaps.keys()) {
+    if (seenHero.has(hid)) continue;
+    const currSeries = cumulativeWinRateSeriesFromMatchMap(
+      heroLatestMaps.get(hid)
+    );
+    if (currSeries.length > 0) continue;
+    const prevSeries = cumulativeWinRateSeriesFromMatchMap(
+      heroPrevMaps.get(hid)
+    );
+    if (prevSeries.length < minUniqueMatches) continue;
+    const stitched = stitchHeroTrendCumulativeSeries([], prevSeries);
+    if (stitched.rates.length !== 1 || !stitched.isBaseline[0]) continue;
+    orphanRows.push({
+      heroId: hid,
+      games: 0,
+      winRate: stitched.rates[0],
+      cumulativeWinRateSeries: stitched.rates,
+      cumulativeSeriesIsBaseline: stitched.isBaseline,
+      roleWinRate: {},
+    });
+  }
+
+  return [...primaryRows, ...orphanRows].filter((x) => {
+    const orphanOnly =
+      x.games === 0 &&
+      x.cumulativeSeriesIsBaseline?.length === 1 &&
+      x.cumulativeSeriesIsBaseline[0] === true;
+    if (orphanOnly) return true;
+    const nLatest =
+      x.cumulativeWinRateSeries.length -
+      (x.cumulativeSeriesIsBaseline?.[0] === true ? 1 : 0);
+    return nLatest >= minUniqueMatches;
+  });
 }
 
 export type MetaSiteSnapshotCloudAgg = {
@@ -217,21 +311,28 @@ export type MetaSiteSnapshotPayload = {
 export function buildMetaSiteSnapshotPayload(
   analyticsReplays: readonly ReplaySummary[],
   cloudAgg: MetaSiteSnapshotCloudAgg,
+  patchKeys: { currentPatch: string; previousPatch: string },
   extras?: {
     itemsMeta: NonNullable<MetaSiteSnapshotPayload["itemsMeta"]>;
     topSection: TopSectionSnapshotPayload;
   }
 ): MetaSiteSnapshotPayload {
+  const { currentPatch, previousPatch } = patchKeys;
   const topHeroByRole = {} as Record<MetaRoleTab, TopHeroRoleRow[]>;
   for (const rk of META_ROLE_KEYS) {
-    topHeroByRole[rk] = buildTopHeroByRole(analyticsReplays, rk);
+    topHeroByRole[rk] = buildTopHeroByRole(analyticsReplays, rk, 50, currentPatch);
   }
   return {
     version: extras ? 2 : 1,
     generatedAt: new Date().toISOString(),
     cloudAgg,
     topHeroByRole,
-    heroOverall: buildTopHeroOverall(analyticsReplays),
+    heroOverall: buildTopHeroOverall(
+      analyticsReplays,
+      100,
+      currentPatch,
+      previousPatch
+    ),
     ...(extras
       ? { itemsMeta: extras.itemsMeta, topSection: extras.topSection }
       : {}),

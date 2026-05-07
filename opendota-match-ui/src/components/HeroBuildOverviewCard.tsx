@@ -14,6 +14,7 @@ import { HeroPickerPopover } from "./HeroPickerPopover";
 import type { SlimPlayer } from "../types/slimMatch";
 import { collectPurchaseEvents } from "../lib/metaGlobalItemStats";
 import { isRadiantFromPlayer } from "../lib/matchGrouping";
+import { useSitePatch } from "../contexts/SitePatchContext";
 
 /** 与下方 rows 切片上限一致；父组件合并 plan_b 请求时用 */
 export const HERO_OVERVIEW_INSIGHT_CAP = 180;
@@ -182,6 +183,7 @@ export function HeroBuildOverviewCard(props: Props) {
     onVsHeroChange,
     latestHeroPatch,
   } = props;
+  const { patch } = useSitePatch();
   const [selectedItemKey, setSelectedItemKey] = useState<string | null>(null);
   const [expanded, setExpanded] = useState(true);
   const rows = useMemo(
@@ -336,6 +338,12 @@ export function HeroBuildOverviewCard(props: Props) {
           {expanded ? "收起" : "展开"}
         </button>
       </div>
+
+      {enabled && replays.length === 0 && patch ? (
+        <p className="mb-3 rounded border border-amber-500/35 bg-amber-500/10 px-3 py-2 text-sm text-skin-sub dark:border-amber-500/25 dark:bg-amber-500/12">
+          暂无当前版本（{patch.currentPatch}）录像样本；核心出装与购买率将在该版本数据入库后展示。下方列表仍可能包含历史补丁对局。
+        </p>
+      ) : null}
 
       {latestHeroPatch !== undefined ? (
         <div className="mb-3 rounded border border-skin-line p-3">

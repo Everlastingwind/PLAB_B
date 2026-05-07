@@ -243,7 +243,9 @@ export function MetaTopKillGamesSection(props: Props) {
       {listLoading ? (
         <p className="text-xs text-skin-sub">加载对局索引…</p>
       ) : singleKillEmpty ? (
-        <p className="text-xs text-skin-sub">暂无可用数据。</p>
+        <p className="text-xs text-skin-sub">
+          {snapshotTop ? "暂无可用数据。" : "暂无当前版本数据。"}
+        </p>
       ) : snapshotTop ? (
         <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-5">
           {snapshotKillRows.map(({ replay, player, itemIconKeys }) => {

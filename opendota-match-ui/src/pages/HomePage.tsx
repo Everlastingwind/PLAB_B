@@ -6,8 +6,13 @@ import { ViewportMountRow } from "../components/ViewportMountRow";
 import type { FeedSelection } from "../components/FeedModeToggle";
 import {
   MATCH_LIST_LOAD_STEP,
+  cloudPackToIndexError,
+  fetchCloudPubReplaySummariesForAnalyticsMerge,
+  fetchCloudPubReplaySummariesPage,
   fetchStaticFeedOnly,
   mergeReplaySummariesByMatchId,
+  normalizeReplaySource,
+  replayMatchesLatestPatch,
 } from "../lib/replaysApi";
 import { applyProDisplayOverridesToReplaySummaries } from "../lib/proAccountDisplayOverrides";
 import { fetchDeployedDataJson } from "../lib/fetchStaticJson";
@@ -41,11 +46,16 @@ import {
   metaEmphasisTextSizeClass,
   metaWinRateAfterGamesClass,
 } from "../lib/winRateTextClass";
+import { useSitePatch } from "../contexts/SitePatchContext";
+import { heroTrendBaselineTooltipTitle } from "../lib/heroTrendSeries";
 
 /** Items 出装聚合：合并索引全站来源，但单场须拉 slim，此处为单场数量上限 */
 const ITEMS_TAB_SLIM_SAMPLE_CAP = 200;
 
 export function HomePage() {
+  const { patch } = useSitePatch();
+  if (!patch) return null;
+
   const { maps, loading: mapsLoading, error: mapsErr } = useEntityMaps();
   const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -144,14 +154,25 @@ export function HomePage() {
     let cancelled = false;
     void (async () => {
       if (!snapshotFetchDone) return;
-      const snap = await fetchStaticFeedOnly(feed);
+      const [snap, cloudAggMerge] = await Promise.all([
+        fetchStaticFeedOnly(feed),
+        feed.pub
+          ? fetchCloudPubReplaySummariesForAnalyticsMerge()
+          : Promise.resolve({ replays: [], error: null }),
+      ]);
       if (cancelled) return;
-      setAnalyticsReplays(mergeReplaySummariesByMatchId(snap.replays, []));
+      const staticFiltered = snap.replays.filter((r) => {
+        if (normalizeReplaySource(r, "pub") === "pro") return true;
+        return replayMatchesLatestPatch(r, patch.currentPatch);
+      });
+      setAnalyticsReplays(
+        mergeReplaySummariesByMatchId(staticFiltered, cloudAggMerge.replays)
+      );
     })();
     return () => {
       cancelled = true;
     };
-  }, [feed, snapshotFetchDone]);
+  }, [feed, snapshotFetchDone, patch.currentPatch]);
 
   useEffect(() => {
     const snapOk = Boolean(feed.pub && metaSnapshot && metaSnapshot.version >= 1);
@@ -170,24 +191,36 @@ export function HomePage() {
 
     void (async () => {
       try {
-        const snap = await fetchStaticFeedOnly(feed);
-        const list = await applyProDisplayOverridesToReplaySummaries(
-          snap.replays
-        );
-        if (cancelled) return;
-
         if (pubOnlyMatches) {
           const pageRaw = Number(pageQueryParam || 1);
           const currentPage =
             Number.isFinite(pageRaw) && pageRaw > 0 ? Math.floor(pageRaw) : 1;
-          const total = list.length;
-          setPagedTotalRows(total);
-          const start = (currentPage - 1) * MATCH_LIST_LOAD_STEP;
-          setReplays(list.slice(start, start + MATCH_LIST_LOAD_STEP));
-        } else {
-          setPagedTotalRows(null);
+          const pack = await fetchCloudPubReplaySummariesPage(
+            currentPage,
+            MATCH_LIST_LOAD_STEP
+          );
+          if (cancelled) return;
+          setIdxErr(cloudPackToIndexError(pack));
+          setPagedTotalRows(pack.totalRows);
+          const list = await applyProDisplayOverridesToReplaySummaries(
+            pack.replays
+          );
           setReplays(list);
+          setFeedListLoading(false);
+          return;
         }
+
+        const snap = await fetchStaticFeedOnly(feed);
+        const list = await applyProDisplayOverridesToReplaySummaries(
+          snap.replays.filter((r) => {
+            if (normalizeReplaySource(r, "pub") === "pro") return true;
+            return replayMatchesLatestPatch(r, patch.currentPatch);
+          })
+        );
+        if (cancelled) return;
+
+        setPagedTotalRows(null);
+        setReplays(list);
         setFeedListLoading(false);
       } catch (e) {
         if (!cancelled) {
@@ -199,7 +232,7 @@ export function HomePage() {
     return () => {
       cancelled = true;
     };
-  }, [feed, homeView, pageQueryParam]);
+  }, [feed, homeView, pageQueryParam, patch.currentPatch]);
 
   const totalPages = useMemo(() => {
     if (
@@ -378,19 +411,41 @@ export function HomePage() {
 
   const feedKey = `${feed.pub ? "p" : ""}${feed.pro ? "r" : ""}`;
 
+  /** Items / TOP：仅当前补丁录像 */
+  const analyticsReplaysLatestOnly = useMemo(
+    () =>
+      analyticsReplays.filter((r) =>
+        replayMatchesLatestPatch(r, patch.currentPatch)
+      ),
+    [analyticsReplays, patch.currentPatch]
+  );
+
   const replaysSampleForItemMeta = useMemo(
-    () => analyticsReplays.slice(0, ITEMS_TAB_SLIM_SAMPLE_CAP),
-    [analyticsReplays]
+    () =>
+      analyticsReplaysLatestOnly.slice(0, ITEMS_TAB_SLIM_SAMPLE_CAP),
+    [analyticsReplaysLatestOnly]
   );
 
   const topHeroByRoleLive = useMemo(
-    () => buildTopHeroByRole(analyticsReplays, roleTab),
-    [analyticsReplays, roleTab]
+    () =>
+      buildTopHeroByRole(
+        analyticsReplays,
+        roleTab,
+        50,
+        patch.currentPatch
+      ),
+    [analyticsReplays, roleTab, patch.currentPatch]
   );
 
   const topHeroOverallLive = useMemo(
-    () => buildTopHeroOverall(analyticsReplays),
-    [analyticsReplays]
+    () =>
+      buildTopHeroOverall(
+        analyticsReplays,
+        100,
+        patch.currentPatch,
+        patch.previousPatch
+      ),
+    [analyticsReplays, patch.currentPatch, patch.previousPatch]
   );
 
   const topHeroByRole = useMemo(() => {
@@ -424,6 +479,7 @@ export function HomePage() {
         winRate: row.winRate,
         games: row.games,
         cumulativeWinRateSeries: row.cumulativeWinRateSeries,
+        cumulativeSeriesIsBaseline: row.cumulativeSeriesIsBaseline,
         roleWinRate: row.roleWinRate,
       };
     });
@@ -742,6 +798,9 @@ export function HomePage() {
                   <HeroWinrateMetaTable
                     rows={heroMetaTableRows}
                     sortMode={heroMetaSort}
+                    baselineTooltipTitle={heroTrendBaselineTooltipTitle(
+                      patch.previousPatch
+                    )}
                     onSortByWinRate={() => {
                       setHeroMetaSort((prev) => {
                         if (isHeroMetaGlobalWinRateSort(prev)) {
@@ -800,7 +859,7 @@ export function HomePage() {
           {homeView === "top" && !mapsLoading && maps ? (
             <section className="mt-6 rounded-lg border border-skin-line bg-skin-card p-3">
               <MetaTopKillGamesSection
-                replays={useFullSnapshot ? [] : analyticsReplays}
+                replays={useFullSnapshot ? [] : analyticsReplaysLatestOnly}
                 maps={maps}
                 listLoading={useFullSnapshot ? false : feedListLoading}
                 slimByMatchId={homeMetaSlimByMatch}

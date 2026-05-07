@@ -14,10 +14,11 @@ import requests
 # 与 ``fetchPlanBReplayIndexPage`` / snapshot 脚本一致的索引列；含 slim/payload 以便顶层 players 为空时补齐
 PLAN_B_SELECT_FULL = (
     "match_id,created_at,duration,radiant_win,radiant_score,dire_score,"
-    "league_name,players,payload,slim"
+    "league_name,players,payload,slim,patch_version"
 )
 PLAN_B_SELECT_FALLBACK = (
-    "match_id,created_at,duration,radiant_win,radiant_score,dire_score,league_name,players"
+    "match_id,created_at,duration,radiant_win,radiant_score,dire_score,"
+    "league_name,players,patch_version"
 )
 
 PAGE_SIZE = 40
@@ -208,7 +209,10 @@ def _row_to_replay_entry(row: Dict[str, Any]) -> Optional[Dict[str, Any]]:
     tier_raw = str(row.get("match_tier") or "").strip().lower()
     tier = tier_raw if tier_raw in ("pub", "pro") else "pub"
 
-    return {
+    pv = row.get("patch_version")
+    patch_version = str(pv).strip() if pv is not None and str(pv).strip() else None
+
+    out = {
         "match_id": mid,
         "uploaded_at": uploaded_at,
         "duration_sec": dur,
@@ -219,6 +223,9 @@ def _row_to_replay_entry(row: Dict[str, Any]) -> Optional[Dict[str, Any]]:
         "match_tier": tier,
         "players": players,
     }
+    if patch_version:
+        out["patch_version"] = patch_version
+    return out
 
 
 def _fetch_plan_b_page(

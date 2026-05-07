@@ -7,6 +7,7 @@ import {
   fetchReplaysForHeroProfile,
   filterReplaysByTeammateOpponentHero,
   heroKeyFromId,
+  replayMatchesLatestPatch,
   type FeedReplayIndexResult,
 } from "../lib/replaysApi";
 import { slotToRoleEarlyFallbackMap } from "../lib/metaRoleFallback";
@@ -46,6 +47,7 @@ import {
   extractVersionFromPatchJsonContent,
 } from "../lib/heroPatchFromUpdate";
 import { translatePatch741cNote } from "../utils/patch741c_translations";
+import { useSitePatch } from "../contexts/SitePatchContext";
 
 function toTalentTreeUi(raw: SlimPlayer["talent_tree"]): TalentTreeUi | null {
   if (!raw || !Array.isArray(raw.tiers)) return null;
@@ -142,6 +144,9 @@ function mergeTalentTreeBySkillBuild(
 }
 
 export function HeroMatchesPage() {
+  const { patch } = useSitePatch();
+  if (!patch) return null;
+
   const { heroKey = "" } = useParams<{ heroKey: string }>();
   const nav = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -411,6 +416,15 @@ export function HeroMatchesPage() {
     });
   }, [replaysSynergy, replayRoleEffective, roleFilter]);
 
+  /** 出装 Items / 天赋统计：仅当前补丁 */
+  const overviewReplaysLatestOnly = useMemo(
+    () =>
+      overviewReplays.filter((r) =>
+        replayMatchesLatestPatch(r, patch.currentPatch)
+      ),
+    [overviewReplays, patch.currentPatch]
+  );
+
   const roleCounts = useMemo(() => {
     const out: Record<string, number> = {
       carry: 0,
@@ -452,10 +466,10 @@ export function HeroMatchesPage() {
     [filteredReplays, pageForList]
   );
 
-  /** Overview（最多 CAP 场）与当前列表页合并去重；仅对尚未写入 detailByMatch 的 id 请求 plan_b */
+  /** Overview 仅用当前补丁 id；列表行保留全版本 slim */
   const mergedSlimMatchIds = useMemo(() => {
     const idSet = new Set<number>();
-    for (const r of overviewReplays.slice(0, HERO_OVERVIEW_INSIGHT_CAP)) {
+    for (const r of overviewReplaysLatestOnly.slice(0, HERO_OVERVIEW_INSIGHT_CAP)) {
       const mid = Number(r.match_id);
       if (Number.isFinite(mid) && mid > 0) idSet.add(mid);
     }
@@ -464,7 +478,7 @@ export function HeroMatchesPage() {
       if (Number.isFinite(mid) && mid > 0) idSet.add(mid);
     }
     return [...idSet].sort((a, b) => a - b);
-  }, [overviewReplays, displayedReplays]);
+  }, [overviewReplaysLatestOnly, displayedReplays]);
 
   const slimIdsToFetch = useMemo(
     () =>
@@ -566,7 +580,7 @@ export function HeroMatchesPage() {
               heroId={heroId}
               heroKey={decoded}
               heroName={heroLabel?.nameCn || heroLabel?.nameEn || decoded}
-              replays={overviewReplays}
+              replays={overviewReplaysLatestOnly}
               maps={maps}
               slimByMatchId={detailByMatch}
               enabled={!feedListLoading && replays.length > 0}

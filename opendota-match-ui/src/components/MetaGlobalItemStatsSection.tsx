@@ -203,12 +203,22 @@ export function MetaGlobalItemStatsSection(props: Props) {
     <section className="mt-6 rounded-lg border border-skin-line bg-skin-card p-3">
       <p className="mb-1 text-sm font-semibold text-skin-ink">全局装备购买</p>
       {loading ? (
-        <p className="text-sm text-skin-sub">
-          正在加载合成装名单与各局购买流水…
-        </p>
+        <div className="space-y-2">
+          <div className="h-4 w-full max-w-md animate-pulse rounded bg-slate-300/60 dark:bg-slate-600/50" />
+          <div className="h-4 w-full max-w-sm animate-pulse rounded bg-slate-300/50 dark:bg-slate-600/40" />
+          <p className="text-sm text-skin-sub">
+            正在加载合成装名单与各局购买流水…
+          </p>
+        </div>
       ) : null}
       {error ? (
         <p className="text-sm text-amber-600 dark:text-amber-400">{error}</p>
+      ) : null}
+      {!loading &&
+      !error &&
+      !precomputedItemAgg &&
+      replays.length === 0 ? (
+        <p className="text-sm text-skin-sub">暂无当前版本数据。</p>
       ) : null}
       {!loading && !error && matchesAnalyzed === 0 && totalListed > 0 ? (
         <p className="text-sm text-skin-sub">

@@ -8,7 +8,6 @@ import {
   metaWinRateAfterGamesClass,
   winRateTextClass,
 } from "../lib/winRateTextClass";
-
 const ROLE_ORDER = [
   "carry",
   "mid",
@@ -76,8 +75,9 @@ export type HeroWinrateMetaRow = {
   winRate: number;
   /** 去重后的有效场次（与累计序列长度一致） */
   games: number;
-  /** 按时间顺序每场之后的累计胜率（%） */
+  /** 按时间顺序每场之后的累计胜率（%）；首点可为上一版本末期基线 */
   cumulativeWinRateSeries: number[];
+  cumulativeSeriesIsBaseline?: boolean[];
   roleWinRate: Partial<
     Record<(typeof ROLE_ORDER)[number], { games: number; winRate: number }>
   >;
@@ -90,16 +90,23 @@ function roleSearchParam(rk: (typeof ROLE_ORDER)[number]): string {
   return rk;
 }
 
+type SparkTipMeta =
+  | { kind: "baseline"; rate: number }
+  | { kind: "game"; rate: number; gameIndex: number };
+
 type SeriesGeo = {
   lineD: string;
   areaD: string;
   w: number;
   h: number;
   pts: [number, number][];
-  meta: { gameIndex: number; rate: number }[];
+  meta: SparkTipMeta[];
 };
 
-function sparklineGeometryFromSeries(series: readonly number[]): SeriesGeo | null {
+function sparklineGeometryFromSeries(
+  series: readonly number[],
+  baselineFlags?: readonly boolean[]
+): SeriesGeo | null {
   const W = 100;
   const H = 36;
   const n = series.length;
@@ -108,10 +115,18 @@ function sparklineGeometryFromSeries(series: readonly number[]): SeriesGeo | nul
   const minR = Math.min(...rates) - 2;
   const maxR = Math.max(...rates) + 2;
   const span = Math.max(maxR - minR, 1e-6);
-  const meta = rates.map((rate, i) => ({
-    gameIndex: i + 1,
-    rate,
-  }));
+  let patchGameIdx = 0;
+  const meta: SparkTipMeta[] = rates.map((rate, i) => {
+    if (baselineFlags?.[i]) {
+      return { kind: "baseline" as const, rate };
+    }
+    patchGameIdx += 1;
+    return {
+      kind: "game" as const,
+      rate,
+      gameIndex: patchGameIdx,
+    };
+  });
   const pts: [number, number][] = rates.map((r, i) => {
     const x = n <= 1 ? W / 2 : (i / (n - 1)) * W;
     const y = H - ((r - minR) / span) * (H - 4) - 2;
@@ -128,11 +143,13 @@ function sparklineGeometryFromSeries(series: readonly number[]): SeriesGeo | nul
 
 function WinRateSparklineHover(props: {
   series: readonly number[];
+  cumulativeSeriesIsBaseline?: readonly boolean[];
+  baselineTooltipTitle: string;
 }) {
-  const { series } = props;
+  const { series, cumulativeSeriesIsBaseline, baselineTooltipTitle } = props;
   const geo = useMemo(
-    () => sparklineGeometryFromSeries(series),
-    [series]
+    () => sparklineGeometryFromSeries(series, cumulativeSeriesIsBaseline),
+    [series, cumulativeSeriesIsBaseline]
   );
   const [hoverIdx, setHoverIdx] = useState<number | null>(null);
   const [tipFixed, setTipFixed] = useState({ x: 0, y: 0 });
@@ -228,9 +245,15 @@ function WinRateSparklineHover(props: {
             transform: "translate(-50%, calc(-100% - 8px))",
           }}
         >
-          <p className="font-semibold text-skin-ink">
-            第 <span className="tabular-nums">{hi.gameIndex}</span> 场后
-          </p>
+          {hi.kind === "baseline" ? (
+            <p className="font-semibold text-skin-ink">
+              {baselineTooltipTitle}
+            </p>
+          ) : (
+            <p className="font-semibold text-skin-ink">
+              第 <span className="tabular-nums">{hi.gameIndex}</span> 场后
+            </p>
+          )}
           <p className="mt-0.5 text-skin-sub">
             累计胜率{" "}
             <span
@@ -251,11 +274,19 @@ type Props = {
   onSortByWinRate: () => void;
   onSortByGames: () => void;
   onSortByRole: (rk: (typeof ROLE_ORDER)[number]) => void;
+  /** 上一版本封盘锚点 Tooltip（含补丁号） */
+  baselineTooltipTitle: string;
 };
 
 export function HeroWinrateMetaTable(props: Props) {
-  const { rows, sortMode, onSortByWinRate, onSortByGames, onSortByRole } =
-    props;
+  const {
+    rows,
+    sortMode,
+    onSortByWinRate,
+    onSortByGames,
+    onSortByRole,
+    baselineTooltipTitle,
+  } = props;
   if (rows.length === 0) return null;
 
   const thBtn =
@@ -380,7 +411,11 @@ export function HeroWinrateMetaTable(props: Props) {
                     {row.winRate.toFixed(1)}%
                   </span>
                   <span className="min-w-0 shrink">
-                    <WinRateSparklineHover series={row.cumulativeWinRateSeries} />
+                    <WinRateSparklineHover
+                      series={row.cumulativeWinRateSeries}
+                      cumulativeSeriesIsBaseline={row.cumulativeSeriesIsBaseline}
+                      baselineTooltipTitle={baselineTooltipTitle}
+                    />
                   </span>
                 </div>
               </td>

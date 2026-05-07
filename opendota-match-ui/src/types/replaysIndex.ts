@@ -21,6 +21,8 @@ export interface ReplayPlayerSummary {
 export interface ReplaySummary {
   match_id: number;
   uploaded_at: string;
+  /** Supabase plan_b 行写入；静态索引可由重建脚本带出 */
+  patch_version?: string | null;
   /** 与比赛 JSON 一致：pub=本地录像隔离；pro=OpenDota 管线 */
   match_tier?: "pub" | "pro";
   /** 前端合并索引时注入来源：OpenDota=pro，本地上传=pub */

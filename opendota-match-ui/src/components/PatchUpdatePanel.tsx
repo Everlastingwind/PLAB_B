@@ -1,11 +1,15 @@
 import { useEffect, useState } from "react";
 import { supabase } from "../lib/supabaseClient.js";
 import { syncPatchFromDota2Datafeed } from "../lib/dota2DatafeedSync";
+import { invalidateSitePatchCache } from "../lib/sitePatchStore";
+import { useSitePatch } from "../contexts/SitePatchContext";
 
 /**
- * 仅在开发环境渲染：从 Steam 拉取公告并 upsert 到 `dota2_updates`。
+ * 仅在开发环境渲染：从 Steam 拉取公告并 upsert 到 `dota2_updates`，
+ * 同时将站点 `site_settings` 的「当前补丁」旋转为「上一补丁」并写入输入框版本为新当前补丁。
  */
 export function PatchUpdatePanel() {
+  const { refresh } = useSitePatch();
   const [targetVersion, setTargetVersion] = useState("");
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState<string | null>(null);
@@ -35,7 +39,43 @@ export function PatchUpdatePanel() {
         );
       }
       const row = await syncPatchFromDota2Datafeed(client, v);
-      setMsg(`已同步：${row.title}（gid=${row.gid}）`);
+
+      const { data: existing, error: selErr } = await client
+        .from("site_settings")
+        .select("current_patch")
+        .eq("id", 1)
+        .maybeSingle();
+
+      if (selErr) throw selErr;
+
+      const oldCurrent = existing
+        ? String((existing as { current_patch?: unknown }).current_patch ?? "").trim()
+        : "";
+
+      if (!existing) {
+        throw new Error(
+          "site_settings 未初始化：请先在 Supabase 执行 opendota-match-ui/supabase/site_settings.sql"
+        );
+      }
+
+      const { error: upErr } = await client.from("site_settings").upsert(
+        {
+          id: 1,
+          current_patch: v,
+          previous_patch: oldCurrent || v,
+          updated_at: new Date().toISOString(),
+        },
+        { onConflict: "id" }
+      );
+
+      if (upErr) throw upErr;
+
+      invalidateSitePatchCache();
+      await refresh();
+
+      setMsg(
+        `已同步：${row.title}（gid=${row.gid}）；站点补丁已设为 ${v}（上一版本：${oldCurrent || "—"}）`
+      );
     } catch (e) {
       setErr(e instanceof Error ? e.message : String(e));
     } finally {
@@ -53,14 +93,14 @@ export function PatchUpdatePanel() {
       aria-label="开发环境补丁同步"
     >
       <p className="mb-2 text-xs font-medium text-amber-800 dark:text-amber-200/90">
-        开发专用：Dota2 Datafeed → Supabase
+        开发专用：Dota2 Datafeed → Supabase；并更新 site_settings（全站热切换）
       </p>
       <div className="flex flex-wrap items-center gap-2">
         <input
           type="text"
           value={targetVersion}
           onChange={(e) => setTargetVersion(e.target.value)}
-          placeholder="输入版本号，如 7.42"
+          placeholder="输入新版本号，如 7.41D"
           disabled={busy}
           className="min-w-[160px] flex-1 rounded border border-amber-600/40 bg-white/90 px-2.5 py-1.5 text-sm text-zinc-900 placeholder:text-zinc-400 focus:border-amber-500 focus:outline-none focus:ring-1 focus:ring-amber-500/50 disabled:opacity-50 dark:border-amber-500/35 dark:bg-zinc-900/90 dark:text-zinc-100 dark:placeholder:text-zinc-500"
           aria-label="补丁版本号"

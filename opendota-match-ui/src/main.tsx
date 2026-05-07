@@ -5,6 +5,10 @@ import { HelmetProvider } from "react-helmet-async";
 import App from "./App";
 import { FeedbackWidget } from "./components/FeedbackWidget";
 import { RootErrorBoundary } from "./components/RootErrorBoundary";
+import {
+  SitePatchProvider,
+  SitePatchReadyGate,
+} from "./contexts/SitePatchContext";
 import { loadProAccountDisplayOverrides } from "./lib/proAccountDisplayOverrides";
 import "./index.css";
 
@@ -34,8 +38,12 @@ if (!rootEl) {
       <RootErrorBoundary>
         <HelmetProvider>
           <BrowserRouter>
-            <App />
-            <FeedbackWidget />
+            <SitePatchProvider>
+              <SitePatchReadyGate>
+                <App />
+              </SitePatchReadyGate>
+              <FeedbackWidget />
+            </SitePatchProvider>
           </BrowserRouter>
         </HelmetProvider>
       </RootErrorBoundary>

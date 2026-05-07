@@ -4308,10 +4308,24 @@ def main() -> None:
         if isinstance(upload_data, dict):
             upload_data.pop(key, None)
     try:
+        from utils.supabase_site_settings import fetch_current_patch
         from supabase import create_client
 
-        supabase_url = "https://wmshhvmqenjxypcmpewl.supabase.co"
-        supabase_key = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indtc2hodm1xZW5qeHlwY21wZXdsIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3NjA5MzM3OCwiZXhwIjoyMDkxNjY5Mzc4fQ.2QkgIqlr2tl6t-pEQ-Lz4hzXO5l27jAwC38laCslUxw"
+        current_patch = fetch_current_patch()
+        if isinstance(upload_data, dict):
+            upload_data["patch_version"] = current_patch
+
+        supabase_url = (
+            os.environ.get("VITE_SUPABASE_URL")
+            or os.environ.get("NEXT_PUBLIC_SUPABASE_URL")
+            or os.environ.get("SUPABASE_URL")
+            or ""
+        ).strip()
+        supabase_key = (os.environ.get("SUPABASE_SERVICE_ROLE_KEY") or "").strip()
+        if not supabase_url or not supabase_key:
+            raise RuntimeError(
+                "上传 plan_b 需环境变量 VITE_SUPABASE_URL（或等价）与 SUPABASE_SERVICE_ROLE_KEY"
+            )
         supabase = create_client(supabase_url, supabase_key)
         _ = supabase.table("plan_b").upsert(upload_data).execute()
         print("Supabase upsert 成功: match_id=", upload_data.get("match_id"))

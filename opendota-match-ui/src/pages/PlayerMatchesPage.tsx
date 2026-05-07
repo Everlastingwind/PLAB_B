@@ -1,10 +1,11 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { Fragment, useCallback, useEffect, useMemo, useState } from "react";
 import { useParams, Link, useSearchParams } from "react-router-dom";
 import { PageShell } from "../components/PageShell";
 import type { FeedSelection } from "../components/FeedModeToggle";
 import {
   MATCH_LIST_LOAD_STEP,
   fetchReplaysForPlayerProfile,
+  replayMatchesLatestPatch,
 } from "../lib/replaysApi";
 import type { ReplaySummary } from "../types/replaysIndex";
 import { useEntityMaps } from "../hooks/useEntityMaps";
@@ -27,7 +28,12 @@ import type { TalentPickUi, TalentTreeUi } from "../data/mockMatchPlayers";
 import { SEO } from "../components/SEO";
 import { ViewportMountRow } from "../components/ViewportMountRow";
 import { loadSlimMatchJsonForDetails } from "../lib/loadSlimMatchJson";
+import { useSitePatch } from "../contexts/SitePatchContext";
 
+function replayUploadedMs(r: ReplaySummary): number {
+  const t = new Date(r.uploaded_at).getTime();
+  return Number.isFinite(t) ? t : 0;
+}
 
 function toTalentTreeUi(raw: SlimPlayer["talent_tree"]): TalentTreeUi | null {
   if (!raw || !Array.isArray(raw.tiers)) return null;
@@ -65,6 +71,9 @@ function toTalentPicksUi(raw: SlimPlayer["talent_picks"]): TalentPickUi[] {
 }
 
 export function PlayerMatchesPage() {
+  const { patch } = useSitePatch();
+  if (!patch) return null;
+
   const { accountId = "0" } = useParams<{ accountId: string }>();
   const [searchParams] = useSearchParams();
   const heroFilterKey = (searchParams.get("hero") || "").trim();
@@ -157,6 +166,24 @@ export function PlayerMatchesPage() {
     });
   }, [roleFilteredReplays, heroFilterKey, maps, aid]);
 
+  /** 当前补丁在上、历史补丁在下；段内按上传时间倒序 */
+  const orderedFilteredReplays = useMemo(() => {
+    const latest = filteredReplays
+      .filter((r) => replayMatchesLatestPatch(r, patch.currentPatch))
+      .sort((a, b) => replayUploadedMs(b) - replayUploadedMs(a));
+    const legacy = filteredReplays
+      .filter((r) => !replayMatchesLatestPatch(r, patch.currentPatch))
+      .sort((a, b) => replayUploadedMs(b) - replayUploadedMs(a));
+    return [...latest, ...legacy];
+  }, [filteredReplays, patch.currentPatch]);
+
+  const firstLegacySectionIndex = useMemo(() => {
+    const i = orderedFilteredReplays.findIndex(
+      (r) => !replayMatchesLatestPatch(r, patch.currentPatch)
+    );
+    return i >= 0 ? i : null;
+  }, [orderedFilteredReplays, patch.currentPatch]);
+
   const roleCounts = useMemo(() => {
     const out: Record<string, number> = {
       carry: 0,
@@ -173,29 +200,28 @@ export function PlayerMatchesPage() {
   }, [replays, replayRoleIndexOnly]);
 
   const filteredReplayIdsSignature = useMemo(
-    () => filteredReplays.map((r) => String(r.match_id)).join(","),
-    [filteredReplays]
+    () => orderedFilteredReplays.map((r) => String(r.match_id)).join(","),
+    [orderedFilteredReplays]
   );
 
   const totalListPages = useMemo(
     () =>
       Math.max(
         1,
-        Math.ceil(filteredReplays.length / MATCH_LIST_LOAD_STEP)
+        Math.ceil(orderedFilteredReplays.length / MATCH_LIST_LOAD_STEP)
       ),
-    [filteredReplays.length]
+    [orderedFilteredReplays.length]
   );
 
   const pageForList = Math.min(listPage, totalListPages);
 
-  const displayedReplays = useMemo(
-    () =>
-      filteredReplays.slice(
-        (pageForList - 1) * MATCH_LIST_LOAD_STEP,
-        pageForList * MATCH_LIST_LOAD_STEP
-      ),
-    [filteredReplays, pageForList]
-  );
+  const displayedReplays = useMemo(() => {
+    const start = (pageForList - 1) * MATCH_LIST_LOAD_STEP;
+    return orderedFilteredReplays.slice(
+      start,
+      pageForList * MATCH_LIST_LOAD_STEP
+    );
+  }, [orderedFilteredReplays, pageForList]);
 
   const visibleMatchIdsKey = useMemo(
     () => displayedReplays.map((r) => r.match_id).join(","),
@@ -455,9 +481,25 @@ export function PlayerMatchesPage() {
                       .slice(0, 16);
                     const talentTree = toTalentTreeUi(row?.talent_tree);
                     const talentPicks = toTalentPicksUi(row?.talent_picks);
+                    const globalIdx =
+                      (pageForList - 1) * MATCH_LIST_LOAD_STEP + vIdx;
+                    const showLegacyDivider =
+                      firstLegacySectionIndex != null &&
+                      globalIdx === firstLegacySectionIndex;
                     return (
+                      <Fragment key={`${r.match_id}-${r.uploaded_at}`}>
+                        {showLegacyDivider ? (
+                          <div
+                            className="border-t border-skin-line bg-skin-inset/60 px-3 py-1.5"
+                            role="separator"
+                            aria-label={`${patch.previousPatch} 及更早版本对局`}
+                          >
+                            <span className="text-[11px] font-semibold uppercase tracking-wide text-skin-sub">
+                              {patch.previousPatch}
+                            </span>
+                          </div>
+                        ) : null}
                       <ViewportMountRow
-                        key={`${r.match_id}-${r.uploaded_at}`}
                         index={vIdx}
                         rootMargin="40px 0px"
                         skeleton={
@@ -586,10 +628,11 @@ export function PlayerMatchesPage() {
                         </div>
                       </div>
                       </ViewportMountRow>
+                      </Fragment>
                     );
                   })}
                 </div>
-                {filteredReplays.length > 0 ? (
+                {orderedFilteredReplays.length > 0 ? (
                   <div className="mt-4 flex flex-wrap items-center justify-center gap-3">
                     <button
                       type="button"
@@ -603,7 +646,7 @@ export function PlayerMatchesPage() {
                     </button>
                     <p className="text-xs text-skin-sub tabular-nums">
                       第 {pageForList} / {totalListPages} 页（共{" "}
-                      {filteredReplays.length} 场）
+                      {orderedFilteredReplays.length} 场）
                     </p>
                     <button
                       type="button"

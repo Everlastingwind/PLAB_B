@@ -4,6 +4,7 @@ import type {
   ReplaySummary,
   ReplaysIndexPayload,
 } from "../types/replaysIndex";
+import { ensureSitePatchLoaded } from "./sitePatchStore";
 import { fetchDeployedDataJson } from "./fetchStaticJson";
 import { applyProDisplayOverridesToReplaySummaries } from "./proAccountDisplayOverrides";
 import {
@@ -50,6 +51,16 @@ function replaySummaryPreferNewerKeepRicherPlayers(
     return { ...newer, players: older.players! };
   }
   return newer;
+}
+
+/** 首页 / 英雄页等：仅展示当前补丁的本地(plan_b)索引行；职业 OpenDota 行不受限 */
+export function replayMatchesLatestPatch(
+  r: ReplaySummary,
+  currentPatch: string
+): boolean {
+  return (
+    String(r.patch_version ?? "").trim() === String(currentPatch ?? "").trim()
+  );
 }
 
 export function normalizeReplaySource(
@@ -277,9 +288,15 @@ function planBRowToReplaySummary(row: Record<string, unknown>): ReplaySummary | 
     players.push(summaryPlayerFromRawObject(p as Record<string, unknown>));
   }
   if (players.length === 0) return null;
+  const patchRaw = row.patch_version;
+  const patch_version =
+    patchRaw != null && String(patchRaw).trim()
+      ? String(patchRaw).trim()
+      : undefined;
   return {
     match_id: matchId,
     uploaded_at: uploadedAt,
+    ...(patch_version ? { patch_version } : {}),
     source: "pub",
     match_tier: "pub",
     duration_sec: durationSec,
@@ -331,16 +348,16 @@ const cloudPubPageCache = new Map<
 /** 英雄/选手页云索引：Strict Mode 双挂载或快速往返时避免重复扫 plan_b */
 const CLOUD_PROFILE_PACK_CACHE_TTL_MS = 60_000;
 const cloudHeroProfilePackCache = new Map<
-  number,
+  string,
   { pack: CloudPubReplayPack; expiresAt: number }
 >();
 const cloudAccountProfilePackCache = new Map<
-  number,
+  string,
   { pack: CloudPubReplayPack; expiresAt: number }
 >();
-const cloudHeroProfileInflight = new Map<number, Promise<CloudPubReplayPack>>();
+const cloudHeroProfileInflight = new Map<string, Promise<CloudPubReplayPack>>();
 const cloudAccountProfileInflight = new Map<
-  number,
+  string,
   Promise<CloudPubReplayPack>
 >();
 
@@ -394,9 +411,10 @@ export async function fetchCloudPubReplaySummariesPage(
   page: number,
   pageSize: number
 ): Promise<CloudPubReplayPagePack> {
+  const { currentPatch } = await ensureSitePatchLoaded();
   const safePage = Math.max(1, Math.floor(page || 1));
   const safePageSize = Math.max(1, Math.min(100, Math.floor(pageSize || 10)));
-  const cacheKey = `${safePage}:${safePageSize}`;
+  const cacheKey = `${currentPatch}:${safePage}:${safePageSize}`;
   const now = Date.now();
   const hit = cloudPubPageCache.get(cacheKey);
   if (hit && hit.expiresAt > now) {
@@ -420,6 +438,7 @@ export async function fetchCloudPubReplaySummariesPage(
 export async function fetchAllReplaySummariesForSearch(): Promise<
   ReplaySummary[]
 > {
+  const { currentPatch } = await ensureSitePatchLoaded();
   const [pubRes, proRes, cloudRes] = await Promise.allSettled([
     fetchReplaysIndex(),
     fetchProReplaysIndex(),
@@ -448,7 +467,10 @@ export async function fetchAllReplaySummariesForSearch(): Promise<
       (cloudRes.status === "rejected" ? String(cloudRes.reason || "") : "");
     console.warn("[plan_b] 搜索合并：云索引未拉取", msg);
   }
-  const mergedPub = mergeReplaySummariesByMatchId(pubIdx.replays, cloud);
+  const mergedPub = mergeReplaySummariesByMatchId(
+    pubIdx.replays.filter((r) => replayMatchesLatestPatch(r, currentPatch)),
+    cloud
+  );
   const merged = mergePubProReplays(mergedPub, proIdx.replays);
   return applyProDisplayOverridesToReplaySummaries(merged);
 }
@@ -492,15 +514,17 @@ export async function fetchCloudPubReplaySummariesForHero(
   if (!Number.isFinite(id) || id <= 0) {
     return { replays: [], error: null };
   }
+  const { currentPatch } = await ensureSitePatchLoaded();
+  const cacheKey = `${currentPatch}:${id}`;
   const now = Date.now();
-  const cached = cloudHeroProfilePackCache.get(id);
+  const cached = cloudHeroProfilePackCache.get(cacheKey);
   if (cached && cached.expiresAt > now) {
     return {
       ...cached.pack,
       replays: [...cached.pack.replays],
     };
   }
-  const inflight = cloudHeroProfileInflight.get(id);
+  const inflight = cloudHeroProfileInflight.get(cacheKey);
   if (inflight) {
     const got = await inflight;
     return { ...got, replays: [...got.replays] };
@@ -511,20 +535,20 @@ export async function fetchCloudPubReplaySummariesForHero(
     const pack: CloudPubReplayPack = error
       ? { replays: [], error }
       : { replays: replaySummariesFromPlanBRows(rows), error: null };
-    cloudHeroProfilePackCache.set(id, {
+    cloudHeroProfilePackCache.set(cacheKey, {
       pack: { ...pack, replays: [...pack.replays] },
       expiresAt: Date.now() + CLOUD_PROFILE_PACK_CACHE_TTL_MS,
     });
     return { ...pack, replays: [...pack.replays] };
   })();
 
-  cloudHeroProfileInflight.set(id, task);
+  cloudHeroProfileInflight.set(cacheKey, task);
   try {
     const got = await task;
     return { ...got, replays: [...got.replays] };
   } finally {
-    if (cloudHeroProfileInflight.get(id) === task) {
-      cloudHeroProfileInflight.delete(id);
+    if (cloudHeroProfileInflight.get(cacheKey) === task) {
+      cloudHeroProfileInflight.delete(cacheKey);
     }
   }
 }
@@ -537,15 +561,17 @@ export async function fetchCloudPubReplaySummariesForAccount(
   if (!Number.isFinite(aid) || aid <= 0) {
     return { replays: [], error: null };
   }
+  const { playerHistoryPatchVersions } = await ensureSitePatchLoaded();
+  const cacheKey = `${playerHistoryPatchVersions.join("|")}:${aid}`;
   const now = Date.now();
-  const cached = cloudAccountProfilePackCache.get(aid);
+  const cached = cloudAccountProfilePackCache.get(cacheKey);
   if (cached && cached.expiresAt > now) {
     return {
       ...cached.pack,
       replays: [...cached.pack.replays],
     };
   }
-  const inflight = cloudAccountProfileInflight.get(aid);
+  const inflight = cloudAccountProfileInflight.get(cacheKey);
   if (inflight) {
     const got = await inflight;
     return { ...got, replays: [...got.replays] };
@@ -556,20 +582,20 @@ export async function fetchCloudPubReplaySummariesForAccount(
     const pack: CloudPubReplayPack = error
       ? { replays: [], error }
       : { replays: replaySummariesFromPlanBRows(rows), error: null };
-    cloudAccountProfilePackCache.set(aid, {
+    cloudAccountProfilePackCache.set(cacheKey, {
       pack: { ...pack, replays: [...pack.replays] },
       expiresAt: Date.now() + CLOUD_PROFILE_PACK_CACHE_TTL_MS,
     });
     return { ...pack, replays: [...pack.replays] };
   })();
 
-  cloudAccountProfileInflight.set(aid, task);
+  cloudAccountProfileInflight.set(cacheKey, task);
   try {
     const got = await task;
     return { ...got, replays: [...got.replays] };
   } finally {
-    if (cloudAccountProfileInflight.get(aid) === task) {
-      cloudAccountProfileInflight.delete(aid);
+    if (cloudAccountProfileInflight.get(cacheKey) === task) {
+      cloudAccountProfileInflight.delete(cacheKey);
     }
   }
 }
@@ -588,8 +614,14 @@ export async function fetchReplaysForHeroProfile(
     return { replays: [], cloudIndexError: null };
   }
 
+  const { currentPatch } = await ensureSitePatchLoaded();
   const snap = await fetchStaticFeedOnly(sel);
-  const staticHero = filterByHeroKey(snap.replays, heroKey, maps);
+  const staticHero = filterByHeroKey(snap.replays, heroKey, maps).filter(
+    (r) => {
+      if (normalizeReplaySource(r, "pub") !== "pub") return true;
+      return replayMatchesLatestPatch(r, currentPatch);
+    }
+  );
 
   let cloudIndexError: string | null = null;
   let cloudHero: ReplaySummary[] = [];
@@ -674,19 +706,23 @@ export async function fetchStaticFeedOnly(
 
 export function mergeCloudIntoStaticFeed(
   snap: StaticFeedSnapshot,
-  cloudPack: { replays: ReplaySummary[]; error: string | null }
+  cloudPack: { replays: ReplaySummary[]; error: string | null },
+  currentPatch: string
 ): FeedReplayIndexResult {
   if (snap.kind === "pro") {
     return { replays: snap.replays, cloudIndexError: null };
   }
+  const pubRowsFiltered = snap.pubRows.filter((r) =>
+    replayMatchesLatestPatch(r, currentPatch)
+  );
   if (snap.kind === "pub") {
     return {
-      replays: mergeReplaySummariesByMatchId(snap.pubRows, cloudPack.replays),
+      replays: mergeReplaySummariesByMatchId(pubRowsFiltered, cloudPack.replays),
       cloudIndexError: cloudPackToIndexError(cloudPack),
     };
   }
   const mergedPub = mergeReplaySummariesByMatchId(
-    snap.pubRows,
+    pubRowsFiltered,
     cloudPack.replays
   );
   return {
@@ -699,7 +735,8 @@ export function mergeCloudIntoStaticFeed(
 export async function fetchReplaysForFeedSelection(
   sel: FeedSelection
 ): Promise<FeedReplayIndexResult> {
-  const cacheKey = `${sel.pub ? 1 : 0}${sel.pro ? 1 : 0}`;
+  const { currentPatch } = await ensureSitePatchLoaded();
+  const cacheKey = `${currentPatch}:${sel.pub ? 1 : 0}${sel.pro ? 1 : 0}`;
   const now = Date.now();
   const cached = feedIndexResultCache.get(cacheKey);
   if (cached && cached.expiresAt > now) {
@@ -724,7 +761,7 @@ export async function fetchReplaysForFeedSelection(
       fetchStaticFeedOnly(sel),
       fetchCloudPubReplaySummaries(),
     ]);
-    base = mergeCloudIntoStaticFeed(snap, cloudPack);
+    base = mergeCloudIntoStaticFeed(snap, cloudPack, currentPatch);
   }
   const replays = await applyProDisplayOverridesToReplaySummaries(
     base.replays
