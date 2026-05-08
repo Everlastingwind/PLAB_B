@@ -11,9 +11,9 @@ export type SEOProps = {
   fullTitle?: boolean;
 };
 
-/** 全站默认 SEO / 社交分享描述（中英双语） */
+/** 全站默认 SEO / 社交分享描述（中英双语）；与 index.html 中 meta description 保持一致 */
 export const SITE_DEFAULT_DESCRIPTION =
-  "专业的 Dota 2 职业比赛数据分析平台，提供高分段对局解析、最新版本英雄出装胜率、天赋加点等大数据服务。The premier Dota 2 professional match data platform. We offer high-bracket game breakdowns, latest patch hero build win rates, talent guides, and comprehensive esports data analytics.";
+  "职业选手都在用的数据网站, Pro players' choice for match data.";
 
 const DEFAULT_TITLE_SUFFIX = "DOTA2 Plan B";
 
@@ -30,10 +30,14 @@ export function SEO({
 }: SEOProps) {
   const documentTitle = buildDocumentTitle(title, fullTitle);
 
+  const isCustomDescription = description !== SITE_DEFAULT_DESCRIPTION;
+
   return (
     <Helmet>
       <title>{documentTitle}</title>
-      <meta name="description" content={description} />
+      {isCustomDescription ? (
+        <meta name="description" content={description} />
+      ) : null}
       <meta property="og:title" content={documentTitle} />
       <meta property="og:description" content={description} />
       <meta property="og:type" content="website" />
