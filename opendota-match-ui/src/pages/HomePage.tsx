@@ -533,6 +533,9 @@ export function HomePage() {
           ref={mainRef}
           className="mx-auto w-full max-w-[1400px] px-4 py-4 sm:px-6 sm:py-8 lg:px-8"
         >
+          <h1 className="sr-only">
+            PlanB - 职业选手都在用的顶分局数据平台
+          </h1>
           {idxErr ? (
             <p className="mb-4 text-sm text-amber-500/90">{idxErr}</p>
           ) : null}
