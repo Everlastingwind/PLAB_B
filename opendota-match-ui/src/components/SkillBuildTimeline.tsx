@@ -8,14 +8,27 @@ import {
   steamCdnImgDefer,
 } from "../data/mockMatchPlayers";
 import { cn } from "../lib/cn";
+import { isSubAbilityUpgradeBlacklistKey } from "../lib/subAbilityUpgradeBlacklist";
 
 const RAISED =
   "rounded-md border border-gray-200 bg-white shadow-sm transition-colors duration-200 ease-in-out dark:border-slate-600 dark:bg-slate-700 dark:shadow-none";
+
+/**
+ * 标准对局中前几级无法选择「全属性」；序列若在前期混入 special_bonus_attributes（多为脏 id 解析），
+ * 应隐藏以免与真实技能混淆（勿用黄点图作为未知 id 的语义暗示）。
+ */
+export function isPrematureAttributeBonusStep(s: SkillBuildStepUi): boolean {
+  const k = (s.abilityKey || "").toLowerCase();
+  if (k !== "special_bonus_attributes") return false;
+  const n = s.step ?? s.level ?? 0;
+  return n > 0 && n <= 16;
+}
 
 /** 录像战斗日志里会出现的传送门/扫描等非「加点」技能，不应出现在加点顺序条 */
 export function isNoiseAbilityStep(s: SkillBuildStepUi): boolean {
   const k = (s.abilityKey || "").toLowerCase();
   if (!k) return false;
+  if (isSubAbilityUpgradeBlacklistKey(k)) return true;
   if (k.includes("twin_gate") || k.includes("portal_warp")) return true;
   if (k.includes("ability_lamp") || k === "plus_high_five") return true;
   if (k.startsWith("courier_") || k.includes("_courier_")) return true;
@@ -47,6 +60,7 @@ export function countTimelineVisibleSteps(steps: SkillBuildStepUi[]): number {
     if (s.kind === "empty") continue;
     if (s.kind === "unknown") continue;
     if (isNoiseAbilityStep(s)) continue;
+    if (isPrematureAttributeBonusStep(s)) continue;
     n++;
   }
   return n;
@@ -59,6 +73,7 @@ export function SkillBuildTimeline({ steps }: { steps: SkillBuildStepUi[] }) {
     if (s.kind === "empty") return false;
     if (s.kind === "unknown") return false;
     if (isNoiseAbilityStep(s)) return false;
+    if (isPrematureAttributeBonusStep(s)) return false;
     return true;
   });
   if (!visible.length) return null;

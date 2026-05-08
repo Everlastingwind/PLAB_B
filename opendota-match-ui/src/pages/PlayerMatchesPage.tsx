@@ -29,6 +29,7 @@ import { SEO } from "../components/SEO";
 import { ViewportMountRow } from "../components/ViewportMountRow";
 import { loadSlimMatchJsonForDetails } from "../lib/loadSlimMatchJson";
 import { useSitePatch } from "../contexts/SitePatchContext";
+import { mainSixSlotsFromPlayerRecord } from "../lib/matchInventory";
 
 function replayUploadedMs(r: ReplaySummary): number {
   const t = new Date(r.uploaded_at).getTime();
@@ -475,7 +476,14 @@ export function PlayerMatchesPage() {
                     const k = p?.kills ?? 0;
                     const d = p?.deaths ?? 0;
                     const a = p?.assists ?? 0;
-                    const items = (row?.items_slot || []).slice(0, 6);
+                    const mainSix =
+                      row && maps
+                        ? mainSixSlotsFromPlayerRecord(
+                            row as unknown as Record<string, unknown>,
+                            row.items_slot ?? null,
+                            maps
+                          )
+                        : null;
                     const steps = (row?.skill_build || [])
                       .filter((s) => s && s.type !== "empty")
                       .slice(0, 16);
@@ -543,30 +551,39 @@ export function PlayerMatchesPage() {
                           </span>
                         </div>
                         <div className="flex items-center gap-1">
-                          {items.filter((it) => !it.empty && (it.item_key || it.image_url)).length
-                            ? items.map((it, idx) => (
-                                !it.empty && (it.item_key || it.image_url) ? (
-                                  <img
-                                    key={`${r.match_id}-it-${idx}`}
-                                    src={
-                                      normalizeDotaAssetUrl(
-                                        String(it.image_url || "").trim()
-                                      ) ||
-                                      itemIconUrl(
-                                        String(it.item_key || "").replace(/^item_/, "")
+                          {mainSix &&
+                          mainSix.some(
+                            (s) => s && (s.imageUrl || s.itemKey)
+                          ) ? (
+                            mainSix.map((slot, idx) => {
+                              if (!slot?.itemKey && !slot?.imageUrl) return null;
+                              return (
+                                <img
+                                  key={`${r.match_id}-it-${idx}`}
+                                  src={
+                                    normalizeDotaAssetUrl(
+                                      String(slot.imageUrl || "").trim()
+                                    ) ||
+                                    itemIconUrl(
+                                      String(slot.itemKey || "").replace(
+                                        /^item_/,
+                                        ""
                                       )
-                                    }
-                                    alt=""
-                                    className="h-8 w-8 rounded object-cover bg-slate-200 dark:bg-slate-800"
-                                    loading="lazy"
-                                    decoding="async"
-                                    referrerPolicy="no-referrer"
-                                    fetchPriority="low"
-                                    onError={onDotaSteamAssetImgError}
-                                  />
-                                ) : null
-                              ))
-                            : <span className="text-skin-sub">-</span>}
+                                    )
+                                  }
+                                  alt=""
+                                  className="h-8 w-8 rounded object-cover bg-slate-200 dark:bg-slate-800"
+                                  loading="lazy"
+                                  decoding="async"
+                                  referrerPolicy="no-referrer"
+                                  fetchPriority="low"
+                                  onError={onDotaSteamAssetImgError}
+                                />
+                              );
+                            })
+                          ) : (
+                            <span className="text-skin-sub">-</span>
+                          )}
                         </div>
                         <div className="flex items-center gap-1 overflow-hidden">
                           {steps.length

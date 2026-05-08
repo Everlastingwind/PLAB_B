@@ -385,9 +385,10 @@ export function extractSixMainSlotItemIds(
 
 /**
  * 结算面 HUD 装备：
- * 1. `items_slot` 含主栏 0–5 装备时优先（若带 `slot` 列则严格按物理索引建 main/backpack/neutral）。
- * 2. 否则若存在 OpenDota 式 `item_0..5`（及 backpack_* / item_neutral），用标量槽位。
- * 3. 否则再按 `items_slot` 无 slot 的定长前 6 项兜底。
+ * 1. **优先** OpenDota/API 标量 `item_0`..`item_5`（终局主栏物理槽位）；避免把无 `slot` 的 `items_slot`
+ *    数组前 6 项当成主栏（常为管线侧顺序列表，≠ HUD）。
+ * 2. `items_slot` 带 HUD `slot` 时：背包 6–8、中立 16 可与标量合并补全。
+ * 3. 无标量主栏时：再用 `items_slot`（有 slot 则按索引；否则仅数组下标 0..5 兜底）。
  */
 export function buildSixPlusOneFinal(
   raw: Record<string, unknown>,
@@ -396,9 +397,6 @@ export function buildSixPlusOneFinal(
 ): SixPlusOneItems {
   const slotList = Array.isArray(slots) ? slots : [];
   const declareHud = itemsSlotArrayUsesExplicitSlotField(slotList);
-  const pipelineMain =
-    slotList.length > 0 &&
-    itemsSlotHasMainSlotEquipped(slotList, declareHud);
 
   const buildFromPipeline = (): SixPlusOneItems => {
     const main = declareHud
@@ -420,13 +418,33 @@ export function buildSixPlusOneFinal(
     return { main, backpack, neutral };
   };
 
+  if (hasOpenDotaItemSlots(raw)) {
+    const od = buildSixPlusOneFromOpenDotaSlots(raw, maps);
+    if (od) {
+      let backpack = od.backpack;
+      let neutral = od.neutral;
+      if (declareHud && slotList.length > 0) {
+        backpack = mergeBackpackIndexedWithOpenDotaScalars(
+          buildBackpackFromIndexedItemsSlot(slotList, maps),
+          od.backpack
+        );
+        neutral = buildNeutralFromPlayerAndSlots(raw, slotList, maps, true);
+      }
+      return { main: od.main, backpack, neutral };
+    }
+  }
+
+  const pipelineMain =
+    slotList.length > 0 &&
+    itemsSlotHasMainSlotEquipped(slotList, declareHud);
+
   if (pipelineMain) {
     return buildFromPipeline();
   }
 
-  const od = buildSixPlusOneFromOpenDotaSlots(raw, maps);
-  if (od) {
-    return od;
+  const odFallback = buildSixPlusOneFromOpenDotaSlots(raw, maps);
+  if (odFallback) {
+    return odFallback;
   }
 
   if (slotList.length > 0) {
@@ -438,4 +456,15 @@ export function buildSixPlusOneFinal(
     backpack: emptyBackpackTuple(),
     neutral: null,
   };
+}
+
+/** 列表页等：从 slim/OpenDota 玩家对象生成固定 6 格主栏（与对阵表同源逻辑） */
+export function mainSixSlotsFromPlayerRecord(
+  raw: Record<string, unknown>,
+  slots: SlimItemSlot[] | undefined | null,
+  maps: EntityMapsPayload
+): SixMainTuple {
+  return normalizeMainSixForDisplay(
+    buildSixPlusOneFinal(raw, slots, maps).main
+  );
 }

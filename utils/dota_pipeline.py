@@ -677,13 +677,31 @@ def _ability_behaviors_normalized(row: Mapping[str, Any]) -> Set[str]:
 
 
 # 录像 ability_upgrades_arr 会混入 facet/魔晶/子技能/占位 ID；客户端加点条不展示这些「非手点格子」。
-_CLIENT_SKILL_BAR_EXTRA_DROP_KEYS = frozenset(
+_CLIENT_SKILL_BAR_EXTRA_DROP_KEYS_BASE = frozenset(
     {
         "terrorblade_terror_wave",  # Aghanim 衍生，replay 会插进序列
         "hoodwink_decoy",
         "hoodwink_hunters_boomerang",
         "kez_switch_weapons",
     }
+)
+
+# 二段施放 / 衍生技能（雪球释放、帕克跳跃、光法终止照明等）：不应出现在加点顺序条。
+# 与前端 `subAbilityUpgradeBlacklist.ts` 对齐。
+SUB_ABILITY_UPGRADE_BLACKLIST_KEYS = frozenset(
+    {
+        "tusk_launch_snowball",
+        "puck_ethereal_jaunt",
+        "keeper_of_the_light_illuminate_end",
+        "windrunner_focusfire_cancel",
+        "brewmaster_primal_split_cancel",
+        "naga_siren_song_of_the_siren_cancel",
+        "kez_shodo_sai_parry_cancel",
+    }
+)
+
+_CLIENT_SKILL_BAR_EXTRA_DROP_KEYS = (
+    _CLIENT_SKILL_BAR_EXTRA_DROP_KEYS_BASE | SUB_ABILITY_UPGRADE_BLACKLIST_KEYS
 )
 
 

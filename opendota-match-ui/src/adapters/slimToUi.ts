@@ -63,6 +63,8 @@ import {
   getTalentState,
   mergeTalentTreeWithAbilityIdState,
 } from "../lib/getTalentState";
+import { isSubAbilityUpgradeBlacklistKey } from "../lib/subAbilityUpgradeBlacklist";
+import { maybeLogSkillBuildSources } from "../lib/skillBuildDebug";
 
 /** ability_id → internal key；entity_maps 缺新 id 时用其补 talentKeys / 排错 */
 const ABILITY_NUM_ID_TO_KEY: Readonly<Record<string, string>> = (() => {
@@ -206,6 +208,21 @@ function mapSkillBuild(raw: unknown): SkillBuildStepUi[] | undefined {
     if (
       kind === "ability" &&
       ak &&
+      isSubAbilityUpgradeBlacklistKey(ak)
+    ) {
+      continue;
+    }
+    if (
+      kind === "ability" &&
+      ak &&
+      isAttributeBonusAbilityKey(ak)
+    ) {
+      const st = numOrZero(o.step);
+      if (st > 0 && st <= 16) continue;
+    }
+    if (
+      kind === "ability" &&
+      ak &&
       isTalentAbilityKey(ak) &&
       !isAttributeBonusAbilityKey(ak)
     ) {
@@ -285,13 +302,40 @@ function skillBuildFromAbilityUpgradeArr(
   if (!dict || typeof dict !== "object") return undefined;
   if (!Array.isArray(raw) || raw.length === 0) return undefined;
 
-  const out: SkillBuildStepUi[] = [];
-  const n = Math.min(raw.length, 25);
-  for (let i = 0; i < n; i++) {
-    const v = raw[i];
+  /** 先剔除衍生/二段技能 ID，再按顺序填满至多 25 步（与管线 filter_merged_steps 一致） */
+  const collectedIds: number[] = [];
+  for (const v of raw) {
+    if (collectedIds.length >= 25) break;
     const idNum = typeof v === "number" ? v : Number(v);
     if (!Number.isFinite(idNum)) continue;
-    const sid = String(Math.abs(Math.floor(idNum)));
+    const floored = Math.floor(Math.abs(idNum));
+    if (floored <= 0) continue;
+    const sid = String(floored);
+    const entry: AbilityMapEntry | undefined = dict[sid];
+    if (!entry) {
+      collectedIds.push(floored);
+      continue;
+    }
+    const key = (entry.key || "").trim();
+    if (key && isSubAbilityUpgradeBlacklistKey(key)) continue;
+    const nextStep = collectedIds.length + 1;
+    if (
+      key &&
+      isAttributeBonusAbilityKey(key) &&
+      nextStep > 0 &&
+      nextStep <= 16
+    ) {
+      continue;
+    }
+    collectedIds.push(floored);
+  }
+
+  if (collectedIds.length === 0) return undefined;
+
+  const out: SkillBuildStepUi[] = [];
+  for (let i = 0; i < collectedIds.length; i++) {
+    const floored = collectedIds[i];
+    const sid = String(floored);
     const entry: AbilityMapEntry | undefined = dict[sid];
     const stepNum = i + 1;
     if (!entry) {
@@ -394,6 +438,7 @@ function skillBuildFromOpenDotaAbilityUpgrades(
         labelCn: "",
       };
       if (isNoiseAbilityStep(probe)) continue;
+      if (key === "special_bonus_attributes" && ids.length + 1 <= 16) continue;
     }
     ids.push(Math.floor(row.aid));
   }
@@ -1072,6 +1117,7 @@ function slimPlayerToRow(
 ): PlayerRowMock {
   const heroId = numOrZero(p.hero_id);
   const key = heroKeyFromMaps(heroId, maps);
+  maybeLogSkillBuildSources(key, p);
   const kda = kdaFromPlayerRecord(p as Record<string, unknown>);
 
   /** 天赋档 10/15/20/25 须 hero level ≥ 档；用于纠偏 learned id 过宽 */
