@@ -159,6 +159,29 @@ export function extractPlanBPlayersArray(
   return lengths[0].arr;
 }
 
+/**
+ * 列表 `select` 可能未带 `patch_version` 列，或补丁号仅在 slim / payload 内。
+ * 供 replay 摘要合并（replaysApi）补全，避免 `replayMatchesLatestPatch` 因缺字段永远为 false。
+ */
+export function extractPatchVersionFromPlanBRow(
+  row: Record<string, unknown>
+): string | undefined {
+  const top = row.patch_version;
+  if (top != null && String(top).trim()) return String(top).trim();
+  for (const col of ["slim", "data", "payload", "match_json", "body"] as const) {
+    const obj = parsePlanBJsonObject(row[col]);
+    if (!obj) continue;
+    const pv = obj.patch_version ?? obj.patchVersion;
+    if (pv != null && String(pv).trim()) return String(pv).trim();
+    const m = parsePlanBJsonObject(obj.match);
+    if (m) {
+      const pv2 = m.patch_version ?? m.patchVersion;
+      if (pv2 != null && String(pv2).trim()) return String(pv2).trim();
+    }
+  }
+  return undefined;
+}
+
 /** 与 {@link summaryPlayerFromRawObject} 对齐：从选手对象解析 npc hero_id */
 function playerObjectHeroNpcId(o: Record<string, unknown>): number {
   let heroId = Math.floor(Number(o.hero_id ?? o.heroId ?? 0) || 0);
@@ -222,9 +245,9 @@ export function planBRowIncludesAccountId(
 }
 
 const PLAN_B_INDEX_SELECT =
-  "match_id, created_at, duration, radiant_win, radiant_score, dire_score, league_name, players";
+  "match_id, created_at, patch_version, duration, radiant_win, radiant_score, dire_score, league_name, players";
 const PLAN_B_INDEX_LIGHT_SELECT =
-  "match_id, created_at, duration, radiant_win, radiant_score, dire_score, league_name";
+  "match_id, created_at, patch_version, duration, radiant_win, radiant_score, dire_score, league_name";
 
 /**
  * 详情页按需列：与列表 PLAN_B_INDEX_SELECT 对齐，并含 unwrap 可能用到的 json 包裹列。
@@ -250,6 +273,7 @@ const PLAN_B_DETAIL_SELECT = [
  */
 const PLAN_B_INDEX_OVERLAY_SELECT = [
   "match_id",
+  "patch_version",
   "players",
   "payload",
   "slim",
@@ -491,7 +515,7 @@ async function fetchPlanBReplayIndexRowsTwoPhase(
     const { data: thin, error: e1 } = await client
       .from("plan_b")
       .select("match_id, created_at")
-      .eq("patch_version", currentPatch)
+      .ilike("patch_version", String(currentPatch ?? "").trim())
       .order("created_at", { ascending: false })
       .range(from, to);
     if (e1) {
@@ -531,7 +555,7 @@ async function fetchPlanBReplayIndexRowsTwoPhase(
       const r = await client
         .from("plan_b")
         .select(sel)
-        .eq("patch_version", currentPatch)
+        .ilike("patch_version", String(currentPatch ?? "").trim())
         .in("match_id", chunk);
       if (!r.error) {
         part = r.data;
@@ -587,7 +611,7 @@ export async function fetchPlanBReplayIndexRows(): Promise<{
     let { data, error } = await client
       .from("plan_b")
       .select(PLAN_B_INDEX_SELECT)
-      .eq("patch_version", currentPatch)
+      .ilike("patch_version", String(currentPatch ?? "").trim())
       .order("created_at", { ascending: false })
       .limit(lim);
 
@@ -657,7 +681,7 @@ async function fetchPlanBReplayIndexPageSplit(
   const countReq = await client
     .from("plan_b")
     .select("match_id", { count: "estimated", head: true })
-    .eq("patch_version", currentPatch);
+    .ilike("patch_version", String(currentPatch ?? "").trim());
   if (countReq.error) {
     return { rows: [], totalRows: 0, error: countReq.error.message };
   }
@@ -666,7 +690,7 @@ async function fetchPlanBReplayIndexPageSplit(
   const pageReq = await client
     .from("plan_b")
     .select(PLAN_B_INDEX_LIGHT_SELECT)
-    .eq("patch_version", currentPatch)
+    .ilike("patch_version", String(currentPatch ?? "").trim())
     .order("created_at", { ascending: false })
     .range(from, to);
   if (pageReq.error) {
@@ -694,7 +718,7 @@ async function fetchPlanBReplayIndexPageSplit(
     const r = await client
       .from("plan_b")
       .select(sel)
-      .eq("patch_version", currentPatch)
+      .ilike("patch_version", String(currentPatch ?? "").trim())
       .in("match_id", ids);
     if (!r.error) {
       overlayData = r.data;
@@ -754,7 +778,7 @@ export async function fetchPlanBReplayIndexPage(
     client
       .from("plan_b")
       .select(sel, { count: "estimated" })
-      .eq("patch_version", currentPatch)
+      .ilike("patch_version", String(currentPatch ?? "").trim())
       .order("created_at", { ascending: false })
       .range(from, to);
 
@@ -789,11 +813,11 @@ export async function fetchPlanBReplayIndexPage(
 export const PLAN_B_PROFILE_QUERY_LIMIT = 2500;
 
 const PLAN_B_INDEX_SELECT_NO_LEAGUE =
-  "match_id, created_at, duration, radiant_win, radiant_score, dire_score, players";
+  "match_id, created_at, patch_version, duration, radiant_win, radiant_score, dire_score, players";
 
 /** 分页扫描：与 {@link extractPlanBPlayersArray} 列集合对齐 */
 const PLAN_B_PROFILE_WIDE_SELECT =
-  "match_id, created_at, duration, radiant_win, radiant_score, dire_score, league_name, players, slim, payload, data, match_json, body";
+  "match_id, created_at, patch_version, duration, radiant_win, radiant_score, dire_score, league_name, players, slim, payload, data, match_json, body";
 
 function isPlanBProfileSchemaError(message: string): boolean {
   return /column|42703|does not exist|schema cache/i.test(message);
@@ -819,7 +843,7 @@ async function planBContainsRows(
   for (const sel of selectors) {
     const scoped =
       patchScope === "latest"
-        ? client.from("plan_b").select(sel).eq("patch_version", currentPatch)
+        ? client.from("plan_b").select(sel).ilike("patch_version", String(currentPatch ?? "").trim())
         : client
             .from("plan_b")
             .select(sel)
@@ -869,7 +893,7 @@ async function fetchPlanBWideReplayIndexPage(
     const base = client.from("plan_b").select(sel);
     const scoped =
       patchScope === "latest"
-        ? base.eq("patch_version", currentPatch)
+        ? base.ilike("patch_version", String(currentPatch ?? "").trim())
         : base.in("patch_version", [...historyPatches]);
     const { data, error } = await scoped
       .order("created_at", { ascending: false })
@@ -1168,12 +1192,12 @@ export async function fetchPlanBAggregateMatchStats(): Promise<{
     client
       .from("plan_b")
       .select("*", { count: "exact", head: true })
-      .eq("patch_version", currentPatch)
+      .ilike("patch_version", String(currentPatch ?? "").trim())
       .eq("radiant_win", true),
     client
       .from("plan_b")
       .select("*", { count: "exact", head: true })
-      .eq("patch_version", currentPatch)
+      .ilike("patch_version", String(currentPatch ?? "").trim())
       .eq("radiant_win", false),
   ]);
 
@@ -1201,7 +1225,7 @@ export async function fetchPlanBAggregateMatchStats(): Promise<{
     const { data, error } = await client
       .from("plan_b")
       .select("duration")
-      .eq("patch_version", currentPatch)
+      .ilike("patch_version", String(currentPatch ?? "").trim())
       .order("match_id", { ascending: true })
       .range(from, to);
 

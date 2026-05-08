@@ -3,7 +3,10 @@ import type { MetaGlobalItemAggRow } from "./metaGlobalItemStats";
 import type { TopSectionSnapshotPayload } from "./homeTopSnapshot";
 import { isRadiantFromPlayer } from "./matchGrouping";
 import { slotToRoleEarlyFallbackMap } from "./metaRoleFallback";
-import { replayMatchesLatestPatch } from "./replaysApi";
+import {
+  patchVersionsEqualCaseInsensitive,
+  replayMatchesLatestPatch,
+} from "./replaysApi";
 import { stitchHeroTrendCumulativeSeries } from "./heroTrendSeries";
 
 export const META_ROLE_KEYS = [
@@ -49,7 +52,7 @@ export type HeroOverallAggRow = {
 };
 
 function matchesPatchKey(r: ReplaySummary, patch: string): boolean {
-  return String(r.patch_version ?? "").trim() === patch;
+  return patchVersionsEqualCaseInsensitive(r.patch_version, patch);
 }
 
 /** 按补丁筛选后的各英雄各场胜负时间线（match_id 去重保留最新时间） */
@@ -139,7 +142,7 @@ export function buildTopHeroByRole(
     .slice(0, 5);
 }
 
-/** 全英雄表：去重后 ≥ minUniqueMatches */
+/** 全英雄表：去重后 ≥ minUniqueMatches（快照脚本用 1；首页实时仍可传 100） */
 export function buildTopHeroOverall(
   analyticsReplays: readonly ReplaySummary[],
   minUniqueMatches = 100,
@@ -318,9 +321,17 @@ export function buildMetaSiteSnapshotPayload(
   }
 ): MetaSiteSnapshotPayload {
   const { currentPatch, previousPatch } = patchKeys;
+  /** 每日快照：允许极小样本也写入 heroOverall / 分路 Top，避免线上「有列表无汇总」 */
+  const snapshotMinUniqueMatches = 1;
+  const snapshotMinRoleGames = 1;
   const topHeroByRole = {} as Record<MetaRoleTab, TopHeroRoleRow[]>;
   for (const rk of META_ROLE_KEYS) {
-    topHeroByRole[rk] = buildTopHeroByRole(analyticsReplays, rk, 50, currentPatch);
+    topHeroByRole[rk] = buildTopHeroByRole(
+      analyticsReplays,
+      rk,
+      snapshotMinRoleGames,
+      currentPatch
+    );
   }
   return {
     version: extras ? 2 : 1,
@@ -329,7 +340,7 @@ export function buildMetaSiteSnapshotPayload(
     topHeroByRole,
     heroOverall: buildTopHeroOverall(
       analyticsReplays,
-      100,
+      snapshotMinUniqueMatches,
       currentPatch,
       previousPatch
     ),

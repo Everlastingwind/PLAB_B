@@ -8,6 +8,7 @@ import { ensureSitePatchLoaded } from "./sitePatchStore";
 import { fetchDeployedDataJson } from "./fetchStaticJson";
 import { applyProDisplayOverridesToReplaySummaries } from "./proAccountDisplayOverrides";
 import {
+  extractPatchVersionFromPlanBRow,
   extractPlanBPlayersArray,
   fetchPlanBReplayIndexPage,
   fetchPlanBReplayIndexRowsForAccount,
@@ -53,14 +54,22 @@ function replaySummaryPreferNewerKeepRicherPlayers(
   return newer;
 }
 
+/** 与数据库 / 站点设置对比补丁号时统一忽略大小写（如 7.41c vs 7.41C） */
+export function patchVersionsEqualCaseInsensitive(
+  a: string | null | undefined,
+  b: string | null | undefined
+): boolean {
+  const x = String(a ?? "").trim().toLowerCase();
+  const y = String(b ?? "").trim().toLowerCase();
+  return x.length > 0 && x === y;
+}
+
 /** 首页 / 英雄页等：仅展示当前补丁的本地(plan_b)索引行；职业 OpenDota 行不受限 */
 export function replayMatchesLatestPatch(
   r: ReplaySummary,
   currentPatch: string
 ): boolean {
-  return (
-    String(r.patch_version ?? "").trim() === String(currentPatch ?? "").trim()
-  );
+  return patchVersionsEqualCaseInsensitive(r.patch_version, currentPatch);
 }
 
 export function normalizeReplaySource(
@@ -288,7 +297,8 @@ function planBRowToReplaySummary(row: Record<string, unknown>): ReplaySummary | 
     players.push(summaryPlayerFromRawObject(p as Record<string, unknown>));
   }
   if (players.length === 0) return null;
-  const patchRaw = row.patch_version;
+  const patchRaw =
+    row.patch_version ?? extractPatchVersionFromPlanBRow(row);
   const patch_version =
     patchRaw != null && String(patchRaw).trim()
       ? String(patchRaw).trim()

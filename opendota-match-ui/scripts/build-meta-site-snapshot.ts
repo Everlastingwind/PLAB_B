@@ -206,16 +206,17 @@ async function fetchPlanBAggregateMatchStats(
     }
   | { error: string }
 > {
+  const patchPat = String(currentPatch ?? "").trim();
   const [rwRes, dwRes] = await Promise.all([
     client
       .from("plan_b")
       .select("*", { count: "exact", head: true })
-      .eq("patch_version", currentPatch)
+      .ilike("patch_version", patchPat)
       .eq("radiant_win", true),
     client
       .from("plan_b")
       .select("*", { count: "exact", head: true })
-      .eq("patch_version", currentPatch)
+      .ilike("patch_version", patchPat)
       .eq("radiant_win", false),
   ]);
   const countErr = rwRes.error?.message || dwRes.error?.message;
@@ -233,7 +234,7 @@ async function fetchPlanBAggregateMatchStats(
     const { data, error } = await client
       .from("plan_b")
       .select("duration")
-      .eq("patch_version", currentPatch)
+      .ilike("patch_version", patchPat)
       .order("match_id", { ascending: true })
       .range(from, to);
 
@@ -282,7 +283,7 @@ async function fetchPlanBReplayRowsPageWithRetry(
     const { data, error } = await client
       .from("plan_b")
       .select(PLAN_B_INDEX_SELECT)
-      .eq("patch_version", currentPatch)
+      .ilike("patch_version", String(currentPatch ?? "").trim())
       .order("created_at", { ascending: false })
       .range(from, to);
 
@@ -350,6 +351,12 @@ async function main(): Promise<void> {
   const siteRow = await fetchSiteSettingsRow(client);
   const currentPatch = siteRow.current_patch;
   const previousPatch = siteRow.previous_patch;
+  console.log(
+    "[build-meta-site-snapshot] site_settings 当前补丁:",
+    currentPatch,
+    "上一补丁:",
+    previousPatch
+  );
 
   const [aggPack, planRows] = await Promise.all([
     fetchPlanBAggregateMatchStats(client, currentPatch),
@@ -359,6 +366,11 @@ async function main(): Promise<void> {
   if ("error" in aggPack && aggPack.error) {
     throw new Error(`聚合统计失败：${aggPack.error}`);
   }
+  console.log(
+    `[build-meta-site-snapshot] 成功匹配到 ${currentPatch} 对局数量（plan_b 已结算场次 radiant+dire）:`,
+    aggPack.decidedMatches,
+    `（plan_b 拉取行数: ${planRows.length}）`
+  );
   const cloudAgg = {
     decidedMatches: aggPack.decidedMatches,
     radiantWins: aggPack.radiantWins,
@@ -378,6 +390,10 @@ async function main(): Promise<void> {
     pubRowsLatest,
     proRowsLatest,
     cloudReplays
+  );
+  console.log(
+    `[build-meta-site-snapshot] 成功匹配到 ${currentPatch} 对局数量（合并静态索引后的 analytics 条数）:`,
+    analyticsReplays.length
   );
 
   const sampleReplays = analyticsReplays.slice(0, ITEMS_TAB_SLIM_SAMPLE_CAP);

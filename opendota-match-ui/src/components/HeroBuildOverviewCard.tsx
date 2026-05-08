@@ -54,7 +54,8 @@ type OverviewData = {
 };
 
 const MAX_MATCHES_FOR_INSIGHT = HERO_OVERVIEW_INSIGHT_CAP;
-const VERSUS_MIN_GAMES = 20;
+/** 样本少时也展示克制关系，与顶部汇总门槛一致 */
+const VERSUS_MIN_GAMES = 1;
 type HeroPlayerLite = {
   hero_id: number;
   purchase_history?: Array<{ time?: number; item?: string; item_key?: string }>;
