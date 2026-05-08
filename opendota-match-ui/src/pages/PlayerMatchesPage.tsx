@@ -338,16 +338,17 @@ export function PlayerMatchesPage() {
     );
   }, [heroSummaries, maps]);
 
-  // SEO：全页标题为「选手名 - 近期天梯战绩 - PlanB」；英雄名用于补充描述/关键词
-  const seoDescription = `查看 ${playerName} 的最新高分局出装路线与正反补细节对比，重点追踪 ${coreHeroNameEn} 等核心英雄的近期打法变化。`;
+  // SEO：中英双语标题/描述，便于国际检索；英雄名保留在 keywords
+  const seoTitle = `${playerName} 近期天梯战绩与出装 | ${playerName} Pro Tracker & Stats - PlanB`;
+  const seoDescription = `${playerName} 的最新 DOTA2 天梯战绩、出装与胜率数据。Latest ${playerName} ranked matches, item builds and pro tracker.`;
 
   return (
     <>
       <SEO
         fullTitle
-        title={`${playerName} - 近期天梯战绩 - PlanB`}
+        title={seoTitle}
         description={seoDescription}
-        keywords={`${playerName},DOTA2高分局,${coreHeroNameEn},出装路线,对线正反补,天梯`}
+        keywords={`${playerName},${playerName} DOTA2 pro tracker,Dota 2 ranked stats,${coreHeroNameEn},item builds,天梯`}
       />
       <PageShell centerSearch feedMode={feed} onFeedModeChange={setFeed}>
         <main className="mx-auto w-full max-w-[1400px] px-4 py-8 sm:px-6 lg:px-8">
