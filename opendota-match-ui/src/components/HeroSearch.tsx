@@ -21,30 +21,39 @@ import { SupportUsHeaderDesktopTrigger } from "./SupportUsButton";
 import { SEEDED_PRO_PLAYERS } from "../data/proPlayers";
 import { useDebouncedValue } from "../hooks/useDebouncedValue";
 import { fetchAllReplaySummariesForSearch } from "../lib/replaysApi";
+import { heroMatchesSearchQuery } from "../lib/heroSearchMatch";
+import {
+  mergeProDisplayOverridesIntoSearchCandidates,
+  proPlayerMatchesSearchQuery,
+  type ProPlayerSearchCandidate,
+} from "../lib/proPlayerSearchMatch";
+import { loadProAccountDisplayOverrides } from "../lib/proAccountDisplayOverrides";
 
 /** 搜索联想过滤防抖：避免在数万条选手索引上用完整查询串逐键重算 */
 const SEARCH_FILTER_DEBOUNCE_MS = 380;
 
 type HeroRow = HeroMapEntry & { id: string };
 type AttrFilter = "str" | "agi" | "int" | "all";
-type ProPlayerCandidate = { accountId: number; proName: string };
+type ProPlayerCandidate = ProPlayerSearchCandidate;
 type SearchRow =
   | { kind: "hero"; key: string; id: string; nameCn: string; nameEn: string }
   | { kind: "player"; accountId: number; proName: string }
   | { kind: "match"; matchId: number };
 
 function seededProPlayerCandidates(): ProPlayerCandidate[] {
-  const uniq = new Map<number, string>();
+  const out: ProPlayerCandidate[] = [];
   for (const p of SEEDED_PRO_PLAYERS) {
     if (!Number.isFinite(p.accountId) || p.accountId <= 0) continue;
     const name = String(p.proName || "").trim();
     if (!name) continue;
-    if (!uniq.has(p.accountId)) uniq.set(p.accountId, name);
+    const display = String(p.displayName || "").trim();
+    out.push({
+      accountId: p.accountId,
+      proName: name,
+      extraSearchLabels: display && display !== name ? [display] : undefined,
+    });
   }
-  return [...uniq.entries()].map(([accountId, proName]) => ({
-    accountId,
-    proName,
-  }));
+  return out;
 }
 
 const ATTR_LABELS: ReadonlyArray<{ id: AttrFilter; label: string }> = [
@@ -66,41 +75,8 @@ const HERO_ATTR_BY_KEY: Record<string, AttrFilter> = (() => {
   return out;
 })();
 
-// 常用简称 / 俗称（可按需继续补充）
-const HERO_ALIASES_BY_KEY: Record<string, string[]> = {
-  nevermore: ["sf", "影魔"],
-  queenofpain: ["qop", "痛苦"],
-  wisp: ["io", "小精灵"],
-  furion: ["np", "先知"],
-  windrunner: ["wr", "风行", "风行者"],
-  magnataur: ["mag", "猛犸"],
-  shredder: ["timber", "伐木机"],
-  skeleton_king: ["wk", "骷髅王"],
-  life_stealer: ["naix", "小狗"],
-  zuus: ["zeus", "宙斯"],
-  doom_bringer: ["doom", "末日"],
-  rattletrap: ["clock", "发条"],
-};
-
 function flattenHeroes(maps: EntityMapsPayload): HeroRow[] {
   return Object.entries(maps.heroes).map(([id, h]) => ({ ...h, id }));
-}
-
-function matchesHero(q: string, h: HeroRow): boolean {
-  const s = q.trim().toLowerCase();
-  if (!s) return false;
-  const aliasRows = HERO_ALIASES_BY_KEY[h.key] || [];
-  const aliasHit = aliasRows.some((a) => {
-    const t = a.trim().toLowerCase();
-    return t === s || t.includes(s);
-  });
-  return (
-    h.key.toLowerCase().includes(s) ||
-    h.nameEn.toLowerCase().includes(s) ||
-    (h.nameCn && h.nameCn.includes(q.trim())) ||
-    h.id === s ||
-    aliasHit
-  );
 }
 
 function buildSearchRows(
@@ -112,7 +88,17 @@ function buildSearchRows(
   if (!s) return [];
 
   const heroRows: SearchRow[] = flattenHeroes(maps)
-    .filter((h) => matchesHero(s, h))
+    .filter((h) =>
+      heroMatchesSearchQuery(
+        {
+          key: h.key,
+          nameEn: h.nameEn,
+          nameCn: h.nameCn,
+          id: h.id,
+        },
+        s
+      )
+    )
     .map((h) => ({
       kind: "hero" as const,
       key: h.key,
@@ -121,16 +107,8 @@ function buildSearchRows(
       nameEn: h.nameEn || "",
     }));
 
-  const sq = s.toLowerCase();
   const playerRows: SearchRow[] = proPlayers
-    .filter((p) => {
-      const idText = String(p.accountId);
-      return (
-        idText.includes(s) ||
-        p.proName.toLowerCase().includes(sq) ||
-        p.proName.includes(s)
-      );
-    })
+    .filter((p) => proPlayerMatchesSearchQuery(p, s))
     .map((p) => ({
       kind: "player" as const,
       accountId: p.accountId,
@@ -171,6 +149,24 @@ export function HeroSearch({
   const [proPlayers, setProPlayers] = useState<ProPlayerCandidate[]>(
     () => seededProPlayerCandidates()
   );
+  /** 合并展示覆盖（含小号名）：无需等待打开下拉或云索引即可检索 overrides 中的账号 */
+  useEffect(() => {
+    let cancelled = false;
+    void (async () => {
+      try {
+        const ov = await loadProAccountDisplayOverrides();
+        if (cancelled) return;
+        setProPlayers((prev) =>
+          mergeProDisplayOverridesIntoSearchCandidates(prev, ov)
+        );
+      } catch {
+        /* 保留种子 */
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
   const boxRef = useRef<HTMLDivElement>(null);
   const anchorRef = useRef<HTMLDivElement>(null);
   /** 云索引合并成功后置位，失败不置位以便下次打开搜索可重试 */
@@ -275,33 +271,41 @@ export function HeroSearch({
     const task = (async () => {
       try {
         const all = await fetchAllReplaySummariesForSearch();
-        const uniq = new Map<number, string>();
+        const uniq = new Map<number, ProPlayerCandidate>();
         for (const r of all) {
           for (const p of r.players ?? []) {
             const aid = Number(p.account_id ?? 0);
             if (!Number.isFinite(aid) || aid <= 0) continue;
             const pro = String(p.pro_name ?? "").trim();
-            const steam = String(p.personaname ?? "").trim();
-            const label = pro || steam;
-            if (!label) continue;
+            if (!pro) continue;
             const prev = uniq.get(aid);
-            if (!prev) uniq.set(aid, label);
-            else if (pro && !String(prev).includes(pro)) uniq.set(aid, pro);
+            if (!prev) uniq.set(aid, { accountId: aid, proName: pro });
+            else if (!prev.proName.includes(pro))
+              uniq.set(aid, { accountId: aid, proName: pro });
           }
         }
-        for (const p of SEEDED_PRO_PLAYERS) {
-          if (!uniq.has(p.accountId)) uniq.set(p.accountId, p.proName);
+        for (const row of seededProPlayerCandidates()) {
+          if (!uniq.has(row.accountId)) uniq.set(row.accountId, row);
         }
-        setProPlayers(
-          [...uniq.entries()].map(([accountId, proName]) => ({
-            accountId,
-            proName,
-          }))
+        const overrides = await loadProAccountDisplayOverrides();
+        const merged = mergeProDisplayOverridesIntoSearchCandidates(
+          [...uniq.values()],
+          overrides
         );
+        setProPlayers(merged);
         replayEnhancerCompletedOk.current = true;
       } catch {
-        // 云索引失败时仍保留内置职业选手；不标记完成，便于用户稍后再次打开搜索重试
-        setProPlayers(seededProPlayerCandidates());
+        try {
+          const overrides = await loadProAccountDisplayOverrides();
+          setProPlayers(
+            mergeProDisplayOverridesIntoSearchCandidates(
+              seededProPlayerCandidates(),
+              overrides
+            )
+          );
+        } catch {
+          setProPlayers(seededProPlayerCandidates());
+        }
       }
     })();
 

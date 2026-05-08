@@ -6,6 +6,7 @@ import {
   steamCdnImgDefer,
 } from "../data/mockMatchPlayers";
 import { cn } from "../lib/cn";
+import { heroMatchesSearchQuery } from "../lib/heroSearchMatch";
 
 type HeroRow = {
   id: number;
@@ -33,16 +34,6 @@ function flattenHeroRows(maps: EntityMapsPayload): HeroRow[] {
   });
 }
 
-function matchesHeroQuery(row: HeroRow, q: string): boolean {
-  const s = q.trim().toLowerCase();
-  if (!s) return true;
-  return (
-    row.key.toLowerCase().includes(s) ||
-    row.nameEn.toLowerCase().includes(s) ||
-    (row.nameCn ? row.nameCn.includes(q.trim()) : false)
-  );
-}
-
 export type HeroPickerMode = "teammate" | "opponent";
 
 type Props = {
@@ -66,7 +57,19 @@ export function HeroPickerPopover({
 
   const rows = useMemo(() => flattenHeroRows(maps), [maps]);
   const filtered = useMemo(
-    () => rows.filter((r) => matchesHeroQuery(r, q)),
+    () =>
+      rows.filter((r) =>
+        heroMatchesSearchQuery(
+          {
+            key: r.key,
+            nameEn: r.nameEn,
+            nameCn: r.nameCn,
+            id: String(r.id),
+          },
+          q,
+          { treatEmptyQueryAsMatch: true }
+        )
+      ),
     [rows, q]
   );
 
