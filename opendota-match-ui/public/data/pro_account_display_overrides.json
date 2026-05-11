@@ -1,6 +1,14 @@
 {
   "_readme": "Steam account_id（字符串数字）→ 全站展示用职业名。对局页、索引、新上传 slim 均会套用；无需改每场 JSON。",
   "by_account_id": {
+    "105045291": "Thiolicor",
+    "118134220": "Bach",
+    "127617979": "Crystallis",
+    "157475523": "XinQ",
+    "190826739": "BOOM",
+    "320252024": "shiro",
+    "324277900": "Yopaj",
+    "355168766": "Natsumi-",
     "375507918": "23savage",
     "56939869": "Gorgc",
     "308504257": "Nisha (smurf)",
