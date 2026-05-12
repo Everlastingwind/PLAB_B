@@ -97,6 +97,7 @@ export const SEEDED_PRO_PLAYERS: SeedProPlayer[] = [
   { accountId: 201358612, proName: "Nisha" },
   { accountId: 203351055, proName: "Malik" },
   { accountId: 206642367, proName: "Ghost" },
+  { accountId: 218231587, proName: "not me" },
   { accountId: 238146811, proName: "ILZH" },
   { accountId: 256156323, proName: "Mira" },
   { accountId: 292921272, proName: "Wisper" },
