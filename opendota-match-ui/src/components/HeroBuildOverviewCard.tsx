@@ -54,8 +54,8 @@ type OverviewData = {
 };
 
 const MAX_MATCHES_FOR_INSIGHT = HERO_OVERVIEW_INSIGHT_CAP;
-/** 样本少时也展示克制关系，与顶部汇总门槛一致 */
-const VERSUS_MIN_GAMES = 1;
+/** Countered By / Good Against：仅保留与该对手英雄同场对局样本量 ≥ 此值的条目 */
+const VERSUS_MIN_SAMPLE_GAMES = 20;
 type HeroPlayerLite = {
   hero_id: number;
   purchase_history?: Array<{ time?: number; item?: string; item_key?: string }>;
@@ -155,7 +155,7 @@ function buildOverviewData(acc: OverviewAccum): OverviewData {
       winRate: pct(v.wins, v.games),
       games: v.games,
     }))
-    .filter((x) => x.games >= VERSUS_MIN_GAMES)
+    .filter((x) => x.games >= VERSUS_MIN_SAMPLE_GAMES)
     .sort((a, b) => a.winRate - b.winRate);
 
   return {
