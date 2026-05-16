@@ -17,10 +17,16 @@ import {
 import { applyProDisplayOverridesToReplaySummaries } from "../lib/proAccountDisplayOverrides";
 import { fetchDeployedDataJson } from "../lib/fetchStaticJson";
 import {
+  buildCloudAggFromReplays,
   buildTopHeroByRole,
   buildTopHeroOverall,
+  pickMetaCloudAgg,
+  pickMetaHeroOverall,
+  pickMetaTopHeroByRole,
+  type MetaSiteSnapshotCloudAgg,
   type MetaSiteSnapshotPayload,
 } from "../lib/metaSiteAggregate";
+import { fetchPlanBAggregateMatchStats } from "../lib/supabasePlanB";
 import type { ReplaySummary } from "../types/replaysIndex";
 import type { SlimMatchJson } from "../types/slimMatch";
 import { useEntityMaps } from "../hooks/useEntityMaps";
@@ -78,14 +84,10 @@ export function HomePage() {
   const [homeView, setHomeView] = useState<"matches" | "meta" | "items" | "top">(
     "matches"
   );
-  const [cloudAgg, setCloudAgg] = useState<{
-    decidedMatches: number;
-    radiantWins: number;
-    direWins: number;
-    durationSamples: number;
-    avgDurationSec: number;
-  } | null>(null);
-  const [cloudAggErr, setCloudAggErr] = useState<string | null>(null);
+  const [cloudAggApi, setCloudAggApi] = useState<MetaSiteSnapshotCloudAgg | null>(
+    null
+  );
+  const [cloudAggApiErr, setCloudAggApiErr] = useState<string | null>(null);
   const [snapshotFetchDone, setSnapshotFetchDone] = useState(false);
   const [metaSnapshot, setMetaSnapshot] = useState<MetaSiteSnapshotPayload | null>(
     null
@@ -175,12 +177,46 @@ export function HomePage() {
   }, [feed, snapshotFetchDone, patch.currentPatch]);
 
   useEffect(() => {
-    const snapOk = Boolean(feed.pub && metaSnapshot && metaSnapshot.version >= 1);
-    if (snapOk && metaSnapshot) {
-      setCloudAgg(metaSnapshot.cloudAgg);
-      setCloudAggErr(null);
+    if (!feed.pub || !patch.currentPatch) {
+      setCloudAggApi(null);
+      setCloudAggApiErr(null);
+      return;
     }
-  }, [feed.pub, metaSnapshot]);
+    let cancelled = false;
+    void (async () => {
+      const pack = await fetchPlanBAggregateMatchStats();
+      if (cancelled) return;
+      if (pack.error) {
+        setCloudAggApiErr(pack.error);
+        setCloudAggApi(null);
+        return;
+      }
+      setCloudAggApiErr(null);
+      setCloudAggApi({
+        decidedMatches: pack.decidedMatches,
+        radiantWins: pack.radiantWins,
+        direWins: pack.direWins,
+        durationSamples: pack.durationSamples,
+        avgDurationSec: pack.avgDurationSec,
+      });
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [feed.pub, patch.currentPatch]);
+
+  const cloudAggFromReplays = useMemo(
+    () => buildCloudAggFromReplays(analyticsReplays, patch.currentPatch),
+    [analyticsReplays, patch.currentPatch]
+  );
+
+  const { agg: cloudAgg, error: cloudAggErr } = useMemo(
+    () =>
+      feed.pub
+        ? pickMetaCloudAgg(cloudAggApi, cloudAggApiErr, cloudAggFromReplays)
+        : { agg: null, error: null as string | null },
+    [feed.pub, cloudAggApi, cloudAggApiErr, cloudAggFromReplays]
+  );
 
   useEffect(() => {
     let cancelled = false;
@@ -450,9 +486,12 @@ export function HomePage() {
 
   const topHeroByRole = useMemo(() => {
     if (!maps) return [];
-    if (useMetaSnapshot && metaSnapshot)
-      return metaSnapshot.topHeroByRole[roleTab];
-    return topHeroByRoleLive;
+    return pickMetaTopHeroByRole(
+      topHeroByRoleLive,
+      useMetaSnapshot && metaSnapshot
+        ? metaSnapshot.topHeroByRole[roleTab]
+        : undefined
+    );
   }, [
     maps,
     useMetaSnapshot,
@@ -463,8 +502,10 @@ export function HomePage() {
 
   const topHeroOverall = useMemo(() => {
     if (!maps) return [];
-    if (useMetaSnapshot && metaSnapshot) return metaSnapshot.heroOverall;
-    return topHeroOverallLive;
+    return pickMetaHeroOverall(
+      topHeroOverallLive,
+      useMetaSnapshot && metaSnapshot ? metaSnapshot.heroOverall : undefined
+    );
   }, [maps, useMetaSnapshot, metaSnapshot, topHeroOverallLive]);
 
   const heroMetaTableRows = useMemo(() => {
@@ -686,7 +727,7 @@ export function HomePage() {
               {cloudAggErr ? (
                 <p className="mb-4 text-sm text-amber-500/90">{cloudAggErr}</p>
               ) : null}
-              {cloudAgg && !cloudAggErr ? (
+              {cloudAgg ? (
                 <div className="mb-6 grid gap-3 sm:grid-cols-3">
                   <div className="rounded border border-emerald-500/45 bg-emerald-500/[0.09] p-3 dark:border-emerald-400/40 dark:bg-emerald-500/15">
                     <p className="text-xs font-semibold text-emerald-800/90 dark:text-emerald-300/90">

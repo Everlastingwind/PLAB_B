@@ -4,6 +4,7 @@ import type { TopSectionSnapshotPayload } from "./homeTopSnapshot";
 import { isRadiantFromPlayer } from "./matchGrouping";
 import { slotToRoleEarlyFallbackMap } from "./metaRoleFallback";
 import {
+  normalizeReplaySource,
   patchVersionsEqualCaseInsensitive,
   replayMatchesLatestPatch,
 } from "./replaysApi";
@@ -19,6 +20,11 @@ export const META_ROLE_KEYS = [
 
 export type MetaRoleTab = (typeof META_ROLE_KEYS)[number];
 
+/** Meta 页 UI：分路 Top 出场下限 */
+export const META_DISPLAY_MIN_ROLE_GAMES = 50;
+/** Meta 页 UI：全英雄表 match_id 去重后场次下限（含上一版本封盘 orphan 行） */
+export const META_DISPLAY_MIN_HERO_UNIQUE_MATCHES = 100;
+
 export function normalizeMetaRole(
   raw: unknown
 ): "carry" | "mid" | "offlane" | "support(4)" | "support(5)" | null {
@@ -26,11 +32,81 @@ export function normalizeMetaRole(
   if (s === "carry") return "carry";
   if (s === "mid") return "mid";
   if (s === "offlane") return "offlane";
-  if (s === "support4" || s === "support 4" || s === "support(4)")
+  if (
+    s === "support4" ||
+    s === "support 4" ||
+    s === "support(4)" ||
+    s === "pos4"
+  )
     return "support(4)";
-  if (s === "support5" || s === "support 5" || s === "support(5)")
+  if (
+    s === "support5" ||
+    s === "support 5" ||
+    s === "support(5)" ||
+    s === "pos5"
+  )
     return "support(5)";
   return null;
+}
+
+function heroOverallMeetsDisplayThreshold(
+  row: HeroOverallAggRow,
+  minUniqueMatches: number
+): boolean {
+  const orphanOnly =
+    row.games === 0 &&
+    row.cumulativeSeriesIsBaseline?.length === 1 &&
+    row.cumulativeSeriesIsBaseline[0] === true;
+  if (orphanOnly) return true;
+  const nLatest =
+    row.cumulativeWinRateSeries.length -
+    (row.cumulativeSeriesIsBaseline?.[0] === true ? 1 : 0);
+  return (
+    row.games >= minUniqueMatches || nLatest >= minUniqueMatches
+  );
+}
+
+/** 分路 Top 5：快照可能按 min=1 预聚合，展示前再筛 ≥50 并重排 */
+export function filterTopHeroByRoleForDisplay(
+  rows: readonly TopHeroRoleRow[],
+  minGames = META_DISPLAY_MIN_ROLE_GAMES
+): TopHeroRoleRow[] {
+  return [...rows]
+    .filter((x) => x.games >= minGames)
+    .sort((a, b) => b.winRate - a.winRate || b.games - a.games)
+    .slice(0, 5);
+}
+
+/** 全英雄表：快照写入 min=1，展示前筛去重场次 ≥100 */
+export function filterHeroOverallForDisplay(
+  rows: readonly HeroOverallAggRow[],
+  minUniqueMatches = META_DISPLAY_MIN_HERO_UNIQUE_MATCHES
+): HeroOverallAggRow[] {
+  return rows.filter((x) =>
+    heroOverallMeetsDisplayThreshold(x, minUniqueMatches)
+  );
+}
+
+/**
+ * 实时聚合优先；仅当实时为空时回退每日快照（并套用 UI 阈值）。
+ * 避免「cloudAgg 有数、heroOverall/topHeroByRole 为空」的快照半成品盖住已加载的全站索引。
+ */
+export function pickMetaTopHeroByRole(
+  live: readonly TopHeroRoleRow[],
+  snapshotRows: readonly TopHeroRoleRow[] | undefined,
+  minGames = META_DISPLAY_MIN_ROLE_GAMES
+): TopHeroRoleRow[] {
+  if (live.length > 0) return [...live];
+  return filterTopHeroByRoleForDisplay(snapshotRows ?? [], minGames);
+}
+
+export function pickMetaHeroOverall(
+  live: readonly HeroOverallAggRow[],
+  snapshotRows: readonly HeroOverallAggRow[] | undefined,
+  minUniqueMatches = META_DISPLAY_MIN_HERO_UNIQUE_MATCHES
+): HeroOverallAggRow[] {
+  if (live.length > 0) return [...live];
+  return filterHeroOverallForDisplay(snapshotRows ?? [], minUniqueMatches);
 }
 
 export type TopHeroRoleRow = {
@@ -294,6 +370,71 @@ export type MetaSiteSnapshotCloudAgg = {
   durationSamples: number;
   avgDurationSec: number;
 };
+
+function cloudAggHasSamples(agg: MetaSiteSnapshotCloudAgg): boolean {
+  return agg.decidedMatches > 0 || agg.durationSamples > 0;
+}
+
+/**
+ * 从已合并的索引行估算全站对局（仅当前补丁、pub），match_id 去重。
+ * 与 Supabase `fetchPlanBAggregateMatchStats` 口径一致，供无云或 API 失败时回退。
+ */
+export function buildCloudAggFromReplays(
+  replays: readonly ReplaySummary[],
+  currentPatch: string
+): MetaSiteSnapshotCloudAgg {
+  const seen = new Set<number>();
+  let radiantWins = 0;
+  let direWins = 0;
+  let durationSum = 0;
+  let durationSamples = 0;
+
+  for (const r of replays) {
+    if (normalizeReplaySource(r, "pub") !== "pub") continue;
+    if (!replayMatchesLatestPatch(r, currentPatch)) continue;
+
+    const mid = Number(r.match_id);
+    if (!Number.isFinite(mid) || mid <= 0 || seen.has(mid)) continue;
+    seen.add(mid);
+
+    if (r.radiant_win === true) radiantWins += 1;
+    else if (r.radiant_win === false) direWins += 1;
+
+    const dur = Math.floor(Number(r.duration_sec ?? 0) || 0);
+    if (dur > 0) {
+      durationSum += dur;
+      durationSamples += 1;
+    }
+  }
+
+  return {
+    decidedMatches: radiantWins + direWins,
+    radiantWins,
+    direWins,
+    durationSamples,
+    avgDurationSec: durationSamples > 0 ? durationSum / durationSamples : 0,
+  };
+}
+
+/**
+ * 全站对局卡片：优先云库按 patch 聚合，其次索引回退；不用未标注补丁的快照 cloudAgg。
+ */
+export function pickMetaCloudAgg(
+  fromApi: MetaSiteSnapshotCloudAgg | null,
+  apiError: string | null,
+  fromReplays: MetaSiteSnapshotCloudAgg
+): { agg: MetaSiteSnapshotCloudAgg | null; error: string | null } {
+  if (fromApi && !apiError) {
+    return { agg: fromApi, error: null };
+  }
+  if (cloudAggHasSamples(fromReplays)) {
+    return { agg: fromReplays, error: apiError };
+  }
+  if (fromApi) {
+    return { agg: fromApi, error: apiError };
+  }
+  return { agg: null, error: apiError };
+}
 
 export type MetaSiteSnapshotPayload = {
   /** 1：仅 Meta；2：含 Items / TOP 预聚合（每日脚本生成） */

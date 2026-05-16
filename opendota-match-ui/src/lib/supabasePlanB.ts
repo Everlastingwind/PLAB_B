@@ -1162,7 +1162,9 @@ function parsePlanBDurationSec(raw: unknown): number | null {
 }
 
 /**
- * 全库聚合：胜场用 PostgREST exact count；平均时长为全表有效 duration 的算术平均。
+ * 当前补丁（site_settings.current_patch）全库聚合：
+ * 胜场用 PostgREST exact count（`.ilike('patch_version', currentPatch)`）；
+ * 平均时长为同补丁有效 duration 的算术平均。
  */
 export async function fetchPlanBAggregateMatchStats(): Promise<{
   /** 有明确胜负（radiant_win 非空）的场数 */

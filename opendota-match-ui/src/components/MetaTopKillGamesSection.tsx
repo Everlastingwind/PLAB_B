@@ -104,6 +104,43 @@ function itemIconsForPlayer(
   return out;
 }
 
+function TopKillPlayerCardHeader(props: {
+  display: string;
+  roleLine: string;
+  kills: number;
+  deaths: number;
+  assists: number;
+  won: boolean;
+}) {
+  const { display, roleLine, kills, deaths, assists, won } = props;
+  return (
+    <div className="min-w-0 flex-1">
+      <div className="flex min-w-0 items-center gap-1.5">
+        <p className="min-w-0 flex-1 truncate text-base font-semibold leading-snug text-skin-ink">
+          {display}
+        </p>
+        <span className="shrink-0 whitespace-nowrap rounded border border-slate-500/40 bg-slate-100/80 px-1.5 py-0.5 text-xs font-semibold text-slate-700 dark:border-slate-500/50 dark:bg-slate-800/80 dark:text-slate-200">
+          {roleLine}
+        </span>
+      </div>
+      <div className="mt-1 flex items-baseline justify-between gap-2">
+        <p className="shrink-0 whitespace-nowrap font-mono text-base font-semibold tabular-nums tracking-tight text-skin-ink">
+          {kills} / {deaths} / {assists}
+        </p>
+        <span
+          className={
+            won
+              ? "shrink-0 whitespace-nowrap text-sm font-bold text-emerald-700 dark:text-emerald-400"
+              : "shrink-0 whitespace-nowrap text-sm font-bold text-rose-700 dark:text-rose-400"
+          }
+        >
+          {won ? "Win" : "Lose"}
+        </span>
+      </div>
+    </div>
+  );
+}
+
 function totalKillsByReplay(replay: ReplaySummary): number {
   let sum = 0;
   for (const p of replay.players || []) {
@@ -279,28 +316,14 @@ export function MetaTopKillGamesSection(props: Props) {
                     {...steamCdnImgDefer}
                     onError={onDotaSteamAssetImgError}
                   />
-                  <div className="min-w-0 flex-1">
-                    <p className="truncate text-base font-semibold leading-snug text-skin-ink">
-                      {display}
-                    </p>
-                    <p className="mt-1 font-mono text-base font-semibold tabular-nums tracking-tight text-skin-ink">
-                      {k} / {d} / {a}
-                    </p>
-                  </div>
-                  <div className="flex shrink-0 flex-col items-end justify-center gap-1.5 text-right">
-                    <span className="rounded border border-slate-500/40 bg-slate-100/80 px-2 py-0.5 text-sm font-semibold tabular-nums text-slate-700 dark:border-slate-500/50 dark:bg-slate-800/80 dark:text-slate-200">
-                      {roleLine}
-                    </span>
-                    <span
-                      className={
-                        won
-                          ? "text-sm font-bold text-emerald-700 dark:text-emerald-400"
-                          : "text-sm font-bold text-rose-700 dark:text-rose-400"
-                      }
-                    >
-                      {won ? "Win" : "Lose"}
-                    </span>
-                  </div>
+                  <TopKillPlayerCardHeader
+                    display={display}
+                    roleLine={roleLine}
+                    kills={k}
+                    deaths={d}
+                    assists={a}
+                    won={won}
+                  />
                 </div>
                 <div className="mt-3 flex min-h-[2rem] flex-wrap items-center gap-1.5">
                   {items.length ? (
@@ -358,28 +381,14 @@ export function MetaTopKillGamesSection(props: Props) {
                     {...steamCdnImgDefer}
                     onError={onDotaSteamAssetImgError}
                   />
-                  <div className="min-w-0 flex-1">
-                    <p className="truncate text-base font-semibold leading-snug text-skin-ink">
-                      {display}
-                    </p>
-                    <p className="mt-1 font-mono text-base font-semibold tabular-nums tracking-tight text-skin-ink">
-                      {k} / {d} / {a}
-                    </p>
-                  </div>
-                  <div className="flex shrink-0 flex-col items-end justify-center gap-1.5 text-right">
-                    <span className="rounded border border-slate-500/40 bg-slate-100/80 px-2 py-0.5 text-sm font-semibold tabular-nums text-slate-700 dark:border-slate-500/50 dark:bg-slate-800/80 dark:text-slate-200">
-                      {roleLine}
-                    </span>
-                    <span
-                      className={
-                        won
-                          ? "text-sm font-bold text-emerald-700 dark:text-emerald-400"
-                          : "text-sm font-bold text-rose-700 dark:text-rose-400"
-                      }
-                    >
-                      {won ? "Win" : "Lose"}
-                    </span>
-                  </div>
+                  <TopKillPlayerCardHeader
+                    display={display}
+                    roleLine={roleLine}
+                    kills={k}
+                    deaths={d}
+                    assists={a}
+                    won={won}
+                  />
                 </div>
                 <div className="mt-3 flex min-h-[2rem] flex-wrap items-center gap-1.5">
                   {loadingItems ? (
