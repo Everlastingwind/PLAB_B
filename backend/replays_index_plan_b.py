@@ -11,10 +11,10 @@ from typing import Any, Dict, List, Mapping, Optional, Set
 
 import requests
 
-# 与 ``fetchPlanBReplayIndexPage`` / snapshot 脚本一致的索引列；含 slim/payload 以便顶层 players 为空时补齐
+# 与 ``fetchPlanBReplayIndexPage`` / snapshot 脚本一致的索引列（plan_b 为 slim 平铺，无 slim/payload 列）
 PLAN_B_SELECT_FULL = (
     "match_id,created_at,duration,radiant_win,radiant_score,dire_score,"
-    "league_name,players,payload,slim,patch_version"
+    "league_name,players,patch_version"
 )
 PLAN_B_SELECT_FALLBACK = (
     "match_id,created_at,duration,radiant_win,radiant_score,dire_score,"

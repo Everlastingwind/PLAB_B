@@ -50,8 +50,8 @@ function parsePlanBJsonObject(raw: unknown): Record<string, unknown> | null {
 }
 
 /**
- * `plan_b` 顶层 `players` 常为列表摘要；`slim`/`payload` 内常为完整 DEM/OpenDota 行。
- * 两者人数常相同，仅靠人数会误选顶层 → 出装/天赋流水缺失。按 richness 打破平局。
+ * `plan_b` 行即 translate_match_data 后的 slim 平铺（upsert 整对象），`players` 在顶层。
+ * 若历史库仍有嵌套 jsonb 列，unwrap 会尝试读取；**查询勿 select 不存在的 slim/payload 列**。
  */
 function planBPlayersRichness(obj: Record<string, unknown>): number {
   const pl = obj["players"];
@@ -250,53 +250,26 @@ const PLAN_B_INDEX_LIGHT_SELECT =
   "match_id, created_at, patch_version, duration, radiant_win, radiant_score, dire_score, league_name";
 
 /**
- * 详情页按需列：与列表 PLAN_B_INDEX_SELECT 对齐，并含 unwrap 可能用到的 json 包裹列。
- * 避免 `*` 把表上未来加的审计/冗余大列一并拉下；players 仍是 jsonb，体积主要在此。
+ * 详情 / 批量 slim：与列表索引列一致（整局 slim 已平铺在 plan_b，无独立 slim/payload 列）。
  * 若库表缺某列，下方会按链依次尝试更窄的显式列集合（**不用 `*`**）。
- *
- * **不显式包含 `data` 列**：部分自建 Supabase 仅有 `payload`/`slim`/`players`，无 `data`，
- * 请求不存在的列会导致 PostgREST 报错且 split 兜底若仍带 `data` 会彻底失败。
- * `unwrapPlanBRow` / `extractPlanBPlayersArray` 仍会从行对象读 `data`（若某次查询带回）。
- * 不含独立列 picks_bans：多数库未建该列；pick/ban 已在 slim / players 等 json 内。
  */
-const PLAN_B_DETAIL_SELECT = [
-  ...PLAN_B_INDEX_SELECT.split(",").map((s) => s.trim()),
-  "payload",
-  "slim",
-  "match_json",
-  "body",
-].join(",");
+const PLAN_B_DETAIL_SELECT = PLAN_B_INDEX_SELECT;
 
-/**
- * 列表分页 split 第二阶段：与轻列行合并，供 {@link unwrapPlanBRow} 读到 payload/slim 内完整阵容。
- * 缺列时查询端会回退列集合（不含 `data`，理由见 {@link PLAN_B_DETAIL_SELECT}）。
- */
-const PLAN_B_INDEX_OVERLAY_SELECT = [
-  "match_id",
-  "patch_version",
-  "players",
-  "payload",
-  "slim",
-  "match_json",
-  "body",
-].join(",");
+/** 列表分页 split 第二阶段：补拉 players 等与轻列行合并 */
+const PLAN_B_INDEX_OVERLAY_SELECT =
+  "match_id, patch_version, players";
 
 const PLAN_B_DETAIL_SELECT_FALLBACKS = [
   PLAN_B_DETAIL_SELECT,
   PLAN_B_INDEX_SELECT,
-  "match_id, players, payload, slim, match_json, body",
-  "match_id, players, slim, payload",
   "match_id, players",
 ] as const;
 
 /**
- * 批量 `.in()` **仅 4 组窄列**：切勿再把整条 {@link PLAN_B_DETAIL_SELECT_FALLBACKS} 拼进来——
- * 失败时会对「每个 chunk」串行尝试 9+ 次 select，总耗时可比「直接拆批」慢一个数量级。
+ * 批量 `.in()`：优先索引列；勿 select 不存在的 slim/payload（每 chunk 失败会刷爆库）。
  */
 const PLAN_B_BATCH_IN_SELECT_FALLBACKS: readonly string[] = [
-  "match_id, slim, payload, players",
   PLAN_B_INDEX_SELECT,
-  "match_id, players, slim, payload",
   "match_id, players",
 ];
 
@@ -709,7 +682,6 @@ async function fetchPlanBReplayIndexPageSplit(
 
   const overlaySelectChain = [
     PLAN_B_INDEX_OVERLAY_SELECT,
-    "match_id, players, payload, slim",
     "match_id, players",
   ] as const;
   let overlayData: unknown;
@@ -815,20 +787,19 @@ export const PLAN_B_PROFILE_QUERY_LIMIT = 2500;
 const PLAN_B_INDEX_SELECT_NO_LEAGUE =
   "match_id, created_at, patch_version, duration, radiant_win, radiant_score, dire_score, players";
 
-/** 分页扫描：与 {@link extractPlanBPlayersArray} 列集合对齐 */
-const PLAN_B_PROFILE_WIDE_SELECT =
-  "match_id, created_at, patch_version, duration, radiant_win, radiant_score, dire_score, league_name, players, slim, payload, data, match_json, body";
+/** 英雄/选手页宽列扫描：与索引列一致（勿 select 不存在的 slim/payload） */
+const PLAN_B_PROFILE_WIDE_SELECT = PLAN_B_INDEX_SELECT;
 
 function isPlanBProfileSchemaError(message: string): boolean {
   return /column|42703|does not exist|schema cache/i.test(message);
 }
 
-type PlanBJsonColumn = "players" | "slim" | "payload" | "data";
+type PlanBJsonColumn = "players";
 
 async function planBContainsRows(
   client: NonNullable<typeof supabase>,
   column: PlanBJsonColumn,
-  /** PostgREST `.contains`：players 为数组探测；slim/payload 多为对象探测 */
+  /** PostgREST `.contains`：players 为 jsonb 数组探测 */
   operand: unknown,
   patchScope: PlanBPatchScope,
   currentPatch: string,
@@ -926,8 +897,8 @@ function mergeProfileRowsByMatchId(
 }
 
 /**
- * 英雄页云库：阵容可能在顶层 `players`，也可能仅在 `slim`/`payload`（与 Python unwrap 一致）。
- * 先多路 `.contains`，再无结果时用宽列分页 + 客户端 {@link planBRowIncludesHeroNpc} 兜底。
+ * 英雄页云库：阵容在顶层 `players`（plan_b 为 slim 平铺）。
+ * 先 `.contains(players)`，再无结果时用宽列分页 + 客户端 {@link planBRowIncludesHeroNpc} 兜底。
  */
 export async function fetchPlanBReplayIndexRowsForHero(
   heroNpcId: number
@@ -956,11 +927,6 @@ export async function fetchPlanBReplayIndexRowsForHero(
     }
   };
 
-  const slimProbeNum = { players: [{ hero_id: heroNpcId }] };
-  const slimProbeStr = { players: [{ hero_id: String(heroNpcId) }] };
-  const nestCols = ["slim", "payload", "data"] as const;
-
-  // A+B 并行：原先串行 8 次 contains，RTT 叠加可达数秒；并行不改变语义（最终仍 merge + 校验）。
   const probeBatches = await Promise.all([
     planBContainsRows(
       client,
@@ -978,24 +944,6 @@ export async function fetchPlanBReplayIndexRowsForHero(
       currentPatch,
       playerHistoryPatchVersions
     ),
-    ...nestCols.flatMap((col) => [
-      planBContainsRows(
-        client,
-        col,
-        slimProbeNum,
-        "latest",
-        currentPatch,
-        playerHistoryPatchVersions
-      ),
-      planBContainsRows(
-        client,
-        col,
-        slimProbeStr,
-        "latest",
-        currentPatch,
-        playerHistoryPatchVersions
-      ),
-    ]),
   ]);
   for (const batch of probeBatches) {
     absorbVerified(batch, () => true);
@@ -1047,9 +995,7 @@ export async function fetchPlanBReplayIndexRowsForHero(
   };
 }
 
-/**
- * 选手页云库：account_id 可能在顶层 players，也可能仅在 slim/payload。
- */
+/** 选手页云库：account_id 在顶层 players（plan_b 为 slim 平铺）。 */
 export async function fetchPlanBReplayIndexRowsForAccount(
   accountId: number
 ): Promise<{ rows: Record<string, unknown>[]; error: string | null }> {
@@ -1064,10 +1010,6 @@ export async function fetchPlanBReplayIndexRowsForAccount(
 
   const byMid = new Map<number, Record<string, unknown>>();
   let wideFallbackError: string | null = null;
-
-  const nestNum = { players: [{ account_id: accountId }] };
-  const nestStr = { players: [{ account_id: String(accountId) }] };
-  const nestCols = ["slim", "payload", "data"] as const;
 
   const probeBatches = await Promise.all([
     planBContainsRows(
@@ -1086,24 +1028,6 @@ export async function fetchPlanBReplayIndexRowsForAccount(
       currentPatch,
       playerHistoryPatchVersions
     ),
-    ...nestCols.flatMap((col) => [
-      planBContainsRows(
-        client,
-        col,
-        nestNum,
-        "player",
-        currentPatch,
-        playerHistoryPatchVersions
-      ),
-      planBContainsRows(
-        client,
-        col,
-        nestStr,
-        "player",
-        currentPatch,
-        playerHistoryPatchVersions
-      ),
-    ]),
   ]);
   for (const batch of probeBatches) {
     mergeProfileRowsByMatchId(batch, byMid);
