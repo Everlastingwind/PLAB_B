@@ -10,10 +10,112 @@
     <link rel="preconnect" href="https://cdn.cloudflare.steamstatic.com" crossorigin />
     <link rel="preconnect" href="https://steamcdn-a.akamaihd.net" crossorigin />
     <link rel="dns-prefetch" href="https://steamcdn-a.akamaihd.net" />
+    <link rel="preload" href="/dota-a-mark.png" as="image" type="image/png" />
     <title>Plan B - DOTA2 数据解析</title>
+    <script>
+      (function () {
+        try {
+          var k = "plab-theme";
+          var s = localStorage.getItem(k);
+          var d = s ? s === "dark" : window.matchMedia("(prefers-color-scheme: dark)").matches;
+          if (d) document.documentElement.classList.add("dark");
+        } catch (e) {}
+      })();
+    </script>
+    <style>
+      :root {
+        --app-bg: #e3e6eb;
+        --app-text: #1f2937;
+      }
+      html.dark {
+        --app-bg: #202124;
+        --app-text: #e8eaed;
+      }
+      .app-boot-splash {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 1.75rem;
+        min-height: 100vh;
+        margin: 0;
+        background: var(--app-bg);
+        color: var(--app-text);
+        -webkit-font-smoothing: antialiased;
+      }
+      .app-boot-logo {
+        display: flex;
+        align-items: center;
+        gap: 2px;
+        margin: 0;
+        font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+        font-size: 28px;
+        font-weight: 600;
+        line-height: 1;
+        letter-spacing: 0.04em;
+      }
+      .app-boot-logo img {
+        display: block;
+        width: 28px;
+        height: 28px;
+        flex-shrink: 0;
+        object-fit: contain;
+      }
+      .app-boot-progress {
+        position: relative;
+        width: min(220px, 72vw);
+        height: 3px;
+        overflow: hidden;
+        border-radius: 9999px;
+        background: color-mix(in srgb, currentColor 14%, transparent);
+      }
+      .app-boot-progress__bar {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 42%;
+        height: 100%;
+        border-radius: inherit;
+        background: linear-gradient(
+          90deg,
+          transparent 0%,
+          currentColor 42%,
+          currentColor 58%,
+          transparent 100%
+        );
+        animation: app-boot-progress-flow 1.35s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+        will-change: transform;
+      }
+      @keyframes app-boot-progress-flow {
+        from {
+          transform: translateX(-110%);
+        }
+        to {
+          transform: translateX(290%);
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .app-boot-progress__bar {
+          animation: none;
+          width: 55%;
+          left: 22.5%;
+        }
+      }
+    </style>
   </head>
   <body class="bg-skin-page text-skin-ink antialiased">
-    <div id="root"></div>
+    <div id="root">
+      <div class="app-boot-splash" role="status" aria-live="polite" aria-label="正在加载">
+        <p class="app-boot-logo" aria-hidden>
+          <span>PL</span>
+          <img src="/dota-a-mark.png" alt="" width="28" height="28" decoding="async" />
+          <span>NB</span>
+        </p>
+        <div class="app-boot-progress" aria-hidden>
+          <span class="app-boot-progress__bar"></span>
+        </div>
+      </div>
+    </div>
     <!-- type=module 默认延迟执行（等 DOM 解析完）；显式 defer 便于排查「非阻塞脚本」 -->
     <script type="module" src="/src/main.tsx" defer></script>
   </body>

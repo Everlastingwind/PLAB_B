@@ -8,6 +8,7 @@ import {
   type ReactNode,
 } from "react";
 import { Link } from "react-router-dom";
+import { AppBootSplash } from "../components/AppBootSplash";
 import {
   ensureSitePatchLoaded,
   invalidateSitePatchCache,
@@ -77,11 +78,7 @@ export function SitePatchReadyGate({ children }: { children: ReactNode }) {
   const { loading, error, patch, refresh } = useSitePatch();
 
   if (loading) {
-    return (
-      <div className="flex min-h-[40vh] flex-col items-center justify-center gap-3 p-8 text-center text-sm text-skin-sub">
-        <p>加载站点补丁配置…</p>
-      </div>
-    );
+    return <AppBootSplash />;
   }
 
   if (error) {
