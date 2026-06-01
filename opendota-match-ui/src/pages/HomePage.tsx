@@ -26,7 +26,8 @@ import {
   type MetaSiteSnapshotCloudAgg,
   type MetaSiteSnapshotPayload,
 } from "../lib/metaSiteAggregate";
-import { fetchPlanBAggregateMatchStats } from "../lib/supabasePlanB";
+import { fetchPlanBAggregateMatchStats, fetchPlanBSlimPayloadBatch } from "../lib/supabasePlanB";
+import { topKillMatchIdsForSlim } from "../lib/topKillMatchIds";
 import type { ReplaySummary } from "../types/replaysIndex";
 import type { SlimMatchJson } from "../types/slimMatch";
 import { useEntityMaps } from "../hooks/useEntityMaps";
@@ -103,9 +104,13 @@ export function HomePage() {
       metaSnapshot.itemsMeta &&
       metaSnapshot.topSection
   );
-  /** Items/TOP 依赖每日快照 v2；不再在前端批量请求 plan_b slim */
+  /** Items 依赖每日快照 v2；TOP 由 analyticsReplays 实时重算 */
   const homeMetaSlimByMatch: Record<number, SlimMatchJson | undefined> = {};
   const homeMetaSlimLoading = false;
+  const [topTabSlimByMatch, setTopTabSlimByMatch] = useState<
+    Record<number, SlimMatchJson | null | undefined>
+  >({});
+  const [topTabSlimLoading, setTopTabSlimLoading] = useState(false);
   /** 全英雄表排序：总胜率/总场次（可升降序）或按分路 */
   const [heroMetaSort, setHeroMetaSort] = useState<HeroWinrateMetaSortMode>({
     type: "winRate",
@@ -455,6 +460,45 @@ export function HomePage() {
       ),
     [analyticsReplays, patch.currentPatch]
   );
+
+  /** TOP 单人击杀卡：仅为 Top5 拉 slim 出装，不依赖过期快照 */
+  useEffect(() => {
+    if (homeView !== "top" || !feed.pub) {
+      setTopTabSlimByMatch({});
+      setTopTabSlimLoading(false);
+      return;
+    }
+    const ids = topKillMatchIdsForSlim(analyticsReplaysLatestOnly, 5);
+    if (!ids.length) {
+      setTopTabSlimByMatch({});
+      setTopTabSlimLoading(false);
+      return;
+    }
+    let cancelled = false;
+    setTopTabSlimLoading(true);
+    void fetchPlanBSlimPayloadBatch(ids)
+      .then((map) => {
+        if (cancelled) return;
+        const next: Record<number, SlimMatchJson | null> = {};
+        for (const id of ids) {
+          const raw = map.get(id);
+          next[id] =
+            raw && typeof raw === "object" && !Array.isArray(raw)
+              ? (raw as SlimMatchJson)
+              : null;
+        }
+        setTopTabSlimByMatch(next);
+      })
+      .catch(() => {
+        if (!cancelled) setTopTabSlimByMatch({});
+      })
+      .finally(() => {
+        if (!cancelled) setTopTabSlimLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [homeView, feed.pub, analyticsReplaysLatestOnly]);
 
   const replaysSampleForItemMeta = useMemo(
     () =>
@@ -903,16 +947,11 @@ export function HomePage() {
           {homeView === "top" && !mapsLoading && maps ? (
             <section className="mt-6 rounded-lg border border-skin-line bg-skin-card p-3">
               <MetaTopKillGamesSection
-                replays={useFullSnapshot ? [] : analyticsReplaysLatestOnly}
+                replays={analyticsReplaysLatestOnly}
                 maps={maps}
-                listLoading={useFullSnapshot ? false : feedListLoading}
-                slimByMatchId={homeMetaSlimByMatch}
-                slimLoading={homeMetaSlimLoading}
-                snapshotTop={
-                  useFullSnapshot && metaSnapshot
-                    ? metaSnapshot.topSection
-                    : undefined
-                }
+                listLoading={feedListLoading}
+                slimByMatchId={topTabSlimByMatch}
+                slimLoading={topTabSlimLoading}
               />
             </section>
           ) : null}

@@ -21,7 +21,10 @@ import {
 } from "../src/lib/metaGlobalItemStats";
 import { buildMetaSiteSnapshotPayload } from "../src/lib/metaSiteAggregate";
 import { purifyMatchJsonForSlim } from "../src/lib/purifyRawMatchJson";
-import { fetchPlanBSlimPayloadBatchWithClient } from "../src/lib/supabasePlanB";
+import {
+  fetchPlanBSlimPayloadBatchWithClient,
+  overlayPlanBListRowsWithPlayersWithClient,
+} from "../src/lib/supabasePlanB";
 import {
   mergePubProReplays,
   mergeReplaySummariesByMatchId,
@@ -288,9 +291,10 @@ async function fetchPlanBReplayRowsPageWithRetry(
       .range(from, to);
 
     if (!error) {
-      return Array.isArray(data)
+      const light = Array.isArray(data)
         ? (data as Record<string, unknown>[])
         : [];
+      return overlayPlanBListRowsWithPlayersWithClient(client, light);
     }
 
     lastMsg = error.message || String(error);

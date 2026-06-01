@@ -279,6 +279,16 @@ function planBPatchVersionForFilter(
 }
 
 /** 分页列表：轻列 + 当前页 match_id 批量 overlay players */
+export async function overlayPlanBListRowsWithPlayersWithClient(
+  client: SupabaseClient,
+  lightRows: Record<string, unknown>[]
+): Promise<Record<string, unknown>[]> {
+  return overlayPlanBListRowsWithPlayers(
+    client as NonNullable<typeof supabase>,
+    lightRows
+  );
+}
+
 async function overlayPlanBListRowsWithPlayers(
   client: NonNullable<typeof supabase>,
   lightRows: Record<string, unknown>[]

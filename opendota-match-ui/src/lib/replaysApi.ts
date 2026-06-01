@@ -29,6 +29,14 @@ function countPositiveHeroIds(r: ReplaySummary): number {
   return (r.players ?? []).filter((p) => Number(p.hero_id) > 0).length;
 }
 
+function hasIndexedMatchScores(r: ReplaySummary): boolean {
+  const rs = Number(r.radiant_score);
+  const ds = Number(r.dire_score);
+  return (
+    (Number.isFinite(rs) && rs > 0) || (Number.isFinite(ds) && ds > 0)
+  );
+}
+
 function replaySummaryPreferNewerKeepRicherPlayers(
   existing: ReplaySummary,
   incoming: ReplaySummary
@@ -39,19 +47,31 @@ function replaySummaryPreferNewerKeepRicherPlayers(
   const older = t2 >= t1 ? existing : incoming;
   const nNew = newer.players?.length ?? 0;
   const nOld = older.players?.length ?? 0;
+  let merged = newer;
   if (nOld > nNew && nOld >= MIN_PLAYERS_FOR_ROSTER_PRESERVE) {
-    return { ...newer, players: older.players! };
+    merged = { ...newer, players: older.players! };
+  } else {
+    const hNew = countPositiveHeroIds(newer);
+    const hOld = countPositiveHeroIds(older);
+    if (
+      nOld === nNew &&
+      nNew >= MIN_PLAYERS_FOR_ROSTER_PRESERVE &&
+      hOld > hNew
+    ) {
+      merged = { ...newer, players: older.players! };
+    }
   }
-  const hNew = countPositiveHeroIds(newer);
-  const hOld = countPositiveHeroIds(older);
-  if (
-    nOld === nNew &&
-    nNew >= MIN_PLAYERS_FOR_ROSTER_PRESERVE &&
-    hOld > hNew
-  ) {
-    return { ...newer, players: older.players! };
+  if (!hasIndexedMatchScores(merged) && hasIndexedMatchScores(older)) {
+    merged = {
+      ...merged,
+      radiant_score: older.radiant_score,
+      dire_score: older.dire_score,
+    };
   }
-  return newer;
+  if ((merged.duration_sec ?? 0) <= 0 && (older.duration_sec ?? 0) > 0) {
+    merged = { ...merged, duration_sec: older.duration_sec };
+  }
+  return merged;
 }
 
 /** 与数据库 / 站点设置对比补丁号时统一忽略大小写（如 7.41c vs 7.41C） */
@@ -310,17 +330,16 @@ function planBRowToReplaySummary(row: Record<string, unknown>): ReplaySummary | 
   if (players.length > 0) {
     const radKills = teamKillScoreFromPlayers(players, true);
     const direKills = teamKillScoreFromPlayers(players, false);
-    if (radKills + direKills > 0 && rs === undefined && ds === undefined) {
-      rs = radKills;
-      ds = direKills;
-    } else if (
-      radKills + direKills > 0 &&
-      rs === 0 &&
-      ds === 0 &&
-      (row.radiant_score === 0 || row.dire_score === 0)
-    ) {
-      rs = radKills;
-      ds = direKills;
+    if (radKills + direKills > 0) {
+      const topRs = parseOptionalIntField(row.radiant_score);
+      const topDs = parseOptionalIntField(row.dire_score);
+      const lacksUsableTopScores =
+        (topRs === undefined || topRs === 0) &&
+        (topDs === undefined || topDs === 0);
+      if (lacksUsableTopScores || (rs === undefined && ds === undefined)) {
+        rs = radKills;
+        ds = direKills;
+      }
     }
   }
   const patchRaw =

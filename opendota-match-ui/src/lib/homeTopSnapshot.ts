@@ -101,7 +101,7 @@ export function buildTopSectionSnapshotPayload(
   }[] = [];
   for (const r of replays) {
     const p = pickTopKillPlayer(r.players || []);
-    if (!p) continue;
+    if (!p || (p.kills ?? 0) <= 0) continue;
     scoredKill.push({
       replay: r,
       player: p,
@@ -129,10 +129,12 @@ export function buildTopSectionSnapshotPayload(
     if (singleKillTop.length >= 5) break;
   }
 
-  const scoredTotal = replays.map((replay) => ({
-    replay,
-    totalKills: totalKillsByReplay(replay),
-  }));
+  const scoredTotal = replays
+    .map((replay) => ({
+      replay,
+      totalKills: totalKillsByReplay(replay),
+    }))
+    .filter((x) => x.totalKills > 0);
   scoredTotal.sort(
     (a, b) =>
       b.totalKills - a.totalKills ||
