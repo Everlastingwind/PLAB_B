@@ -36,7 +36,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const UI_ROOT = join(__dirname, "..");
 
 const PLAN_B_INDEX_SELECT =
-  "match_id, created_at, duration, radiant_win, radiant_score, dire_score, league_name, players";
+  "match_id, created_at, patch_version, duration, radiant_win, radiant_score, dire_score, league_name";
 
 /** 单次 range 行数减小，降低大 json `players` 触发表超时概率 */
 const ANALYTICS_PAGE_SIZE = 40;
@@ -210,13 +210,13 @@ async function fetchPlanBAggregateMatchStats(
   const [rwRes, dwRes] = await Promise.all([
     client
       .from("plan_b")
-      .select("*", { count: "exact", head: true })
-      .ilike("patch_version", patchPat)
+      .select("match_id", { count: "exact", head: true })
+      .eq("patch_version", patchPat)
       .eq("radiant_win", true),
     client
       .from("plan_b")
-      .select("*", { count: "exact", head: true })
-      .ilike("patch_version", patchPat)
+      .select("match_id", { count: "exact", head: true })
+      .eq("patch_version", patchPat)
       .eq("radiant_win", false),
   ]);
   const countErr = rwRes.error?.message || dwRes.error?.message;
@@ -234,7 +234,7 @@ async function fetchPlanBAggregateMatchStats(
     const { data, error } = await client
       .from("plan_b")
       .select("duration")
-      .ilike("patch_version", patchPat)
+      .eq("patch_version", patchPat)
       .order("match_id", { ascending: true })
       .range(from, to);
 
@@ -283,7 +283,7 @@ async function fetchPlanBReplayRowsPageWithRetry(
     const { data, error } = await client
       .from("plan_b")
       .select(PLAN_B_INDEX_SELECT)
-      .ilike("patch_version", String(currentPatch ?? "").trim())
+      .eq("patch_version", String(currentPatch ?? "").trim())
       .order("created_at", { ascending: false })
       .range(from, to);
 

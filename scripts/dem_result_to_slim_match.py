@@ -4176,14 +4176,32 @@ def build_slim_from_dem_events(
     }
     if assigned_via_pr:
         meta_out["player_resource_team_assign"] = True
+
+    radiant_score = 0
+    dire_score = 0
+    for pl in players:
+        if not isinstance(pl, dict):
+            continue
+        kills = int(pl.get("kills") or 0)
+        is_rad = pl.get("is_radiant")
+        if is_rad is None:
+            is_rad = pl.get("isRadiant")
+        if is_rad is None:
+            ps = pl.get("player_slot")
+            is_rad = int(ps) < 128 if ps is not None else False
+        if bool(is_rad):
+            radiant_score += kills
+        else:
+            dire_score += kills
+
     return {
         "_meta": meta_out,
         "match_id": mid,
         "match_tier": "pub",
         "match_source": "local",
         "radiant_win": radiant_win if radiant_win is not None else True,
-        "radiant_score": 0,
-        "dire_score": 0,
+        "radiant_score": radiant_score,
+        "dire_score": dire_score,
         "duration": duration_sec,
         "league_name": "本地录像",
         "players": players,

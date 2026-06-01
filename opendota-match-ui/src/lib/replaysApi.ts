@@ -258,6 +258,25 @@ function summaryPlayerFromRawObject(o: Record<string, unknown>): ReplayPlayerSum
   };
 }
 
+function parseOptionalIntField(raw: unknown): number | undefined {
+  if (raw === undefined || raw === null || raw === "") return undefined;
+  const n = Number(raw);
+  if (!Number.isFinite(n)) return undefined;
+  return Math.floor(n);
+}
+
+function teamKillScoreFromPlayers(
+  players: ReplayPlayerSummary[],
+  radiant: boolean
+): number {
+  return players
+    .filter((p) => p.is_radiant === radiant)
+    .reduce(
+      (sum, p) => sum + (Number.isFinite(p.kills) ? Math.max(0, p.kills) : 0),
+      0
+    );
+}
+
 function planBRowToReplaySummary(row: Record<string, unknown>): ReplaySummary | null {
   const matchId = Number(row.match_id);
   if (!Number.isFinite(matchId) || matchId <= 0) return null;
@@ -272,31 +291,38 @@ function planBRowToReplaySummary(row: Record<string, unknown>): ReplaySummary | 
       ? d.toISOString()
       : new Date().toISOString();
   }
-  const durationSec = Math.max(
-    0,
-    Math.floor(Number(row.duration ?? row.duration_sec ?? 0) || 0)
-  );
+  const durationParsed = parseOptionalIntField(row.duration ?? row.duration_sec);
+  const durationSec =
+    durationParsed !== undefined ? Math.max(0, durationParsed) : 0;
   const radiantWin = Boolean(row.radiant_win);
   const leagueName =
     String(row.league_name ?? "本地录像").trim() || "本地录像";
-  const rsRaw = row.radiant_score;
-  const dsRaw = row.dire_score;
-  const rs =
-    rsRaw !== undefined && rsRaw !== null
-      ? Math.floor(Number(rsRaw) || 0)
-      : undefined;
-  const ds =
-    dsRaw !== undefined && dsRaw !== null
-      ? Math.floor(Number(dsRaw) || 0)
-      : undefined;
+  let rs = parseOptionalIntField(row.radiant_score);
+  let ds = parseOptionalIntField(row.dire_score);
   const playersRaw = extractPlanBPlayersArray(row);
-  if (!playersRaw?.length) return null;
   const players: ReplayPlayerSummary[] = [];
-  for (const p of playersRaw) {
-    if (!p || typeof p !== "object") continue;
-    players.push(summaryPlayerFromRawObject(p as Record<string, unknown>));
+  if (playersRaw?.length) {
+    for (const p of playersRaw) {
+      if (!p || typeof p !== "object") continue;
+      players.push(summaryPlayerFromRawObject(p as Record<string, unknown>));
+    }
   }
-  if (players.length === 0) return null;
+  if (players.length > 0) {
+    const radKills = teamKillScoreFromPlayers(players, true);
+    const direKills = teamKillScoreFromPlayers(players, false);
+    if (radKills + direKills > 0 && rs === undefined && ds === undefined) {
+      rs = radKills;
+      ds = direKills;
+    } else if (
+      radKills + direKills > 0 &&
+      rs === 0 &&
+      ds === 0 &&
+      (row.radiant_score === 0 || row.dire_score === 0)
+    ) {
+      rs = radKills;
+      ds = direKills;
+    }
+  }
   const patchRaw =
     row.patch_version ?? extractPatchVersionFromPlanBRow(row);
   const patch_version =
@@ -329,8 +355,8 @@ export function replaySummariesFromPlanBRows(
         ? (unwrapped as Record<string, unknown>)
         : row;
     const mergedRow: Record<string, unknown> = {
-      ...row,
       ...raw,
+      ...row,
       created_at: row.created_at ?? raw.created_at,
     };
     const r = planBRowToReplaySummary(mergedRow);

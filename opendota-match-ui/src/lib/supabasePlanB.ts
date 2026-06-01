@@ -244,34 +244,73 @@ export function planBRowIncludesAccountId(
   return false;
 }
 
+/** 列表 / 分页 / 搜索：严禁 select `*` 或 `players`（jsonb 过大易 OOM） */
 const PLAN_B_INDEX_SELECT =
-  "match_id, created_at, patch_version, duration, radiant_win, radiant_score, dire_score, league_name, players";
-const PLAN_B_INDEX_LIGHT_SELECT =
   "match_id, created_at, patch_version, duration, radiant_win, radiant_score, dire_score, league_name";
+const PLAN_B_INDEX_LIGHT_SELECT = PLAN_B_INDEX_SELECT;
 
 /**
- * 详情 / 批量 slim：与列表索引列一致（整局 slim 已平铺在 plan_b，无独立 slim/payload 列）。
- * 若库表缺某列，下方会按链依次尝试更窄的显式列集合（**不用 `*`**）。
+ * 详情 / 批量 slim / 英雄·选手页：需 `players` 时用此列集（**不用 `*`**）。
+ * 若库表缺某列，下方会按链依次尝试更窄的显式列集合。
  */
-const PLAN_B_DETAIL_SELECT = PLAN_B_INDEX_SELECT;
-
-/** 列表分页 split 第二阶段：补拉 players 等与轻列行合并 */
-const PLAN_B_INDEX_OVERLAY_SELECT =
-  "match_id, patch_version, players";
+const PLAN_B_DETAIL_SELECT =
+  "match_id, created_at, patch_version, duration, radiant_win, radiant_score, dire_score, league_name, players";
 
 const PLAN_B_DETAIL_SELECT_FALLBACKS = [
   PLAN_B_DETAIL_SELECT,
-  PLAN_B_INDEX_SELECT,
   "match_id, players",
 ] as const;
 
 /**
- * 批量 `.in()`：优先索引列；勿 select 不存在的 slim/payload（每 chunk 失败会刷爆库）。
+ * 批量 `.in()`：优先详情列；勿 select 不存在的 slim/payload（每 chunk 失败会刷爆库）。
  */
 const PLAN_B_BATCH_IN_SELECT_FALLBACKS: readonly string[] = [
-  PLAN_B_INDEX_SELECT,
+  PLAN_B_DETAIL_SELECT,
   "match_id, players",
 ];
+
+/** 列表页第二段：仅按 match_id 补拉 `players`（比分/英雄），避免排序扫描大 jsonb */
+const PLAN_B_LIST_PLAYERS_OVERLAY_SELECT = "match_id, players";
+
+function planBPatchVersionForFilter(
+  currentPatch: string | null | undefined
+): string {
+  return String(currentPatch ?? "").trim();
+}
+
+/** 分页列表：轻列 + 当前页 match_id 批量 overlay players */
+async function overlayPlanBListRowsWithPlayers(
+  client: NonNullable<typeof supabase>,
+  lightRows: Record<string, unknown>[]
+): Promise<Record<string, unknown>[]> {
+  const ids: (number | string)[] = [];
+  for (const row of lightRows) {
+    const id = row.match_id;
+    if (id !== undefined && id !== null) ids.push(id as number | string);
+  }
+  if (!ids.length) return lightRows;
+
+  const { data, error } = await client
+    .from("plan_b")
+    .select(PLAN_B_LIST_PLAYERS_OVERLAY_SELECT)
+    .in("match_id", ids);
+  if (error || !Array.isArray(data)) return lightRows;
+
+  const byId = new Map<string, Record<string, unknown>>();
+  for (const row of data) {
+    if (row && typeof row === "object" && !Array.isArray(row)) {
+      byId.set(String((row as Record<string, unknown>).match_id), row as Record<
+        string,
+        unknown
+      >);
+    }
+  }
+  return lightRows.map((row) => {
+    const ov = byId.get(String(row.match_id));
+    if (!ov) return row;
+    return { ...row, ...ov };
+  });
+}
 
 export async function fetchPlanBSlimPayloadWithClient(
   client: SupabaseClient,
@@ -481,6 +520,7 @@ async function fetchPlanBReplayIndexRowsTwoPhase(
   client: NonNullable<typeof supabase>
 ): Promise<{ rows: Record<string, unknown>[]; error: string | null }> {
   const { currentPatch } = await ensureSitePatchLoaded();
+  const patchVersion = planBPatchVersionForFilter(currentPatch);
   const idOrder: (string | number)[] = [];
   for (let page = 0; page < PLAN_B_TWO_PHASE_MAX_PAGES; page++) {
     const from = page * PLAN_B_TWO_PHASE_PAGE_SIZE;
@@ -488,7 +528,7 @@ async function fetchPlanBReplayIndexRowsTwoPhase(
     const { data: thin, error: e1 } = await client
       .from("plan_b")
       .select("match_id, created_at")
-      .ilike("patch_version", String(currentPatch ?? "").trim())
+      .eq("patch_version", patchVersion)
       .order("created_at", { ascending: false })
       .range(from, to);
     if (e1) {
@@ -520,15 +560,12 @@ async function fetchPlanBReplayIndexRowsTwoPhase(
     const chunk = uniqueIdOrder.slice(i, i + PLAN_B_IN_CHUNK);
     let part: unknown;
     let e2: { message?: string } | null = null;
-    const selectFallbacks = [
-      PLAN_B_INDEX_SELECT,
-      ...PLAN_B_DETAIL_SELECT_FALLBACKS.filter((s) => s !== PLAN_B_INDEX_SELECT),
-    ] as readonly string[];
+    const selectFallbacks = [PLAN_B_INDEX_SELECT] as readonly string[];
     for (const sel of selectFallbacks) {
       const r = await client
         .from("plan_b")
         .select(sel)
-        .ilike("patch_version", String(currentPatch ?? "").trim())
+        .eq("patch_version", patchVersion)
         .in("match_id", chunk);
       if (!r.error) {
         part = r.data;
@@ -578,13 +615,15 @@ export async function fetchPlanBReplayIndexRows(): Promise<{
 
   console.warn("[plan_b] 两阶段拉取超时/失败，回退单条 SQL:", two.error);
 
+  const patchVersion = planBPatchVersionForFilter(currentPatch);
+
   let lastError: string | null = two.error;
   for (let i = 0; i < PLAN_B_SINGLE_QUERY_LIMITS.length; i++) {
     const lim = PLAN_B_SINGLE_QUERY_LIMITS[i];
     let { data, error } = await client
       .from("plan_b")
       .select(PLAN_B_INDEX_SELECT)
-      .ilike("patch_version", String(currentPatch ?? "").trim())
+      .eq("patch_version", patchVersion)
       .order("created_at", { ascending: false })
       .limit(lim);
 
@@ -634,8 +673,7 @@ export async function fetchPlanBReplayIndexRows(): Promise<{
 }
 
 /**
- * 列表分页（兜底）：count 一次 + 轻列 range + players in —— 共 3 次往返；
- * 大 `players` json 与排序同 SQL 易超时，作为 {@link fetchPlanBReplayIndexPage} 的回退。
+ * 列表分页（兜底）：count + 轻列 range + 当前页 players overlay。
  */
 async function fetchPlanBReplayIndexPageSplit(
   client: NonNullable<typeof supabase>,
@@ -647,6 +685,7 @@ async function fetchPlanBReplayIndexPageSplit(
   error: string | null;
 }> {
   const { currentPatch } = await ensureSitePatchLoaded();
+  const patchVersion = planBPatchVersionForFilter(currentPatch);
   const from = (safePage - 1) * safePageSize;
   const to = from + safePageSize - 1;
 
@@ -654,7 +693,7 @@ async function fetchPlanBReplayIndexPageSplit(
   const countReq = await client
     .from("plan_b")
     .select("match_id", { count: "estimated", head: true })
-    .ilike("patch_version", String(currentPatch ?? "").trim());
+    .eq("patch_version", patchVersion);
   if (countReq.error) {
     return { rows: [], totalRows: 0, error: countReq.error.message };
   }
@@ -663,7 +702,7 @@ async function fetchPlanBReplayIndexPageSplit(
   const pageReq = await client
     .from("plan_b")
     .select(PLAN_B_INDEX_LIGHT_SELECT)
-    .ilike("patch_version", String(currentPatch ?? "").trim())
+    .eq("patch_version", patchVersion)
     .order("created_at", { ascending: false })
     .range(from, to);
   if (pageReq.error) {
@@ -673,61 +712,13 @@ async function fetchPlanBReplayIndexPageSplit(
     string,
     unknown
   >[];
-  const ids: (number | string)[] = [];
-  for (const row of lightRows) {
-    const id = row.match_id;
-    if (id !== undefined && id !== null) ids.push(id as number | string);
-  }
-  if (!ids.length) return { rows: [], totalRows, error: null };
-
-  const overlaySelectChain = [
-    PLAN_B_INDEX_OVERLAY_SELECT,
-    "match_id, players",
-  ] as const;
-  let overlayData: unknown;
-  let overlayErr = null as { message?: string } | null;
-  for (const sel of overlaySelectChain) {
-    const r = await client
-      .from("plan_b")
-      .select(sel)
-      .ilike("patch_version", String(currentPatch ?? "").trim())
-      .in("match_id", ids);
-    if (!r.error) {
-      overlayData = r.data;
-      overlayErr = null;
-      break;
-    }
-    overlayErr = r.error;
-    const msg = r.error.message || "";
-    if (!/column|42703|does not exist|schema cache/i.test(msg)) {
-      break;
-    }
-  }
-  if (overlayErr) {
-    return { rows: [], totalRows, error: overlayErr.message ?? "overlay failed" };
-  }
-  const overlayRows = (Array.isArray(overlayData)
-    ? overlayData
-    : []) as Record<string, unknown>[];
-  const overlayById = new Map<string, Record<string, unknown>>();
-  for (const row of overlayRows) {
-    overlayById.set(String(row.match_id), row);
-  }
-  const merged = lightRows.map((row) => {
-    const ov = overlayById.get(String(row.match_id));
-    if (!ov) return row;
-    return { ...row, ...ov };
-  });
-  return { rows: merged, totalRows, error: null };
+  const rows = await overlayPlanBListRowsWithPlayers(client, lightRows);
+  return { rows, totalRows, error: null };
 }
 
 /**
- * plan_b 列表分页：优先 **单次** `select(索引列含 players) + count + range`，
- * 失败或超时时回退为 split 查询。
- *
- * **仅用 {@link PLAN_B_INDEX_SELECT}，不用 {@link PLAN_B_DETAIL_SELECT}：**
- * 列表只需顶层 `players` 等与摘要展示；附带 payload/slim/body 等大 jsonb 会成倍放大单次扫描，
- * 易触发 PostgreSQL `statement_timeout`（canceling statement due to statement timeout）。
+ * plan_b 列表分页：单次 `select(轻量列) + count + range`，失败或超时时回退 split。
+ * 列表严禁 select `*` 或 `players`（jsonb 过大易 OOM / statement timeout）。
  */
 export async function fetchPlanBReplayIndexPage(
   page: number,
@@ -740,6 +731,8 @@ export async function fetchPlanBReplayIndexPage(
   const client = supabase;
   if (!client) return { rows: [], totalRows: 0, error: null };
   const { currentPatch } = await ensureSitePatchLoaded();
+  const patchVersion = planBPatchVersionForFilter(currentPatch);
+  console.log("用于过滤的版本号:", patchVersion);
   const safePage = Math.max(1, Math.floor(page || 1));
   const safePageSize = Math.max(1, Math.min(100, Math.floor(pageSize || 10)));
   const from = (safePage - 1) * safePageSize;
@@ -750,7 +743,7 @@ export async function fetchPlanBReplayIndexPage(
     client
       .from("plan_b")
       .select(sel, { count: "estimated" })
-      .ilike("patch_version", String(currentPatch ?? "").trim())
+      .eq("patch_version", patchVersion)
       .order("created_at", { ascending: false })
       .range(from, to);
 
@@ -774,9 +767,10 @@ export async function fetchPlanBReplayIndexPage(
     return { rows: [], totalRows: 0, error: error.message };
   }
 
-  const rows = Array.isArray(data)
+  const lightRows = Array.isArray(data)
     ? (data as unknown as Record<string, unknown>[])
     : [];
+  const rows = await overlayPlanBListRowsWithPlayers(client, lightRows);
   const totalRows = Math.max(0, Number(count ?? 0));
   return { rows, totalRows, error: null };
 }
@@ -787,8 +781,8 @@ export const PLAN_B_PROFILE_QUERY_LIMIT = 2500;
 const PLAN_B_INDEX_SELECT_NO_LEAGUE =
   "match_id, created_at, patch_version, duration, radiant_win, radiant_score, dire_score, players";
 
-/** 英雄/选手页宽列扫描：与索引列一致（勿 select 不存在的 slim/payload） */
-const PLAN_B_PROFILE_WIDE_SELECT = PLAN_B_INDEX_SELECT;
+/** 英雄/选手页：需 `players` 做 contains / 阵容展示 */
+const PLAN_B_PROFILE_WIDE_SELECT = PLAN_B_DETAIL_SELECT;
 
 function isPlanBProfileSchemaError(message: string): boolean {
   return /column|42703|does not exist|schema cache/i.test(message);
@@ -807,14 +801,14 @@ async function planBContainsRows(
 ): Promise<Record<string, unknown>[]> {
   const selectors = [
     PLAN_B_INDEX_SELECT_NO_LEAGUE,
-    PLAN_B_INDEX_SELECT,
+    PLAN_B_DETAIL_SELECT,
     PLAN_B_PROFILE_WIDE_SELECT,
   ] as const;
 
   for (const sel of selectors) {
     const scoped =
       patchScope === "latest"
-        ? client.from("plan_b").select(sel).ilike("patch_version", String(currentPatch ?? "").trim())
+        ? client.from("plan_b").select(sel).eq("patch_version", planBPatchVersionForFilter(currentPatch))
         : client
             .from("plan_b")
             .select(sel)
@@ -856,7 +850,7 @@ async function fetchPlanBWideReplayIndexPage(
 
   const selectors = [
     PLAN_B_INDEX_SELECT_NO_LEAGUE,
-    PLAN_B_INDEX_SELECT,
+    PLAN_B_DETAIL_SELECT,
     PLAN_B_PROFILE_WIDE_SELECT,
   ] as const;
 
@@ -864,7 +858,7 @@ async function fetchPlanBWideReplayIndexPage(
     const base = client.from("plan_b").select(sel);
     const scoped =
       patchScope === "latest"
-        ? base.ilike("patch_version", String(currentPatch ?? "").trim())
+        ? base.eq("patch_version", planBPatchVersionForFilter(currentPatch))
         : base.in("patch_version", [...historyPatches]);
     const { data, error } = await scoped
       .order("created_at", { ascending: false })
@@ -1087,7 +1081,7 @@ function parsePlanBDurationSec(raw: unknown): number | null {
 
 /**
  * 当前补丁（site_settings.current_patch）全库聚合：
- * 胜场用 PostgREST exact count（`.ilike('patch_version', currentPatch)`）；
+ * 胜场用 PostgREST exact count（`.eq('patch_version', currentPatch)`）；
  * 平均时长为同补丁有效 duration 的算术平均。
  */
 export async function fetchPlanBAggregateMatchStats(): Promise<{
@@ -1114,16 +1108,18 @@ export async function fetchPlanBAggregateMatchStats(): Promise<{
 
   const { currentPatch } = await ensureSitePatchLoaded();
 
+  const patchVersion = planBPatchVersionForFilter(currentPatch);
+
   const [rwRes, dwRes] = await Promise.all([
     client
       .from("plan_b")
-      .select("*", { count: "exact", head: true })
-      .ilike("patch_version", String(currentPatch ?? "").trim())
+      .select("match_id", { count: "exact", head: true })
+      .eq("patch_version", patchVersion)
       .eq("radiant_win", true),
     client
       .from("plan_b")
-      .select("*", { count: "exact", head: true })
-      .ilike("patch_version", String(currentPatch ?? "").trim())
+      .select("match_id", { count: "exact", head: true })
+      .eq("patch_version", patchVersion)
       .eq("radiant_win", false),
   ]);
 
@@ -1151,7 +1147,7 @@ export async function fetchPlanBAggregateMatchStats(): Promise<{
     const { data, error } = await client
       .from("plan_b")
       .select("duration")
-      .ilike("patch_version", String(currentPatch ?? "").trim())
+      .eq("patch_version", patchVersion)
       .order("match_id", { ascending: true })
       .range(from, to);
 
