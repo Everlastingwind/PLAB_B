@@ -29,7 +29,6 @@ import {
   mergePubProReplays,
   mergeReplaySummariesByMatchId,
   normalizeReplaySource,
-  replayMatchesLatestPatch,
   replaySummariesFromPlanBRows,
 } from "../src/lib/replaysApi";
 import { topKillMatchIdsForSlim } from "../src/lib/topKillMatchIds";
@@ -196,8 +195,7 @@ function readProIndex(): ReplaysIndexPayload {
 }
 
 async function fetchPlanBAggregateMatchStats(
-  client: SupabaseClient,
-  currentPatch: string
+  client: SupabaseClient
 ): Promise<
   | {
       decidedMatches: number;
@@ -209,17 +207,14 @@ async function fetchPlanBAggregateMatchStats(
     }
   | { error: string }
 > {
-  const patchPat = String(currentPatch ?? "").trim();
   const [rwRes, dwRes] = await Promise.all([
     client
       .from("plan_b")
       .select("match_id", { count: "exact", head: true })
-      .eq("patch_version", patchPat)
       .eq("radiant_win", true),
     client
       .from("plan_b")
       .select("match_id", { count: "exact", head: true })
-      .eq("patch_version", patchPat)
       .eq("radiant_win", false),
   ]);
   const countErr = rwRes.error?.message || dwRes.error?.message;
@@ -237,7 +232,6 @@ async function fetchPlanBAggregateMatchStats(
     const { data, error } = await client
       .from("plan_b")
       .select("duration")
-      .eq("patch_version", patchPat)
       .order("match_id", { ascending: true })
       .range(from, to);
 
@@ -275,8 +269,7 @@ async function fetchPlanBAggregateMatchStats(
 async function fetchPlanBReplayRowsPageWithRetry(
   client: SupabaseClient,
   pageIndexZeroBased: number,
-  pageSize: number,
-  currentPatch: string
+  pageSize: number
 ): Promise<Record<string, unknown>[]> {
   const from = pageIndexZeroBased * pageSize;
   const to = from + pageSize - 1;
@@ -286,7 +279,6 @@ async function fetchPlanBReplayRowsPageWithRetry(
     const { data, error } = await client
       .from("plan_b")
       .select(PLAN_B_INDEX_SELECT)
-      .eq("patch_version", String(currentPatch ?? "").trim())
       .order("created_at", { ascending: false })
       .range(from, to);
 
@@ -316,8 +308,7 @@ async function fetchPlanBReplayRowsPageWithRetry(
 }
 
 async function fetchAllPlanBReplayRows(
-  client: SupabaseClient,
-  currentPatch: string
+  client: SupabaseClient
 ): Promise<Record<string, unknown>[]> {
   const merged: Record<string, unknown>[] = [];
   const pageSize = ANALYTICS_PAGE_SIZE;
@@ -326,8 +317,7 @@ async function fetchAllPlanBReplayRows(
     const rows = await fetchPlanBReplayRowsPageWithRetry(
       client,
       page - 1,
-      pageSize,
-      currentPatch
+      pageSize
     );
     if (rows.length === 0) break;
     merged.push(...rows);
@@ -363,15 +353,15 @@ async function main(): Promise<void> {
   );
 
   const [aggPack, planRows] = await Promise.all([
-    fetchPlanBAggregateMatchStats(client, currentPatch),
-    fetchAllPlanBReplayRows(client, currentPatch),
+    fetchPlanBAggregateMatchStats(client),
+    fetchAllPlanBReplayRows(client),
   ]);
 
   if ("error" in aggPack && aggPack.error) {
     throw new Error(`聚合统计失败：${aggPack.error}`);
   }
   console.log(
-    `[build-meta-site-snapshot] 成功匹配到 ${currentPatch} 对局数量（plan_b 已结算场次 radiant+dire）:`,
+    "[build-meta-site-snapshot] plan_b 全库已结算场次（radiant+dire）:",
     aggPack.decidedMatches,
     `（plan_b 拉取行数: ${planRows.length}）`
   );
@@ -384,19 +374,13 @@ async function main(): Promise<void> {
   };
 
   const cloudReplays = replaySummariesFromPlanBRows(planRows);
-  const pubRowsLatest = pubRows.filter((r) =>
-    replayMatchesLatestPatch(r, currentPatch)
-  );
-  const proRowsLatest = proRows.filter((r) =>
-    replayMatchesLatestPatch(r, currentPatch)
-  );
   const analyticsReplays = mergeAnalyticsLikeHomePage(
-    pubRowsLatest,
-    proRowsLatest,
+    pubRows,
+    proRows,
     cloudReplays
   );
   console.log(
-    `[build-meta-site-snapshot] 成功匹配到 ${currentPatch} 对局数量（合并静态索引后的 analytics 条数）:`,
+    "[build-meta-site-snapshot] 合并静态索引后的 analytics 条数:",
     analyticsReplays.length
   );
 
@@ -441,15 +425,10 @@ async function main(): Promise<void> {
     entityMaps
   );
 
-  const payload = buildMetaSiteSnapshotPayload(
-    analyticsReplays,
-    cloudAgg,
-    { currentPatch, previousPatch },
-    {
-      itemsMeta,
-      topSection,
-    }
-  );
+  const payload = buildMetaSiteSnapshotPayload(analyticsReplays, cloudAgg, {
+    itemsMeta,
+    topSection,
+  });
 
   const jsonText = `${JSON.stringify(payload)}\n`;
 

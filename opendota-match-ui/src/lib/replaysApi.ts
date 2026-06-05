@@ -4,7 +4,6 @@ import type {
   ReplaySummary,
   ReplaysIndexPayload,
 } from "../types/replaysIndex";
-import { ensureSitePatchLoaded } from "./sitePatchStore";
 import { fetchDeployedDataJson } from "./fetchStaticJson";
 import { applyProDisplayOverridesToReplaySummaries } from "./proAccountDisplayOverrides";
 import {
@@ -466,10 +465,9 @@ export async function fetchCloudPubReplaySummariesPage(
   page: number,
   pageSize: number
 ): Promise<CloudPubReplayPagePack> {
-  const { currentPatch } = await ensureSitePatchLoaded();
   const safePage = Math.max(1, Math.floor(page || 1));
   const safePageSize = Math.max(1, Math.min(100, Math.floor(pageSize || 10)));
-  const cacheKey = `${currentPatch}:${safePage}:${safePageSize}`;
+  const cacheKey = `${safePage}:${safePageSize}`;
   const now = Date.now();
   const hit = cloudPubPageCache.get(cacheKey);
   if (hit && hit.expiresAt > now) {
@@ -493,7 +491,6 @@ export async function fetchCloudPubReplaySummariesPage(
 export async function fetchAllReplaySummariesForSearch(): Promise<
   ReplaySummary[]
 > {
-  const { currentPatch } = await ensureSitePatchLoaded();
   const [pubRes, proRes, cloudRes] = await Promise.allSettled([
     fetchReplaysIndex(),
     fetchProReplaysIndex(),
@@ -522,10 +519,7 @@ export async function fetchAllReplaySummariesForSearch(): Promise<
       (cloudRes.status === "rejected" ? String(cloudRes.reason || "") : "");
     console.warn("[plan_b] 搜索合并：云索引未拉取", msg);
   }
-  const mergedPub = mergeReplaySummariesByMatchId(
-    pubIdx.replays.filter((r) => replayMatchesLatestPatch(r, currentPatch)),
-    cloud
-  );
+  const mergedPub = mergeReplaySummariesByMatchId(pubIdx.replays, cloud);
   const merged = mergePubProReplays(mergedPub, proIdx.replays);
   return applyProDisplayOverridesToReplaySummaries(merged);
 }
@@ -569,8 +563,7 @@ export async function fetchCloudPubReplaySummariesForHero(
   if (!Number.isFinite(id) || id <= 0) {
     return { replays: [], error: null };
   }
-  const { currentPatch } = await ensureSitePatchLoaded();
-  const cacheKey = `${currentPatch}:${id}`;
+  const cacheKey = String(id);
   const now = Date.now();
   const cached = cloudHeroProfilePackCache.get(cacheKey);
   if (cached && cached.expiresAt > now) {
@@ -616,8 +609,7 @@ export async function fetchCloudPubReplaySummariesForAccount(
   if (!Number.isFinite(aid) || aid <= 0) {
     return { replays: [], error: null };
   }
-  const { playerHistoryPatchVersions } = await ensureSitePatchLoaded();
-  const cacheKey = `${playerHistoryPatchVersions.join("|")}:${aid}`;
+  const cacheKey = String(aid);
   const now = Date.now();
   const cached = cloudAccountProfilePackCache.get(cacheKey);
   if (cached && cached.expiresAt > now) {
@@ -669,14 +661,8 @@ export async function fetchReplaysForHeroProfile(
     return { replays: [], cloudIndexError: null };
   }
 
-  const { currentPatch } = await ensureSitePatchLoaded();
   const snap = await fetchStaticFeedOnly(sel);
-  const staticHero = filterByHeroKey(snap.replays, heroKey, maps).filter(
-    (r) => {
-      if (normalizeReplaySource(r, "pub") !== "pub") return true;
-      return replayMatchesLatestPatch(r, currentPatch);
-    }
-  );
+  const staticHero = filterByHeroKey(snap.replays, heroKey, maps);
 
   let cloudIndexError: string | null = null;
   let cloudHero: ReplaySummary[] = [];
@@ -761,23 +747,19 @@ export async function fetchStaticFeedOnly(
 
 export function mergeCloudIntoStaticFeed(
   snap: StaticFeedSnapshot,
-  cloudPack: { replays: ReplaySummary[]; error: string | null },
-  currentPatch: string
+  cloudPack: { replays: ReplaySummary[]; error: string | null }
 ): FeedReplayIndexResult {
   if (snap.kind === "pro") {
     return { replays: snap.replays, cloudIndexError: null };
   }
-  const pubRowsFiltered = snap.pubRows.filter((r) =>
-    replayMatchesLatestPatch(r, currentPatch)
-  );
   if (snap.kind === "pub") {
     return {
-      replays: mergeReplaySummariesByMatchId(pubRowsFiltered, cloudPack.replays),
+      replays: mergeReplaySummariesByMatchId(snap.pubRows, cloudPack.replays),
       cloudIndexError: cloudPackToIndexError(cloudPack),
     };
   }
   const mergedPub = mergeReplaySummariesByMatchId(
-    pubRowsFiltered,
+    snap.pubRows,
     cloudPack.replays
   );
   return {
@@ -790,8 +772,7 @@ export function mergeCloudIntoStaticFeed(
 export async function fetchReplaysForFeedSelection(
   sel: FeedSelection
 ): Promise<FeedReplayIndexResult> {
-  const { currentPatch } = await ensureSitePatchLoaded();
-  const cacheKey = `${currentPatch}:${sel.pub ? 1 : 0}${sel.pro ? 1 : 0}`;
+  const cacheKey = `${sel.pub ? 1 : 0}${sel.pro ? 1 : 0}`;
   const now = Date.now();
   const cached = feedIndexResultCache.get(cacheKey);
   if (cached && cached.expiresAt > now) {
@@ -816,7 +797,7 @@ export async function fetchReplaysForFeedSelection(
       fetchStaticFeedOnly(sel),
       fetchCloudPubReplaySummaries(),
     ]);
-    base = mergeCloudIntoStaticFeed(snap, cloudPack, currentPatch);
+    base = mergeCloudIntoStaticFeed(snap, cloudPack);
   }
   const replays = await applyProDisplayOverridesToReplaySummaries(
     base.replays

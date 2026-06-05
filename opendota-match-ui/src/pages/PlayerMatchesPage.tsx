@@ -5,7 +5,6 @@ import type { FeedSelection } from "../components/FeedModeToggle";
 import {
   MATCH_LIST_LOAD_STEP,
   fetchReplaysForPlayerProfile,
-  replayMatchesLatestPatch,
 } from "../lib/replaysApi";
 import type { ReplaySummary } from "../types/replaysIndex";
 import { useEntityMaps } from "../hooks/useEntityMaps";
@@ -28,7 +27,6 @@ import type { TalentPickUi, TalentTreeUi } from "../data/mockMatchPlayers";
 import { SEO } from "../components/SEO";
 import { ViewportMountRow } from "../components/ViewportMountRow";
 import { loadSlimMatchJsonForDetails } from "../lib/loadSlimMatchJson";
-import { useSitePatch } from "../contexts/SitePatchContext";
 import { mainSixSlotsFromPlayerRecord } from "../lib/matchInventory";
 
 function replayUploadedMs(r: ReplaySummary): number {
@@ -72,9 +70,6 @@ function toTalentPicksUi(raw: SlimPlayer["talent_picks"]): TalentPickUi[] {
 }
 
 export function PlayerMatchesPage() {
-  const { patch } = useSitePatch();
-  if (!patch) return null;
-
   const { accountId = "0" } = useParams<{ accountId: string }>();
   const [searchParams] = useSearchParams();
   const heroFilterKey = (searchParams.get("hero") || "").trim();
@@ -167,23 +162,13 @@ export function PlayerMatchesPage() {
     });
   }, [roleFilteredReplays, heroFilterKey, maps, aid]);
 
-  /** 当前补丁在上、历史补丁在下；段内按上传时间倒序 */
-  const orderedFilteredReplays = useMemo(() => {
-    const latest = filteredReplays
-      .filter((r) => replayMatchesLatestPatch(r, patch.currentPatch))
-      .sort((a, b) => replayUploadedMs(b) - replayUploadedMs(a));
-    const legacy = filteredReplays
-      .filter((r) => !replayMatchesLatestPatch(r, patch.currentPatch))
-      .sort((a, b) => replayUploadedMs(b) - replayUploadedMs(a));
-    return [...latest, ...legacy];
-  }, [filteredReplays, patch.currentPatch]);
-
-  const firstLegacySectionIndex = useMemo(() => {
-    const i = orderedFilteredReplays.findIndex(
-      (r) => !replayMatchesLatestPatch(r, patch.currentPatch)
-    );
-    return i >= 0 ? i : null;
-  }, [orderedFilteredReplays, patch.currentPatch]);
+  const orderedFilteredReplays = useMemo(
+    () =>
+      [...filteredReplays].sort(
+        (a, b) => replayUploadedMs(b) - replayUploadedMs(a)
+      ),
+    [filteredReplays]
+  );
 
   const roleCounts = useMemo(() => {
     const out: Record<string, number> = {
@@ -490,24 +475,8 @@ export function PlayerMatchesPage() {
                       .slice(0, 16);
                     const talentTree = toTalentTreeUi(row?.talent_tree);
                     const talentPicks = toTalentPicksUi(row?.talent_picks);
-                    const globalIdx =
-                      (pageForList - 1) * MATCH_LIST_LOAD_STEP + vIdx;
-                    const showLegacyDivider =
-                      firstLegacySectionIndex != null &&
-                      globalIdx === firstLegacySectionIndex;
                     return (
                       <Fragment key={`${r.match_id}-${r.uploaded_at}`}>
-                        {showLegacyDivider ? (
-                          <div
-                            className="border-t border-skin-line bg-skin-inset/60 px-3 py-1.5"
-                            role="separator"
-                            aria-label={`${patch.previousPatch} 及更早版本对局`}
-                          >
-                            <span className="text-[11px] font-semibold uppercase tracking-wide text-skin-sub">
-                              {patch.previousPatch}
-                            </span>
-                          </div>
-                        ) : null}
                       <ViewportMountRow
                         index={vIdx}
                         rootMargin="40px 0px"

@@ -11,8 +11,6 @@ import {
   fetchCloudPubReplaySummariesPage,
   fetchStaticFeedOnly,
   mergeReplaySummariesByMatchId,
-  normalizeReplaySource,
-  replayMatchesLatestPatch,
 } from "../lib/replaysApi";
 import { applyProDisplayOverridesToReplaySummaries } from "../lib/proAccountDisplayOverrides";
 import { fetchDeployedDataJson } from "../lib/fetchStaticJson";
@@ -172,18 +170,14 @@ export function HomePage() {
           : Promise.resolve({ replays: [], error: null }),
       ]);
       if (cancelled) return;
-      const staticFiltered = snap.replays.filter((r) => {
-        if (normalizeReplaySource(r, "pub") === "pro") return true;
-        return replayMatchesLatestPatch(r, patch.currentPatch);
-      });
       setAnalyticsReplays(
-        mergeReplaySummariesByMatchId(staticFiltered, cloudAggMerge.replays)
+        mergeReplaySummariesByMatchId(snap.replays, cloudAggMerge.replays)
       );
     })();
     return () => {
       cancelled = true;
     };
-  }, [feed, snapshotFetchDone, patch.currentPatch]);
+  }, [feed, snapshotFetchDone]);
 
   useEffect(() => {
     if (!feed.pub || !patch.currentPatch) {
@@ -215,8 +209,8 @@ export function HomePage() {
   }, [feed.pub, patch.currentPatch]);
 
   const cloudAggFromReplays = useMemo(
-    () => buildCloudAggFromReplays(analyticsReplays, patch.currentPatch),
-    [analyticsReplays, patch.currentPatch]
+    () => buildCloudAggFromReplays(analyticsReplays),
+    [analyticsReplays]
   );
 
   const { agg: cloudAgg, error: cloudAggErr } = useMemo(
@@ -257,10 +251,7 @@ export function HomePage() {
 
         const snap = await fetchStaticFeedOnly(feed);
         const list = await applyProDisplayOverridesToReplaySummaries(
-          snap.replays.filter((r) => {
-            if (normalizeReplaySource(r, "pub") === "pro") return true;
-            return replayMatchesLatestPatch(r, patch.currentPatch);
-          })
+          snap.replays
         );
         if (cancelled) return;
 
@@ -277,7 +268,7 @@ export function HomePage() {
     return () => {
       cancelled = true;
     };
-  }, [feed, homeView, pageQueryParam, patch.currentPatch]);
+  }, [feed, homeView, pageQueryParam]);
 
   const totalPages = useMemo(() => {
     if (
@@ -456,15 +447,6 @@ export function HomePage() {
 
   const feedKey = `${feed.pub ? "p" : ""}${feed.pro ? "r" : ""}`;
 
-  /** Items / TOP：仅当前补丁录像 */
-  const analyticsReplaysLatestOnly = useMemo(
-    () =>
-      analyticsReplays.filter((r) =>
-        replayMatchesLatestPatch(r, patch.currentPatch)
-      ),
-    [analyticsReplays, patch.currentPatch]
-  );
-
   /** TOP 单人击杀卡：仅为 Top5 拉 slim 出装，不依赖过期快照 */
   useEffect(() => {
     if (homeView !== "top" || !feed.pub) {
@@ -472,7 +454,7 @@ export function HomePage() {
       setTopTabSlimLoading(false);
       return;
     }
-    const ids = topKillMatchIdsForSlim(analyticsReplaysLatestOnly, 5);
+    const ids = topKillMatchIdsForSlim(analyticsReplays, 5);
     if (!ids.length) {
       setTopTabSlimByMatch({});
       setTopTabSlimLoading(false);
@@ -502,34 +484,21 @@ export function HomePage() {
     return () => {
       cancelled = true;
     };
-  }, [homeView, feed.pub, analyticsReplaysLatestOnly]);
+  }, [homeView, feed.pub, analyticsReplays]);
 
   const replaysSampleForItemMeta = useMemo(
-    () =>
-      analyticsReplaysLatestOnly.slice(0, ITEMS_TAB_SLIM_SAMPLE_CAP),
-    [analyticsReplaysLatestOnly]
+    () => analyticsReplays.slice(0, ITEMS_TAB_SLIM_SAMPLE_CAP),
+    [analyticsReplays]
   );
 
   const topHeroByRoleLive = useMemo(
-    () =>
-      buildTopHeroByRole(
-        analyticsReplays,
-        roleTab,
-        50,
-        patch.currentPatch
-      ),
-    [analyticsReplays, roleTab, patch.currentPatch]
+    () => buildTopHeroByRole(analyticsReplays, roleTab, 50),
+    [analyticsReplays, roleTab]
   );
 
   const topHeroOverallLive = useMemo(
-    () =>
-      buildTopHeroOverall(
-        analyticsReplays,
-        100,
-        patch.currentPatch,
-        patch.previousPatch
-      ),
-    [analyticsReplays, patch.currentPatch, patch.previousPatch]
+    () => buildTopHeroOverall(analyticsReplays, 100),
+    [analyticsReplays]
   );
 
   const topHeroByRole = useMemo(() => {
@@ -951,7 +920,7 @@ export function HomePage() {
           {homeView === "top" && !mapsLoading && maps ? (
             <section className="mt-6 rounded-lg border border-skin-line bg-skin-card p-3">
               <MetaTopKillGamesSection
-                replays={analyticsReplaysLatestOnly}
+                replays={analyticsReplays}
                 maps={maps}
                 listLoading={feedListLoading}
                 slimByMatchId={topTabSlimByMatch}

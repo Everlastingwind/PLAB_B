@@ -7,7 +7,6 @@ import {
   fetchReplaysForHeroProfile,
   filterReplaysByTeammateOpponentHero,
   heroKeyFromId,
-  replayMatchesLatestPatch,
   type FeedReplayIndexResult,
 } from "../lib/replaysApi";
 import { slotToRoleEarlyFallbackMap } from "../lib/metaRoleFallback";
@@ -398,15 +397,6 @@ export function HeroMatchesPage() {
     });
   }, [replaysSynergy, replayRoleEffective, roleFilter]);
 
-  /** 出装 Items / 天赋统计：仅当前补丁 */
-  const overviewReplaysLatestOnly = useMemo(
-    () =>
-      overviewReplays.filter((r) =>
-        replayMatchesLatestPatch(r, patch.currentPatch)
-      ),
-    [overviewReplays, patch.currentPatch]
-  );
-
   const roleCounts = useMemo(() => {
     const out: Record<string, number> = {
       carry: 0,
@@ -451,7 +441,7 @@ export function HeroMatchesPage() {
   /** Overview 仅用当前补丁 id；列表行保留全版本 slim */
   const mergedSlimMatchIds = useMemo(() => {
     const idSet = new Set<number>();
-    for (const r of overviewReplaysLatestOnly.slice(0, HERO_OVERVIEW_INSIGHT_CAP)) {
+    for (const r of overviewReplays.slice(0, HERO_OVERVIEW_INSIGHT_CAP)) {
       const mid = Number(r.match_id);
       if (Number.isFinite(mid) && mid > 0) idSet.add(mid);
     }
@@ -460,7 +450,7 @@ export function HeroMatchesPage() {
       if (Number.isFinite(mid) && mid > 0) idSet.add(mid);
     }
     return [...idSet].sort((a, b) => a - b);
-  }, [overviewReplaysLatestOnly, displayedReplays]);
+  }, [overviewReplays, displayedReplays]);
 
   const slimIdsToFetch = useMemo(
     () =>
@@ -562,7 +552,7 @@ export function HeroMatchesPage() {
               heroId={heroId}
               heroKey={decoded}
               heroName={heroLabel?.nameCn || heroLabel?.nameEn || decoded}
-              replays={overviewReplaysLatestOnly}
+              replays={overviewReplays}
               maps={maps}
               slimByMatchId={detailByMatch}
               enabled={!feedListLoading && replays.length > 0}

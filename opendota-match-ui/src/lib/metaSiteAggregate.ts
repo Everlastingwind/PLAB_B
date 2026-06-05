@@ -3,11 +3,7 @@ import type { MetaGlobalItemAggRow } from "./metaGlobalItemStats";
 import type { TopSectionSnapshotPayload } from "./homeTopSnapshot";
 import { isRadiantFromPlayer } from "./matchGrouping";
 import { slotToRoleEarlyFallbackMap } from "./metaRoleFallback";
-import {
-  normalizeReplaySource,
-  patchVersionsEqualCaseInsensitive,
-  replayMatchesLatestPatch,
-} from "./replaysApi";
+import { normalizeReplaySource } from "./replaysApi";
 import { stitchHeroTrendCumulativeSeries } from "./heroTrendSeries";
 
 export const META_ROLE_KEYS = [
@@ -53,16 +49,9 @@ function heroOverallMeetsDisplayThreshold(
   row: HeroOverallAggRow,
   minUniqueMatches: number
 ): boolean {
-  const orphanOnly =
-    row.games === 0 &&
-    row.cumulativeSeriesIsBaseline?.length === 1 &&
-    row.cumulativeSeriesIsBaseline[0] === true;
-  if (orphanOnly) return true;
-  const nLatest =
-    row.cumulativeWinRateSeries.length -
-    (row.cumulativeSeriesIsBaseline?.[0] === true ? 1 : 0);
   return (
-    row.games >= minUniqueMatches || nLatest >= minUniqueMatches
+    row.games >= minUniqueMatches ||
+    row.cumulativeWinRateSeries.length >= minUniqueMatches
   );
 }
 
@@ -120,18 +109,13 @@ export type HeroOverallAggRow = {
   games: number;
   winRate: number;
   cumulativeWinRateSeries: number[];
-  /** 与 cumulativeWinRateSeries 等长；首点可为上一版本末期基线（用于 Tooltip） */
   cumulativeSeriesIsBaseline?: boolean[];
   roleWinRate: Partial<
     Record<MetaRoleTab, { games: number; winRate: number }>
   >;
 };
 
-function matchesPatchKey(r: ReplaySummary, patch: string): boolean {
-  return patchVersionsEqualCaseInsensitive(r.patch_version, patch);
-}
-
-/** 按补丁筛选后的各英雄各场胜负时间线（match_id 去重保留最新时间） */
+/** 各英雄各场胜负时间线（match_id 去重保留最新时间） */
 function collectHeroMatchMaps(
   replays: readonly ReplaySummary[],
   patchPredicate: (r: ReplaySummary) => boolean
@@ -185,12 +169,10 @@ function cumulativeWinRateSeriesFromMatchMap(
 export function buildTopHeroByRole(
   analyticsReplays: readonly ReplaySummary[],
   roleTab: MetaRoleTab,
-  minGames = 50,
-  currentPatch: string
+  minGames = 50
 ): TopHeroRoleRow[] {
   const agg = new Map<number, { games: number; wins: number }>();
   for (const r of analyticsReplays) {
-    if (!replayMatchesLatestPatch(r, currentPatch)) continue;
     const slotRole = slotToRoleEarlyFallbackMap(r);
     for (const p of r.players || []) {
       const role =
@@ -221,19 +203,9 @@ export function buildTopHeroByRole(
 /** 全英雄表：去重后 ≥ minUniqueMatches（快照脚本用 1；首页实时仍可传 100） */
 export function buildTopHeroOverall(
   analyticsReplays: readonly ReplaySummary[],
-  minUniqueMatches = 100,
-  currentPatch: string,
-  previousPatch: string
+  minUniqueMatches = 100
 ): HeroOverallAggRow[] {
-  const headlineReplays = analyticsReplays.filter((r) =>
-    replayMatchesLatestPatch(r, currentPatch)
-  );
-  const heroLatestMaps = collectHeroMatchMaps(analyticsReplays, (r) =>
-    replayMatchesLatestPatch(r, currentPatch)
-  );
-  const heroPrevMaps = collectHeroMatchMaps(analyticsReplays, (r) =>
-    matchesPatchKey(r, previousPatch)
-  );
+  const heroAllMaps = collectHeroMatchMaps(analyticsReplays, () => true);
 
   const agg = new Map<
     number,
@@ -244,7 +216,7 @@ export function buildTopHeroOverall(
     }
   >();
 
-  for (const r of headlineReplays) {
+  for (const r of analyticsReplays) {
     const rw = Boolean(r.radiant_win);
     const slotRole = slotToRoleEarlyFallbackMap(r);
     for (const p of r.players || []) {
@@ -291,18 +263,11 @@ export function buildTopHeroOverall(
       );
 
       const currSeries = cumulativeWinRateSeriesFromMatchMap(
-        heroLatestMaps.get(heroId)
-      );
-      const prevSeries = cumulativeWinRateSeriesFromMatchMap(
-        heroPrevMaps.get(heroId)
+        heroAllMaps.get(heroId)
       );
 
-      const stitched = stitchHeroTrendCumulativeSeries(currSeries, prevSeries);
-
+      const stitched = stitchHeroTrendCumulativeSeries(currSeries);
       const cumulativeWinRateSeries = stitched.rates;
-      const cumulativeSeriesIsBaseline = stitched.isBaseline.some((b) => b)
-        ? stitched.isBaseline
-        : undefined;
 
       const uniqueG = currSeries.length;
       const winRateFinal =
@@ -312,55 +277,21 @@ export function buildTopHeroOverall(
             ? (s.wins / s.games) * 100
             : 0;
 
-      const row: HeroOverallAggRow = {
+      return {
         heroId,
         games: uniqueG > 0 ? uniqueG : s.games,
         winRate: winRateFinal,
         cumulativeWinRateSeries,
         roleWinRate,
       };
-      if (cumulativeSeriesIsBaseline) {
-        row.cumulativeSeriesIsBaseline = cumulativeSeriesIsBaseline;
-      }
-      return row;
     }
   );
 
-  const seenHero = new Set(primaryRows.map((r) => r.heroId));
-  const orphanRows: HeroOverallAggRow[] = [];
-  for (const hid of heroPrevMaps.keys()) {
-    if (seenHero.has(hid)) continue;
-    const currSeries = cumulativeWinRateSeriesFromMatchMap(
-      heroLatestMaps.get(hid)
-    );
-    if (currSeries.length > 0) continue;
-    const prevSeries = cumulativeWinRateSeriesFromMatchMap(
-      heroPrevMaps.get(hid)
-    );
-    if (prevSeries.length < minUniqueMatches) continue;
-    const stitched = stitchHeroTrendCumulativeSeries([], prevSeries);
-    if (stitched.rates.length !== 1 || !stitched.isBaseline[0]) continue;
-    orphanRows.push({
-      heroId: hid,
-      games: 0,
-      winRate: stitched.rates[0],
-      cumulativeWinRateSeries: stitched.rates,
-      cumulativeSeriesIsBaseline: stitched.isBaseline,
-      roleWinRate: {},
-    });
-  }
-
-  return [...primaryRows, ...orphanRows].filter((x) => {
-    const orphanOnly =
-      x.games === 0 &&
-      x.cumulativeSeriesIsBaseline?.length === 1 &&
-      x.cumulativeSeriesIsBaseline[0] === true;
-    if (orphanOnly) return true;
-    const nLatest =
-      x.cumulativeWinRateSeries.length -
-      (x.cumulativeSeriesIsBaseline?.[0] === true ? 1 : 0);
-    return nLatest >= minUniqueMatches;
-  });
+  return primaryRows.filter(
+    (x) =>
+      x.cumulativeWinRateSeries.length >= minUniqueMatches ||
+      x.games >= minUniqueMatches
+  );
 }
 
 export type MetaSiteSnapshotCloudAgg = {
@@ -376,12 +307,11 @@ function cloudAggHasSamples(agg: MetaSiteSnapshotCloudAgg): boolean {
 }
 
 /**
- * 从已合并的索引行估算全站对局（仅当前补丁、pub），match_id 去重。
+ * 从已合并的索引行估算全站对局（全历史 pub），match_id 去重。
  * 与 Supabase `fetchPlanBAggregateMatchStats` 口径一致，供无云或 API 失败时回退。
  */
 export function buildCloudAggFromReplays(
-  replays: readonly ReplaySummary[],
-  currentPatch: string
+  replays: readonly ReplaySummary[]
 ): MetaSiteSnapshotCloudAgg {
   const seen = new Set<number>();
   let radiantWins = 0;
@@ -391,7 +321,6 @@ export function buildCloudAggFromReplays(
 
   for (const r of replays) {
     if (normalizeReplaySource(r, "pub") !== "pub") continue;
-    if (!replayMatchesLatestPatch(r, currentPatch)) continue;
 
     const mid = Number(r.match_id);
     if (!Number.isFinite(mid) || mid <= 0 || seen.has(mid)) continue;
@@ -455,13 +384,11 @@ export type MetaSiteSnapshotPayload = {
 export function buildMetaSiteSnapshotPayload(
   analyticsReplays: readonly ReplaySummary[],
   cloudAgg: MetaSiteSnapshotCloudAgg,
-  patchKeys: { currentPatch: string; previousPatch: string },
   extras?: {
     itemsMeta: NonNullable<MetaSiteSnapshotPayload["itemsMeta"]>;
     topSection: TopSectionSnapshotPayload;
   }
 ): MetaSiteSnapshotPayload {
-  const { currentPatch, previousPatch } = patchKeys;
   /** 每日快照：允许极小样本也写入 heroOverall / 分路 Top，避免线上「有列表无汇总」 */
   const snapshotMinUniqueMatches = 1;
   const snapshotMinRoleGames = 1;
@@ -470,8 +397,7 @@ export function buildMetaSiteSnapshotPayload(
     topHeroByRole[rk] = buildTopHeroByRole(
       analyticsReplays,
       rk,
-      snapshotMinRoleGames,
-      currentPatch
+      snapshotMinRoleGames
     );
   }
   return {
@@ -481,9 +407,7 @@ export function buildMetaSiteSnapshotPayload(
     topHeroByRole,
     heroOverall: buildTopHeroOverall(
       analyticsReplays,
-      snapshotMinUniqueMatches,
-      currentPatch,
-      previousPatch
+      snapshotMinUniqueMatches
     ),
     ...(extras
       ? { itemsMeta: extras.itemsMeta, topSection: extras.topSection }
