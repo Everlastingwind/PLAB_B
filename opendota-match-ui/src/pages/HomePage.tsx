@@ -54,6 +54,10 @@ import {
   metaWinRateAfterGamesClass,
 } from "../lib/winRateTextClass";
 import { useSitePatch } from "../contexts/SitePatchContext";
+import {
+  patchNavDisplayLabel,
+  patchNotesRoutePath,
+} from "../lib/dota2UpdatesApi";
 import { heroTrendBaselineTooltipTitle } from "../lib/heroTrendSeries";
 
 /** Items 出装聚合：合并索引全站来源，但单场须拉 slim，此处为单场数量上限 */
@@ -675,10 +679,10 @@ export function HomePage() {
                   TOP
                 </button>
                 <Link
-                  to="/patches/7.41c"
+                  to={patchNotesRoutePath(patch.currentPatch)}
                   className="inline-flex rounded border border-slate-500/35 bg-slate-200/35 px-3 py-1.5 text-sm font-semibold text-skin-sub hover:bg-slate-300/35 dark:border-slate-500/45 dark:bg-slate-700/35 dark:hover:bg-slate-700/55"
                 >
-                  7.41C
+                  {patchNavDisplayLabel(patch.currentPatch)}
                 </Link>
                 </div>
               </div>

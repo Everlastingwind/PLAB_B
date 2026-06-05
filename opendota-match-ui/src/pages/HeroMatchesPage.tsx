@@ -48,6 +48,7 @@ import {
 } from "../lib/heroPatchFromUpdate";
 import { translatePatch741cNote } from "../utils/patch741c_translations";
 import { useSitePatch } from "../contexts/SitePatchContext";
+import { fetchDota2UpdateContentByVersion } from "../lib/dota2UpdatesApi";
 import { mainSixSlotsFromPlayerRecord } from "../lib/matchInventory";
 
 function toTalentTreeUi(raw: SlimPlayer["talent_tree"]): TalentTreeUi | null {
@@ -266,28 +267,6 @@ export function HeroMatchesPage() {
     setLatestHeroPatch(null);
     void (async () => {
       try {
-        async function fetchLatestPatchRow(): Promise<{
-          version: string | null;
-          content: string | null;
-        } | null> {
-          if (!supabase) return null;
-          const { data, error } = await supabase
-            .from("dota2_updates")
-            .select("version, content")
-            .order("release_date", { ascending: false })
-            .limit(1)
-            .maybeSingle();
-          if (error) {
-            console.warn(error);
-            return null;
-          }
-          if (!data) return null;
-          return {
-            version: data.version ?? null,
-            content: data.content ?? null,
-          };
-        }
-
         const [replayResult, patchRow] = await Promise.all([
           fetchReplaysForHeroProfile(feed, decoded, maps).catch(
             (): FeedReplayIndexResult => ({
@@ -295,7 +274,9 @@ export function HeroMatchesPage() {
               cloudIndexError: null,
             })
           ),
-          fetchLatestPatchRow(),
+          supabase
+            ? fetchDota2UpdateContentByVersion(supabase, patch.currentPatch)
+            : Promise.resolve(null),
         ]);
 
         if (cancelled) return;
@@ -355,7 +336,7 @@ export function HeroMatchesPage() {
     return () => {
       cancelled = true;
     };
-  }, [decoded, maps, feed]);
+  }, [decoded, maps, feed, patch.currentPatch]);
 
   const normalizeRole = (raw: unknown): string => {
     const s = String(raw ?? "").trim().toLowerCase();

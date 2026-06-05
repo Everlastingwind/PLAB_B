@@ -52,7 +52,7 @@ export default function App() {
           <Route path="/pros" element={<ProPlayersPage />} />
           <Route path="/high-mmr-matches" element={<HighMmrMatchesPage />} />
           <Route path="/item/:itemKey" element={<ItemDetailPage />} />
-          <Route path="/patches/7.41c" element={<Patch741CPage />} />
+          <Route path="/patches/:patchVersion" element={<Patch741CPage />} />
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </Suspense>

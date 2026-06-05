@@ -4,6 +4,12 @@ import { heroes, item_ids, items } from "dotaconstants";
 import { PageShell } from "../components/PageShell";
 import { SEOMeta } from "../components/SEOMeta";
 import { supabase } from "../lib/supabaseClient.js";
+import { useSitePatch } from "../contexts/SitePatchContext";
+import {
+  fetchDota2UpdateByVersion,
+  patchNavDisplayLabel,
+  type Dota2UpdateRow,
+} from "../lib/dota2UpdatesApi";
 import { parseSteamBBCode } from "../lib/parseSteamBBCode";
 import { PatchUpdatePanel } from "../components/PatchUpdatePanel";
 import { PatchNotesDatafeedView } from "../components/PatchNotesDatafeedView";
@@ -31,23 +37,18 @@ export {
   translatePatch741cTitle,
 } from "../utils/patch741c_translations";
 
-type Dota2Update = {
-  id: number;
-  gid: string;
-  title: string;
-  content: string | null;
-  version: string | null;
-  release_date: string | null;
-  url: string | null;
-};
-
 export function Patch741CPage() {
+  const { patch } = useSitePatch();
+  const currentPatch = patch?.currentPatch ?? "";
+  const patchLabel = patchNavDisplayLabel(currentPatch);
+
   const [lang, setLang] = useState<"zh" | "en">("zh");
-  const [row, setRow] = useState<Dota2Update | null>(null);
+  const [row, setRow] = useState<Dota2UpdateRow | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    if (!currentPatch) return;
     let cancelled = false;
     (async () => {
       setLoading(true);
@@ -61,27 +62,24 @@ export function Patch741CPage() {
         setLoading(false);
         return;
       }
-      const { data, error: qErr } = await client
-        .from("dota2_updates")
-        .select("*")
-        .eq("version", "7.41c")
-        .order("release_date", { ascending: false })
-        .limit(1)
-        .maybeSingle();
+      const { row: data, error: qErr } = await fetchDota2UpdateByVersion(
+        client,
+        currentPatch
+      );
 
       if (cancelled) return;
       if (qErr) {
-        setError(qErr.message);
+        setError(qErr);
         setRow(null);
       } else {
-        setRow((data as Dota2Update) ?? null);
+        setRow(data);
       }
       setLoading(false);
     })();
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [currentPatch]);
 
   const bodyRender = useMemo(() => {
     if (!row?.content) return { kind: "empty" as const };
@@ -113,9 +111,11 @@ export function Patch741CPage() {
     }
   }, [row?.release_date]);
 
+  if (!patch) return null;
+
   return (
     <>
-      <SEOMeta title="Dota 2 更新 7.41c" />
+      <SEOMeta title={`Dota 2 更新 ${patchLabel}`} />
       <PageShell>
         <main className="mx-auto w-full max-w-[900px] px-4 py-8 sm:px-6 lg:px-8">
           <div className="mb-6 flex flex-wrap items-end justify-between gap-4 border-b border-skin-line pb-4">
@@ -124,7 +124,7 @@ export function Patch741CPage() {
                 Gameplay Update
               </p>
               <h1 className="mt-1 text-2xl font-bold tracking-tight text-skin-ink sm:text-3xl">
-                7.41c
+                {patchLabel}
               </h1>
               {releaseLabel ? (
                 <p className="mt-1 text-sm text-skin-sub">{releaseLabel}</p>
@@ -183,7 +183,7 @@ export function Patch741CPage() {
           ) : !row ? (
             <div className="rounded-xl border border-skin-line bg-skin-card p-6 shadow-sm">
               <p className="text-sm text-skin-sub">
-                暂无 7.41c 补丁数据。请在 Supabase 中创建表{" "}
+                暂无 {patchLabel} 补丁数据。请在 Supabase 中创建表{" "}
                 <code className="rounded bg-skin-inset px-1 py-0.5 text-xs">
                   dota2_updates
                 </code>{" "}
