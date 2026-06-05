@@ -278,6 +278,27 @@ function planBPatchVersionForFilter(
   return String(currentPatch ?? "").trim();
 }
 
+/**
+ * 分页「共 N 场」：独立 exact count（`head: true`），勿与 range 列表同请求。
+ * `estimated` 统计值在大表上常严重偏低（例如固定显示 ~1001）。
+ */
+async function fetchPlanBPatchReplayExactCount(
+  client: NonNullable<typeof supabase>,
+  patchVersion: string
+): Promise<{ totalRows: number; error: string | null }> {
+  const { count, error } = await client
+    .from("plan_b")
+    .select("match_id", { count: "exact", head: true })
+    .eq("patch_version", patchVersion);
+  if (error) {
+    return { totalRows: 0, error: error.message };
+  }
+  return {
+    totalRows: Math.max(0, Number(count ?? 0)),
+    error: null,
+  };
+}
+
 /** 分页列表：轻列 + 当前页 match_id 批量 overlay players */
 export async function overlayPlanBListRowsWithPlayersWithClient(
   client: SupabaseClient,
@@ -699,15 +720,11 @@ async function fetchPlanBReplayIndexPageSplit(
   const from = (safePage - 1) * safePageSize;
   const to = from + safePageSize - 1;
 
-  /** `exact` 全表 COUNT 在大表上极易超时；分页总数用统计估算即可 */
-  const countReq = await client
-    .from("plan_b")
-    .select("match_id", { count: "estimated", head: true })
-    .eq("patch_version", patchVersion);
-  if (countReq.error) {
-    return { rows: [], totalRows: 0, error: countReq.error.message };
+  const countPack = await fetchPlanBPatchReplayExactCount(client, patchVersion);
+  if (countPack.error) {
+    return { rows: [], totalRows: 0, error: countPack.error };
   }
-  const totalRows = Math.max(0, Number(countReq.count || 0));
+  const totalRows = countPack.totalRows;
 
   const pageReq = await client
     .from("plan_b")
@@ -748,16 +765,18 @@ export async function fetchPlanBReplayIndexPage(
   const from = (safePage - 1) * safePageSize;
   const to = from + safePageSize - 1;
 
-  /** `exact` count 与 range 同请求时会多做昂贵 COUNT(*)；列表总条数用 estimated 即可 */
-  const runSelect = async (sel: string) =>
+  const [countPack, pageResult] = await Promise.all([
+    fetchPlanBPatchReplayExactCount(client, patchVersion),
     client
       .from("plan_b")
-      .select(sel, { count: "estimated" })
+      .select(PLAN_B_INDEX_SELECT)
       .eq("patch_version", patchVersion)
       .order("created_at", { ascending: false })
-      .range(from, to);
+      .range(from, to),
+  ]);
 
-  let { data, error, count } = await runSelect(PLAN_B_INDEX_SELECT);
+  const { data, error } = pageResult;
+
   if (error) {
     const msg = error.message || "";
     if (/column|42703|does not exist|schema cache/i.test(msg)) {
@@ -781,8 +800,10 @@ export async function fetchPlanBReplayIndexPage(
     ? (data as unknown as Record<string, unknown>[])
     : [];
   const rows = await overlayPlanBListRowsWithPlayers(client, lightRows);
-  const totalRows = Math.max(0, Number(count ?? 0));
-  return { rows, totalRows, error: null };
+  if (countPack.error) {
+    return { rows, totalRows: 0, error: countPack.error };
+  }
+  return { rows, totalRows: countPack.totalRows, error: null };
 }
 
 /** 英雄/选手页：合并结果上限（单次扫描过大仍可能触发超时） */
